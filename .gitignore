@@ -1,7 +1,11 @@
 # directories
+.nx/cache
+.nx/workspace-data
 dist/
 node_modules/
 
 # files
 .DS_Store
 .env
+
+vite.config.*.timestamp*

@@ -17,10 +17,6 @@
     "noUncheckedIndexedAccess": true,
     "noUncheckedSideEffectImports": true,
     "noUnusedParameters": true,
-    "outDir": "dist",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
     "resolveJsonModule": true,
     "skipDefaultLibCheck": true,
     "sourceMap": true,
