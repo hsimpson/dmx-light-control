@@ -1,11 +1,14 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
+    "composite": true,
+    "ignoreDeprecations": "6.0",
     "module": "commonjs",
     "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
+    "noPropertyAccessFromIndexSignature": false,
+    "outDir": "../../dist/out-tsc",
+    "rootDir": "src",
     "types": ["jest", "node"]
   },
+  "extends": "./tsconfig.json",
   "include": ["jest.config.ts", "src/**/*.ts"]
 }

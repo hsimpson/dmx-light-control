@@ -1,16 +1,17 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
+    "composite": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "ignoreDeprecations": "6.0",
     "module": "commonjs",
     "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
+    "noPropertyAccessFromIndexSignature": false,
+    "outDir": "../../dist/out-tsc",
     "rootDir": "src",
-    "types": ["node"],
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "target": "es2021",
-    "noPropertyAccessFromIndexSignature": false
+    "types": ["node"]
   },
+  "extends": "./tsconfig.json",
   "include": ["src/**/*.ts"]
 }
