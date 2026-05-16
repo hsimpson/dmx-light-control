@@ -11,7 +11,7 @@ export default defineConfig(
   tseslint.configs.stylisticTypeChecked,
 
   {
-    ignores: ['coverage/**/*', 'dist/**/*'],
+    ignores: ['coverage/**/*', 'dist/**/*', '**/eslint.config.ts'],
   },
 
   // configuration for rules that require type information
@@ -36,7 +36,10 @@ export default defineConfig(
   {
     rules: {
       '@typescript-eslint/consistent-type-definitions': 'off',
-      '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'explicit' }],
+      '@typescript-eslint/explicit-member-accessibility': [
+        'error',
+        { accessibility: 'explicit' },
+      ],
       '@typescript-eslint/no-shadow': 'error',
       '@typescript-eslint/no-unused-vars': [
         'warn',
@@ -50,7 +53,10 @@ export default defineConfig(
       '@typescript-eslint/no-var-requires': 'warn',
       '@typescript-eslint/promise-function-async': 'error',
       '@typescript-eslint/require-await': 'error',
-      '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        { allowNumber: true },
+      ],
     },
   },
 

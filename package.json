@@ -7,8 +7,6 @@
   "packageManager": "pnpm@11.1.2",
   "scripts": {
     "build": "nx build",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
     "lint": "nx lint"
   },
   "devDependencies": {
@@ -17,6 +15,7 @@
     "@nestjs/testing": "^11.0.0",
     "@nx/devkit": "22.7.2",
     "@nx/eslint": "^22.0.0",
+    "@nx/jest": "^22.7.2",
     "@nx/js": "22.7.2",
     "@nx/nest": "22.7.2",
     "@nx/node": "22.7.2",
@@ -29,6 +28,7 @@
     "@swc-node/register": "~1.11.1",
     "@swc/core": "~1.15.5",
     "@swc/helpers": "~0.5.18",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.8.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
@@ -37,10 +37,12 @@
     "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
+    "jest": "^30.4.2",
     "jiti": "^2.7.0",
     "jsdom": "~22.1.0",
     "nx": "^22.0.0",
     "prettier": "^3.8.3",
+    "ts-jest": "^29.4.9",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.3",
     "vite": "^8.0.0",
