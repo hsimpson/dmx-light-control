@@ -2,7 +2,7 @@
   "compilerOptions": {
     "allowJs": true,
     "composite": true,
-    "module": "commonjs",
+    "module": "esnext",
     "outDir": "../../dist/out-tsc",
     "skipLibCheck": true,
     "sourceMap": false
