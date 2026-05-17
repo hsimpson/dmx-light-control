@@ -6,7 +6,7 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { CommandFactory } from 'nest-commander';
-import { AppModule } from './app/app.module';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   // If CLI args are passed (e.g. `node main.js dmx-sniffer`), run as command

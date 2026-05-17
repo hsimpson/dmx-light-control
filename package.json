@@ -55,6 +55,7 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "axios": "^1.16.1",
+    "class-transformer": "^0.5.1",
     "nest-commander": "^3.20.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

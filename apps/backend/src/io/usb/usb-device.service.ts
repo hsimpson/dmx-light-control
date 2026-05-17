@@ -34,4 +34,15 @@ export class UsbDeviceService {
     const device = devices.find((d) => d.serialNumber === serial);
     return device;
   }
+
+  public async send(device: WebUSBDevice, data: ArrayBuffer): Promise<void> {
+    // This method should implement the logic to send data to the USB device.
+    if (!device.opened) {
+      await device.open();
+      await device.selectConfiguration(1);
+      await device.claimInterface(0);
+    }
+
+    await device.transferOut(2, data);
+  }
 }
