@@ -40,7 +40,7 @@
     "eslint-plugin-prettier": "^5.5.5",
     "jest": "^30.4.2",
     "jiti": "^2.7.0",
-    "jsdom": "~22.1.0",
+    "jsdom": "~29.1.1",
     "nx": "^22.0.0",
     "prettier": "^3.8.3",
     "ts-jest": "^29.4.9",
@@ -48,18 +48,18 @@
     "typescript-eslint": "^8.59.3",
     "vite": "^8.0.0",
     "vitest": "~4.1.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^7.0.2"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
-    "axios": "^1.6.0",
+    "axios": "^1.16.1",
     "nest-commander": "^3.20.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
     "tslib": "^2.3.0",
     "usb": "^2.17.0"
   }
