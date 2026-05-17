@@ -11,3 +11,4 @@ allowBuilds:
   midi: true
   nx: true
   unrs-resolver: true
+  usb: true

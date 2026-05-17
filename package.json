@@ -32,6 +32,7 @@
     "@types/node": "^25.8.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/w3c-web-usb": "^1.0.14",
     "@vitejs/plugin-react": "^6.0.0",
     "@vitest/ui": "~4.1.0",
     "eslint": "^10.3.0",
@@ -54,10 +55,12 @@
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "axios": "^1.6.0",
+    "nest-commander": "^3.20.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "usb": "^2.17.0"
   }
 }
