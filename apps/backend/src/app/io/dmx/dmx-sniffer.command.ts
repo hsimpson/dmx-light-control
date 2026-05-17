@@ -32,7 +32,6 @@ export class DmxSnifferCommand extends CommandRunner {
         return;
       }
       this.logger.log(`Monitoring USB device with serial: '${options.serial}'`);
-      await this.usbDeviceService.openDevice(device);
     }
 
     return Promise.resolve();
