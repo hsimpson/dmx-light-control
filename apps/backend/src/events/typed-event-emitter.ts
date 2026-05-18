@@ -5,15 +5,15 @@ export class TypedEventEmitter<TEvents extends Record<string, unknown>> {
 
   public emit<TEvent extends keyof TEvents & string>(
     event: TEvent,
-    payload: TEvents[TEvent],
+    ...args: TEvents[TEvent] extends undefined ? [] : [payload: TEvents[TEvent]]
   ): boolean {
-    return this.emitter.emit(event, payload);
+    return this.emitter.emit(event, ...args);
   }
 
   public on<TEvent extends keyof TEvents & string>(
     event: TEvent,
-    listener: (payload: TEvents[TEvent]) => void,
+    listener: (payload: TEvents[TEvent]) => void | Promise<void>,
   ): void {
-    this.emitter.on(event, listener);
+    this.emitter.on(event, listener as (...args: unknown[]) => void);
   }
 }

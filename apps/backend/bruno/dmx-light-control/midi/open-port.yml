@@ -1,0 +1,22 @@
+info:
+  name: open-port
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: "{{backendUrl}}/api/midi/open-ports"
+  body:
+    type: json
+    data: |-
+      {
+        "inputPort": 1,
+        "outputPort": 1
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
