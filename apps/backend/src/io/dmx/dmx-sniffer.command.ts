@@ -13,6 +13,22 @@ export class DmxSnifferCommand extends CommandRunner {
     super();
   }
 
+  @Option({
+    flags: '-b, --bus <bus>',
+    description: 'Specify the bus number of the USB device to monitor',
+  })
+  public parseBus(val: string) {
+    return Number(val);
+  }
+
+  @Option({
+    flags: '-a, --address <address>',
+    description: 'Specify the address of the USB device to monitor',
+  })
+  public parseAddress(val: string) {
+    return Number(val);
+  }
+
   public override async run(
     passedParams: string[],
     options: Record<string, string | boolean | number>,
@@ -40,21 +56,5 @@ export class DmxSnifferCommand extends CommandRunner {
     );
 
     return Promise.resolve();
-  }
-
-  @Option({
-    flags: '-b, --bus <bus>',
-    description: 'Specify the bus number of the USB device to monitor',
-  })
-  public parseBus(val: string) {
-    return Number(val);
-  }
-
-  @Option({
-    flags: '-a, --address <address>',
-    description: 'Specify the address of the USB device to monitor',
-  })
-  public parseAddress(val: string) {
-    return Number(val);
   }
 }

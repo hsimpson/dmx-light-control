@@ -36,6 +36,19 @@ export class DmxSendService implements OnModuleInit {
     return this._isSending;
   }
 
+  public async startSending(): Promise<void> {
+    // FIXME: device selection
+    this.device = await this.usbDeviceService.getDeviceBySerial('A50285BI');
+    this.logger.log(
+      `Found device: ${this.device ? this.device.productName : 'None'}`,
+    );
+    this.sendDmxFrame();
+  }
+
+  public stopSending(): void {
+    this._isSending = false;
+  }
+
   private setChannelValues(channelValues: DmxValue[]): void {
     // Update the DMX frame with the provided channel values
     this.logger.debug(
@@ -56,19 +69,6 @@ export class DmxSendService implements OnModuleInit {
       }
       this.dmxFrame[channel] = value; // Channel numbers are 1-based, array is 0-based
     }
-  }
-
-  public async startSending(): Promise<void> {
-    // FIXME: device selection
-    this.device = await this.usbDeviceService.getDeviceBySerial('A50285BI');
-    this.logger.log(
-      `Found device: ${this.device ? this.device.productName : 'None'}`,
-    );
-    this.sendDmxFrame();
-  }
-
-  public stopSending(): void {
-    this._isSending = false;
   }
 
   private sendDmxFrame() {

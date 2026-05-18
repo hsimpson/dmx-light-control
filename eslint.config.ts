@@ -40,6 +40,7 @@ export default defineConfig(
         'error',
         { accessibility: 'explicit' },
       ],
+      '@typescript-eslint/member-ordering': 'error',
       '@typescript-eslint/no-shadow': 'error',
       '@typescript-eslint/no-unused-vars': [
         'warn',
