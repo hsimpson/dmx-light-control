@@ -12,9 +12,6 @@
     },
     {
       "path": "./apps/frontend-e2e"
-    },
-    {
-      "path": "./packages/tools"
     }
   ]
 }

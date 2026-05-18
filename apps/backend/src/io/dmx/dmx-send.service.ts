@@ -1,10 +1,11 @@
+import { AppEventEmitter } from '@/events/app-event-emitter';
 import { UsbDeviceService } from '@/io/usb/usb-device.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { WebUSBDevice } from 'usb';
 import { DmxValue } from './types/dmx.types';
 
 @Injectable()
-export class DmxSendService {
+export class DmxSendService implements OnModuleInit {
   // This service will handle the logic for sending DMX data frames to USB devices.
   // It will be used by the DmxSendCommand to start the sender and process the data.
 
@@ -13,15 +14,29 @@ export class DmxSendService {
   private _isSending = false;
   private device?: WebUSBDevice;
 
-  public constructor(private readonly usbDeviceService: UsbDeviceService) {
+  public constructor(
+    private readonly usbDeviceService: UsbDeviceService,
+    private readonly eventEmitter: AppEventEmitter,
+  ) {
     this.dmxFrame.fill(0); // Initialize DMX frame with zeros
+  }
+
+  public onModuleInit() {
+    this.eventEmitter.on('dmx.channelValues', (values) => {
+      this.setChannelValues(values);
+
+      // If not already sending, start the sender
+      if (!this.isSending()) {
+        void this.startSending();
+      }
+    });
   }
 
   public isSending(): boolean {
     return this._isSending;
   }
 
-  public setChannelValues(channelValues: DmxValue[]): void {
+  private setChannelValues(channelValues: DmxValue[]): void {
     // Update the DMX frame with the provided channel values
     this.logger.debug(
       `Setting DMX channel values: ${JSON.stringify(channelValues)}`,
@@ -44,6 +59,7 @@ export class DmxSendService {
   }
 
   public async startSending(): Promise<void> {
+    // FIXME: device selection
     this.device = await this.usbDeviceService.getDeviceBySerial('A50285BI');
     this.logger.log(
       `Found device: ${this.device ? this.device.productName : 'None'}`,
