@@ -67,7 +67,8 @@
           "buildTarget": "backend:build:production",
           "watch": false
         }
-      }
+      },
+      "dependsOn": [{ "projects": ["infra"], "target": "db-start" }]
     }
   },
   "tags": []

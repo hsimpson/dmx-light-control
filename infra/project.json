@@ -1,0 +1,41 @@
+{
+  "name": "infra",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "db-start": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "docker compose up -d --wait",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "db-stop": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "docker compose down",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "db-reset": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "docker compose down -v",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "db-logs": {
+      "continuous": true,
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "docker compose logs -f db",
+        "cwd": "{projectRoot}"
+      }
+    }
+  },
+  "tags": ["type:infra"]
+}
