@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@11.1.2",
+  "packageManager": "pnpm@11.1.3",
   "scripts": {
     "build": "nx build",
     "lint": "nx lint"
@@ -52,11 +52,14 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
+    "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.0",
     "@nestjs/event-emitter": "^3.1.0",
     "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/platform-fastify": "^11.1.21",
     "axios": "^1.16.1",
     "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
     "midi": "^2.0.0",
     "nest-commander": "^3.20.1",
     "react": "^19.0.0",

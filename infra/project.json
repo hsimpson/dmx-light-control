@@ -7,7 +7,7 @@
       "executor": "nx:run-commands",
       "cache": false,
       "options": {
-        "command": "docker compose up -d --wait",
+        "command": "docker compose --env-file ../.env up -d --wait",
         "cwd": "{projectRoot}"
       }
     },
@@ -15,7 +15,7 @@
       "executor": "nx:run-commands",
       "cache": false,
       "options": {
-        "command": "docker compose down",
+        "command": "docker compose --env-file ../.env down",
         "cwd": "{projectRoot}"
       }
     },
@@ -23,7 +23,7 @@
       "executor": "nx:run-commands",
       "cache": false,
       "options": {
-        "command": "docker compose down -v",
+        "command": "docker compose --env-file ../.env down -v",
         "cwd": "{projectRoot}"
       }
     },
@@ -32,7 +32,7 @@
       "executor": "nx:run-commands",
       "cache": false,
       "options": {
-        "command": "docker compose logs -f db",
+        "command": "docker compose --env-file ../.env logs -f db",
         "cwd": "{projectRoot}"
       }
     }
