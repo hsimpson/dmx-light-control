@@ -2,6 +2,28 @@
 
 This is the backend application for the DMX Light Control project. It is built using NestJS and provides an API for controlling DMX devices, as well as a command-line interface for sniffing DMX data from USB devices.
 
+## Database
+
+### Drizzle ORM
+
+The backend uses Drizzle ORM for database interactions. The database schema is defined in `src/db/schema.ts`, and migrations are generated in the `src/db/migrations` directory. To generate a new migration after modifying the schema, run the following command:
+
+```bash
+nx run backend:drizzle-generate --name <migration_name>
+```
+
+To drop a migration, use the following command:
+
+```bash
+nx run backend:drizzle-drop
+```
+
+To apply migrations, use the following command:
+
+```bash
+nx run backend:drizzle-migrate
+```
+
 ## DMX Sniffer Command
 
 The `dmx-sniffer` command allows you to monitor DMX data from a specified USB device. To use this command, you need to provide the bus number and address of the USB device you want to monitor. This command is only supported on Linux, because it relies on `usbmon` kernel module to capture USB traffic.

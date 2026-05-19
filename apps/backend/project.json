@@ -69,6 +69,27 @@
         }
       },
       "dependsOn": [{ "projects": ["infra"], "target": "db-start" }]
+    },
+    "drizzle-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit generate --config=./src/db/drizzle.config.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "drizzle-drop": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit drop --config=./src/db/drizzle.config.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "drizzle-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit migrate --config=./src/db/drizzle.config.ts",
+        "cwd": "{projectRoot}"
+      }
     }
   },
   "tags": []
