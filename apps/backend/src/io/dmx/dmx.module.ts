@@ -10,6 +10,6 @@ import { DmxController } from './dmx.controller';
   imports: [UsbModule, EventsModule],
   controllers: [DmxController],
   providers: [DmxSendService, DmxSnifferCommand, DmxSnifferService],
-  exports: [DmxSendService, DmxSnifferCommand],
+  exports: [DmxSnifferCommand],
 })
 export class DmxModule {}

@@ -90,6 +90,13 @@
         "command": "drizzle-kit migrate --config=./src/db/drizzle.config.ts",
         "cwd": "{projectRoot}"
       }
+    },
+    "drizzle-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx src/db/seeding/seed.ts",
+        "cwd": "{projectRoot}"
+      }
     }
   },
   "tags": []

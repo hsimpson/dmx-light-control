@@ -10,6 +10,8 @@ import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { DB_PROVIDER } from './db/db.provider';
+import { FixturesModule } from './fixtures/fixtures.module';
 
 @Module({
   imports: [
@@ -19,13 +21,14 @@ import { AppService } from './app.service';
       load: [loadConfig],
     }),
     DrizzlePGModule.registerAsync({
-      tag: 'DB',
+      tag: DB_PROVIDER,
       useClass: DbConfigService,
     }),
     EventEmitterModule.forRoot(),
     DmxModule,
     MidiModule,
     IoBridgeModule,
+    FixturesModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppEventEmitter],

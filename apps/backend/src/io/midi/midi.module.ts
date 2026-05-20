@@ -7,6 +7,5 @@ import { MidiService } from './midi.service';
   imports: [EventsModule],
   controllers: [MidiController],
   providers: [MidiService],
-  exports: [MidiService],
 })
 export class MidiModule {}
