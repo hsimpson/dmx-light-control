@@ -1,11 +1,11 @@
+import { BaseRepository } from '@/db/base.repository';
 import { InjectDb } from '@/db/db.provider';
-import { DrizzleRepository } from '@/db/drizzleRepository';
+import { fixture } from '@/fixtures/entities';
 import { Injectable } from '@nestjs/common';
-import { NodePgDatabase } from 'drizzle-orm/node-postgres/driver';
-import { fixture } from '../entities';
+import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 @Injectable()
-export class FixtureRepository extends DrizzleRepository {
+export class FixtureRepository extends BaseRepository<typeof fixture> {
   public constructor(@InjectDb() db: NodePgDatabase) {
     super(db, fixture);
   }
