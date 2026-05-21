@@ -29,6 +29,7 @@
     "@swc/core": "~1.15.5",
     "@swc/helpers": "~0.5.18",
     "@types/jest": "^30.0.0",
+    "@types/midi": "^2.0.4",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.20.0",
     "@types/react": "^19.2.15",
