@@ -5,8 +5,8 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { vendor } from '../entities';
 
 @Injectable()
-export class VendorRepository extends BaseRepository<typeof vendor> {
+export class VendorRepository extends BaseRepository<typeof vendor, 'vendor'> {
   public constructor(@InjectDb() db: NodePgDatabase) {
-    super(db, vendor);
+    super(db, vendor, 'vendor');
   }
 }

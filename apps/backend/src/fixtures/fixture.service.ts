@@ -7,6 +7,8 @@ export class FixtureService {
   public constructor(private readonly fixtureRepository: FixtureRepository) {}
 
   public async getAllFixtures(): Promise<Fixture[]> {
-    return this.fixtureRepository.findMany();
+    return this.fixtureRepository.findManyWithRelations({
+      with: { vendor: true },
+    });
   }
 }

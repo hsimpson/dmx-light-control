@@ -10,6 +10,7 @@ export class FixtureController {
   @Get('all-fixtures')
   public async getAllFixtures(): Promise<FixtureResponseDto[]> {
     const fixtures = await this.fixtureService.getAllFixtures();
+    console.log(fixtures);
     return plainToInstance(FixtureResponseDto, fixtures);
   }
 }

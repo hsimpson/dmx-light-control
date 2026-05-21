@@ -1,18 +1,12 @@
-import { Expose } from 'class-transformer';
+import { BaseDto } from '@/db/base.dto';
+import { Expose, Type } from 'class-transformer';
+import { VendorResponseDto } from './vendor-response.dto';
 
-export class FixtureResponseDto {
-  @Expose()
-  public externalId: string;
-
+export class FixtureResponseDto extends BaseDto {
   @Expose()
   public name: string;
 
   @Expose()
-  public vendor: string;
-
-  @Expose()
-  public createdAt: Date;
-
-  @Expose()
-  public updatedAt: Date;
+  @Type(() => VendorResponseDto)
+  public vendor: VendorResponseDto;
 }
