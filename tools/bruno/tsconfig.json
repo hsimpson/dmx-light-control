@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "noPropertyAccessFromIndexSignature": false
+  },
+  "extends": "../../tsconfig.base.json",
+  "include": ["create-collection.ts"]
+}

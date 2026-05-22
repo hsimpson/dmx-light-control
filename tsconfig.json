@@ -12,6 +12,9 @@
     },
     {
       "path": "./apps/frontend-e2e"
+    },
+    {
+      "path": "./tools/bruno"
     }
   ]
 }

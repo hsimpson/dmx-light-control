@@ -2,6 +2,7 @@ packages:
   - 'apps/*'
   - 'packages/*'
 allowBuilds:
+  '@apollo/protobufjs': true
   '@nestjs/core': true
   '@parcel/watcher': true
   '@serialport/bindings-cpp': true

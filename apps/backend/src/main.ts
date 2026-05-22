@@ -19,6 +19,7 @@ function registerGlobals(app: INestApplication) {
       // TODO: disable error messages in production
       disableErrorMessages: false,
       whitelist: true,
+      transform: true,
     }),
   );
 

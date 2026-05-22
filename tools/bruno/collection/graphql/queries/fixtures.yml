@@ -1,0 +1,36 @@
+info:
+  name: fixtures
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body: graphql
+
+body:
+  graphql:
+    query: |
+      query {
+        fixtures {
+          createdAt
+          externalId
+          name
+          updatedAt
+          vendor {
+            createdAt
+            externalId
+            name
+            updatedAt
+          }
+        }
+      }
+    variables: |
+      {}
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

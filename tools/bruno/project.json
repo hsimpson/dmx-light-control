@@ -1,0 +1,16 @@
+{
+  "name": "bruno",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx create-collection.ts",
+        "cwd": "{projectRoot}"
+      },
+      "dependsOn": [{ "projects": ["backend"], "target": "serve" }]
+    }
+  },
+  "tags": ["type:tools"]
+}

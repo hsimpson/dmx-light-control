@@ -5,9 +5,11 @@ import { DmxModule } from '@/io/dmx/dmx.module';
 import { IoBridgeModule } from '@/io/io-bridge/io-bridge.module';
 import { MidiModule } from '@/io/midi/midi.module';
 import { DrizzlePGModule } from '@knaadh/nestjs-drizzle-pg';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { GraphQLModule } from '@nestjs/graphql';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DB_PROVIDER } from './db/db.provider';
@@ -23,6 +25,12 @@ import { FixturesModule } from './fixtures/fixtures.module';
     DrizzlePGModule.registerAsync({
       tag: DB_PROVIDER,
       useClass: DbConfigService,
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      playground: false,
+      autoSchemaFile: true,
+      sortSchema: true,
     }),
     EventEmitterModule.forRoot(),
     DmxModule,

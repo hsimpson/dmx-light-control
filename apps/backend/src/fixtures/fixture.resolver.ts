@@ -1,16 +1,18 @@
-import { Controller, Get } from '@nestjs/common';
+import { Query, Resolver } from '@nestjs/graphql';
 import { plainToInstance } from 'class-transformer';
-import { FixtureResponseDto } from './dto/fixture-response.dto';
+import { FixtureResponseDto } from './dto/fixture.response.dto';
 import { FixtureService } from './fixture.service';
 
-@Controller('fixtures')
-export class FixtureController {
+@Resolver(() => FixtureResponseDto)
+export class FixtureResolver {
   public constructor(private readonly fixtureService: FixtureService) {}
 
-  @Get('all-fixtures')
+  @Query(() => [FixtureResponseDto], {
+    name: 'fixtures',
+    description: 'Get all fixtures',
+  })
   public async getAllFixtures(): Promise<FixtureResponseDto[]> {
     const fixtures = await this.fixtureService.getAllFixtures();
-    console.log(fixtures);
     return plainToInstance(FixtureResponseDto, fixtures);
   }
 }
