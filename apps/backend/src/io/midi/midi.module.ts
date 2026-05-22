@@ -1,11 +1,10 @@
 import { EventsModule } from '@/events/events.module';
 import { Module } from '@nestjs/common';
-import { MidiController } from './midi.controller';
+import { MidiResolver } from './midi.resolver';
 import { MidiService } from './midi.service';
 
 @Module({
   imports: [EventsModule],
-  controllers: [MidiController],
-  providers: [MidiService],
+  providers: [MidiService, MidiResolver],
 })
 export class MidiModule {}

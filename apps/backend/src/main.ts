@@ -25,8 +25,7 @@ function registerGlobals(app: INestApplication) {
 
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(app.get(Reflector), {
-      strategy: 'excludeAll',
-      excludeExtraneousValues: true,
+      strategy: 'exposeAll',
     }),
   );
 }

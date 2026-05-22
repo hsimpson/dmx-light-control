@@ -1,7 +1,7 @@
 info:
-  name: fixtures
+  name: getMidiDevices
   type: graphql
-  seq: 1
+  seq: 2
 
 graphql:
   method: POST
@@ -10,16 +10,14 @@ graphql:
   body:
     query: |
       query {
-        fixtures {
-          createdAt
-          externalId
-          name
-          updatedAt
-          vendor {
-            createdAt
-            externalId
+        getMidiDevices {
+          inputDevices {
             name
-            updatedAt
+            port
+          }
+          outputDevices {
+            name
+            port
           }
         }
       }

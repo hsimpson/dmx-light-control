@@ -1,10 +1,26 @@
-import { MidiDevice } from '@/io/midi/types/midi.types';
-import { Expose } from 'class-transformer';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { IsInt, Min } from 'class-validator';
 
-export class GetMidiDevicesDto {
-  @Expose()
-  public inputDevices: MidiDevice[];
+@ObjectType()
+export class MidiDeviceDto {
+  @Field(() => Int, { description: 'The port number of the MIDI device' })
+  @IsInt()
+  @Min(0)
+  public port: number;
 
-  @Expose()
-  public outputDevices: MidiDevice[];
+  @Field({ description: 'The name of the MIDI device' })
+  public name: string;
+}
+
+@ObjectType()
+export class MidiDevicesDto {
+  @Field(() => [MidiDeviceDto], {
+    description: 'The list of MIDI input devices',
+  })
+  public inputDevices: MidiDeviceDto[];
+
+  @Field(() => [MidiDeviceDto], {
+    description: 'The list of MIDI output devices',
+  })
+  public outputDevices: MidiDeviceDto[];
 }

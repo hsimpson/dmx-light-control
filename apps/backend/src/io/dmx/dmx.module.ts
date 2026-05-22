@@ -4,12 +4,16 @@ import { Module } from '@nestjs/common';
 import { DmxSendService } from './dmx-send.service';
 import { DmxSnifferCommand } from './dmx-sniffer.command';
 import { DmxSnifferService } from './dmx-sniffer.service';
-import { DmxController } from './dmx.controller';
+import { DmxResolver } from './dmx.resolver';
 
 @Module({
   imports: [UsbModule, EventsModule],
-  controllers: [DmxController],
-  providers: [DmxSendService, DmxSnifferCommand, DmxSnifferService],
+  providers: [
+    DmxSendService,
+    DmxSnifferCommand,
+    DmxSnifferService,
+    DmxResolver,
+  ],
   exports: [DmxSnifferCommand],
 })
 export class DmxModule {}

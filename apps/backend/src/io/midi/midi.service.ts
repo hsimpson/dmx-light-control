@@ -1,8 +1,9 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { Injectable, Logger } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 import midi, { MidiMessage } from 'midi';
-import { OpenPortsDto } from './dto/open-ports.dto';
-import { MidiDevice } from './types/midi.types';
+import { MidiDeviceDto } from './dto/get-devices.dto';
+import { OpenPortsInput } from './dto/open-ports.dto';
 
 @Injectable()
 export class MidiService {
@@ -21,23 +22,27 @@ export class MidiService {
     });
   }
 
-  public getInputDevices(): MidiDevice[] {
+  public getInputDevices(): MidiDeviceDto[] {
     const count = this.input.getPortCount();
-    return Array.from({ length: count }, (_, i) => ({
-      port: i,
-      name: this.input.getPortName(i),
-    }));
+    return Array.from({ length: count }, (_, i) =>
+      plainToInstance(MidiDeviceDto, {
+        port: i,
+        name: this.input.getPortName(i),
+      }),
+    );
   }
 
-  public getOutputDevices(): MidiDevice[] {
+  public getOutputDevices(): MidiDeviceDto[] {
     const count = this.output.getPortCount();
-    return Array.from({ length: count }, (_, i) => ({
-      port: i,
-      name: this.output.getPortName(i),
-    }));
+    return Array.from({ length: count }, (_, i) =>
+      plainToInstance(MidiDeviceDto, {
+        port: i,
+        name: this.output.getPortName(i),
+      }),
+    );
   }
 
-  public openPorts(openPortsDto: OpenPortsDto): void {
+  public openPorts(openPortsDto: OpenPortsInput): void {
     const { inputPort, outputPort } = openPortsDto;
     this.input.openPort(inputPort);
     this.eventEmitter.emit('midi.inputOpened');

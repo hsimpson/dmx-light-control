@@ -8,8 +8,7 @@
       "options": {
         "command": "tsx create-collection.ts",
         "cwd": "{projectRoot}"
-      },
-      "dependsOn": [{ "projects": ["backend"], "target": "serve" }]
+      }
     }
   },
   "tags": ["type:tools"]

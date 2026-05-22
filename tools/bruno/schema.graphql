@@ -1,0 +1,94 @@
+input ChannelValuesInput {
+  """The list of DMX channel values"""
+  dmxValues: [DmxValueInput!]! = [{channel: 1, value: 127}]
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input DmxValueInput {
+  """The DMX channel number (1-512)"""
+  channel: Int!
+
+  """The DMX channel value (0-255)"""
+  value: Int!
+}
+
+type FixtureResponseDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The unique identifier of the entity"""
+  externalId: String!
+
+  """The name of the fixture"""
+  name: String!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
+
+  """The vendor of the fixture"""
+  vendor: VendorResponseDto!
+}
+
+type MidiDeviceDto {
+  """The name of the MIDI device"""
+  name: String!
+
+  """The port number of the MIDI device"""
+  port: Int!
+}
+
+type MidiDevicesDto {
+  """The list of MIDI input devices"""
+  inputDevices: [MidiDeviceDto!]!
+
+  """The list of MIDI output devices"""
+  outputDevices: [MidiDeviceDto!]!
+}
+
+type Mutation {
+  """Close the specified MIDI ports"""
+  closePorts: Void!
+
+  """test dmx resolver"""
+  dmxTest(channelValues: ChannelValuesInput!): String!
+
+  """Open the specified MIDI ports"""
+  openPorts(openPortsDto: OpenPortsInput!): Void!
+}
+
+input OpenPortsInput {
+  """The MIDI input port number to open"""
+  inputPort: Int! = 0
+
+  """The MIDI output port number to open"""
+  outputPort: Int! = 0
+}
+
+type Query {
+  """get all fixtures"""
+  fixtures: [FixtureResponseDto!]!
+
+  """Get the list of MIDI input and output devices"""
+  getMidiDevices: MidiDevicesDto!
+}
+
+type VendorResponseDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The unique identifier of the entity"""
+  externalId: String!
+
+  """The name of the vendor"""
+  name: String!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
+}
+
+"""Represents NULL values"""
+scalar Void

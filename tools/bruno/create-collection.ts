@@ -3,9 +3,11 @@ import { UrlLoader } from '@graphql-tools/url-loader';
 import 'dotenv/config';
 import { mkdirSync, rmSync, writeFileSync } from 'fs';
 import {
+  isInputObjectType,
   isListType,
   isNonNullType,
   isObjectType,
+  printSchema,
   type GraphQLField,
   type GraphQLObjectType,
   type GraphQLType,
@@ -17,11 +19,24 @@ import waitOn from 'wait-on';
 const port = process.env.BACKEND_PORT ?? '3000';
 const url = `http://localhost:${port}/graphql`;
 
-await waitOn({ resources: [`tcp:localhost:${port}`] });
+console.log(`Checking if backend is reachable at ${url} ...`);
+await waitOn({ resources: [`tcp:localhost:${port}`], timeout: 5000 }).catch(
+  () => {
+    console.error(
+      `Backend not reachable on port ${port}. Start it first with: nx run backend:serve`,
+    );
+    process.exit(1);
+  },
+);
 
 const schema = await loadSchema(url, {
   loaders: [new UrlLoader()],
 });
+
+writeFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), 'schema.graphql'),
+  printSchema(schema),
+);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -86,12 +101,36 @@ function buildOperation(
   return `${operationType}${opArgs} {\n  ${fieldName}${fieldArgs}\n}`;
 }
 
+/**
+ * Recursively build a default value for an input type by collecting the
+ * default values declared on each of its fields.
+ */
+function buildDefaultValue(type: GraphQLType): unknown {
+  if (isNonNullType(type)) {
+    return buildDefaultValue((type as { ofType: GraphQLType }).ofType);
+  }
+  if (isListType(type)) return [];
+  if (!isInputObjectType(type)) return null;
+
+  const obj: Record<string, unknown> = {};
+  for (const field of Object.values(type.getFields())) {
+    obj[field.name] =
+      field.defaultValue !== undefined
+        ? field.defaultValue
+        : buildDefaultValue(field.type);
+  }
+  return obj;
+}
+
 /** Build a JSON variables object for all arguments, using defaults or null. */
 function buildVariables(field: GraphQLField<unknown, unknown>): string {
   if (!field.args.length) return '{}';
   const vars: Record<string, unknown> = {};
   for (const arg of field.args) {
-    vars[arg.name] = arg.defaultValue ?? null;
+    vars[arg.name] =
+      arg.defaultValue !== undefined
+        ? arg.defaultValue
+        : buildDefaultValue(arg.type);
   }
   return JSON.stringify(vars, null, 2);
 }
@@ -111,17 +150,14 @@ function generateBrunoRequest(
 
   return `info:
   name: ${fieldName}
-  type: http
+  type: graphql
   seq: ${seq}
 
-http:
+graphql:
   method: POST
   url: "{{backendUrl}}/graphql"
   auth: inherit
-  body: graphql
-
-body:
-  graphql:
+  body:
     query: |
       ${queryBlock}
     variables: |
