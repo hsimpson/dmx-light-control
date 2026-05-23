@@ -3,7 +3,7 @@ import { relations } from 'drizzle-orm';
 import { integer, pgTable, varchar } from 'drizzle-orm/pg-core';
 import vendor from './vendor.entity';
 
-const fixture = pgTable('fixture', {
+const fixture = pgTable('fixtures', {
   ...pk,
   vendorId: integer()
     .notNull()

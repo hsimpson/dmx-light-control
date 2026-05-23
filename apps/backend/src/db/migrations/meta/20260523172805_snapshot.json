@@ -1,11 +1,11 @@
 {
-  "id": "9646950a-b5b1-4231-9e4d-2a0705828837",
-  "prevId": "a273c58a-0b1e-44b6-9b2c-b7eb7f9eafa2",
+  "id": "5162011a-3347-4cc6-bd4f-abfddbf03ae5",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.fixture": {
-      "name": "fixture",
+    "public.fixtures": {
+      "name": "fixtures",
       "schema": "",
       "columns": {
         "id": {
@@ -15,7 +15,7 @@
           "notNull": true,
           "identity": {
             "type": "always",
-            "name": "fixture_id_seq",
+            "name": "fixtures_id_seq",
             "schema": "public",
             "increment": "1",
             "startWith": "1",
@@ -61,10 +61,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "fixture_vendor_id_vendor_id_fk": {
-          "name": "fixture_vendor_id_vendor_id_fk",
-          "tableFrom": "fixture",
-          "tableTo": "vendor",
+        "fixtures_vendor_id_vendors_id_fk": {
+          "name": "fixtures_vendor_id_vendors_id_fk",
+          "tableFrom": "fixtures",
+          "tableTo": "vendors",
           "columnsFrom": [
             "vendor_id"
           ],
@@ -77,8 +77,8 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "fixture_name_unique": {
-          "name": "fixture_name_unique",
+        "fixtures_name_unique": {
+          "name": "fixtures_name_unique",
           "nullsNotDistinct": false,
           "columns": [
             "name"
@@ -89,8 +89,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.vendor": {
-      "name": "vendor",
+    "public.vendors": {
+      "name": "vendors",
       "schema": "",
       "columns": {
         "id": {
@@ -100,7 +100,7 @@
           "notNull": true,
           "identity": {
             "type": "always",
-            "name": "vendor_id_seq",
+            "name": "vendors_id_seq",
             "schema": "public",
             "increment": "1",
             "startWith": "1",
@@ -142,8 +142,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "vendor_name_unique": {
-          "name": "vendor_name_unique",
+        "vendors_name_unique": {
+          "name": "vendors_name_unique",
           "nullsNotDistinct": false,
           "columns": [
             "name"
