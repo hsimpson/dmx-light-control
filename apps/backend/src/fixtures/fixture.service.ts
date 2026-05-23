@@ -8,7 +8,7 @@ export class FixtureService {
 
   public async getAllFixtures(): Promise<Fixture[]> {
     return this.fixtureRepository.findManyWithRelations({
-      with: { vendor: true },
+      with: { vendor: true, channelAssignments: true },
     });
   }
 }

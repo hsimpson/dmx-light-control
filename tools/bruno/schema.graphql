@@ -1,3 +1,23 @@
+type ChannelAssignmentDto {
+  """The channel mode of the channel assignment"""
+  channelMode: Float!
+
+  """The number of the channel assignment"""
+  channelNumber: Float!
+
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The unique identifier of the entity"""
+  externalId: String!
+
+  """The preset of the channel assignment"""
+  preset: FixtureChannelPreset!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
+}
+
 input ChannelValuesInput {
   """The list of DMX channel values"""
   dmxValues: [DmxValueInput!]! = [{channel: 1, value: 127}]
@@ -16,7 +36,25 @@ input DmxValueInput {
   value: Int!
 }
 
+"""The preset of a fixture channel assignment"""
+enum FixtureChannelPreset {
+  Custom
+  IntensityAmber
+  IntensityBlue
+  IntensityDimmer
+  IntensityGreen
+  IntensityMasterDimmer
+  IntensityRed
+  IntensityUV
+  IntensityWhite
+  ShutterStrobeFastSlow
+  ShutterStrobeSlowFast
+}
+
 type FixtureResponseDto {
+  """The channel assignments of the fixture"""
+  channelAssignments: [ChannelAssignmentDto!]!
+
   """The date and time when the entity was created"""
   createdAt: DateTime!
 

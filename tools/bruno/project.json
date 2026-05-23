@@ -4,6 +4,7 @@
   "projectType": "application",
   "targets": {
     "build": {
+      "cache": false,
       "executor": "nx:run-commands",
       "options": {
         "command": "tsx create-collection.ts",

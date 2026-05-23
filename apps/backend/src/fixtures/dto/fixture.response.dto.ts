@@ -1,6 +1,7 @@
 import { BaseDto } from '@/db/base.dto';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
+import { ChannelAssignmentDto } from './channel-assignment.dto';
 import { VendorResponseDto } from './vendor.response.dto';
 
 @ObjectType()
@@ -11,4 +12,10 @@ export class FixtureResponseDto extends BaseDto {
   @Type(() => VendorResponseDto)
   @Field(() => VendorResponseDto, { description: 'The vendor of the fixture' })
   public vendor: VendorResponseDto;
+
+  @Type(() => ChannelAssignmentDto)
+  @Field(() => [ChannelAssignmentDto], {
+    description: 'The channel assignments of the fixture',
+  })
+  public channelAssignments: ChannelAssignmentDto[];
 }

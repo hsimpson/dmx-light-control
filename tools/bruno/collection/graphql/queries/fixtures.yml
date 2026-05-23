@@ -11,6 +11,14 @@ graphql:
     query: |
       query {
         fixtures {
+          channelAssignments {
+            channelMode
+            channelNumber
+            createdAt
+            externalId
+            preset
+            updatedAt
+          }
           createdAt
           externalId
           name

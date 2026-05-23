@@ -1,11 +1,11 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const { join } = require('path');
+const { join } = require('node:path');
 
 // Export a function so the @nx/webpack:webpack executor can pass its options
 // (including `watch: true`) into the config. When the config is an object,
 // the executor ignores the watch option and webpack always exits after one build,
 // causing @nx/js:node to restart in an infinite loop.
-module.exports = (config, { options } = {}) => {
+module.exports = function webpackConfig(config, { options } = {}) {
   const isDevMode = process.env.NODE_ENV !== 'production';
 
   config.output = {

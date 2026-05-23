@@ -1,3 +1,5 @@
+import { registerEnumType } from '@nestjs/graphql';
+
 export enum FixtureChannelPreset {
   // color presets
   IntensityRed = 'IntensityRed',
@@ -17,6 +19,11 @@ export enum FixtureChannelPreset {
 
   Custom = 'Custom',
 }
+
+registerEnumType(FixtureChannelPreset, {
+  name: 'FixtureChannelPreset',
+  description: 'The preset of a fixture channel assignment',
+});
 
 const fixtureChannelNames: Record<FixtureChannelPreset, string> = {
   [FixtureChannelPreset.IntensityRed]: 'Red',
