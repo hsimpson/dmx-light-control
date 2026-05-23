@@ -5,13 +5,7 @@
       "path": "./apps/backend"
     },
     {
-      "path": "./apps/backend-e2e"
-    },
-    {
       "path": "./apps/frontend"
-    },
-    {
-      "path": "./apps/frontend-e2e"
     },
     {
       "path": "./tools/bruno"
