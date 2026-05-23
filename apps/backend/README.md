@@ -45,5 +45,5 @@ lsusb
 Then, run the `dmx-sniffer` command with the appropriate options:
 
 ```bash
-node dist/apps/backend/main.js dmx-sniffer --bus <bus_number> --address <device_address>
+nx run backend:dmx-sniffer -- --bus <bus_number> --address <device_address>
 ```

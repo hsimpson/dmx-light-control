@@ -36,7 +36,7 @@ export class DmxSnifferCommand extends CommandRunner {
     // this command should only be available on linux
     if (process.platform !== 'linux') {
       this.logger.error('The dmx-sniffer command is only supported on Linux.');
-      return;
+      process.exit(1);
     }
 
     this.logger.log(
@@ -47,7 +47,7 @@ export class DmxSnifferCommand extends CommandRunner {
       this.logger.error(
         'Both --bus and --address options are required to start the DMX sniffer.',
       );
-      return;
+      process.exit(1);
     }
 
     await this.dmxSnifferService.startSniffer(
@@ -55,6 +55,6 @@ export class DmxSnifferCommand extends CommandRunner {
       Number(options.address),
     );
 
-    return Promise.resolve();
+    process.exit(0);
   }
 }

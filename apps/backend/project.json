@@ -70,6 +70,13 @@
       },
       "dependsOn": [{ "projects": ["infra"], "target": "db-start" }]
     },
+    "dmx-sniffer": {
+      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node dist/apps/backend/main.js dmx-sniffer"
+      }
+    },
     "drizzle-generate": {
       "executor": "nx:run-commands",
       "options": {
