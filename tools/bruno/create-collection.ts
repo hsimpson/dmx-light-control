@@ -1,7 +1,6 @@
 import { loadSchema } from '@graphql-tools/load';
 import { UrlLoader } from '@graphql-tools/url-loader';
 import 'dotenv/config';
-import { mkdirSync, rmSync, writeFileSync } from 'fs';
 import {
   isInputObjectType,
   isListType,
@@ -12,8 +11,9 @@ import {
   type GraphQLObjectType,
   type GraphQLType,
 } from 'graphql';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import waitOn from 'wait-on';
 
 const port = process.env.BACKEND_PORT ?? '3000';
@@ -31,12 +31,15 @@ await waitOn({ resources: [`tcp:localhost:${port}`], timeout: 5000 }).catch(
 
 const schema = await loadSchema(url, {
   loaders: [new UrlLoader()],
+  sort: true,
 });
 
-writeFileSync(
-  join(dirname(fileURLToPath(import.meta.url)), 'schema.graphql'),
-  printSchema(schema),
+const schemaPath = join(
+  dirname(fileURLToPath(import.meta.url)),
+  'schema.graphql',
 );
+rmSync(schemaPath, { force: true });
+writeFileSync(schemaPath, printSchema(schema));
 
 // ---------------------------------------------------------------------------
 // Helpers

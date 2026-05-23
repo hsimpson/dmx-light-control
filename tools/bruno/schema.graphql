@@ -51,21 +51,21 @@ type MidiDevicesDto {
 
 type Mutation {
   """Close the specified MIDI ports"""
-  closePorts: Void!
+  closePorts: Boolean
 
   """test dmx resolver"""
   dmxTest(channelValues: ChannelValuesInput!): String!
 
   """Open the specified MIDI ports"""
-  openPorts(openPortsDto: OpenPortsInput!): Void!
+  openPorts(openPortsDto: OpenPortsInput!): Boolean
 }
 
 input OpenPortsInput {
   """The MIDI input port number to open"""
-  inputPort: Int! = 0
+  inputPort: Int! = 1
 
   """The MIDI output port number to open"""
-  outputPort: Int! = 0
+  outputPort: Int! = 1
 }
 
 type Query {
@@ -89,6 +89,3 @@ type VendorResponseDto {
   """The date and time when the entity was last updated"""
   updatedAt: DateTime!
 }
-
-"""Represents NULL values"""
-scalar Void

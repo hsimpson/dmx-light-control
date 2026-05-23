@@ -15,8 +15,8 @@ graphql:
     variables: |
       {
         "openPortsDto": {
-          "inputPort": 0,
-          "outputPort": 0
+          "inputPort": 1,
+          "outputPort": 1
         }
       }
 

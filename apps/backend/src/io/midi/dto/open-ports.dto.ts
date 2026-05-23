@@ -5,7 +5,7 @@ import { IsInt, Min } from 'class-validator';
 export class OpenPortsInput {
   @Field(() => Int, {
     description: 'The MIDI input port number to open',
-    defaultValue: 0,
+    defaultValue: 1,
   })
   @IsInt()
   @Min(0)
@@ -13,7 +13,7 @@ export class OpenPortsInput {
 
   @Field(() => Int, {
     description: 'The MIDI output port number to open',
-    defaultValue: 0,
+    defaultValue: 1,
   })
   @IsInt()
   @Min(0)

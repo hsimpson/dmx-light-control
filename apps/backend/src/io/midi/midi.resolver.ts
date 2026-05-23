@@ -1,6 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { plainToInstance } from 'class-transformer';
-import { GraphQLVoid } from 'graphql-scalars';
 import { MidiDevicesDto } from './dto/get-devices.dto';
 import { OpenPortsInput } from './dto/open-ports.dto';
 import { MidiService } from './midi.service';
@@ -16,29 +15,29 @@ export class MidiResolver {
   public getInputDevices(): MidiDevicesDto {
     const inputDevices = this.midiService.getInputDevices();
     const outputDevices = this.midiService.getOutputDevices();
-    console.log('MIDI input devices:', inputDevices);
-    console.log('MIDI output devices:', outputDevices);
     return plainToInstance(MidiDevicesDto, { inputDevices, outputDevices });
   }
 
-  @Mutation(() => GraphQLVoid, {
+  @Mutation(() => Boolean, {
     name: 'openPorts',
     description: 'Open the specified MIDI ports',
+    nullable: true,
   })
   public openPorts(
     @Args('openPortsDto', { type: () => OpenPortsInput })
     openPortsDto: OpenPortsInput,
-  ): null {
+  ): boolean {
     this.midiService.openPorts(openPortsDto);
-    return null;
+    return true;
   }
 
-  @Mutation(() => GraphQLVoid, {
+  @Mutation(() => Boolean, {
     name: 'closePorts',
     description: 'Close the specified MIDI ports',
+    nullable: true,
   })
-  public closePorts(): null {
+  public closePorts(): boolean {
     this.midiService.closePorts();
-    return null;
+    return true;
   }
 }
