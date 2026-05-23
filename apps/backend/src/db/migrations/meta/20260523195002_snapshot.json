@@ -1,9 +1,116 @@
 {
-  "id": "5162011a-3347-4cc6-bd4f-abfddbf03ae5",
+  "id": "211bc66f-9c1e-4b8e-a48b-b583d6db8624",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.channel_assignments": {
+      "name": "channel_assignments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "channel_assignments_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "external_id": {
+          "name": "external_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "fixture_id": {
+          "name": "fixture_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "channel_mode": {
+          "name": "channel_mode",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "channel_number": {
+          "name": "channel_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "preset": {
+          "name": "preset",
+          "type": "preset",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "channel_assignments_fixture_id_fixtures_id_fk": {
+          "name": "channel_assignments_fixture_id_fixtures_id_fk",
+          "tableFrom": "channel_assignments",
+          "tableTo": "fixtures",
+          "columnsFrom": [
+            "fixture_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "channel_assignments_externalId_unique": {
+          "name": "channel_assignments_externalId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "external_id"
+          ]
+        },
+        "channel_assignments_fixtureId_channelMode_channelNumber_unique": {
+          "name": "channel_assignments_fixtureId_channelMode_channelNumber_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "fixture_id",
+            "channel_mode",
+            "channel_number"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.fixtures": {
       "name": "fixtures",
       "schema": "",
@@ -83,6 +190,13 @@
           "columns": [
             "name"
           ]
+        },
+        "fixtures_externalId_unique": {
+          "name": "fixtures_externalId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "external_id"
+          ]
         }
       },
       "policies": {},
@@ -148,6 +262,13 @@
           "columns": [
             "name"
           ]
+        },
+        "vendors_externalId_unique": {
+          "name": "vendors_externalId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "external_id"
+          ]
         }
       },
       "policies": {},
@@ -155,7 +276,25 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.preset": {
+      "name": "preset",
+      "schema": "public",
+      "values": [
+        "IntensityRed",
+        "IntensityGreen",
+        "IntensityBlue",
+        "IntensityWhite",
+        "IntensityAmber",
+        "IntensityUV",
+        "ShutterStrobeSlowFast",
+        "ShutterStrobeFastSlow",
+        "IntensityMasterDimmer",
+        "IntensityDimmer",
+        "Custom"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

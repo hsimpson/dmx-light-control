@@ -1,4 +1,9 @@
 export {
+  default as channelAssignment,
+  presetEnum,
+  type ChannelAssignment,
+} from '@/fixtures/entities/channel-assignment.entity';
+export {
   default as fixture,
   fixtureRelations,
   type Fixture,
