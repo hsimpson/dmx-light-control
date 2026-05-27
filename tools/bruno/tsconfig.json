@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "composite": true,
+    "noEmit": true,
     "noPropertyAccessFromIndexSignature": false
   },
   "extends": "../../tsconfig.base.json",
