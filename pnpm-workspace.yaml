@@ -11,5 +11,6 @@ allowBuilds:
   less: true
   midi: true
   nx: true
+  sharp: true
   unrs-resolver: true
   usb: true

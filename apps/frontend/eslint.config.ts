@@ -1,3 +1,9 @@
-import rootConfig from '../../eslint.config.ts';
+import rootConfig from '../../eslint.config.js';
 
-export default [...rootConfig];
+export default [
+  ...rootConfig,
+
+  {
+    ignores: ['.next/**/*'],
+  },
+];
