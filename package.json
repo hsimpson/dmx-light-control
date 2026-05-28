@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@graphql-codegen/cli": "^7.1.0",
     "@graphql-tools/load": "^8.1.10",
     "@graphql-tools/url-loader": "^9.1.2",
     "@nestjs/schematics": "^11.1.0",
@@ -50,6 +51,7 @@
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
+    "graphql-config": "^5.1.6",
     "jiti": "^2.7.0",
     "jsdom": "~29.1.1",
     "nx": "^22.7.4",
@@ -63,8 +65,10 @@
     "webpack-cli": "^7.0.2"
   },
   "dependencies": {
+    "@apollo/client": "^4.2.0",
     "@apollo/server": "^5.5.1",
     "@as-integrations/fastify": "^3.1.0",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@knaadh/nestjs-drizzle-pg": "^1.2.0",
     "@nestjs/apollo": "^13.4.2",
     "@nestjs/common": "^11.1.24",

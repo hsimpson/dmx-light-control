@@ -1,0 +1,6 @@
+query GetFixtures {
+  fixtures {
+    externalId
+    name
+  }
+}
