@@ -9,6 +9,9 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "noEmit": true,
     "noPropertyAccessFromIndexSignature": false,
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "plugins": [
       {
         "name": "next"
