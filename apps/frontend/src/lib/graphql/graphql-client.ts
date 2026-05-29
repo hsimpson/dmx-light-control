@@ -9,7 +9,7 @@ import {
 import { ErrorLink } from '@apollo/client/link/error';
 
 const httpLink = new HttpLink({
-  uri: process.env.GRAPHQL_API_URL,
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_API_URL,
   fetchOptions: {
     // you can pass additional options that should be passed to `fetch` here,
     // e.g. Next.js-related `fetch` options regarding caching and revalidation

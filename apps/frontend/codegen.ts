@@ -1,10 +1,10 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 import 'dotenv/config';
 
-const graphqlApiUrl = process.env.GRAPHQL_API_URL;
+const graphqlApiUrl = process.env.NEXT_PUBLIC_GRAPHQL_API_URL;
 if (!graphqlApiUrl) {
   throw new Error(
-    'GRAPHQL_API_URL is not defined in the environment variables',
+    'NEXT_PUBLIC_GRAPHQL_API_URL is not defined in the environment variables',
   );
 }
 

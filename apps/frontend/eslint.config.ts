@@ -4,6 +4,6 @@ export default [
   ...rootConfig,
 
   {
-    ignores: ['.next/**/*', 'src/shared/types/graphql/**/*'],
+    ignores: ['.next/**/*', 'src/shared/types/graphql/**/*', 'next-env.d.ts'],
   },
 ];
