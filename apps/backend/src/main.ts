@@ -42,14 +42,11 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
   registerGlobals(app);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
+  app.enableCors();
   const configService = app.get(ConfigService);
   const port = configService.getOrThrow<number>('port');
   await app.listen(port);
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
-  );
+  Logger.log(`🚀 Application is running on: http://localhost:${port}`);
 }
 
 void bootstrap();

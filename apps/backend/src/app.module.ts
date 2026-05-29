@@ -10,8 +10,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GraphQLModule } from '@nestjs/graphql';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { DB_PROVIDER } from './db/db.provider';
 import { FixturesModule } from './fixtures/fixtures.module';
 
@@ -38,8 +36,7 @@ import { FixturesModule } from './fixtures/fixtures.module';
     IoBridgeModule,
     FixturesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, AppEventEmitter],
+  providers: [AppEventEmitter],
   exports: [AppEventEmitter],
 })
 export class AppModule {}

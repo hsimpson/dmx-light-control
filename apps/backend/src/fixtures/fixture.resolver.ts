@@ -13,7 +13,6 @@ export class FixtureResolver {
   })
   public async getAllFixtures(): Promise<FixtureResponseDto[]> {
     const fixtures = await this.fixtureService.getAllFixtures();
-    console.log('fixtures', fixtures);
     return plainToInstance(FixtureResponseDto, fixtures);
   }
 }
