@@ -2,5 +2,24 @@ query GetFixtures {
   fixtures {
     externalId
     name
+
+    createdAt
+    updatedAt
+
+    vendor {
+      externalId
+      name
+      createdAt
+      updatedAt
+    }
+
+    channelAssignments {
+      channelMode
+      channelNumber
+      createdAt
+      externalId
+      preset
+      updatedAt
+    }
   }
 }

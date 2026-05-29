@@ -1,0 +1,15 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="DMX Light Control logo" xmlns="http://www.w3.org/2000/svg">
+  <title>DMX Light Control logo</title>
+  <rect x="8" y="16" width="34" height="32" rx="10" fill="#64748B" opacity="0.16"/>
+  <rect x="12" y="20" width="26" height="24" rx="8" stroke="#0F172A" stroke-width="3"/>
+  <path d="M25 10C20.5817 10 17 13.5817 17 18V20H33V18C33 13.5817 29.4183 10 25 10Z" fill="#F59E0B"/>
+  <path d="M47 20L54 26V38L47 44" stroke="#06B6D4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M38 26H54" stroke="#06B6D4" stroke-width="4" stroke-linecap="round"/>
+  <path d="M38 38H54" stroke="#06B6D4" stroke-width="4" stroke-linecap="round"/>
+  <rect x="17" y="25" width="4" height="4" rx="2" fill="#F59E0B"/>
+  <rect x="23" y="25" width="4" height="4" rx="2" fill="#F59E0B"/>
+  <rect x="29" y="25" width="4" height="4" rx="2" fill="#F59E0B"/>
+  <rect x="17" y="33" width="4" height="4" rx="2" fill="#06B6D4"/>
+  <rect x="23" y="33" width="4" height="4" rx="2" fill="#06B6D4"/>
+  <rect x="29" y="33" width="4" height="4" rx="2" fill="#06B6D4"/>
+</svg>

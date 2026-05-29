@@ -4,6 +4,11 @@ export default [
   ...rootConfig,
 
   {
-    ignores: ['.next/**/*', 'src/shared/types/graphql/**/*', 'next-env.d.ts'],
+    ignores: [
+      '.next/**/*',
+      'src/shared/types/graphql/**/*',
+      'next-env.d.ts',
+      'postcss.config.cjs',
+    ],
   },
 ];

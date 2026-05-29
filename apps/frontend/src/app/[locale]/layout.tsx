@@ -1,5 +1,12 @@
+import App from '@/components/app';
 import ApolloWrapper from '@/lib/graphql/apollo-wrapper';
 import IntlWrapper from '@/lib/i18n/intl-wrapper';
+import {
+  ColorSchemeScript,
+  mantineHtmlProps,
+  MantineProvider,
+} from '@mantine/core';
+import '@mantine/core/styles.css';
 import { ReactNode } from 'react';
 import './global.css';
 
@@ -17,10 +24,17 @@ const RootLayout = async ({ params, children }: LayoutProperties) => {
   const { locale } = await params;
 
   return (
-    <html lang={locale}>
+    <html lang={locale} {...mantineHtmlProps}>
+      <head>
+        <ColorSchemeScript />
+      </head>
       <body>
         <ApolloWrapper>
-          <IntlWrapper locale={locale}>{children}</IntlWrapper>
+          <IntlWrapper locale={locale}>
+            <MantineProvider defaultColorScheme="auto">
+              <App>{children}</App>
+            </MantineProvider>
+          </IntlWrapper>
         </ApolloWrapper>
       </body>
     </html>

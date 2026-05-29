@@ -14,10 +14,10 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "query GetFixtures {\n  fixtures {\n    externalId\n    name\n  }\n}": typeof types.GetFixturesDocument,
+    "query GetFixtures {\n  fixtures {\n    externalId\n    name\n    createdAt\n    updatedAt\n    vendor {\n      externalId\n      name\n      createdAt\n      updatedAt\n    }\n    channelAssignments {\n      channelMode\n      channelNumber\n      createdAt\n      externalId\n      preset\n      updatedAt\n    }\n  }\n}": typeof types.GetFixturesDocument,
 };
 const documents: Documents = {
-    "query GetFixtures {\n  fixtures {\n    externalId\n    name\n  }\n}": types.GetFixturesDocument,
+    "query GetFixtures {\n  fixtures {\n    externalId\n    name\n    createdAt\n    updatedAt\n    vendor {\n      externalId\n      name\n      createdAt\n      updatedAt\n    }\n    channelAssignments {\n      channelMode\n      channelNumber\n      createdAt\n      externalId\n      preset\n      updatedAt\n    }\n  }\n}": types.GetFixturesDocument,
 };
 
 /**
@@ -37,7 +37,7 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "query GetFixtures {\n  fixtures {\n    externalId\n    name\n  }\n}"): (typeof documents)["query GetFixtures {\n  fixtures {\n    externalId\n    name\n  }\n}"];
+export function gql(source: "query GetFixtures {\n  fixtures {\n    externalId\n    name\n    createdAt\n    updatedAt\n    vendor {\n      externalId\n      name\n      createdAt\n      updatedAt\n    }\n    channelAssignments {\n      channelMode\n      channelNumber\n      createdAt\n      externalId\n      preset\n      updatedAt\n    }\n  }\n}"): (typeof documents)["query GetFixtures {\n  fixtures {\n    externalId\n    name\n    createdAt\n    updatedAt\n    vendor {\n      externalId\n      name\n      createdAt\n      updatedAt\n    }\n    channelAssignments {\n      channelMode\n      channelNumber\n      createdAt\n      externalId\n      preset\n      updatedAt\n    }\n  }\n}"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};
