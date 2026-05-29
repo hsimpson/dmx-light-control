@@ -14,3 +14,9 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   usb: true
+minimumReleaseAgeExclude:
+  - '@formatjs/cli-native-darwin-arm64@1.1.1'
+  - '@formatjs/cli-native-linux-arm64@1.2.1'
+  - '@formatjs/cli-native-linux-x64@1.1.1'
+  - '@formatjs/cli-native-win32-x64@1.1.2'
+  - '@formatjs/cli@6.16.6'

@@ -6,6 +6,20 @@
   "tags": [],
   "// targets": "to see all targets run: nx show project frontend --web",
   "targets": {
+    "start": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "frontend:build",
+        "port": 3001
+      }
+    },
+    "extract-i18n": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "formatjs extract 'src/**/*.{ts,tsx,js,jsx}' --ignore='**/*.d.ts' --out-file src/lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]' --format simple --additional-function-names t --pragma formatjs --throws",
+        "cwd": "apps/frontend"
+      }
+    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
