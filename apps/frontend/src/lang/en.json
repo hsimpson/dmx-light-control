@@ -1,3 +1,7 @@
 {
-  "FixtureList.title": "Fixture list"
+  "FixtureList.Table.name": "Name",
+  "FixtureList.Table.vendor": "Vendor",
+  "FixtureList.add": "Add Fixture",
+  "FixtureList.title": "Fixture list",
+  "FixtureList.Table.channelsModes": "Channel modes"
 }

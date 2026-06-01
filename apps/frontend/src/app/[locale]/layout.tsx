@@ -1,4 +1,4 @@
-import App from '@/components/app';
+import App from '@/app/[locale]/_components/app';
 import ApolloWrapper from '@/lib/graphql/apollo-wrapper';
 import IntlWrapper from '@/lib/i18n/intl-wrapper';
 import {
@@ -7,6 +7,7 @@ import {
   MantineProvider,
 } from '@mantine/core';
 import '@mantine/core/styles.css';
+import 'mantine-datatable/styles.layer.css';
 import { ReactNode } from 'react';
 import './global.css';
 
@@ -31,7 +32,8 @@ const RootLayout = async ({ params, children }: LayoutProperties) => {
       <body>
         <ApolloWrapper>
           <IntlWrapper locale={locale}>
-            <MantineProvider defaultColorScheme="auto">
+            {/* <MantineProvider defaultColorScheme="auto"> */}
+            <MantineProvider>
               <App>{children}</App>
             </MantineProvider>
           </IntlWrapper>

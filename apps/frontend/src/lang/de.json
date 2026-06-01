@@ -1,3 +1,7 @@
 {
-  "FixtureList.title": "Fixtureliste"
+  "FixtureList.title": "Fixtureliste",
+  "FixtureList.add": "Fixture hinzufügen",
+  "FixtureList.Table.vendor": "Hersteller",
+  "FixtureList.Table.name": "Name",
+  "FixtureList.Table.channelsModes": "Kanalmodi"
 }
