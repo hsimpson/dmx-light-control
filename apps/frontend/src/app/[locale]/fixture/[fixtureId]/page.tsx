@@ -1,12 +1,16 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+import FixtureForm from '../_components/fixture-form';
 
 const EditFixturePage = () => {
-  const parameters = useParams();
-  const fixtureId = parameters.fixtureId;
+  const { fixtureId } = useParams<{ fixtureId: string }>();
 
-  return <div>Edit fixture {fixtureId}</div>;
+  return (
+    <>
+      <FixtureForm fixtureId={fixtureId} />
+    </>
+  );
 };
 
 export default EditFixturePage;

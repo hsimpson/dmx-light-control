@@ -18,11 +18,13 @@ const config: CodegenConfig = {
       plugins: [],
       presetConfig: {
         gqlTagName: 'gql',
+        fragmentMasking: false,
       },
       config: {
         scalars: {
-          Date: 'string',
-          DateTime: 'string',
+          Date: 'Date',
+          DateTime: 'Date',
+          UUID: 'string',
         },
         skipTypename: true,
       },

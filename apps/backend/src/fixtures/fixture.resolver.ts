@@ -2,10 +2,20 @@ import { Args, Query, Resolver } from '@nestjs/graphql';
 import { plainToInstance } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
 import { FixtureResponseDto } from './dto/fixture.response.dto';
+import { VendorResponseDto } from './dto/vendor.response.dto';
 import { FixtureService } from './fixture.service';
 @Resolver()
 export class FixtureResolver {
   public constructor(private readonly fixtureService: FixtureService) {}
+
+  @Query(() => [VendorResponseDto], {
+    name: 'vendors',
+    description: 'get all fixture vendors',
+  })
+  public async getAllVendors(): Promise<VendorResponseDto[]> {
+    const vendors = await this.fixtureService.getAllVendors();
+    return plainToInstance(VendorResponseDto, vendors);
+  }
 
   @Query(() => [FixtureResponseDto], {
     name: 'fixtures',
@@ -22,10 +32,9 @@ export class FixtureResolver {
     nullable: true,
   })
   public async getFixtureByExternalId(
-    @Args('externalId', { type: () => GraphQLUUID }) externalId: string,
+    @Args('fixtureId', { type: () => GraphQLUUID }) fixtureId: string,
   ): Promise<FixtureResponseDto | null> {
-    const fixture =
-      await this.fixtureService.getFixtureByExternalId(externalId);
+    const fixture = await this.fixtureService.getFixtureByExternalId(fixtureId);
     if (!fixture) {
       return null;
     }

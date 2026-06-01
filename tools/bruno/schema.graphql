@@ -108,13 +108,16 @@ input OpenPortsInput {
 
 type Query {
   """get fixture by external id"""
-  fixture(externalId: UUID!): FixtureResponseDto
+  fixture(fixtureId: UUID!): FixtureResponseDto
 
   """get all fixtures"""
   fixtures: [FixtureResponseDto!]!
 
   """Get the list of MIDI input and output devices"""
   getMidiDevices: MidiDevicesDto!
+
+  """get all fixture vendors"""
+  vendors: [VendorResponseDto!]!
 }
 
 """

@@ -1,0 +1,27 @@
+info:
+  name: vendors
+  type: graphql
+  seq: 4
+
+graphql:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body:
+    query: |
+      query {
+        vendors {
+          createdAt
+          externalId
+          name
+          updatedAt
+        }
+      }
+    variables: |
+      {}
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

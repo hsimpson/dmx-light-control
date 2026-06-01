@@ -1,25 +1,43 @@
+fragment VendorFields on VendorResponseDto {
+  externalId
+  name
+  createdAt
+  updatedAt
+}
+
+fragment ChannelAssignmentFields on ChannelAssignmentDto {
+  channelMode
+  channelNumber
+  createdAt
+  externalId
+  preset
+  updatedAt
+}
+
+fragment FixtureFields on FixtureResponseDto {
+  externalId
+  name
+
+  vendor {
+    ...VendorFields
+  }
+
+  channelAssignments {
+    ...ChannelAssignmentFields
+  }
+
+  createdAt
+  updatedAt
+}
+
 query GetFixtures {
   fixtures {
-    externalId
-    name
+    ...FixtureFields
+  }
+}
 
-    createdAt
-    updatedAt
-
-    vendor {
-      externalId
-      name
-      createdAt
-      updatedAt
-    }
-
-    channelAssignments {
-      channelMode
-      channelNumber
-      createdAt
-      externalId
-      preset
-      updatedAt
-    }
+query GetFixture($fixtureId: UUID!) {
+  fixture(fixtureId: $fixtureId) {
+    ...FixtureFields
   }
 }

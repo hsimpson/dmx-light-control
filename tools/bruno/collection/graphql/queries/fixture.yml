@@ -9,8 +9,8 @@ graphql:
   auth: inherit
   body:
     query: |
-      query($externalId: UUID!) {
-        fixture(externalId: $externalId) {
+      query($fixtureId: UUID!) {
+        fixture(fixtureId: $fixtureId) {
           channelAssignments {
             channelMode
             channelNumber
@@ -33,7 +33,7 @@ graphql:
       }
     variables: |
       {
-        "externalId": null
+        "fixtureId": null
       }
 
 settings:
