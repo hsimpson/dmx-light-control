@@ -1,8 +1,11 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { GraphQLUUID } from 'graphql-scalars';
 
 @ObjectType()
 export abstract class BaseDto {
-  @Field({ description: 'The unique identifier of the entity' })
+  @Field(() => GraphQLUUID, {
+    description: 'The unique identifier of the entity',
+  })
   public externalId: string;
 
   @Field({ description: 'The date and time when the entity was created' })

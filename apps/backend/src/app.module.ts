@@ -10,6 +10,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GraphQLModule } from '@nestjs/graphql';
+import { GraphQLUUID } from 'graphql-scalars';
 import { DB_PROVIDER } from './db/db.provider';
 import { FixturesModule } from './fixtures/fixtures.module';
 
@@ -29,6 +30,7 @@ import { FixturesModule } from './fixtures/fixtures.module';
       playground: false,
       autoSchemaFile: true,
       sortSchema: true,
+      resolvers: { UUID: GraphQLUUID },
     }),
     EventEmitterModule.forRoot(),
     DmxModule,

@@ -3,7 +3,6 @@ import {
   BuildQueryResult,
   DBQueryConfig,
   ExtractTablesWithRelations,
-  InferSelectModel,
 } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres/driver';
 import { AnyPgTable } from 'drizzle-orm/pg-core';
@@ -25,12 +24,33 @@ export abstract class BaseRepository<
     this.queryDb = db as unknown as NodePgDatabase<Schema>;
   }
 
-  public async findMany(): Promise<InferSelectModel<TableT>[]> {
-    // @ts-expect-error - Drizzle generic select type limitation
-    return this.db.select().from(this.table);
+  public async findOneByExternalId<
+    TConfig extends DBQueryConfig<
+      'one',
+      true,
+      TablesWithRelations,
+      TablesWithRelations[TTableName]
+    >,
+  >(
+    externalId: string,
+    config?: TConfig,
+  ): Promise<
+    | BuildQueryResult<
+        TablesWithRelations,
+        TablesWithRelations[TTableName],
+        TConfig
+      >
+    | undefined
+  > {
+    // @ts-expect-error - Drizzle generic relational query type limitation
+    return this.queryDb.query[this.tableName].findFirst({
+      ...config,
+      // @ts-expect-error - All tables have externalId from pk spread
+      where: (fields, { eq }) => eq(fields.externalId, externalId),
+    });
   }
 
-  public async findManyWithRelations<
+  public async findMany<
     TConfig extends DBQueryConfig<
       'many',
       true,

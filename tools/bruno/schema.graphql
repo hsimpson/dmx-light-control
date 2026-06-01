@@ -9,7 +9,7 @@ type ChannelAssignmentDto {
   createdAt: DateTime!
 
   """The unique identifier of the entity"""
-  externalId: String!
+  externalId: UUID!
 
   """The preset of the channel assignment"""
   preset: FixtureChannelPreset!
@@ -59,7 +59,7 @@ type FixtureResponseDto {
   createdAt: DateTime!
 
   """The unique identifier of the entity"""
-  externalId: String!
+  externalId: UUID!
 
   """The name of the fixture"""
   name: String!
@@ -107,6 +107,9 @@ input OpenPortsInput {
 }
 
 type Query {
+  """get fixture by external id"""
+  fixture(externalId: UUID!): FixtureResponseDto
+
   """get all fixtures"""
   fixtures: [FixtureResponseDto!]!
 
@@ -114,12 +117,17 @@ type Query {
   getMidiDevices: MidiDevicesDto!
 }
 
+"""
+A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier.
+"""
+scalar UUID
+
 type VendorResponseDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
 
   """The unique identifier of the entity"""
-  externalId: String!
+  externalId: UUID!
 
   """The name of the vendor"""
   name: String!
