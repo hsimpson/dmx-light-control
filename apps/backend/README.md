@@ -1,8 +1,10 @@
 # Backend
 
-This is the backend application for the DMX Light Control project. It is built using NestJS and provides an API for controlling DMX devices, as well as a command-line interface for sniffing DMX data from USB devices.
+This is the backend application for the DMX Light Control project. It is built using NestJS and provides a GraphQL API for controlling DMX fixtures, as well as a command-line interface for sniffing DMX data from USB devices.
 
 ## Database
+
+The backend uses a PostgreSQL database to store information about fixtures, vendors, and other related data. The database schema is managed using Drizzle ORM, and migrations are used to keep the schema up-to-date with the application code. See the [Drizzle ORM](#drizzle-orm) section below for more details on how to manage the database schema and migrations.
 
 ### Drizzle ORM
 
@@ -22,6 +24,14 @@ To apply migrations, use the following command:
 
 ```bash
 nx run backend:drizzle-migrate
+```
+
+## Backend commands
+
+To run the backend application, use the following command:
+
+```bash
+nx serve backend
 ```
 
 ## DMX Sniffer Command
