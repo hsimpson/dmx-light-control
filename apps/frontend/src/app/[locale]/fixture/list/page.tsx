@@ -66,8 +66,7 @@ const FixtureListPage = () => {
             }),
             render: ({ channelAssignments }) => {
               const modes = channelAssignments.map((ca) => ca.channelMode);
-              const set = new Set(modes);
-              return Array.from(set).sort().join(', ');
+              return modes.sort().join(', ');
             },
           },
         ]}

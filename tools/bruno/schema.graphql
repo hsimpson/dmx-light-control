@@ -1,9 +1,14 @@
 type ChannelAssignmentDto {
   """The channel mode of the channel assignment"""
-  channelMode: Float!
+  channelMode: Int!
 
+  """The channels of the channel assignment"""
+  channels: [ChannelDto!]!
+}
+
+type ChannelDto {
   """The number of the channel assignment"""
-  channelNumber: Float!
+  channelNumber: Int!
 
   """The date and time when the entity was created"""
   createdAt: DateTime!

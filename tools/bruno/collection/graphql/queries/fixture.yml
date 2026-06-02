@@ -13,11 +13,13 @@ graphql:
         fixture(fixtureId: $fixtureId) {
           channelAssignments {
             channelMode
-            channelNumber
-            createdAt
-            externalId
-            preset
-            updatedAt
+            channels {
+              channelNumber
+              createdAt
+              externalId
+              preset
+              updatedAt
+            }
           }
           createdAt
           externalId

@@ -10,6 +10,30 @@ import { AnyPgTable } from 'drizzle-orm/pg-core';
 type Schema = typeof schema;
 type TablesWithRelations = ExtractTablesWithRelations<Schema>;
 
+// Helper types to reduce complexity in repository methods
+type OneConfig<TTableName extends keyof TablesWithRelations> = DBQueryConfig<
+  'one',
+  true,
+  TablesWithRelations,
+  TablesWithRelations[TTableName]
+>;
+
+type ManyConfig<TTableName extends keyof TablesWithRelations> = DBQueryConfig<
+  'many',
+  true,
+  TablesWithRelations,
+  TablesWithRelations[TTableName]
+>;
+
+type QueryResult<
+  TTableName extends keyof TablesWithRelations,
+  TConfig extends true | Record<string, unknown>,
+> = BuildQueryResult<
+  TablesWithRelations,
+  TablesWithRelations[TTableName],
+  TConfig
+>;
+
 export abstract class BaseRepository<
   TableT extends AnyPgTable,
   TTableName extends keyof TablesWithRelations = keyof TablesWithRelations,
@@ -24,24 +48,10 @@ export abstract class BaseRepository<
     this.queryDb = db as unknown as NodePgDatabase<Schema>;
   }
 
-  public async findOneByExternalId<
-    TConfig extends DBQueryConfig<
-      'one',
-      true,
-      TablesWithRelations,
-      TablesWithRelations[TTableName]
-    >,
-  >(
+  public async findOneByExternalId<TConfig extends OneConfig<TTableName>>(
     externalId: string,
     config?: TConfig,
-  ): Promise<
-    | BuildQueryResult<
-        TablesWithRelations,
-        TablesWithRelations[TTableName],
-        TConfig
-      >
-    | undefined
-  > {
+  ): Promise<QueryResult<TTableName, TConfig> | undefined> {
     // @ts-expect-error - Drizzle generic relational query type limitation
     return this.queryDb.query[this.tableName].findFirst({
       ...config,
@@ -50,22 +60,9 @@ export abstract class BaseRepository<
     });
   }
 
-  public async findMany<
-    TConfig extends DBQueryConfig<
-      'many',
-      true,
-      TablesWithRelations,
-      TablesWithRelations[TTableName]
-    >,
-  >(
+  public async findMany<TConfig extends ManyConfig<TTableName>>(
     config?: TConfig,
-  ): Promise<
-    BuildQueryResult<
-      TablesWithRelations,
-      TablesWithRelations[TTableName],
-      TConfig
-    >[]
-  > {
+  ): Promise<QueryResult<TTableName, TConfig>[]> {
     // @ts-expect-error - Drizzle generic relational query type limitation
     return this.queryDb.query[this.tableName].findMany(config);
   }

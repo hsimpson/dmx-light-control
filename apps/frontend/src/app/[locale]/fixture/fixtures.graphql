@@ -7,11 +7,13 @@ fragment VendorFields on VendorResponseDto {
 
 fragment ChannelAssignmentFields on ChannelAssignmentDto {
   channelMode
-  channelNumber
-  createdAt
-  externalId
-  preset
-  updatedAt
+  channels {
+    channelNumber
+    createdAt
+    externalId
+    preset
+    updatedAt
+  }
 }
 
 fragment FixtureFields on FixtureResponseDto {

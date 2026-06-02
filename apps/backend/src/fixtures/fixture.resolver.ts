@@ -3,7 +3,7 @@ import { plainToInstance } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
 import { FixtureResponseDto } from './dto/fixture.response.dto';
 import { VendorResponseDto } from './dto/vendor.response.dto';
-import { FixtureService } from './fixture.service';
+import { FixtureService, FixtureWithRelations } from './fixture.service';
 @Resolver()
 export class FixtureResolver {
   public constructor(private readonly fixtureService: FixtureService) {}
@@ -23,7 +23,7 @@ export class FixtureResolver {
   })
   public async getAllFixtures(): Promise<FixtureResponseDto[]> {
     const fixtures = await this.fixtureService.getAllFixtures();
-    return plainToInstance(FixtureResponseDto, fixtures);
+    return fixtures.map((fixture) => this.transformFixture(fixture));
   }
 
   @Query(() => FixtureResponseDto, {
@@ -38,6 +38,42 @@ export class FixtureResolver {
     if (!fixture) {
       return null;
     }
-    return plainToInstance(FixtureResponseDto, fixture);
+    return this.transformFixture(fixture);
+  }
+
+  private transformFixture(fixture: FixtureWithRelations): FixtureResponseDto {
+    // Group channel assignments by channelMode
+    const grouped = new Map<number, unknown[]>();
+
+    if (fixture.channelAssignments) {
+      for (const assignment of fixture.channelAssignments) {
+        if (!grouped.has(assignment.channelMode)) {
+          grouped.set(assignment.channelMode, []);
+        }
+        const channels = grouped.get(assignment.channelMode);
+        if (channels) {
+          channels.push({
+            channelNumber: assignment.channelNumber,
+            preset: assignment.preset,
+            externalId: assignment.externalId,
+            createdAt: assignment.createdAt,
+            updatedAt: assignment.updatedAt,
+          });
+        }
+      }
+    }
+
+    // Convert grouped map to ChannelAssignmentDto array
+    const channelAssignments = Array.from(grouped.entries()).map(
+      ([channelMode, channels]) => ({
+        channelMode,
+        channels,
+      }),
+    );
+
+    return plainToInstance(FixtureResponseDto, {
+      ...fixture,
+      channelAssignments,
+    });
   }
 }
