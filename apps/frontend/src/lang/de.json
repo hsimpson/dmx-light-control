@@ -3,5 +3,15 @@
   "FixtureList.add": "Fixture hinzufügen",
   "FixtureList.Table.vendor": "Hersteller",
   "FixtureList.Table.name": "Name",
-  "FixtureList.Table.channelsModes": "Kanalmodi"
+  "FixtureList.Table.channelsModes": "Kanalmodi",
+  "AddFixturePage.title": "Fixture hinzufügen",
+  "EditFixturePage.title": "Fixture bearbeiten",
+  "GlobalMessages.Cancel": "Abbrechen",
+  "GlobalMessages.Save": "Speichern",
+  "FixtureForm.fixtureName": "Fixture Name:",
+  "FixtureForm.fixtureNamePlaceholder": "Name des Fixtures eingeben",
+  "FixtureForm.validation.fixtureName": "Fixture Name muss mindestens 3 Zeichen lang sein",
+  "FixtureForm.validation.vendor": "Herstellername muss mindestens 3 Zeichen lang sein",
+  "FixtureForm.vendorPlaceholder": "Herstellername auswählen oder eingeben",
+  "FixtureForm.vendor": "Herstellername:"
 }

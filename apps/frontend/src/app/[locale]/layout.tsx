@@ -1,4 +1,4 @@
-import App from '@/app/[locale]/_components/app';
+import App from '@/components/app';
 import ApolloWrapper from '@/lib/graphql/apollo-wrapper';
 import IntlWrapper from '@/lib/i18n/intl-wrapper';
 import {

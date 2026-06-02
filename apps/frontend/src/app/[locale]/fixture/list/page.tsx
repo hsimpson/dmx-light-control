@@ -1,5 +1,6 @@
 'use client';
 
+import { Loading } from '@/components/loading';
 import { ICON_SIZE } from '@/lib/constants';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { GetFixturesDocument } from '@/shared/types/graphql/graphql';
@@ -14,6 +15,10 @@ const FixtureListPage = () => {
   const { t } = useTranslation();
   const { data, loading } = useQuery(GetFixturesDocument);
   const router = useRouter();
+
+  if (loading) {
+    return <Loading />;
+  }
 
   const fixtures = data?.fixtures ?? [];
 

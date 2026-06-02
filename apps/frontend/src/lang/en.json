@@ -1,7 +1,17 @@
 {
+  "AddFixturePage.title": "Add Fixture",
+  "EditFixturePage.title": "Edit Fixture",
+  "FixtureForm.fixtureName": "Fixture name:",
+  "FixtureForm.fixtureNamePlaceholder": "Enter fixture name",
+  "FixtureForm.validation.fixtureName": "Fixture name must be at least 3 characters long",
+  "FixtureForm.validation.vendor": "Vendor name must be at least 3 characters long",
+  "FixtureForm.vendor": "Vendor name:",
+  "FixtureForm.vendorPlaceholder": "Select or enter vendor name",
+  "FixtureList.Table.channelsModes": "Channel modes",
   "FixtureList.Table.name": "Name",
   "FixtureList.Table.vendor": "Vendor",
   "FixtureList.add": "Add Fixture",
   "FixtureList.title": "Fixture list",
-  "FixtureList.Table.channelsModes": "Channel modes"
+  "GlobalMessages.Cancel": "Cancel",
+  "GlobalMessages.Save": "Save"
 }

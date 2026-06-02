@@ -26,6 +26,7 @@ export default defineConfig(
   // customize eslint-rules
   {
     rules: {
+      'no-console': 'warn',
       'no-unused-vars': 'off', // Note: you must disable the base rule as it can report incorrect errors
       'no-warning-comments': 'warn',
       eqeqeq: 'error',

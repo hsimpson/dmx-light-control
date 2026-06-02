@@ -14,7 +14,6 @@ export class DmxResolver {
     @Args('channelValues', { type: () => ChannelValuesInput })
     dto: ChannelValuesInput,
   ): string {
-    console.log('Received DMX channel values:', dto);
     this.eventEmitter.emit('dmx.channelValues', dto.dmxValues);
     return 'DMX channel values set successfully';
   }

@@ -41,3 +41,9 @@ query GetFixture($fixtureId: UUID!) {
     ...FixtureFields
   }
 }
+
+query GetVendors {
+  vendors {
+    ...VendorFields
+  }
+}

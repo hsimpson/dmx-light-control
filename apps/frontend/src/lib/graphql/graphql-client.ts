@@ -20,9 +20,11 @@ const httpLink = new HttpLink({
 const errorLink = new ErrorLink(({ error }) => {
   if (CombinedGraphQLErrors.is(error) || CombinedProtocolErrors.is(error)) {
     for (const error_ of error.errors) {
-      console.log('[GraphQL error]:', error_);
+      // eslint-disable-next-line no-console
+      console.warn('[GraphQL error]:', error_);
     }
   } else {
+    // eslint-disable-next-line no-console
     console.error('GraphQL error:', error);
   }
 });
