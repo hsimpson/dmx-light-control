@@ -43,7 +43,7 @@ export class FixtureResolver {
 
   private transformFixture(fixture: FixtureWithRelations): FixtureResponseDto {
     // Group channel assignments by channelMode
-    const grouped = new Map<number, unknown[]>();
+    const grouped = new Map<string, unknown[]>();
 
     if (fixture.channelAssignments) {
       for (const assignment of fixture.channelAssignments) {

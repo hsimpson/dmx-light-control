@@ -1,5 +1,6 @@
 'use client';
 
+import { ICON_SIZE } from '@/lib/constants';
 import { globalMessages } from '@/lib/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import {
@@ -23,6 +24,7 @@ import {
   ApertureIcon,
   LightbulbIcon,
   PencilIcon,
+  PlusCircleIcon,
   RectangleIcon,
 } from '@phosphor-icons/react';
 import { useState } from 'react';
@@ -39,7 +41,7 @@ type FixtureFormProps = {
 };
 
 const getChannelsForMode = (
-  channelMode: number,
+  channelMode: string,
   channelAssignments: ChannelAssignment,
 ): Channel[] => {
   const assignment = channelAssignments.find(
@@ -146,12 +148,12 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
     fixture?.vendor.name ?? '',
   );
 
-  let initialChannelMode: number | null = null;
+  let initialChannelMode: string | null = null;
   if (fixture?.channelAssignments.length) {
     initialChannelMode = fixture.channelAssignments[0]?.channelMode ?? null;
   }
 
-  const [channelMode, setChannelMode] = useState<number | null>(
+  const [channelMode, setChannelMode] = useState<string | null>(
     initialChannelMode,
   );
 
@@ -279,11 +281,21 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
                 defaultMessage: 'Channel modes:',
               })}
             </Text>
+            <Button
+              rightSection={
+                <PlusCircleIcon size={ICON_SIZE} weight="duotone" />
+              }
+            >
+              {t({
+                id: 'FixtureForm.addChannelMode',
+                defaultMessage: 'Add channel mode',
+              })}
+            </Button>
             <Chip.Group
               multiple={false}
               value={channelMode?.toString()}
               onChange={(val) => {
-                setChannelMode(val ? Number(val) : null);
+                setChannelMode(val);
               }}
             >
               <Flex direction="column" gap="md">
@@ -308,7 +320,7 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
             </Text>
             <List withPadding listStyleType="none">
               {getChannelsForMode(
-                channelMode ?? 0,
+                channelMode ?? '', // Fallback to empty string if channelMode is null
                 fixture?.channelAssignments ?? [],
               ).map((channel) => getChannelItem(channel))}
             </List>

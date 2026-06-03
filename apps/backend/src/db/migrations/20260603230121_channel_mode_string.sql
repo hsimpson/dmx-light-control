@@ -1,0 +1,1 @@
+ALTER TABLE "channel_assignments" ALTER COLUMN "channel_mode" SET DATA TYPE varchar(255);

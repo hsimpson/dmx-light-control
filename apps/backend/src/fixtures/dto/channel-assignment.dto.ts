@@ -16,10 +16,10 @@ export class ChannelDto extends BaseDto {
 
 @ObjectType()
 export class ChannelAssignmentDto {
-  @Field(() => Int, {
+  @Field({
     description: 'The channel mode of the channel assignment',
   })
-  public channelMode: number;
+  public channelMode: string;
 
   @Type(() => ChannelDto)
   @Field(() => [ChannelDto], {

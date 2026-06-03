@@ -1,6 +1,6 @@
 type ChannelAssignmentDto {
   """The channel mode of the channel assignment"""
-  channelMode: Int!
+  channelMode: String!
 
   """The channels of the channel assignment"""
   channels: [ChannelDto!]!

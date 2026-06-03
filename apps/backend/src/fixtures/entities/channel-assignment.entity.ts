@@ -1,5 +1,5 @@
 import { pk, timestamps } from '@/db/columns.helpers';
-import { integer, pgEnum, pgTable, unique } from 'drizzle-orm/pg-core';
+import { integer, pgEnum, pgTable, unique, varchar } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm/relations';
 import { FixtureChannelPreset } from '../channel-presets';
 import fixture from './fixture.entity';
@@ -19,7 +19,7 @@ const channelAssignment = pgTable(
     fixtureId: integer()
       .notNull()
       .references(() => fixture.id),
-    channelMode: integer().notNull(),
+    channelMode: varchar({ length: 255 }).notNull(),
     channelNumber: integer().notNull(),
     preset: presetEnum(),
 

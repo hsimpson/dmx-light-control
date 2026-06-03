@@ -21,21 +21,21 @@ export const enum FixtureChannelPreset {
 
 export type VendorFieldsFragment = { externalId: string, name: string, createdAt: Date, updatedAt: Date };
 
-export type ChannelAssignmentFieldsFragment = { channelMode: number, channels: Array<{ channelNumber: number, createdAt: Date, externalId: string, preset: FixtureChannelPreset, updatedAt: Date }> };
+export type ChannelAssignmentFieldsFragment = { channelMode: string, channels: Array<{ channelNumber: number, createdAt: Date, externalId: string, preset: FixtureChannelPreset, updatedAt: Date }> };
 
-export type FixtureFieldsFragment = { externalId: string, name: string, createdAt: Date, updatedAt: Date, vendor: { externalId: string, name: string, createdAt: Date, updatedAt: Date }, channelAssignments: Array<{ channelMode: number, channels: Array<{ channelNumber: number, createdAt: Date, externalId: string, preset: FixtureChannelPreset, updatedAt: Date }> }> };
+export type FixtureFieldsFragment = { externalId: string, name: string, createdAt: Date, updatedAt: Date, vendor: { externalId: string, name: string, createdAt: Date, updatedAt: Date }, channelAssignments: Array<{ channelMode: string, channels: Array<{ channelNumber: number, createdAt: Date, externalId: string, preset: FixtureChannelPreset, updatedAt: Date }> }> };
 
 export type GetFixturesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetFixturesQuery = { fixtures: Array<{ externalId: string, name: string, createdAt: Date, updatedAt: Date, vendor: { externalId: string, name: string, createdAt: Date, updatedAt: Date }, channelAssignments: Array<{ channelMode: number, channels: Array<{ channelNumber: number, createdAt: Date, externalId: string, preset: FixtureChannelPreset, updatedAt: Date }> }> }> };
+export type GetFixturesQuery = { fixtures: Array<{ externalId: string, name: string, createdAt: Date, updatedAt: Date, vendor: { externalId: string, name: string, createdAt: Date, updatedAt: Date }, channelAssignments: Array<{ channelMode: string, channels: Array<{ channelNumber: number, createdAt: Date, externalId: string, preset: FixtureChannelPreset, updatedAt: Date }> }> }> };
 
 export type GetFixtureQueryVariables = Exact<{
   fixtureId: string;
 }>;
 
 
-export type GetFixtureQuery = { fixture: { externalId: string, name: string, createdAt: Date, updatedAt: Date, vendor: { externalId: string, name: string, createdAt: Date, updatedAt: Date }, channelAssignments: Array<{ channelMode: number, channels: Array<{ channelNumber: number, createdAt: Date, externalId: string, preset: FixtureChannelPreset, updatedAt: Date }> }> } | null };
+export type GetFixtureQuery = { fixture: { externalId: string, name: string, createdAt: Date, updatedAt: Date, vendor: { externalId: string, name: string, createdAt: Date, updatedAt: Date }, channelAssignments: Array<{ channelMode: string, channels: Array<{ channelNumber: number, createdAt: Date, externalId: string, preset: FixtureChannelPreset, updatedAt: Date }> }> } | null };
 
 export type GetVendorsQueryVariables = Exact<{ [key: string]: never; }>;
 
