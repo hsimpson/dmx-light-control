@@ -1,15 +1,12 @@
 'use client';
 
-import { Loading } from '@/components/loading';
 import { globalMessages } from '@/lib/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import {
   FixtureChannelPreset,
-  GetFixtureDocument,
   GetFixturesQuery,
-  GetVendorsDocument,
+  GetVendorsQuery,
 } from '@/shared/types/graphql/graphql';
-import { useQuery } from '@apollo/client/react';
 import {
   Button,
   Chip,
@@ -28,16 +25,18 @@ import {
   PencilIcon,
   RectangleIcon,
 } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { z } from 'zod/v4';
 
-type FixtureFormProps = {
-  fixtureId?: string;
-};
-
+type Fixture = GetFixturesQuery['fixtures'][number];
 type ChannelAssignment =
   GetFixturesQuery['fixtures'][number]['channelAssignments'];
 type Channel = ChannelAssignment[number]['channels'][number];
+
+type FixtureFormProps = {
+  fixture?: Fixture;
+  vendors: GetVendorsQuery['vendors'];
+};
 
 const getChannelsForMode = (
   channelMode: number,
@@ -105,18 +104,10 @@ const getChannelItem = (channel: Channel) => {
   );
 };
 
-const FixtureForm = ({ fixtureId }: FixtureFormProps) => {
+const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const { t } = useTranslation();
-  const { data: fixtureData, loading: fixtureLoading } = useQuery(
-    GetFixtureDocument,
-    {
-      variables: { fixtureId: fixtureId ?? '' },
-      skip: !fixtureId,
-    },
-  );
 
-  const { data: vendorsData, loading: vendorsLoading } =
-    useQuery(GetVendorsDocument);
+  const vendorNames = vendors.map((vendor) => vendor.name);
 
   const schema = z.object({
     fixtureName: z.string().min(3, {
@@ -147,23 +138,28 @@ const FixtureForm = ({ fixtureId }: FixtureFormProps) => {
     },
   });
 
-  const [comboBoxData, setComboBoxData] = useState<string[]>([]);
-  const [comboBoxValue, setComboBoxValue] = useState<string | null>(null);
-  const [search, setSearch] = useState('');
-  const [channelMode, setChannelMode] = useState<number | null>(null);
+  const [comboBoxData, setComboBoxData] = useState(vendorNames);
+  const [comboBoxValue, setComboBoxValue] = useState(
+    fixture?.vendor.name ?? null,
+  );
+  const [comboBoxSearch, setComboBoxSearch] = useState(
+    fixture?.vendor.name ?? '',
+  );
 
-  useEffect(() => {
-    if (vendorsData?.vendors) {
-      const vendorNames = vendorsData.vendors.map((vendor) => vendor.name);
-      setComboBoxData(vendorNames);
-    }
-  }, [vendorsData?.vendors]);
+  let initialChannelMode: number | null = null;
+  if (fixture?.channelAssignments.length) {
+    initialChannelMode = fixture.channelAssignments[0]?.channelMode ?? null;
+  }
 
-  const exactOptionMatch = comboBoxData.some((item) => item === search);
+  const [channelMode, setChannelMode] = useState<number | null>(
+    initialChannelMode,
+  );
+
+  const exactOptionMatch = comboBoxData.some((item) => item === comboBoxSearch);
   const filteredOptions = exactOptionMatch
     ? comboBoxData
     : comboBoxData.filter((item) =>
-        item.toLowerCase().includes(search.toLowerCase().trim()),
+        item.toLowerCase().includes(comboBoxSearch.toLowerCase().trim()),
       );
 
   const comboBoxOptions = filteredOptions.map((item) => (
@@ -175,34 +171,11 @@ const FixtureForm = ({ fixtureId }: FixtureFormProps) => {
   const form = useForm<FixtureFormValues>({
     mode: 'controlled',
     initialValues: {
-      fixtureName: '',
-      vendor: '',
+      fixtureName: fixture?.name ?? '',
+      vendor: fixture?.vendor.name ?? '',
     },
     validate: schemaResolver(schema, { sync: true }),
   });
-
-  useEffect(() => {
-    if (fixtureData?.fixture) {
-      const vendorName = fixtureData.fixture.vendor.name;
-      setComboBoxValue(vendorName);
-      setSearch(vendorName);
-      form.initialize({
-        fixtureName: fixtureData.fixture.name,
-        vendor: vendorName,
-      });
-
-      // Automatically select the first channel mode
-      if (fixtureData.fixture.channelAssignments.length > 0) {
-        setChannelMode(
-          fixtureData.fixture.channelAssignments[0]?.channelMode ?? null,
-        );
-      }
-    }
-  }, [fixtureData?.fixture]);
-
-  if (fixtureLoading || vendorsLoading) {
-    return <Loading />;
-  }
 
   const onSubmit = (values: FixtureFormValues) => {
     console.log(values);
@@ -218,12 +191,12 @@ const FixtureForm = ({ fixtureId }: FixtureFormProps) => {
             let selectedValue: string;
 
             if (val === '$create') {
-              setComboBoxData((current) => [...current, search]);
-              setComboBoxValue(search);
-              selectedValue = search;
+              setComboBoxData((current) => [...current, comboBoxSearch]);
+              setComboBoxValue(comboBoxSearch);
+              selectedValue = comboBoxSearch;
             } else {
               setComboBoxValue(val);
-              setSearch(val);
+              setComboBoxSearch(val);
               selectedValue = val;
             }
 
@@ -235,11 +208,11 @@ const FixtureForm = ({ fixtureId }: FixtureFormProps) => {
           <Combobox.Target>
             <InputBase
               rightSection={<Combobox.Chevron />}
-              value={search}
+              value={comboBoxSearch}
               onChange={(event) => {
                 combobox.openDropdown();
                 combobox.updateSelectedOptionIndex();
-                setSearch(event.currentTarget.value);
+                setComboBoxSearch(event.currentTarget.value);
               }}
               onClick={() => {
                 combobox.openDropdown();
@@ -249,7 +222,7 @@ const FixtureForm = ({ fixtureId }: FixtureFormProps) => {
               }}
               onBlur={() => {
                 combobox.closeDropdown();
-                setSearch(comboBoxValue ?? '');
+                setComboBoxSearch(comboBoxValue ?? '');
               }}
               placeholder={t({
                 id: 'FixtureForm.vendorPlaceholder',
@@ -268,9 +241,9 @@ const FixtureForm = ({ fixtureId }: FixtureFormProps) => {
           <Combobox.Dropdown>
             <Combobox.Options>
               {comboBoxOptions}
-              {!exactOptionMatch && search.trim().length > 0 && (
+              {!exactOptionMatch && comboBoxSearch.trim().length > 0 && (
                 <Combobox.Option value="$create">
-                  + Create {search}
+                  + Create {comboBoxSearch}
                 </Combobox.Option>
               )}
             </Combobox.Options>
@@ -314,16 +287,14 @@ const FixtureForm = ({ fixtureId }: FixtureFormProps) => {
               }}
             >
               <Flex direction="column" gap="md">
-                {(fixtureData?.fixture?.channelAssignments ?? []).map(
-                  (assignment) => (
-                    <Chip
-                      key={assignment.channelMode}
-                      value={assignment.channelMode.toString()}
-                    >
-                      {assignment.channelMode} Channels
-                    </Chip>
-                  ),
-                )}
+                {(fixture?.channelAssignments ?? []).map((assignment) => (
+                  <Chip
+                    key={assignment.channelMode}
+                    value={assignment.channelMode.toString()}
+                  >
+                    {assignment.channelMode} Channels
+                  </Chip>
+                ))}
               </Flex>
             </Chip.Group>
           </Flex>
@@ -338,7 +309,7 @@ const FixtureForm = ({ fixtureId }: FixtureFormProps) => {
             <List withPadding listStyleType="none">
               {getChannelsForMode(
                 channelMode ?? 0,
-                fixtureData?.fixture?.channelAssignments ?? [],
+                fixture?.channelAssignments ?? [],
               ).map((channel) => getChannelItem(channel))}
             </List>
           </Flex>
