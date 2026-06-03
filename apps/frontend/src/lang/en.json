@@ -1,6 +1,9 @@
 {
   "AddFixturePage.title": "Add Fixture",
   "EditFixturePage.title": "Edit Fixture",
+  "FixtureForm.channelAssignments": "Channel assignments",
+  "FixtureForm.channelModes": "Channel modes:",
+  "FixtureForm.channelsForMode": "Channels for mode:",
   "FixtureForm.fixtureName": "Fixture name:",
   "FixtureForm.fixtureNamePlaceholder": "Enter fixture name",
   "FixtureForm.validation.fixtureName": "Fixture name must be at least 3 characters long",

@@ -12,15 +12,16 @@ const config: CodegenConfig = {
   verbose: true,
   schema: graphqlApiUrl,
   documents: ['src/**/*.graphql'],
+  ignoreNoDocuments: true, // for better experience with the watcher
   generates: {
     './src/shared/types/graphql/': {
       preset: 'client',
-      plugins: [],
       presetConfig: {
         gqlTagName: 'gql',
         fragmentMasking: false,
       },
       config: {
+        enumType: 'native-const',
         scalars: {
           Date: 'Date',
           DateTime: 'Date',
@@ -30,7 +31,6 @@ const config: CodegenConfig = {
       },
     },
   },
-  // ignoreNoDocuments: true, // indicates missing graphql statements
 };
 
 export default config;

@@ -37,6 +37,7 @@ export default defineConfig(
   {
     rules: {
       '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
       '@typescript-eslint/explicit-member-accessibility': [
         'error',
         { accessibility: 'explicit' },

@@ -18,7 +18,7 @@ const App = ({ children }: AppProperties) => {
       padding="md"
       header={{ height: 60 }}
       navbar={{
-        width: 300,
+        width: 250,
         breakpoint: 'sm',
         collapsed: { mobile: !opened },
       }}

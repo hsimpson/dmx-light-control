@@ -33,5 +33,6 @@
   "i18n-ally.regex.usageMatchAppend": [
     "[^\\w\\d](?:t)\\(.|\\s*?id?:\\s*'([a-zA-z].*?)'"
   ],
+  "i18n-ally.sortKeys": true,
   "i18n-ally.sourceLanguage": "en"
 }

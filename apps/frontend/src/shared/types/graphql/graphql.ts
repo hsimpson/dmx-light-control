@@ -5,18 +5,19 @@ type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 /** The preset of a fixture channel assignment */
-export type FixtureChannelPreset =
-  | 'Custom'
-  | 'IntensityAmber'
-  | 'IntensityBlue'
-  | 'IntensityDimmer'
-  | 'IntensityGreen'
-  | 'IntensityMasterDimmer'
-  | 'IntensityRed'
-  | 'IntensityUV'
-  | 'IntensityWhite'
-  | 'ShutterStrobeFastSlow'
-  | 'ShutterStrobeSlowFast';
+export const enum FixtureChannelPreset {
+  Custom = 'Custom',
+  IntensityAmber = 'IntensityAmber',
+  IntensityBlue = 'IntensityBlue',
+  IntensityDimmer = 'IntensityDimmer',
+  IntensityGreen = 'IntensityGreen',
+  IntensityMasterDimmer = 'IntensityMasterDimmer',
+  IntensityRed = 'IntensityRed',
+  IntensityUv = 'IntensityUV',
+  IntensityWhite = 'IntensityWhite',
+  ShutterStrobeFastSlow = 'ShutterStrobeFastSlow',
+  ShutterStrobeSlowFast = 'ShutterStrobeSlowFast'
+};
 
 export type VendorFieldsFragment = { externalId: string, name: string, createdAt: Date, updatedAt: Date };
 
