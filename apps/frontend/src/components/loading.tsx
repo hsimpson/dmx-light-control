@@ -27,13 +27,7 @@ type LoadingProps = {
   minHeight?: number | string;
 };
 
-export const Loading = ({
-  message,
-  size = 'md',
-  type = 'oval',
-  centered = true,
-  minHeight = 200,
-}: LoadingProps) => {
+export const Loading = ({ message, size = 'md', type = 'oval', centered = true, minHeight = 200 }: LoadingProps) => {
   const content = (
     <Stack align="center" gap="md">
       <Loader size={size} type={type} />

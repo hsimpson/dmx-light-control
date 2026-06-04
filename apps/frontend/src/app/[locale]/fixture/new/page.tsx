@@ -9,8 +9,7 @@ import FixtureForm from '../_components/fixture-form';
 
 export const AddFixturePage = () => {
   const { t } = useTranslation();
-  const { data: vendorsData, loading: vendorsLoading } =
-    useQuery(GetVendorsDocument);
+  const { data: vendorsData, loading: vendorsLoading } = useQuery(GetVendorsDocument);
 
   if (vendorsLoading) {
     return <Loading />;
@@ -18,9 +17,7 @@ export const AddFixturePage = () => {
 
   return (
     <>
-      <Title order={1}>
-        {t({ id: 'AddFixturePage.title', defaultMessage: 'Add Fixture' })}
-      </Title>
+      <Title order={1}>{t({ id: 'AddFixturePage.title', defaultMessage: 'Add Fixture' })}</Title>
       <FixtureForm vendors={vendorsData?.vendors ?? []} />
     </>
   );

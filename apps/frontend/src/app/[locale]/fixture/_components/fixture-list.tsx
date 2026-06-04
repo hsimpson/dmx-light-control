@@ -50,12 +50,12 @@ const FixtureList = () => {
             defaultMessage: 'Channel modes',
           }),
           render: ({ channelAssignments }) => {
-            const modes = channelAssignments.map((ca) => ca.channelMode);
+            const modes = channelAssignments.map(ca => ca.channelMode);
             return modes.sort().join(', ');
           },
         },
       ]}
-      onRowClick={(record) => {
+      onRowClick={record => {
         router.push(`/fixture/${record.record.externalId}`);
       }}
     />

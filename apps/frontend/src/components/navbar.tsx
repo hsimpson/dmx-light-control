@@ -5,11 +5,7 @@ import { HeadlightsIcon, HouseIcon } from '@phosphor-icons/react';
 const NavBar = () => {
   return (
     <>
-      <NavLink
-        label="Home"
-        href="/"
-        leftSection={<HouseIcon size={ICON_SIZE} weight="duotone" />}
-      />
+      <NavLink label="Home" href="/" leftSection={<HouseIcon size={ICON_SIZE} weight="duotone" />} />
       <NavLink
         label="Fixtures"
         href="/fixture/list"

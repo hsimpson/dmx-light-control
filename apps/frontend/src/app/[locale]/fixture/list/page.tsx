@@ -13,9 +13,7 @@ const FixtureListPage = () => {
   return (
     <>
       <Flex direction="row" justify="space-between" align="center" mb="md">
-        <Title order={1}>
-          {t({ id: 'FixtureList.title', defaultMessage: 'Fixture list' })}
-        </Title>
+        <Title order={1}>{t({ id: 'FixtureList.title', defaultMessage: 'Fixture list' })}</Title>
         <Button
           component={Link}
           rightSection={<PlusCircleIcon size={ICON_SIZE} weight="duotone" />}

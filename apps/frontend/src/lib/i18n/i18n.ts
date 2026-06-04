@@ -14,8 +14,6 @@ const messages = {
 } as const;
 
 export const getLocalizedMessages = (locale = '') => {
-  const verifiedLocale = (
-    Object.hasOwn(messages, locale) ? locale : i18nConfig.defaultLocale
-  ) as keyof typeof messages;
+  const verifiedLocale = (Object.hasOwn(messages, locale) ? locale : i18nConfig.defaultLocale) as keyof typeof messages;
   return { messages: messages[verifiedLocale], locale: verifiedLocale };
 };
