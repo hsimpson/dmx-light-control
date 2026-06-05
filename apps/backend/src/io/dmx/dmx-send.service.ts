@@ -22,7 +22,7 @@ export class DmxSendService implements OnModuleInit {
   }
 
   public onModuleInit() {
-    this.eventEmitter.on('dmx.channelValues', (values) => {
+    this.eventEmitter.on('dmx.channelValues', values => {
       this.setChannelValues(values);
 
       // If not already sending, start the sender
@@ -39,9 +39,7 @@ export class DmxSendService implements OnModuleInit {
   public async startSending(): Promise<void> {
     // FIXME: device selection
     this.device = await this.usbDeviceService.getDeviceBySerial('A50285BI');
-    this.logger.log(
-      `Found device: ${this.device ? this.device.productName : 'None'}`,
-    );
+    this.logger.log(`Found device: ${this.device ? this.device.productName : 'None'}`);
     this.sendDmxFrame();
   }
 
@@ -51,20 +49,14 @@ export class DmxSendService implements OnModuleInit {
 
   private setChannelValues(channelValues: DmxValue[]): void {
     // Update the DMX frame with the provided channel values
-    this.logger.debug(
-      `Setting DMX channel values: ${JSON.stringify(channelValues)}`,
-    );
+    this.logger.debug(`Setting DMX channel values: ${JSON.stringify(channelValues)}`);
     for (const { channel, value } of channelValues) {
       if (channel < 1 || channel > 512) {
-        this.logger.warn(
-          `Invalid DMX channel: ${channel}. Must be between 1 and 512.`,
-        );
+        this.logger.warn(`Invalid DMX channel: ${channel}. Must be between 1 and 512.`);
         continue;
       }
       if (value < 0 || value > 255) {
-        this.logger.warn(
-          `Invalid DMX value: ${value}. Must be between 0 and 255.`,
-        );
+        this.logger.warn(`Invalid DMX value: ${value}. Must be between 0 and 255.`);
         continue;
       }
       this.dmxFrame[channel] = value; // Channel numbers are 1-based, array is 0-based

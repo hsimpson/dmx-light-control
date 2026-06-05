@@ -11,7 +11,7 @@ const vendor = pgTable(
 
     ...timestamps,
   },
-  (table) => [unique().on(table.externalId)],
+  table => [unique().on(table.externalId)],
 );
 
 export const vendorRelations = relations(vendor, ({ many }) => ({

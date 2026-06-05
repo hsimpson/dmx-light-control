@@ -15,7 +15,7 @@ const fixture = pgTable(
 
     ...timestamps,
   },
-  (table) => [unique().on(table.externalId)],
+  table => [unique().on(table.externalId)],
 );
 
 export const fixtureRelations = relations(fixture, ({ one, many }) => ({

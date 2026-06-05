@@ -29,10 +29,7 @@ export class DmxSnifferCommand extends CommandRunner {
     return Number(val);
   }
 
-  public override async run(
-    passedParams: string[],
-    options: Record<string, string | boolean | number>,
-  ): Promise<void> {
+  public override async run(passedParams: string[], options: Record<string, string | boolean | number>): Promise<void> {
     // this command should only be available on linux
     if (process.platform !== 'linux') {
       this.logger.error('The dmx-sniffer command is only supported on Linux.');
@@ -44,16 +41,11 @@ export class DmxSnifferCommand extends CommandRunner {
     );
 
     if (!options.bus || !options.address) {
-      this.logger.error(
-        'Both --bus and --address options are required to start the DMX sniffer.',
-      );
+      this.logger.error('Both --bus and --address options are required to start the DMX sniffer.');
       process.exit(1);
     }
 
-    await this.dmxSnifferService.startSniffer(
-      Number(options.bus),
-      Number(options.address),
-    );
+    await this.dmxSnifferService.startSniffer(Number(options.bus), Number(options.address));
 
     process.exit(0);
   }

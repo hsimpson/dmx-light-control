@@ -8,12 +8,7 @@ import { DmxResolver } from './dmx.resolver';
 
 @Module({
   imports: [UsbModule, EventsModule],
-  providers: [
-    DmxSendService,
-    DmxSnifferCommand,
-    DmxSnifferService,
-    DmxResolver,
-  ],
+  providers: [DmxSendService, DmxSnifferCommand, DmxSnifferService, DmxResolver],
   exports: [DmxSnifferCommand],
 })
 export class DmxModule {}

@@ -27,9 +27,7 @@ export class FixtureService {
     });
   }
 
-  public async getFixtureByExternalId(
-    externalId: string,
-  ): Promise<FixtureWithRelations | undefined> {
+  public async getFixtureByExternalId(externalId: string): Promise<FixtureWithRelations | undefined> {
     return this.fixtureRepository.findOneByExternalId(externalId, {
       with: { vendor: true, channelAssignments: true },
     });

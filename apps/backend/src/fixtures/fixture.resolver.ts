@@ -23,7 +23,7 @@ export class FixtureResolver {
   })
   public async getAllFixtures(): Promise<FixtureResponseDto[]> {
     const fixtures = await this.fixtureService.getAllFixtures();
-    return fixtures.map((fixture) => this.transformFixture(fixture));
+    return fixtures.map(fixture => this.transformFixture(fixture));
   }
 
   @Query(() => FixtureResponseDto, {
@@ -64,12 +64,10 @@ export class FixtureResolver {
     }
 
     // Convert grouped map to ChannelAssignmentDto array
-    const channelAssignments = Array.from(grouped.entries()).map(
-      ([channelMode, channels]) => ({
-        channelMode,
-        channels,
-      }),
-    );
+    const channelAssignments = Array.from(grouped.entries()).map(([channelMode, channels]) => ({
+      channelMode,
+      channels,
+    }));
 
     return plainToInstance(FixtureResponseDto, {
       ...fixture,

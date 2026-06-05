@@ -34,7 +34,7 @@ export class IoBridgeService implements OnModuleInit {
   public constructor(private readonly eventEmitter: AppEventEmitter) {}
 
   public onModuleInit(): void {
-    this.eventEmitter.on('midi.inputMessage', (message) => {
+    this.eventEmitter.on('midi.inputMessage', message => {
       this.handleMidiMessage(message);
     });
 
@@ -54,9 +54,7 @@ export class IoBridgeService implements OnModuleInit {
 
     if (dmxChannel === 0) {
       // If the MIDI note is not mapped, ignore the message
-      this.logger.warn(
-        `Received MIDI message with unmapped note: ${data1}. Ignoring.`,
-      );
+      this.logger.warn(`Received MIDI message with unmapped note: ${data1}. Ignoring.`);
       return;
     }
 
@@ -77,8 +75,6 @@ export class IoBridgeService implements OnModuleInit {
     // normalize DMX value to 0-255
     dmxValue = Math.round((dmxValue / 127) * 255);
 
-    this.eventEmitter.emit('dmx.channelValues', [
-      { channel: dmxChannel, value: dmxValue },
-    ]);
+    this.eventEmitter.emit('dmx.channelValues', [{ channel: dmxChannel, value: dmxValue }]);
   }
 }

@@ -48,9 +48,7 @@ export class MidiService {
     this.eventEmitter.emit('midi.inputOpened');
     this.output.openPort(outputPort);
     this.eventEmitter.emit('midi.outputOpened');
-    this.logger.log(
-      `Opened MIDI input port ${inputPort} and output port ${outputPort}`,
-    );
+    this.logger.log(`Opened MIDI input port ${inputPort} and output port ${outputPort}`);
   }
 
   public closePorts(): void {
@@ -60,15 +58,13 @@ export class MidiService {
   }
 
   private handleMidiMessage(deltaTime: number, message: MidiMessage): void {
-    this.logger.log(
-      `Received MIDI message: ${message.join(', ')} (deltaTime: ${deltaTime})`,
-    );
+    this.logger.log(`Received MIDI message: ${message.join(', ')} (deltaTime: ${deltaTime})`);
     this.eventEmitter.emit('midi.inputMessage', message);
   }
 
   private async sendMidiMessage(message: MidiMessage): Promise<void> {
     this.logger.log(`Sent MIDI message: ${message.join(', ')}`);
     this.output.sendMessage(message);
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise(resolve => setTimeout(resolve, 200));
   }
 }

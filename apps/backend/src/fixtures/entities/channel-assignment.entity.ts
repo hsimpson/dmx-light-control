@@ -4,12 +4,8 @@ import { relations } from 'drizzle-orm/relations';
 import { FixtureChannelPreset } from '../channel-presets';
 import fixture from './fixture.entity';
 
-type PresetValue =
-  (typeof FixtureChannelPreset)[keyof typeof FixtureChannelPreset];
-const presetValues = Object.values(FixtureChannelPreset) as [
-  PresetValue,
-  ...PresetValue[],
-];
+type PresetValue = (typeof FixtureChannelPreset)[keyof typeof FixtureChannelPreset];
+const presetValues = Object.values(FixtureChannelPreset) as [PresetValue, ...PresetValue[]];
 export const presetEnum = pgEnum('preset', presetValues);
 
 const channelAssignment = pgTable(
@@ -25,21 +21,15 @@ const channelAssignment = pgTable(
 
     ...timestamps,
   },
-  (table) => [
-    unique().on(table.externalId),
-    unique().on(table.fixtureId, table.channelMode, table.channelNumber),
-  ],
+  table => [unique().on(table.externalId), unique().on(table.fixtureId, table.channelMode, table.channelNumber)],
 );
 
-export const channelAssignmentRelations = relations(
-  channelAssignment,
-  ({ one }) => ({
-    fixture: one(fixture, {
-      fields: [channelAssignment.fixtureId],
-      references: [fixture.id],
-    }),
+export const channelAssignmentRelations = relations(channelAssignment, ({ one }) => ({
+  fixture: one(fixture, {
+    fields: [channelAssignment.fixtureId],
+    references: [fixture.id],
   }),
-);
+}));
 
 export type ChannelAssignment = typeof channelAssignment.$inferSelect;
 

@@ -1,9 +1,5 @@
 import * as schema from '@/db/schema';
-import {
-  BuildQueryResult,
-  DBQueryConfig,
-  ExtractTablesWithRelations,
-} from 'drizzle-orm';
+import { BuildQueryResult, DBQueryConfig, ExtractTablesWithRelations } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres/driver';
 import { AnyPgTable } from 'drizzle-orm/pg-core';
 
@@ -28,11 +24,7 @@ type ManyConfig<TTableName extends keyof TablesWithRelations> = DBQueryConfig<
 type QueryResult<
   TTableName extends keyof TablesWithRelations,
   TConfig extends true | Record<string, unknown>,
-> = BuildQueryResult<
-  TablesWithRelations,
-  TablesWithRelations[TTableName],
-  TConfig
->;
+> = BuildQueryResult<TablesWithRelations, TablesWithRelations[TTableName], TConfig>;
 
 export abstract class BaseRepository<
   TableT extends AnyPgTable,

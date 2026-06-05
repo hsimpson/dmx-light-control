@@ -15,10 +15,7 @@ const OFFSET_STATUS = 28; // i32: URB status
 const OFFSET_LENGTH = 32; // u32: requested data length
 const OFFSET_LEN_CAP = 36; // u32: captured data bytes appended after header
 
-function parseFrames(
-  buf: Buffer,
-  onFrame: (header: Buffer, data: Buffer) => void,
-): Buffer {
+function parseFrames(buf: Buffer, onFrame: (header: Buffer, data: Buffer) => void): Buffer {
   let offset = 0;
   while (offset + USBMON_HEADER_SIZE <= buf.length) {
     const lenCap = buf.readUInt32LE(offset + OFFSET_LEN_CAP);
@@ -67,12 +64,7 @@ export class DmxSnifferService {
           // const direction = epnum & 0x80 ? 'IN' : 'OUT';
           const type = String.fromCharCode(header.readUInt8(OFFSET_TYPE));
 
-          if (
-            devnum !== address ||
-            endpoint !== TARGET_ENDPOINT ||
-            type !== 'S'
-          )
-            return;
+          if (devnum !== address || endpoint !== TARGET_ENDPOINT || type !== 'S') return;
           if (data.length === 0) return;
 
           // FTDI serial driver splits writes into multiple USB packets — accumulate and reassemble.
@@ -88,14 +80,14 @@ export class DmxSnifferService {
             dmxBuffer = dmxBuffer.subarray(513);
 
             let message = '';
-            message += `Ch 001-064: ${[...frame.subarray(1, 65)].map((b) => b.toString(16).padStart(2, '0')).join(' ')}\n`;
-            message += `Ch 065-128: ${[...frame.subarray(65, 129)].map((b) => b.toString(16).padStart(2, '0')).join(' ')}\n`;
-            message += `Ch 129-192: ${[...frame.subarray(129, 193)].map((b) => b.toString(16).padStart(2, '0')).join(' ')}\n`;
-            message += `Ch 193-256: ${[...frame.subarray(193, 257)].map((b) => b.toString(16).padStart(2, '0')).join(' ')}\n`;
-            message += `Ch 257-320: ${[...frame.subarray(257, 321)].map((b) => b.toString(16).padStart(2, '0')).join(' ')}\n`;
-            message += `Ch 321-384: ${[...frame.subarray(321, 385)].map((b) => b.toString(16).padStart(2, '0')).join(' ')}\n`;
-            message += `Ch 385-448: ${[...frame.subarray(385, 449)].map((b) => b.toString(16).padStart(2, '0')).join(' ')}\n`;
-            message += `Ch 449-512: ${[...frame.subarray(449, 513)].map((b) => b.toString(16).padStart(2, '0')).join(' ')}\n`;
+            message += `Ch 001-064: ${[...frame.subarray(1, 65)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
+            message += `Ch 065-128: ${[...frame.subarray(65, 129)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
+            message += `Ch 129-192: ${[...frame.subarray(129, 193)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
+            message += `Ch 193-256: ${[...frame.subarray(193, 257)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
+            message += `Ch 257-320: ${[...frame.subarray(257, 321)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
+            message += `Ch 321-384: ${[...frame.subarray(321, 385)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
+            message += `Ch 385-448: ${[...frame.subarray(385, 449)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
+            message += `Ch 449-512: ${[...frame.subarray(449, 513)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
             message += '\n';
 
             console.log(message);

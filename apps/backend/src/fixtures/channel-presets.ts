@@ -39,8 +39,6 @@ const fixtureChannelNames: Record<FixtureChannelPreset, string> = {
   [FixtureChannelPreset.Custom]: 'Custom',
 };
 
-export const fixtureChannelPresetsName = (
-  preset: FixtureChannelPreset,
-): string => {
+export const fixtureChannelPresetsName = (preset: FixtureChannelPreset): string => {
   return fixtureChannelNames[preset];
 };

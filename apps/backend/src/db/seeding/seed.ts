@@ -21,9 +21,7 @@ async function main() {
   for (const value of Object.values(schema)) {
     if (value instanceof PgTable) {
       const name = getTableName(value);
-      await db.execute(
-        sql.raw(`ALTER TABLE "${name}" ALTER COLUMN id RESTART WITH 1`),
-      );
+      await db.execute(sql.raw(`ALTER TABLE "${name}" ALTER COLUMN id RESTART WITH 1`));
     }
   }
 

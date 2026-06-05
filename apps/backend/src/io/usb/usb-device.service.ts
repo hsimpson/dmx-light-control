@@ -24,14 +24,12 @@ export class UsbDeviceService {
     }
   }
 
-  public async getDeviceBySerial(
-    serial: string,
-  ): Promise<WebUSBDevice | undefined> {
+  public async getDeviceBySerial(serial: string): Promise<WebUSBDevice | undefined> {
     const devices = await this.getConnectedDevices();
     if (!devices) {
       return undefined;
     }
-    const device = devices.find((d) => d.serialNumber === serial);
+    const device = devices.find(d => d.serialNumber === serial);
     return device;
   }
 
