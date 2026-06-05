@@ -1,6 +1,7 @@
 {
   "AddFixturePage.title": "Fixture hinzufügen",
   "EditFixturePage.title": "Fixture bearbeiten",
+  "FixtureForm.addChannelMode": "Add channel mode",
   "FixtureForm.channelAssignments": "Kanalzuordnungen",
   "FixtureForm.channelModes": "Kanalmodi:",
   "FixtureForm.channelsForMode": "Channels for mode:",
@@ -16,5 +17,7 @@
   "FixtureList.add": "Fixture hinzufügen",
   "FixtureList.title": "Fixtureliste",
   "GlobalMessages.Cancel": "Abbrechen",
-  "GlobalMessages.Save": "Speichern"
+  "GlobalMessages.Error": "Fehler!",
+  "GlobalMessages.Save": "Speichern",
+  "SelectableList.itemAlreadyExists": "Eintrag existiert schon"
 }

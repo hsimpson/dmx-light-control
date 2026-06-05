@@ -9,4 +9,12 @@ export const globalMessages = defineMessages({
     id: 'GlobalMessages.Save',
     defaultMessage: 'Save',
   },
+  error: {
+    id: 'GlobalMessages.Error',
+    defaultMessage: 'Error!',
+  },
+  warning: {
+    id: 'GlobalMessages.Warning',
+    defaultMessage: 'Warning!',
+  },
 });

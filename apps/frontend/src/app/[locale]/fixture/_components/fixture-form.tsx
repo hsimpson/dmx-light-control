@@ -1,38 +1,17 @@
 'use client';
 
-import { ICON_SIZE } from '@/lib/constants';
-import { globalMessages } from '@/lib/global-messages';
+import SelectableList from '@/components/selectable-list/selectable-list';
+import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import {
-  FixtureChannelPreset,
-  GetFixturesQuery,
-  GetVendorsQuery,
-} from '@/shared/types/graphql/graphql';
-import {
-  Button,
-  Chip,
-  Combobox,
-  Flex,
-  InputBase,
-  List,
-  Text,
-  TextInput,
-  useCombobox,
-} from '@mantine/core';
+import { FixtureChannelPreset, GetFixturesQuery, GetVendorsQuery } from '@/shared/types/graphql/graphql';
+import { Button, Combobox, Flex, InputBase, List, Text, TextInput, useCombobox } from '@mantine/core';
 import { schemaResolver, useForm } from '@mantine/form';
-import {
-  ApertureIcon,
-  LightbulbIcon,
-  PencilIcon,
-  PlusCircleIcon,
-  RectangleIcon,
-} from '@phosphor-icons/react';
+import { ApertureIcon, LightbulbIcon, PencilIcon, RectangleIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { z } from 'zod/v4';
 
 type Fixture = GetFixturesQuery['fixtures'][number];
-type ChannelAssignment =
-  GetFixturesQuery['fixtures'][number]['channelAssignments'];
+type ChannelAssignment = GetFixturesQuery['fixtures'][number]['channelAssignments'];
 type Channel = ChannelAssignment[number]['channels'][number];
 
 type FixtureFormProps = {
@@ -40,13 +19,8 @@ type FixtureFormProps = {
   vendors: GetVendorsQuery['vendors'];
 };
 
-const getChannelsForMode = (
-  channelMode: string,
-  channelAssignments: ChannelAssignment,
-): Channel[] => {
-  const assignment = channelAssignments.find(
-    (a) => a.channelMode === channelMode,
-  );
+const getChannelsForMode = (channelMode: string, channelAssignments: ChannelAssignment): Channel[] => {
+  const assignment = channelAssignments.find(a => a.channelMode === channelMode);
   return assignment?.channels ?? [];
 };
 
@@ -93,10 +67,10 @@ const getChannelItem = (channel: Channel) => {
       icon = <RectangleIcon size={size} weight="duotone" color={color} />;
       break;
     case 'dimmer':
-      icon = <LightbulbIcon size={size} weight="duotone" color="yellow" />;
+      icon = <LightbulbIcon size={size} weight="duotone" color="orange" />;
       break;
     case 'shutter':
-      icon = <ApertureIcon size={size} weight="duotone" color="yellow" />;
+      icon = <ApertureIcon size={size} weight="duotone" color="orange" />;
       break;
   }
   return (
@@ -109,7 +83,7 @@ const getChannelItem = (channel: Channel) => {
 const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const { t } = useTranslation();
 
-  const vendorNames = vendors.map((vendor) => vendor.name);
+  const vendorNames = vendors.map(vendor => vendor.name);
 
   const schema = z.object({
     fixtureName: z.string().min(3, {
@@ -131,7 +105,7 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
     onDropdownClose: () => {
       combobox.resetSelectedOption();
     },
-    onDropdownOpen: (eventSource) => {
+    onDropdownOpen: eventSource => {
       if (eventSource === 'keyboard') {
         combobox.selectActiveOption();
       } else {
@@ -141,30 +115,20 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   });
 
   const [comboBoxData, setComboBoxData] = useState(vendorNames);
-  const [comboBoxValue, setComboBoxValue] = useState(
-    fixture?.vendor.name ?? null,
-  );
-  const [comboBoxSearch, setComboBoxSearch] = useState(
-    fixture?.vendor.name ?? '',
-  );
+  const [comboBoxValue, setComboBoxValue] = useState(fixture?.vendor.name ?? null);
+  const [comboBoxSearch, setComboBoxSearch] = useState(fixture?.vendor.name ?? '');
 
-  let initialChannelMode: string | null = null;
-  if (fixture?.channelAssignments.length) {
-    initialChannelMode = fixture.channelAssignments[0]?.channelMode ?? null;
-  }
+  const channelAssignments = fixture?.channelAssignments ?? [];
 
-  const [channelMode, setChannelMode] = useState<string | null>(
-    initialChannelMode,
-  );
+  const [channelModes, setChannelModes] = useState(channelAssignments.map(a => a.channelMode));
+  const [selectedChannelMode, setSelectedChannelMode] = useState(channelModes[0] ?? null);
 
-  const exactOptionMatch = comboBoxData.some((item) => item === comboBoxSearch);
+  const exactOptionMatch = comboBoxData.some(item => item === comboBoxSearch);
   const filteredOptions = exactOptionMatch
     ? comboBoxData
-    : comboBoxData.filter((item) =>
-        item.toLowerCase().includes(comboBoxSearch.toLowerCase().trim()),
-      );
+    : comboBoxData.filter(item => item.toLowerCase().includes(comboBoxSearch.toLowerCase().trim()));
 
-  const comboBoxOptions = filteredOptions.map((item) => (
+  const comboBoxOptions = filteredOptions.map(item => (
     <Combobox.Option value={item} key={item} active={item === comboBoxValue}>
       {item}
     </Combobox.Option>
@@ -189,11 +153,11 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
         <Combobox
           store={combobox}
           withinPortal={false}
-          onOptionSubmit={(val) => {
+          onOptionSubmit={val => {
             let selectedValue: string;
 
             if (val === '$create') {
-              setComboBoxData((current) => [...current, comboBoxSearch]);
+              setComboBoxData(current => [...current, comboBoxSearch]);
               setComboBoxValue(comboBoxSearch);
               selectedValue = comboBoxSearch;
             } else {
@@ -211,7 +175,7 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
             <InputBase
               rightSection={<Combobox.Chevron />}
               value={comboBoxSearch}
-              onChange={(event) => {
+              onChange={event => {
                 combobox.openDropdown();
                 combobox.updateSelectedOptionIndex();
                 setComboBoxSearch(event.currentTarget.value);
@@ -244,9 +208,7 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
             <Combobox.Options>
               {comboBoxOptions}
               {!exactOptionMatch && comboBoxSearch.trim().length > 0 && (
-                <Combobox.Option value="$create">
-                  + Create {comboBoxSearch}
-                </Combobox.Option>
+                <Combobox.Option value="$create">+ Create {comboBoxSearch}</Combobox.Option>
               )}
             </Combobox.Options>
           </Combobox.Dropdown>
@@ -275,40 +237,25 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
 
         <Flex direction="row" gap="5rem">
           <Flex direction="column" gap="md">
-            <Text size="sm">
-              {t({
-                id: 'FixtureForm.channelModes',
-                defaultMessage: 'Channel modes:',
-              })}
-            </Text>
-            <Button
-              rightSection={
-                <PlusCircleIcon size={ICON_SIZE} weight="duotone" />
+            <SelectableList
+              title={
+                <Text size="sm">
+                  {t({
+                    id: 'FixtureForm.channelModes',
+                    defaultMessage: 'Channel modes:',
+                  })}
+                </Text>
               }
-            >
-              {t({
+              addNewItemPlaceholder={t({
                 id: 'FixtureForm.addChannelMode',
                 defaultMessage: 'Add channel mode',
               })}
-            </Button>
-            <Chip.Group
-              multiple={false}
-              value={channelMode?.toString()}
-              onChange={(val) => {
-                setChannelMode(val);
-              }}
-            >
-              <Flex direction="column" gap="md">
-                {(fixture?.channelAssignments ?? []).map((assignment) => (
-                  <Chip
-                    key={assignment.channelMode}
-                    value={assignment.channelMode.toString()}
-                  >
-                    {assignment.channelMode} Channels
-                  </Chip>
-                ))}
-              </Flex>
-            </Chip.Group>
+              items={channelModes}
+              sorted
+              selectedItem={selectedChannelMode ?? undefined}
+              onSelectedItemChange={setSelectedChannelMode}
+              onItemsChange={setChannelModes}
+            />
           </Flex>
 
           <Flex direction="column" gap="md">
@@ -320,19 +267,14 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
             </Text>
             <List withPadding listStyleType="none">
               {getChannelsForMode(
-                channelMode ?? '', // Fallback to empty string if channelMode is null
+                selectedChannelMode ?? '', // Fallback to empty string if channelMode is null
                 fixture?.channelAssignments ?? [],
-              ).map((channel) => getChannelItem(channel))}
+              ).map(channel => getChannelItem(channel))}
             </List>
           </Flex>
         </Flex>
 
-        <Button
-          type="submit"
-          mt="sm"
-          w="fit-content"
-          style={{ alignSelf: 'flex-end' }}
-        >
+        <Button type="submit" mt="sm" w="fit-content" style={{ alignSelf: 'flex-end' }}>
           {t(globalMessages.save)}
         </Button>
       </Flex>

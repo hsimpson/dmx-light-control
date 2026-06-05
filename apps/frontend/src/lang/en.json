@@ -1,6 +1,7 @@
 {
   "AddFixturePage.title": "Add Fixture",
   "EditFixturePage.title": "Edit Fixture",
+  "FixtureForm.addChannelMode": "Add channel mode",
   "FixtureForm.channelAssignments": "Channel assignments",
   "FixtureForm.channelModes": "Channel modes:",
   "FixtureForm.channelsForMode": "Channels for mode:",
@@ -16,5 +17,8 @@
   "FixtureList.add": "Add Fixture",
   "FixtureList.title": "Fixture list",
   "GlobalMessages.Cancel": "Cancel",
-  "GlobalMessages.Save": "Save"
+  "GlobalMessages.Error": "Error!",
+  "GlobalMessages.Save": "Save",
+  "GlobalMessages.Warning": "Warning!",
+  "SelectableList.itemAlreadyExists": "Item already exists"
 }

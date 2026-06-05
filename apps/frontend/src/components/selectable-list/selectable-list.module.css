@@ -1,0 +1,31 @@
+.list {
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-md);
+  overflow: hidden;
+
+  & :global(.mantine-List-item) {
+    padding: var(--mantine-spacing-md);
+    cursor: pointer;
+  }
+
+  & :global(.mantine-List-item:not(:first-of-type)) {
+    border-top: 1px solid var(--mantine-color-default-border);
+  }
+
+  & :global(.mantine-List-itemWrapper) {
+    width: 100%;
+  }
+
+  & :global(.mantine-List-itemLabel) {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--mantine-spacing-md);
+  }
+}
+
+.selectedItem {
+  background-color: var(--mantine-primary-color-light-hover);
+}
