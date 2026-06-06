@@ -20,24 +20,17 @@ const port = process.env.BACKEND_PORT ?? '3000';
 const url = `http://localhost:${port}/graphql`;
 
 console.log(`Checking if backend is reachable at ${url} ...`);
-await waitOn({ resources: [`tcp:localhost:${port}`], timeout: 5000 }).catch(
-  () => {
-    console.error(
-      `Backend not reachable on port ${port}. Start it first with: nx run backend:serve`,
-    );
-    process.exit(1);
-  },
-);
+await waitOn({ resources: [`tcp:localhost:${port}`], timeout: 5000 }).catch(() => {
+  console.error(`Backend not reachable on port ${port}. Start it first with: nx run backend:serve`);
+  process.exit(1);
+});
 
 const schema = await loadSchema(url, {
   loaders: [new UrlLoader()],
   sort: true,
 });
 
-const schemaPath = join(
-  dirname(fileURLToPath(import.meta.url)),
-  'schema.graphql',
-);
+const schemaPath = join(dirname(fileURLToPath(import.meta.url)), 'schema.graphql');
 rmSync(schemaPath, { force: true });
 writeFileSync(schemaPath, printSchema(schema));
 
@@ -64,9 +57,7 @@ function buildSelectionSet(type: GraphQLType, depth = 0, maxDepth = 4): string {
   const indent = '  '.repeat(depth + 2);
   const lines: string[] = [];
 
-  for (const field of Object.values(
-    (namedType as GraphQLObjectType).getFields(),
-  )) {
+  for (const field of Object.values((namedType as GraphQLObjectType).getFields())) {
     const fieldNamedType = getNamedType(field.type);
     if (isObjectType(fieldNamedType)) {
       const nested = buildSelectionSet(field.type, depth + 1, maxDepth);
@@ -90,12 +81,8 @@ function buildOperation(
   operationType: 'query' | 'mutation',
 ): string {
   const args = field.args;
-  const opArgs = args.length
-    ? `(${args.map((a) => `$${a.name}: ${String(a.type)}`).join(', ')})`
-    : '';
-  const fieldArgs = args.length
-    ? `(${args.map((a) => `${a.name}: $${a.name}`).join(', ')})`
-    : '';
+  const opArgs = args.length ? `(${args.map(a => `$${a.name}: ${String(a.type)}`).join(', ')})` : '';
+  const fieldArgs = args.length ? `(${args.map(a => `${a.name}: $${a.name}`).join(', ')})` : '';
 
   const selectionSet = buildSelectionSet(field.type);
   if (selectionSet) {
@@ -117,10 +104,7 @@ function buildDefaultValue(type: GraphQLType): unknown {
 
   const obj: Record<string, unknown> = {};
   for (const field of Object.values(type.getFields())) {
-    obj[field.name] =
-      field.defaultValue !== undefined
-        ? field.defaultValue
-        : buildDefaultValue(field.type);
+    obj[field.name] = field.defaultValue !== undefined ? field.defaultValue : buildDefaultValue(field.type);
   }
   return obj;
 }
@@ -130,10 +114,7 @@ function buildVariables(field: GraphQLField<unknown, unknown>): string {
   if (!field.args.length) return '{}';
   const vars: Record<string, unknown> = {};
   for (const arg of field.args) {
-    vars[arg.name] =
-      arg.defaultValue !== undefined
-        ? arg.defaultValue
-        : buildDefaultValue(arg.type);
+    vars[arg.name] = arg.defaultValue !== undefined ? arg.defaultValue : buildDefaultValue(arg.type);
   }
   return JSON.stringify(vars, null, 2);
 }
@@ -146,9 +127,7 @@ function generateBrunoRequest(
   seq: number,
 ): string {
   // Indent each line so YAML block-scalar content is properly nested (6 spaces).
-  const queryBlock = buildOperation(fieldName, field, operationType)
-    .split('\n')
-    .join('\n      ');
+  const queryBlock = buildOperation(fieldName, field, operationType).split('\n').join('\n      ');
   const variablesBlock = buildVariables(field).split('\n').join('\n      ');
 
   return `info:
@@ -186,10 +165,7 @@ function writeFolderYml(dir: string, name: string, seq: number): void {
 // Collection generation
 // ---------------------------------------------------------------------------
 
-const collectionDir = join(
-  dirname(fileURLToPath(import.meta.url)),
-  'collection',
-);
+const collectionDir = join(dirname(fileURLToPath(import.meta.url)), 'collection');
 
 // --- GraphQL parent folder ---
 const graphqlDir = join(collectionDir, 'graphql');
@@ -206,14 +182,9 @@ if (queryType) {
 
   const fields = Object.values(queryType.getFields());
   fields.forEach((field, i) => {
-    writeFileSync(
-      join(queriesDir, `${field.name}.yml`),
-      generateBrunoRequest(field.name, field, 'query', i + 1),
-    );
+    writeFileSync(join(queriesDir, `${field.name}.yml`), generateBrunoRequest(field.name, field, 'query', i + 1));
   });
-  console.log(
-    `Generated ${fields.length} quer${fields.length === 1 ? 'y' : 'ies'}`,
-  );
+  console.log(`Generated ${fields.length} quer${fields.length === 1 ? 'y' : 'ies'}`);
 }
 
 // --- Mutations ---
@@ -225,14 +196,9 @@ if (mutationType) {
 
   const fields = Object.values(mutationType.getFields());
   fields.forEach((field, i) => {
-    writeFileSync(
-      join(mutationsDir, `${field.name}.yml`),
-      generateBrunoRequest(field.name, field, 'mutation', i + 1),
-    );
+    writeFileSync(join(mutationsDir, `${field.name}.yml`), generateBrunoRequest(field.name, field, 'mutation', i + 1));
   });
-  console.log(
-    `Generated ${fields.length} mutation${fields.length === 1 ? '' : 's'}`,
-  );
+  console.log(`Generated ${fields.length} mutation${fields.length === 1 ? '' : 's'}`);
 }
 
 console.log('Done - Bruno collection written to', collectionDir);

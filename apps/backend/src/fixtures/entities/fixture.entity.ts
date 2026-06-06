@@ -16,7 +16,7 @@ const fixture = pgTable('fixtures', {
 });
 
 export const fixtureRelations = relations(fixture, ({ one, many }) => ({
-  vendor: one(fixtureVendor, {
+  fixtureVendor: one(fixtureVendor, {
     fields: [fixture.vendorId],
     references: [fixtureVendor.id],
   }),

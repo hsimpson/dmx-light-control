@@ -12,8 +12,8 @@ graphql:
       query {
         vendors {
           createdAt
-          externalId
           name
+          publicId
           updatedAt
         }
       }

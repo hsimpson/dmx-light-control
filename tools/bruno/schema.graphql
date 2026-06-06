@@ -1,28 +1,3 @@
-type ChannelAssignmentDto {
-  """The channel mode of the channel assignment"""
-  channelMode: String!
-
-  """The channels of the channel assignment"""
-  channels: [ChannelDto!]!
-}
-
-type ChannelDto {
-  """The number of the channel assignment"""
-  channelNumber: Int!
-
-  """The date and time when the entity was created"""
-  createdAt: DateTime!
-
-  """The unique identifier of the entity"""
-  externalId: UUID!
-
-  """The preset of the channel assignment"""
-  preset: FixtureChannelPreset!
-
-  """The date and time when the entity was last updated"""
-  updatedAt: DateTime!
-}
-
 input ChannelValuesInput {
   """The list of DMX channel values"""
   dmxValues: [DmxValueInput!]! = [{channel: 1, value: 127}]
@@ -41,6 +16,57 @@ input DmxValueInput {
   value: Int!
 }
 
+type FixtureChannelAssignmentDto {
+  """The number of the channel assignment"""
+  channelNumber: Int!
+
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The public id, unique identifier of the entity"""
+  publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
+}
+
+type FixtureChannelDefinitionDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The channel assignments of the channel mode"""
+  fixtureChannelAssignments: [FixtureChannelAssignmentDto!]!
+
+  """The name of the channel definition"""
+  name: String!
+
+  """The preset of the channel assignment"""
+  preset: FixtureChannelPreset!
+
+  """The public id, unique identifier of the entity"""
+  publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
+}
+
+type FixtureChannelModeDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The channel assignments of the channel mode"""
+  fixtureChannelAssignments: [FixtureChannelAssignmentDto!]!
+
+  """The name of the channel mode"""
+  name: String!
+
+  """The public id, unique identifier of the entity"""
+  publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
+}
+
 """The preset of a fixture channel assignment"""
 enum FixtureChannelPreset {
   Custom
@@ -56,24 +82,41 @@ enum FixtureChannelPreset {
   ShutterStrobeSlowFast
 }
 
-type FixtureResponseDto {
-  """The channel assignments of the fixture"""
-  channelAssignments: [ChannelAssignmentDto!]!
-
+type FixtureDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
 
-  """The unique identifier of the entity"""
-  externalId: UUID!
+  """The channel definitions of the fixture"""
+  fixtureChannelDefinitions: [FixtureChannelDefinitionDto!]!
+
+  """The channel modes of the fixture"""
+  fixtureChannelModes: [FixtureChannelModeDto!]!
+
+  """The vendor of the fixture"""
+  fixtureVendor: FixtureVendorDto!
 
   """The name of the fixture"""
   name: String!
 
+  """The public id, unique identifier of the entity"""
+  publicId: UUID!
+
   """The date and time when the entity was last updated"""
   updatedAt: DateTime!
+}
 
-  """The vendor of the fixture"""
-  vendor: VendorResponseDto!
+type FixtureVendorDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The name of the vendor"""
+  name: String!
+
+  """The public id, unique identifier of the entity"""
+  publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
 }
 
 type MidiDeviceDto {
@@ -113,33 +156,19 @@ input OpenPortsInput {
 
 type Query {
   """get fixture by external id"""
-  fixture(fixtureId: UUID!): FixtureResponseDto
+  fixture(fixtureId: UUID!): FixtureDto
 
   """get all fixtures"""
-  fixtures: [FixtureResponseDto!]!
+  fixtures: [FixtureDto!]!
 
   """Get the list of MIDI input and output devices"""
   getMidiDevices: MidiDevicesDto!
 
   """get all fixture vendors"""
-  vendors: [VendorResponseDto!]!
+  vendors: [FixtureVendorDto!]!
 }
 
 """
 A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier.
 """
 scalar UUID
-
-type VendorResponseDto {
-  """The date and time when the entity was created"""
-  createdAt: DateTime!
-
-  """The unique identifier of the entity"""
-  externalId: UUID!
-
-  """The name of the vendor"""
-  name: String!
-
-  """The date and time when the entity was last updated"""
-  updatedAt: DateTime!
-}

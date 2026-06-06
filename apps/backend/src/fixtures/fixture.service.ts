@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Fixture } from './entities';
-import { ChannelAssignment } from './entities/channel-assignment.entity';
-import { Vendor } from './entities/vendor.entity';
+import { Fixture, FixtureChannelDefinition, FixtureChannelMode, FixtureVendor } from './entities';
 import { FixtureRepository } from './repositories/fixture.repository';
 import { VendorRepository } from './repositories/vendor.repository';
 
-export type FixtureWithRelations = Fixture & {
-  vendor?: Vendor;
-  channelAssignments?: ChannelAssignment[];
+type FixtureWithRelations = Fixture & {
+  fixtureVendor?: FixtureVendor;
+  fixtureChannelDefinitions?: FixtureChannelDefinition[];
+  fixtureChannelModes?: FixtureChannelMode[];
 };
 
 @Injectable()
@@ -23,13 +22,21 @@ export class FixtureService {
 
   public async getAllFixtures(): Promise<FixtureWithRelations[]> {
     return this.fixtureRepository.findMany({
-      with: { vendor: true, channelAssignments: true },
+      with: {
+        fixtureVendor: true,
+        fixtureChannelDefinitions: { with: { fixtureChannelAssignments: true } },
+        fixtureChannelModes: { with: { fixtureChannelAssignments: true } },
+      },
     });
   }
 
-  public async getFixtureByExternalId(externalId: string): Promise<FixtureWithRelations | undefined> {
-    return this.fixtureRepository.findOneByExternalId(externalId, {
-      with: { vendor: true, channelAssignments: true },
+  public async getFixtureByPublicId(publicId: string): Promise<FixtureWithRelations | undefined> {
+    return this.fixtureRepository.findOneByPublicId(publicId, {
+      with: {
+        fixtureVendor: true,
+        fixtureChannelDefinitions: { with: { fixtureChannelAssignments: true } },
+        fixtureChannelModes: { with: { fixtureChannelAssignments: true } },
+      },
     });
   }
 }

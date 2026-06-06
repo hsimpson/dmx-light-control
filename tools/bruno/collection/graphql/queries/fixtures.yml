@@ -11,26 +11,41 @@ graphql:
     query: |
       query {
         fixtures {
-          channelAssignments {
-            channelMode
-            channels {
+          createdAt
+          fixtureChannelDefinitions {
+            createdAt
+            fixtureChannelAssignments {
               channelNumber
               createdAt
-              externalId
-              preset
+              publicId
               updatedAt
             }
-          }
-          createdAt
-          externalId
-          name
-          updatedAt
-          vendor {
-            createdAt
-            externalId
             name
+            preset
+            publicId
             updatedAt
           }
+          fixtureChannelModes {
+            createdAt
+            fixtureChannelAssignments {
+              channelNumber
+              createdAt
+              publicId
+              updatedAt
+            }
+            name
+            publicId
+            updatedAt
+          }
+          fixtureVendor {
+            createdAt
+            name
+            publicId
+            updatedAt
+          }
+          name
+          publicId
+          updatedAt
         }
       }
     variables: |
