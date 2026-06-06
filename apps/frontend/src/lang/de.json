@@ -19,5 +19,6 @@
   "GlobalMessages.Cancel": "Abbrechen",
   "GlobalMessages.Error": "Fehler!",
   "GlobalMessages.Save": "Speichern",
+  "LanguageSwitcher.language": "Sprache",
   "SelectableList.itemAlreadyExists": "Eintrag existiert schon"
 }

@@ -20,5 +20,6 @@
   "GlobalMessages.Error": "Error!",
   "GlobalMessages.Save": "Save",
   "GlobalMessages.Warning": "Warning!",
+  "LanguageSwitcher.language": "Language",
   "SelectableList.itemAlreadyExists": "Item already exists"
 }
