@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1779565802437,
-      "tag": "20260523195002_basic_migration",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1780527681751,
-      "tag": "20260603230121_channel_mode_string",
+      "when": 1780747435917,
+      "tag": "20260606120355_fixtures_tables",
       "breakpoints": true
     }
   ]

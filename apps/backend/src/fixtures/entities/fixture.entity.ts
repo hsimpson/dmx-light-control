@@ -1,29 +1,27 @@
 import { pk, timestamps } from '@/db/columns.helpers';
 import { relations } from 'drizzle-orm';
-import { integer, pgTable, unique, varchar } from 'drizzle-orm/pg-core';
-import channelAssignment from './channel-assignment.entity';
-import vendor from './vendor.entity';
+import { integer, pgTable, varchar } from 'drizzle-orm/pg-core';
+import fixtureChannelDefinition from './fixture-channel-definition.entity';
+import fixtureChannelMode from './fixture-channel-mode.entity';
+import fixtureVendor from './fixture-vendor.entity';
 
-const fixture = pgTable(
-  'fixtures',
-  {
-    ...pk,
-    vendorId: integer()
-      .notNull()
-      .references(() => vendor.id),
-    name: varchar({ length: 255 }).notNull().unique(),
+const fixture = pgTable('fixtures', {
+  ...pk,
+  vendorId: integer()
+    .notNull()
+    .references(() => fixtureVendor.id),
+  name: varchar({ length: 255 }).notNull().unique(),
 
-    ...timestamps,
-  },
-  table => [unique().on(table.externalId)],
-);
+  ...timestamps,
+});
 
 export const fixtureRelations = relations(fixture, ({ one, many }) => ({
-  vendor: one(vendor, {
+  vendor: one(fixtureVendor, {
     fields: [fixture.vendorId],
-    references: [vendor.id],
+    references: [fixtureVendor.id],
   }),
-  channelAssignments: many(channelAssignment),
+  fixtureChannelDefinitions: many(fixtureChannelDefinition),
+  fixtureChannelModes: many(fixtureChannelMode),
 }));
 
 export type Fixture = typeof fixture.$inferSelect;

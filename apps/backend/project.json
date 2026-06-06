@@ -29,10 +29,7 @@
       "dependsOn": ["build"],
       "cache": true,
       "executor": "@nx/js:prune-lockfile",
-      "outputs": [
-        "{workspaceRoot}/dist/apps/backend/package.json",
-        "{workspaceRoot}/dist/apps/backend/pnpm-lock.yaml"
-      ],
+      "outputs": ["{workspaceRoot}/dist/apps/backend/package.json", "{workspaceRoot}/dist/apps/backend/pnpm-lock.yaml"],
       "options": {
         "buildTarget": "build"
       }
@@ -102,6 +99,13 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "tsx src/db/seeding/seed.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "drizzle-studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit studio --config=./src/db/drizzle.config.ts",
         "cwd": "{projectRoot}"
       }
     }

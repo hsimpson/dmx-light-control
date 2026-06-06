@@ -1,6 +1,7 @@
 # directories
 .nx/cache
 .nx/workspace-data
+.VSCodeCounter
 dist/
 node_modules/
 

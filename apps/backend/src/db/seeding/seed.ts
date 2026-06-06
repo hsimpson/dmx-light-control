@@ -5,9 +5,12 @@ import { getTableName, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { PgTable } from 'drizzle-orm/pg-core';
 import { reset } from 'drizzle-seed';
-import { channelAssignments } from './data/channel-assignment';
-import { fixtures } from './data/fixtures';
-import { vendors } from './data/vendors';
+import { fixtureChannelAssignments } from './data/fixtures/fixture-channel-assignment';
+import { fixtureChannelDefinitions } from './data/fixtures/fixture-channel-definitions';
+import { fixtureChannelModes } from './data/fixtures/fixture-channel-modes';
+import { fixtureChannelRanges } from './data/fixtures/fixture-channel-ranges';
+import { fixtureVendors } from './data/fixtures/fixture-vendors';
+import { fixtures } from './data/fixtures/fixtures';
 
 async function main() {
   const db = drizzle({
@@ -25,9 +28,13 @@ async function main() {
     }
   }
 
-  await db.insert(schema.vendor).values(vendors);
+  // fixture data
+  await db.insert(schema.fixtureVendor).values(fixtureVendors);
   await db.insert(schema.fixture).values(fixtures);
-  await db.insert(schema.channelAssignment).values(channelAssignments);
+  await db.insert(schema.fixtureChannelMode).values(fixtureChannelModes);
+  await db.insert(schema.fixtureChannelDefinition).values(fixtureChannelDefinitions);
+  await db.insert(schema.fixtureChannelRange).values(fixtureChannelRanges);
+  await db.insert(schema.fixtureChannelAssignment).values(fixtureChannelAssignments);
 }
 
 void main();

@@ -40,15 +40,15 @@ export abstract class BaseRepository<
     this.queryDb = db as unknown as NodePgDatabase<Schema>;
   }
 
-  public async findOneByExternalId<TConfig extends OneConfig<TTableName>>(
-    externalId: string,
+  public async findOneByPublicId<TConfig extends OneConfig<TTableName>>(
+    publicId: string,
     config?: TConfig,
   ): Promise<QueryResult<TTableName, TConfig> | undefined> {
     // @ts-expect-error - Drizzle generic relational query type limitation
     return this.queryDb.query[this.tableName].findFirst({
       ...config,
-      // @ts-expect-error - All tables have externalId from pk spread
-      where: (fields, { eq }) => eq(fields.externalId, externalId),
+      // @ts-expect-error - All tables have publicId from pk spread
+      where: (fields, { eq }) => eq(fields.publicId, publicId),
     });
   }
 

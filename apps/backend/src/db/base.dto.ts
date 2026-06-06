@@ -4,9 +4,9 @@ import { GraphQLUUID } from 'graphql-scalars';
 @ObjectType()
 export abstract class BaseDto {
   @Field(() => GraphQLUUID, {
-    description: 'The unique identifier of the entity',
+    description: 'The public id, unique identifier of the entity',
   })
-  public externalId: string;
+  public publicId: string;
 
   @Field({ description: 'The date and time when the entity was created' })
   public createdAt: Date;

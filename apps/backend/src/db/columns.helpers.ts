@@ -13,8 +13,8 @@ export const timestamps: {
 
 export const pk: {
   id: ReturnType<typeof integer>;
-  externalId: ReturnType<typeof uuid>;
+  publicId: ReturnType<typeof uuid>;
 } = {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  externalId: uuid().notNull().defaultRandom(),
+  publicId: uuid().notNull().defaultRandom(),
 };
