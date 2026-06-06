@@ -1,31 +1,49 @@
-fragment VendorFields on VendorResponseDto {
-  externalId
+fragment VendorFields on FixtureVendorDto {
+  publicId
   name
   createdAt
   updatedAt
 }
 
-fragment ChannelAssignmentFields on ChannelAssignmentDto {
-  channelMode
-  channels {
-    channelNumber
-    createdAt
-    externalId
-    preset
-    updatedAt
-  }
+fragment FixtureChannelAssignmentFields on FixtureChannelAssignmentDto {
+  publicId
+  channelNumber
+  createdAt
+  updatedAt
 }
 
-fragment FixtureFields on FixtureResponseDto {
-  externalId
+fragment FixtureChannelDefinitionFields on FixtureChannelDefinitionDto {
+  publicId
+  name
+  preset
+  createdAt
+  updatedAt
+}
+
+fragment FixtureChannelModeFields on FixtureChannelModeDto {
+  publicId
+  name
+  fixtureChannelAssignments {
+    ...FixtureChannelAssignmentFields
+  }
+  createdAt
+  updatedAt
+}
+
+fragment FixtureFields on FixtureDto {
+  publicId
   name
 
-  vendor {
-    ...VendorFields
+  fixtureChannelDefinitions {
+    ...FixtureChannelDefinitionFields
   }
 
-  channelAssignments {
-    ...ChannelAssignmentFields
+  fixtureChannelModes {
+    ...FixtureChannelModeFields
+  }
+
+  fixtureVendor {
+    ...VendorFields
   }
 
   createdAt

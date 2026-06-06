@@ -24,7 +24,7 @@ export class FixtureService {
     return this.fixtureRepository.findMany({
       with: {
         fixtureVendor: true,
-        fixtureChannelDefinitions: { with: { fixtureChannelAssignments: true } },
+        fixtureChannelDefinitions: { with: { fixtureChannelRanges: true, fixtureChannelAssignments: true } },
         fixtureChannelModes: { with: { fixtureChannelAssignments: true } },
       },
     });
@@ -34,7 +34,7 @@ export class FixtureService {
     return this.fixtureRepository.findOneByPublicId(publicId, {
       with: {
         fixtureVendor: true,
-        fixtureChannelDefinitions: { with: { fixtureChannelAssignments: true } },
+        fixtureChannelDefinitions: { with: { fixtureChannelRanges: true, fixtureChannelAssignments: true } },
         fixtureChannelModes: { with: { fixtureChannelAssignments: true } },
       },
     });

@@ -25,12 +25,12 @@ const FixtureList = () => {
       withColumnBorders
       striped
       highlightOnHover
-      idAccessor="externalId"
+      idAccessor="publicId"
       records={fixtures}
       fetching={loading}
       columns={[
         {
-          accessor: 'vendor.name',
+          accessor: 'fixtureVendor.name',
           title: t({
             id: 'FixtureList.Table.vendor',
             defaultMessage: 'Vendor',
@@ -44,19 +44,19 @@ const FixtureList = () => {
           }),
         },
         {
-          accessor: 'channelAssignments',
+          accessor: 'fixtureChannelModes',
           title: t({
             id: 'FixtureList.Table.channelsModes',
             defaultMessage: 'Channel modes',
           }),
-          render: ({ channelAssignments }) => {
-            const modes = channelAssignments.map(ca => ca.channelMode);
+          render: ({ fixtureChannelModes }) => {
+            const modes = fixtureChannelModes.map(cm => cm.name);
             return modes.sort().join(', ');
           },
         },
       ]}
       onRowClick={record => {
-        router.push(`/fixture/${record.record.externalId}`);
+        router.push(`/fixture/${record.record.publicId}`);
       }}
     />
   );
