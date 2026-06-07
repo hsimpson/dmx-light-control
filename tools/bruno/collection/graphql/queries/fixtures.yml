@@ -20,6 +20,14 @@ graphql:
               publicId
               updatedAt
             }
+            fixtureChannelRanges {
+              createdAt
+              description
+              dmxEnd
+              dmxStart
+              publicId
+              updatedAt
+            }
             name
             preset
             publicId

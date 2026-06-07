@@ -7,30 +7,36 @@ import { ListPlusIcon, TrashIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import styles from './selectable-list.module.css';
 
-type SelectableListProps = {
+type SelectableListProps<ItemType> = {
   title: React.ReactNode;
   addNewItemPlaceholder: string;
-  items: string[];
-  sorted?: boolean;
-  selectedItem?: string;
-  onSelectedItemChange?: (item: string | null) => void;
-  onItemsChange?: (items: string[]) => void;
+  items: ItemType[];
+  accessor: keyof ItemType;
+  keyAccessor: keyof ItemType;
+  selectedItem?: ItemType;
+  itemRenderer?: (item: ItemType) => React.ReactNode;
+  onSelectedItemChange?: (item?: ItemType) => void;
+  onItemAdd?: (itemToAdd: string) => void;
+  onItemRemove?: (itemToRemove: ItemType) => void;
 };
 
-const SelectableList = ({
+const SelectableList = <ItemType,>({
   title,
   addNewItemPlaceholder,
   items,
-  sorted,
+  accessor,
+  keyAccessor,
+  itemRenderer,
   selectedItem,
-  onSelectedItemChange: onSelectedItemChange,
-  onItemsChange,
-}: SelectableListProps) => {
+  onSelectedItemChange,
+  onItemAdd,
+  onItemRemove,
+}: SelectableListProps<ItemType>) => {
   const [addItem, setAddItem] = useState('');
   const { t } = useTranslation();
 
   const handleAddItem = (itemToAdd: string) => {
-    if (items.includes(itemToAdd)) {
+    if (items.some(item => item[accessor] === itemToAdd)) {
       notifications.show({
         color: 'red',
         title: t(globalMessages.error),
@@ -39,18 +45,16 @@ const SelectableList = ({
       return;
     }
 
-    const newItems = sorted ? [...items, itemToAdd].sort() : [...items, itemToAdd];
     setAddItem('');
-    handleSelectedItemChange(itemToAdd);
-    if (onItemsChange) {
-      onItemsChange(newItems);
+    if (onItemAdd) {
+      onItemAdd(itemToAdd);
     }
   };
 
-  const handleRemoveItem = (itemToRemove: string) => {
+  const handleRemoveItem = (itemToRemove: ItemType) => {
     const newItems = items.filter(i => i !== itemToRemove);
-    if (onItemsChange) {
-      onItemsChange(newItems);
+    if (onItemRemove) {
+      onItemRemove(itemToRemove);
     }
 
     if (selectedItem === itemToRemove && newItems.length > 0) {
@@ -60,9 +64,9 @@ const SelectableList = ({
     }
   };
 
-  const handleSelectedItemChange = (item?: string) => {
+  const handleSelectedItemChange = (item?: ItemType) => {
     if (onSelectedItemChange) {
-      onSelectedItemChange(item ?? null);
+      onSelectedItemChange(item);
     }
   };
 
@@ -92,13 +96,13 @@ const SelectableList = ({
       <List className={styles.list} listStyleType="none">
         {items.map(item => (
           <List.Item
-            key={item}
+            key={item[keyAccessor] as unknown as string}
             className={item === selectedItem ? styles.selectedItem : ''}
             onClick={() => {
               handleSelectedItemChange(item);
             }}
           >
-            <span>{item}</span>
+            {itemRenderer ? itemRenderer(item) : <span>{item[accessor] as string}</span>}
             <ActionIcon
               onClick={event => {
                 event.stopPropagation();

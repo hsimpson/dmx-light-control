@@ -4,7 +4,7 @@
   overflow: hidden;
 
   & :global(.mantine-List-item) {
-    padding: var(--mantine-spacing-md);
+    padding: var(--mantine-spacing-xs);
     cursor: pointer;
   }
 

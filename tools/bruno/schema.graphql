@@ -37,6 +37,9 @@ type FixtureChannelDefinitionDto {
   """The channel assignments of the channel mode"""
   fixtureChannelAssignments: [FixtureChannelAssignmentDto!]!
 
+  """The channel ranges of the channel definition"""
+  fixtureChannelRanges: [FixtureChannelRangeDto!]!
+
   """The name of the channel definition"""
   name: String!
 
@@ -80,6 +83,26 @@ enum FixtureChannelPreset {
   IntensityWhite
   ShutterStrobeFastSlow
   ShutterStrobeSlowFast
+}
+
+type FixtureChannelRangeDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The description of the channel range"""
+  description: String!
+
+  """The DMX end channel of the channel range"""
+  dmxEnd: Int!
+
+  """The DMX start channel of the channel range"""
+  dmxStart: Int!
+
+  """The public id, unique identifier of the entity"""
+  publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
 }
 
 type FixtureDto {

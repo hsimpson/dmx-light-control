@@ -12,10 +12,22 @@ fragment FixtureChannelAssignmentFields on FixtureChannelAssignmentDto {
   updatedAt
 }
 
+fragment FixtureChannelRangeFields on FixtureChannelRangeDto {
+  publicId
+  dmxStart
+  dmxEnd
+  description
+  createdAt
+  updatedAt
+}
+
 fragment FixtureChannelDefinitionFields on FixtureChannelDefinitionDto {
   publicId
   name
   preset
+  fixtureChannelRanges {
+    ...FixtureChannelRangeFields
+  }
   createdAt
   updatedAt
 }

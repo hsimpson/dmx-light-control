@@ -1,6 +1,10 @@
 {
   "AddFixturePage.title": "Add Fixture",
   "EditFixturePage.title": "Edit Fixture",
+  "FixtureChannelDefinitions.addNewItemPlaceholder": "Add Channel Definition",
+  "FixtureChannelDefinitions.details": "Channel Definition Details",
+  "FixtureChannelDefinitions.listTitle": "Channel Definitions",
+  "FixtureChannelDefinitions.title": "Channel definitions",
   "FixtureForm.addChannelMode": "Add channel mode",
   "FixtureForm.channelAssignments": "Channel assignments",
   "FixtureForm.channelModes": "Channel modes:",

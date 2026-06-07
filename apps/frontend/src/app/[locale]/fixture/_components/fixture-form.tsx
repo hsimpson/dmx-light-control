@@ -1,84 +1,25 @@
 'use client';
 
-import SelectableList from '@/components/selectable-list/selectable-list';
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { FixtureChannelPreset, GetFixturesQuery, GetVendorsQuery } from '@/shared/types/graphql/graphql';
-import { Button, Combobox, Flex, InputBase, List, Text, TextInput, useCombobox } from '@mantine/core';
+import { GetFixturesQuery, GetVendorsQuery } from '@/shared/types/graphql/graphql';
+import { Button, Combobox, Flex, InputBase, TextInput, useCombobox } from '@mantine/core';
 import { schemaResolver, useForm } from '@mantine/form';
-import { ApertureIcon, LightbulbIcon, PencilIcon, RectangleIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { z } from 'zod/v4';
+import FixtureChannelDefinitions from './fixture-channel-definitions';
 
 type Fixture = GetFixturesQuery['fixtures'][number];
-type ChannelAssignment = GetFixturesQuery['fixtures'][number]['channelAssignments'];
-type Channel = ChannelAssignment[number]['channels'][number];
 
 type FixtureFormProps = {
   fixture?: Fixture;
   vendors: GetVendorsQuery['vendors'];
 };
 
-const getChannelsForMode = (channelMode: string, channelAssignments: ChannelAssignment): Channel[] => {
-  const assignment = channelAssignments.find(a => a.channelMode === channelMode);
-  return assignment?.channels ?? [];
-};
-
-const getChannelItem = (channel: Channel) => {
-  const size = 36;
-  let icon: React.ReactNode = null;
-  let color = 'gray';
-  let type: 'color' | 'dimmer' | 'shutter' = 'color';
-
-  switch (channel.preset) {
-    case FixtureChannelPreset.IntensityRed:
-      color = 'red';
-      break;
-    case FixtureChannelPreset.IntensityGreen:
-      color = 'green';
-      break;
-    case FixtureChannelPreset.IntensityBlue:
-      color = 'blue';
-      break;
-    case FixtureChannelPreset.IntensityWhite:
-      color = 'white';
-      break;
-    case FixtureChannelPreset.IntensityAmber:
-      color = 'orange';
-      break;
-    case FixtureChannelPreset.IntensityUv:
-      color = 'purple';
-      break;
-    case FixtureChannelPreset.IntensityDimmer:
-    case FixtureChannelPreset.IntensityMasterDimmer:
-      type = 'dimmer';
-      break;
-    case FixtureChannelPreset.ShutterStrobeFastSlow:
-    case FixtureChannelPreset.ShutterStrobeSlowFast:
-      type = 'shutter';
-      break;
-    case FixtureChannelPreset.Custom:
-      icon = <PencilIcon size={size} weight="duotone" color={color} />;
-      break;
-  }
-
-  switch (type) {
-    case 'color':
-      icon = <RectangleIcon size={size} weight="duotone" color={color} />;
-      break;
-    case 'dimmer':
-      icon = <LightbulbIcon size={size} weight="duotone" color="orange" />;
-      break;
-    case 'shutter':
-      icon = <ApertureIcon size={size} weight="duotone" color="orange" />;
-      break;
-  }
-  return (
-    <List.Item key={channel.channelNumber} icon={icon}>
-      {channel.channelNumber}: {channel.preset}
-    </List.Item>
-  );
-};
+// const getChannelsForMode = (channelMode: string, channelAssignments: ChannelAssignment): Channel[] => {
+//   const assignment = channelAssignments.find(a => a.channelMode === channelMode);
+//   return assignment?.channels ?? [];
+// };
 
 const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const { t } = useTranslation();
@@ -115,13 +56,10 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   });
 
   const [comboBoxData, setComboBoxData] = useState(vendorNames);
-  const [comboBoxValue, setComboBoxValue] = useState(fixture?.vendor.name ?? null);
-  const [comboBoxSearch, setComboBoxSearch] = useState(fixture?.vendor.name ?? '');
+  const [comboBoxValue, setComboBoxValue] = useState(fixture?.fixtureVendor.name ?? null);
+  const [comboBoxSearch, setComboBoxSearch] = useState(fixture?.fixtureVendor.name ?? '');
 
-  const channelAssignments = fixture?.channelAssignments ?? [];
-
-  const [channelModes, setChannelModes] = useState(channelAssignments.map(a => a.channelMode));
-  const [selectedChannelMode, setSelectedChannelMode] = useState(channelModes[0] ?? null);
+  const [channelDefinitionsToRemove, setChannelDefinitionsToRemove] = useState<string[]>([]);
 
   const exactOptionMatch = comboBoxData.some(item => item === comboBoxSearch);
   const filteredOptions = exactOptionMatch
@@ -138,7 +76,7 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
     mode: 'controlled',
     initialValues: {
       fixtureName: fixture?.name ?? '',
-      vendor: fixture?.vendor.name ?? '',
+      vendor: fixture?.fixtureVendor.name ?? '',
     },
     validate: schemaResolver(schema, { sync: true }),
   });
@@ -228,49 +166,23 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
           {...form.getInputProps('fixtureName')}
         />
 
-        <Text size="xl" fw={600} mt="xl">
-          {t({
-            id: 'FixtureForm.channelAssignments',
-            defaultMessage: 'Channel assignments',
-          })}
-        </Text>
+        <FixtureChannelDefinitions fixtureChannelDefinitions={fixture?.fixtureChannelDefinitions ?? []} />
 
         <Flex direction="row" gap="5rem">
           <Flex direction="column" gap="md">
-            <SelectableList
-              title={
-                <Text size="sm">
-                  {t({
-                    id: 'FixtureForm.channelModes',
-                    defaultMessage: 'Channel modes:',
-                  })}
-                </Text>
-              }
-              addNewItemPlaceholder={t({
-                id: 'FixtureForm.addChannelMode',
-                defaultMessage: 'Add channel mode',
-              })}
-              items={channelModes}
-              sorted
-              selectedItem={selectedChannelMode ?? undefined}
-              onSelectedItemChange={setSelectedChannelMode}
-              onItemsChange={setChannelModes}
-            />
-          </Flex>
-
-          <Flex direction="column" gap="md">
-            <Text size="sm">
+            {/* <Text size="sm">
               {t({
                 id: 'FixtureForm.channelsForMode',
                 defaultMessage: 'Channels for mode:',
               })}
-            </Text>
-            <List withPadding listStyleType="none">
+            </Text> */}
+
+            {/* <List withPadding listStyleType="none">
               {getChannelsForMode(
                 selectedChannelMode ?? '', // Fallback to empty string if channelMode is null
                 fixture?.channelAssignments ?? [],
               ).map(channel => getChannelItem(channel))}
-            </List>
+            </List> */}
           </Flex>
         </Flex>
 
