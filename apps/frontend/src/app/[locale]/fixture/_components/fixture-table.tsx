@@ -7,7 +7,7 @@ import { useQuery } from '@apollo/client/react';
 import { DataTable } from 'mantine-datatable';
 import { useRouter } from 'next/navigation';
 
-const FixtureList = () => {
+const FixtureTable = () => {
   const { t } = useTranslation();
   const { data, loading } = useQuery(GetFixturesDocument);
   const router = useRouter();
@@ -62,4 +62,4 @@ const FixtureList = () => {
   );
 };
 
-export default FixtureList;
+export default FixtureTable;

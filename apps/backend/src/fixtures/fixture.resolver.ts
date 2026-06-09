@@ -23,8 +23,6 @@ export class FixtureResolver {
   })
   public async getAllFixtures(): Promise<FixtureDto[]> {
     const fixtures = await this.fixtureService.getAllFixtures();
-    console.log('Fetched fixtures:', JSON.stringify(fixtures, null, 2));
-    // return fixtures.map(fixture => this.transformFixture(fixture));
     return plainToInstance(FixtureDto, fixtures);
   }
 

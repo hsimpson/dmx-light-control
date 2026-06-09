@@ -5,7 +5,7 @@ import { useTranslation } from '@/lib/i18n/use-translation';
 import { Button, Flex, Title } from '@mantine/core';
 import { PlusCircleIcon } from '@phosphor-icons/react';
 import Link from 'next/link';
-import FixtureList from '../_components/fixture-list';
+import FixtureTable from '../_components/fixture-table';
 
 const FixtureListPage = () => {
   const { t } = useTranslation();
@@ -22,7 +22,7 @@ const FixtureListPage = () => {
           {t({ id: 'FixtureList.add', defaultMessage: 'Add Fixture' })}
         </Button>
       </Flex>
-      <FixtureList />
+      <FixtureTable />
     </>
   );
 };

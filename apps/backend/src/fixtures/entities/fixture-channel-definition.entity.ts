@@ -18,6 +18,7 @@ const fixtureChannelDefinition = pgTable(
       .notNull()
       .references(() => fixture.id, { onDelete: 'cascade' }),
     name: varchar({ length: 255 }).notNull(),
+    order: integer().notNull(),
     preset: presetEnum().notNull(),
 
     ...timestamps,

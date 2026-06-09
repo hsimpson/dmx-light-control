@@ -8,6 +8,13 @@
       "when": 1780747435917,
       "tag": "20260606120355_fixtures_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781040445359,
+      "tag": "20260609212725_fixture_channel_definitions_order",
+      "breakpoints": true
     }
   ]
 }

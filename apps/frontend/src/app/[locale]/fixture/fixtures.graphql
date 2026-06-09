@@ -24,6 +24,7 @@ fragment FixtureChannelRangeFields on FixtureChannelRangeDto {
 fragment FixtureChannelDefinitionFields on FixtureChannelDefinitionDto {
   publicId
   name
+  order
   preset
   fixtureChannelRanges {
     ...FixtureChannelRangeFields

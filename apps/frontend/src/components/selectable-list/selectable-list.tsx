@@ -8,7 +8,6 @@ import { useState } from 'react';
 import styles from './selectable-list.module.css';
 
 type SelectableListProps<ItemType> = {
-  title: React.ReactNode;
   addNewItemPlaceholder: string;
   items: ItemType[];
   accessor: keyof ItemType;
@@ -21,7 +20,6 @@ type SelectableListProps<ItemType> = {
 };
 
 const SelectableList = <ItemType,>({
-  title,
   addNewItemPlaceholder,
   items,
   accessor,
@@ -72,9 +70,9 @@ const SelectableList = <ItemType,>({
 
   return (
     <Flex direction="column" gap="md">
-      <div>{title}</div>
       <Flex direction="row" gap="xs" align="center">
         <TextInput
+          style={{ flex: 1 }}
           placeholder={addNewItemPlaceholder}
           value={addItem}
           onChange={event => {

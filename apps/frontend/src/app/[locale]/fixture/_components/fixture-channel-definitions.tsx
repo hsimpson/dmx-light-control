@@ -3,23 +3,15 @@
 import SelectableList from '@/components/selectable-list/selectable-list';
 import { ICON_SIZE } from '@/lib/constants';
 import { useTranslation } from '@/lib/i18n/use-translation';
+import { FixtureChannelDefinition } from '@/shared/types/fixtures';
 import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
-import { Flex } from '@mantine/core';
+import { Flex, Text } from '@mantine/core';
 import { ApertureIcon, LightbulbIcon, PencilIcon, RectangleIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
-
-type MinimalChannelDefinition = {
-  name: string;
-  preset: FixtureChannelPreset;
-  fixtureChannelRanges: {
-    dmxStart: number;
-    dmxEnd: number;
-    description: string;
-  }[];
-};
+import FixtureChannelRangeTable from './fixture-channel-range-table';
 
 type FixtureChannelDefinitionsProps = {
-  fixtureChannelDefinitions: MinimalChannelDefinition[];
+  fixtureChannelDefinitions: FixtureChannelDefinition[];
 };
 
 const getPresetIcon = (preset: FixtureChannelPreset) => {
@@ -51,63 +43,74 @@ const getPresetIcon = (preset: FixtureChannelPreset) => {
 
 const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannelDefinitionsProps) => {
   const { t } = useTranslation();
-  const [channelDefinitions, setChannelDefinitions] = useState<MinimalChannelDefinition[]>(fixtureChannelDefinitions);
-  const [selectedChannelDefinition, setSelectedChannelDefinition] = useState<MinimalChannelDefinition | undefined>(
-    fixtureChannelDefinitions[0],
+  const [channelDefinitions, setChannelDefinitions] = useState(
+    fixtureChannelDefinitions.toSorted((a, b) => a.order - b.order),
+  );
+  const [selectedChannelDefinition, setSelectedChannelDefinition] = useState<FixtureChannelDefinition | undefined>(
+    channelDefinitions[0],
   );
 
-  const handleSelectedChannelDefinitionChange = (item?: MinimalChannelDefinition) => {
+  const handleSelectedChannelDefinitionChange = (item?: FixtureChannelDefinition) => {
     setSelectedChannelDefinition(item);
   };
 
   const handleChannelDefinitionAdd = (name: string) => {
-    const newChannelDefinition: MinimalChannelDefinition = {
+    const newChannelDefinition: Partial<FixtureChannelDefinition> = {
       name,
       preset: FixtureChannelPreset.Custom,
       fixtureChannelRanges: [],
+      order: channelDefinitions.length,
     };
     const newChannelDefinitions = [...channelDefinitions, newChannelDefinition];
-    setChannelDefinitions(newChannelDefinitions);
-    handleSelectedChannelDefinitionChange(newChannelDefinition);
+    setChannelDefinitions(newChannelDefinitions as FixtureChannelDefinition[]);
+    handleSelectedChannelDefinitionChange(newChannelDefinition as FixtureChannelDefinition);
   };
 
-  const handleChannelDefinitionRemove = (itemToRemove: MinimalChannelDefinition) => {
+  const handleChannelDefinitionRemove = (itemToRemove: FixtureChannelDefinition) => {
     const newChannelDefinitions = channelDefinitions.filter(i => i !== itemToRemove);
     setChannelDefinitions(newChannelDefinitions);
   };
 
   return (
     <Flex direction="row" gap="xl">
-      <SelectableList
-        title={t({
-          id: 'FixtureChannelDefinitions.listTitle',
-          defaultMessage: 'Channel Definitions',
-        })}
-        addNewItemPlaceholder={t({
-          id: 'FixtureChannelDefinitions.addNewItemPlaceholder',
-          defaultMessage: 'Add Channel Definition',
-        })}
-        items={channelDefinitions}
-        accessor="name"
-        keyAccessor="name"
-        itemRenderer={item => (
-          <Flex direction="row" align="center" gap="sm">
-            {getPresetIcon(item.preset)}
-            <span>{item.name}</span>
-          </Flex>
-        )}
-        selectedItem={selectedChannelDefinition}
-        onSelectedItemChange={handleSelectedChannelDefinitionChange}
-        onItemAdd={handleChannelDefinitionAdd}
-        onItemRemove={handleChannelDefinitionRemove}
-      ></SelectableList>
       <Flex direction="column" gap="md">
-        <div>
+        <Text size="md">
+          {t({
+            id: 'FixtureChannelDefinitions.listTitle',
+            defaultMessage: 'Channel Definitions',
+          })}
+        </Text>
+        <SelectableList
+          addNewItemPlaceholder={t({
+            id: 'FixtureChannelDefinitions.addNewItemPlaceholder',
+            defaultMessage: 'Add Channel Definition',
+          })}
+          items={channelDefinitions}
+          accessor="name"
+          keyAccessor="name"
+          itemRenderer={item => (
+            <Flex direction="row" align="center" gap="sm">
+              {getPresetIcon(item.preset)}
+              <span>{item.name}</span>
+            </Flex>
+          )}
+          selectedItem={selectedChannelDefinition}
+          onSelectedItemChange={handleSelectedChannelDefinitionChange}
+          onItemAdd={handleChannelDefinitionAdd}
+          onItemRemove={handleChannelDefinitionRemove}
+        />
+      </Flex>
+
+      <Flex direction="column" gap="md">
+        <Text size="md">
           {t({
             id: 'FixtureChannelDefinitions.details',
             defaultMessage: 'Channel Definition Details',
           })}
-        </div>
+        </Text>
+
+        <Text size="sm">Ranges</Text>
+        <FixtureChannelRangeTable fixtureChannelRanges={selectedChannelDefinition?.fixtureChannelRanges ?? []} />
       </Flex>
     </Flex>
   );
