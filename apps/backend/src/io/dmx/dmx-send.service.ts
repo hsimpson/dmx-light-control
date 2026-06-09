@@ -1,7 +1,6 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { UsbDeviceService } from '@/io/usb/usb-device.service';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { WebUSBDevice } from 'usb';
 import { DmxValue } from './types/dmx.types';
 
 @Injectable()
@@ -12,7 +11,7 @@ export class DmxSendService implements OnModuleInit {
   private readonly logger = new Logger(DmxSendService.name);
   private dmxFrame = new Uint8Array(513); // DMX frame: start byte + 512 channel values
   private _isSending = false;
-  private device?: WebUSBDevice;
+  private device?: USBDevice;
 
   public constructor(
     private readonly usbDeviceService: UsbDeviceService,

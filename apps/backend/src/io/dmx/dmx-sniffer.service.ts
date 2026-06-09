@@ -8,11 +8,11 @@ const USBMON_HEADER_SIZE = 48;
 
 // Offsets within the usbmon_packet header
 const OFFSET_TYPE = 8; // u8: 'S'=submit, 'C'=complete, 'E'=error
-const OFFSET_XFER_TYPE = 9; // u8: 0=ISO, 1=Intr, 2=Control, 3=Bulk
+const _OFFSET_XFER_TYPE = 9; // u8: 0=ISO, 1=Intr, 2=Control, 3=Bulk
 const OFFSET_EPNUM = 10; // u8: endpoint number (bit 7 = direction)
 const OFFSET_DEVNUM = 11; // u8: device address
-const OFFSET_STATUS = 28; // i32: URB status
-const OFFSET_LENGTH = 32; // u32: requested data length
+const _OFFSET_STATUS = 28; // i32: URB status
+const _OFFSET_LENGTH = 32; // u32: requested data length
 const OFFSET_LEN_CAP = 36; // u32: captured data bytes appended after header
 
 function parseFrames(buf: Buffer, onFrame: (header: Buffer, data: Buffer) => void): Buffer {

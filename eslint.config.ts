@@ -1,9 +1,8 @@
 import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-
 import configPrettier from 'eslint-config-prettier';
 import pluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import { defineConfig } from 'eslint/config';
+import tseslint from 'typescript-eslint';
 
 export default defineConfig(
   eslint.configs.recommended,
@@ -44,10 +43,13 @@ export default defineConfig(
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
-          args: 'after-used',
+          args: 'all',
           argsIgnorePattern: '^_',
-          ignoreRestSiblings: false,
-          vars: 'all',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
         },
       ],
       '@typescript-eslint/no-var-requires': 'warn',
