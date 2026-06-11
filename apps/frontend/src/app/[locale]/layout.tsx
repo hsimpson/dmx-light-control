@@ -3,13 +3,15 @@ import { APP_NAME } from '@/lib/constants';
 import ApolloWrapper from '@/lib/graphql/apollo-wrapper';
 import IntlWrapper from '@/lib/i18n/intl-wrapper';
 import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
-import '@mantine/core/styles.css';
 import { Notifications } from '@mantine/notifications';
 
 // mantine styles
+import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 // ‼️ import notifications styles after core package styles
 import 'mantine-datatable/styles.layer.css';
+
+import './global.css';
 
 import { ReactNode } from 'react';
 
