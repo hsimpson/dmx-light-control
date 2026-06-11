@@ -3,7 +3,7 @@ import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { ActionIcon, Flex, List, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { ListPlusIcon, TrashIcon } from '@phosphor-icons/react';
+import { ListPlusIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import SelectableListItem from './selectable-list-item';
 import styles from './selectable-list.module.css';
@@ -79,6 +79,11 @@ const SelectableList = <ItemType,>({
           onChange={event => {
             setAddItem(event.currentTarget.value);
           }}
+          onKeyDown={event => {
+            if (event.key === 'Enter' && addItem.trim()) {
+              handleAddItem(addItem);
+            }
+          }}
         />
         <ActionIcon
           variant="filled"
@@ -102,16 +107,12 @@ const SelectableList = <ItemType,>({
             onClick={() => {
               handleSelectedItemChange(item);
             }}
+            canDelete
+            onDelete={() => {
+              handleRemoveItem(item);
+            }}
           >
             {itemRenderer ? itemRenderer(item) : <span>{item[accessor] as string}</span>}
-            <ActionIcon
-              onClick={event => {
-                event.stopPropagation();
-                handleRemoveItem(item);
-              }}
-            >
-              <TrashIcon size={ICON_SIZE} weight="fill" />
-            </ActionIcon>
           </SelectableListItem>
         ))}
       </List>
