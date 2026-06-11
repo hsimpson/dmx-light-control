@@ -26,6 +26,12 @@ To apply migrations, use the following command:
 nx run backend:drizzle-migrate
 ```
 
+To seed the database with initial data, use the following command:
+
+```bash
+nx run backend:drizzle-seed
+```
+
 ## Backend commands
 
 To run the backend application, use the following command:

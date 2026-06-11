@@ -1,15 +1,14 @@
 .list {
-  border: 1px solid var(--mantine-color-default-border);
-  border-radius: var(--mantine-radius-md);
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-xs);
 
   & :global(.mantine-List-item) {
+    border: 1px solid var(--mantine-color-default-border);
+    border-radius: var(--mantine-radius-md);
     padding: var(--mantine-spacing-xs);
     cursor: pointer;
-  }
-
-  & :global(.mantine-List-item:not(:first-of-type)) {
-    border-top: 1px solid var(--mantine-color-default-border);
+    overflow: hidden;
   }
 
   & :global(.mantine-List-itemWrapper) {

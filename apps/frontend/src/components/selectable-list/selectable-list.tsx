@@ -5,6 +5,7 @@ import { ActionIcon, Flex, List, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ListPlusIcon, TrashIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
+import SelectableListItem from './selectable-list-item';
 import styles from './selectable-list.module.css';
 
 type SelectableListProps<ItemType> = {
@@ -92,10 +93,12 @@ const SelectableList = <ItemType,>({
         </ActionIcon>
       </Flex>
       <List className={styles.list} listStyleType="none">
-        {items.map(item => (
-          <List.Item
+        {items.map((item, index) => (
+          <SelectableListItem
             key={item[keyAccessor] as unknown as string}
-            className={item === selectedItem ? styles.selectedItem : ''}
+            id={item[keyAccessor] as unknown as string}
+            index={index}
+            isSelected={item === selectedItem}
             onClick={() => {
               handleSelectedItemChange(item);
             }}
@@ -109,10 +112,11 @@ const SelectableList = <ItemType,>({
             >
               <TrashIcon size={ICON_SIZE} weight="fill" />
             </ActionIcon>
-          </List.Item>
+          </SelectableListItem>
         ))}
       </List>
     </Flex>
   );
 };
+
 export default SelectableList;
