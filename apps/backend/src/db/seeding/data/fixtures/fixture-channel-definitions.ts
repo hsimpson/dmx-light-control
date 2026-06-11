@@ -48,14 +48,14 @@ export const fixtureChannelDefinitions: InferInsertModel<typeof fixtureChannelDe
   {
     publicId: '2f598d6b-1b0e-462c-9c8f-9b368c4e689f',
     fixtureId: 1,
-    name: 'Color macros/programs/sound activity',
+    name: 'Program Selection Mode',
     order: 6,
     preset: FixtureChannelPreset.Custom,
   },
   {
     publicId: 'a340e94c-de49-4a08-97ce-c3a4225a63a4',
     fixtureId: 1,
-    name: 'Program selection mode',
+    name: 'Color macros/programs/sound activity',
     order: 7,
     preset: FixtureChannelPreset.Custom,
   },
