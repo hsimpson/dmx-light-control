@@ -1,6 +1,7 @@
 import { ICON_SIZE } from '@/lib/constants';
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
+import { DragDropProvider } from '@dnd-kit/react';
 import { ActionIcon, Flex, List, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ListPlusIcon } from '@phosphor-icons/react';
@@ -97,25 +98,31 @@ const SelectableList = <ItemType,>({
           <ListPlusIcon size={ICON_SIZE} weight="fill" />
         </ActionIcon>
       </Flex>
-      <List className={styles.list} listStyleType="none">
-        {items.map((item, index) => (
-          <SelectableListItem
-            key={item[keyAccessor] as unknown as string}
-            id={item[keyAccessor] as unknown as string}
-            index={index}
-            isSelected={item === selectedItem}
-            onClick={() => {
-              handleSelectedItemChange(item);
-            }}
-            canDelete
-            onDelete={() => {
-              handleRemoveItem(item);
-            }}
-          >
-            {itemRenderer ? itemRenderer(item) : <span>{item[accessor] as string}</span>}
-          </SelectableListItem>
-        ))}
-      </List>
+      <DragDropProvider
+      // onDragEnd={event => {
+      //   setItems(items => move(items, event));
+      // }}
+      >
+        <List className={styles.list} listStyleType="none">
+          {items.map((item, index) => (
+            <SelectableListItem
+              key={item[keyAccessor] as unknown as string}
+              id={item[keyAccessor] as unknown as string}
+              index={index}
+              isSelected={item === selectedItem}
+              onClick={() => {
+                handleSelectedItemChange(item);
+              }}
+              canDelete
+              onDelete={() => {
+                handleRemoveItem(item);
+              }}
+            >
+              {itemRenderer ? itemRenderer(item) : <span>{item[accessor] as string}</span>}
+            </SelectableListItem>
+          ))}
+        </List>
+      </DragDropProvider>
     </Flex>
   );
 };

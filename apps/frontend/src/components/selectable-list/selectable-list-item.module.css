@@ -1,0 +1,34 @@
+.item {
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-md);
+  padding: var(--mantine-spacing-xs);
+  cursor: pointer;
+  overflow: hidden;
+
+  & :global(.mantine-List-itemWrapper) {
+    width: 100%;
+  }
+
+  & :global(.mantine-List-itemLabel) {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--mantine-spacing-xs);
+  }
+
+  .removeButton {
+    margin-left: auto;
+  }
+
+  .selectedItem {
+    background-color: var(--mantine-primary-color-light-hover);
+  }
+}
+
+.item[data-dnd-dragging] {
+  transform: scale(1);
+  backdrop-filter: blur(5px);
+  background-color: rgb(from var(--mantine-color-body) r g b / 0.8);
+  box-shadow: var(--mantine-shadow-lg);
+}
