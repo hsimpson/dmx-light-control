@@ -3,17 +3,19 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { MidiMessage } from 'midi';
 
 // this is for testing with the Akai APC mini mk2
-const noteDmxMapping: Record<number, number> = {
+const noteDmxMapping: Record<number, number[]> = {
   // Map MIDI note numbers to DMX channel values (example mapping)
-  0: 1, // button 0 maps to DMX channel 1
-  1: 2, // button 1 maps to DMX channel 2
-  2: 3, // button 2 maps to DMX channel 3
-  3: 4, // button 3 maps to DMX channel 4
+  0: [1], // button 0 maps to DMX channel 1
+  1: [2], // button 1 maps to DMX channel 2
+  2: [3], // button 2 maps to DMX channel 3
+  3: [4], // button 3 maps to DMX channel 4
 
-  48: 10, // 1st fader maps to DMX channel 10
-  49: 11, // 2nd fader maps to DMX channel 11
-  50: 12, // 3rd fader maps to DMX channel 12
-  51: 13, // 4th fader maps to DMX channel 13
+  48: [1, 10], // 1st fader maps to DMX channel 1
+  49: [2, 11], // 2nd fader maps to DMX channel 2
+  50: [3, 12], // 3rd fader maps to DMX channel 3
+  51: [4, 13], // 4th fader maps to DMX channel 4
+
+  56: [6, 15], // 9th fader maps to DMX channel 6
 };
 
 // format: [behavior, button, color]
@@ -50,9 +52,9 @@ export class IoBridgeService implements OnModuleInit {
     const [status, data1, data2] = message;
 
     let dmxValue = 0;
-    const dmxChannel = noteDmxMapping[data1] ?? 0; // Get DMX channel based on MIDI note number
+    const dmxChannels = noteDmxMapping[data1] ?? []; // Get DMX channels based on MIDI note number
 
-    if (dmxChannel === 0) {
+    if (dmxChannels.length === 0) {
       // If the MIDI note is not mapped, ignore the message
       this.logger.warn(`Received MIDI message with unmapped note: ${data1}. Ignoring.`);
       return;
@@ -75,6 +77,8 @@ export class IoBridgeService implements OnModuleInit {
     // normalize DMX value to 0-255
     dmxValue = Math.round((dmxValue / 127) * 255);
 
-    this.eventEmitter.emit('dmx.channelValues', [{ channel: dmxChannel, value: dmxValue }]);
+    for (const dmxChannel of dmxChannels) {
+      this.eventEmitter.emit('dmx.channelValues', [{ channel: dmxChannel, value: dmxValue }]);
+    }
   }
 }

@@ -58,12 +58,12 @@ export class MidiService {
   }
 
   private handleMidiMessage(deltaTime: number, message: MidiMessage): void {
-    this.logger.log(`Received MIDI message: ${message.join(', ')} (deltaTime: ${deltaTime})`);
+    this.logger.debug(`Received MIDI message: ${message.join(', ')} (deltaTime: ${deltaTime})`);
     this.eventEmitter.emit('midi.inputMessage', message);
   }
 
   private async sendMidiMessage(message: MidiMessage): Promise<void> {
-    this.logger.log(`Sent MIDI message: ${message.join(', ')}`);
+    this.logger.debug(`Sent MIDI message: ${message.join(', ')}`);
     this.output.sendMessage(message);
     await new Promise(resolve => setTimeout(resolve, 200));
   }
