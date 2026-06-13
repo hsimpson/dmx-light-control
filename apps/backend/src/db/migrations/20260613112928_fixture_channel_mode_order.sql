@@ -1,0 +1,1 @@
+ALTER TABLE "fixture_channel_modes" ADD COLUMN "order" integer DEFAULT 0 NOT NULL;

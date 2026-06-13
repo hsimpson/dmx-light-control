@@ -43,6 +43,9 @@ type FixtureChannelDefinitionDto {
   """The name of the channel definition"""
   name: String!
 
+  """The order of the channel definition"""
+  order: Int!
+
   """The preset of the channel assignment"""
   preset: FixtureChannelPreset!
 
@@ -62,6 +65,9 @@ type FixtureChannelModeDto {
 
   """The name of the channel mode"""
   name: String!
+
+  """The order of the channel mode"""
+  order: Int!
 
   """The public id, unique identifier of the entity"""
   publicId: UUID!

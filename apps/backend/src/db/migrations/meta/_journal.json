@@ -15,6 +15,13 @@
       "when": 1781040445359,
       "tag": "20260609212725_fixture_channel_definitions_order",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781350168124,
+      "tag": "20260613112928_fixture_channel_mode_order",
+      "breakpoints": true
     }
   ]
 }

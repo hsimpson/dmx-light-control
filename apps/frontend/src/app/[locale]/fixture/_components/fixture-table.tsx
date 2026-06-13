@@ -2,6 +2,7 @@
 
 import { Loading } from '@/components/loading';
 import { useTranslation } from '@/lib/i18n/use-translation';
+import { orderSorter } from '@/shared/sorter';
 import { GetFixturesDocument } from '@/shared/types/graphql/graphql';
 import { useQuery } from '@apollo/client/react';
 import { DataTable } from 'mantine-datatable';
@@ -50,8 +51,10 @@ const FixtureTable = () => {
             defaultMessage: 'Channel modes',
           }),
           render: ({ fixtureChannelModes }) => {
-            const modes = fixtureChannelModes.map(cm => cm.name);
-            return modes.sort().join(', ');
+            return [...fixtureChannelModes]
+              .sort(orderSorter)
+              .map(cm => cm.name)
+              .join(', ');
           },
         },
       ]}

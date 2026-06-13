@@ -3,6 +3,7 @@
 import SelectableList from '@/components/selectable-list/selectable-list';
 import { ICON_SIZE } from '@/lib/constants';
 import { useTranslation } from '@/lib/i18n/use-translation';
+import { orderSorter } from '@/shared/sorter';
 import { FixtureChannelDefinition } from '@/shared/types/fixtures';
 import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
 import { Flex, Text } from '@mantine/core';
@@ -43,9 +44,7 @@ const getPresetIcon = (preset: FixtureChannelPreset) => {
 
 const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannelDefinitionsProps) => {
   const { t } = useTranslation();
-  const [channelDefinitions, setChannelDefinitions] = useState(
-    fixtureChannelDefinitions.toSorted((a, b) => a.order - b.order),
-  );
+  const [channelDefinitions, setChannelDefinitions] = useState(fixtureChannelDefinitions.toSorted(orderSorter));
   const [selectedChannelDefinition, setSelectedChannelDefinition] = useState<FixtureChannelDefinition | undefined>(
     channelDefinitions[0],
   );

@@ -36,6 +36,7 @@ fragment FixtureChannelDefinitionFields on FixtureChannelDefinitionDto {
 fragment FixtureChannelModeFields on FixtureChannelModeDto {
   publicId
   name
+  order
   fixtureChannelAssignments {
     ...FixtureChannelAssignmentFields
   }

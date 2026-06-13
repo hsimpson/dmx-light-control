@@ -29,6 +29,7 @@ graphql:
               updatedAt
             }
             name
+            order
             preset
             publicId
             updatedAt
@@ -42,6 +43,7 @@ graphql:
               updatedAt
             }
             name
+            order
             publicId
             updatedAt
           }
