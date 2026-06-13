@@ -7,7 +7,6 @@ import { notifications } from '@mantine/notifications';
 import { ListPlusIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import SelectableListItem from './selectable-list-item';
-import styles from './selectable-list.module.css';
 
 type SelectableListProps<ItemType> = {
   addNewItemPlaceholder: string;
@@ -98,29 +97,27 @@ const SelectableList = <ItemType,>({
           <ListPlusIcon size={ICON_SIZE} weight="fill" />
         </ActionIcon>
       </Flex>
-      <DragDropProvider
-      // onDragEnd={event => {
-      //   setItems(items => move(items, event));
-      // }}
-      >
-        <List className={styles.list} listStyleType="none">
-          {items.map((item, index) => (
-            <SelectableListItem
-              key={item[keyAccessor] as unknown as string}
-              id={item[keyAccessor] as unknown as string}
-              index={index}
-              isSelected={item === selectedItem}
-              onClick={() => {
-                handleSelectedItemChange(item);
-              }}
-              canDelete
-              onDelete={() => {
-                handleRemoveItem(item);
-              }}
-            >
-              {itemRenderer ? itemRenderer(item) : <span>{item[accessor] as string}</span>}
-            </SelectableListItem>
-          ))}
+      <DragDropProvider>
+        <List listStyleType="none">
+          <Flex direction="column" gap="xs">
+            {items.map((item, index) => (
+              <SelectableListItem
+                key={item[keyAccessor] as unknown as string}
+                id={item[keyAccessor] as unknown as string}
+                index={index}
+                isSelected={item === selectedItem}
+                onClick={() => {
+                  handleSelectedItemChange(item);
+                }}
+                canDelete
+                onDelete={() => {
+                  handleRemoveItem(item);
+                }}
+              >
+                {itemRenderer ? itemRenderer(item) : <span>{item[accessor] as string}</span>}
+              </SelectableListItem>
+            ))}
+          </Flex>
         </List>
       </DragDropProvider>
     </Flex>

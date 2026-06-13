@@ -27,7 +27,13 @@ const SelectableListItem = ({
   const { ref, isDragging, handleRef } = useSortable({ id, index });
 
   return (
-    <List.Item ref={ref} className={styles.item} onClick={onClick}>
+    <List.Item
+      ref={ref}
+      className={styles.item}
+      onClick={onClick}
+      data-dragging={isDragging}
+      data-selected={isSelected}
+    >
       <DotsSixVerticalIcon ref={handleRef} size={ICON_SIZE} />
       {children}
       {canDelete && (

@@ -5,8 +5,15 @@
   cursor: pointer;
   overflow: hidden;
 
+  /* Force the root list item to vertically align its contents */
+  display: flex;
+  align-items: center;
+
+  /* Ensure Mantine's internal wrapper expands fully and centers its content */
   & :global(.mantine-List-itemWrapper) {
     width: 100%;
+    display: flex;
+    align-items: center;
   }
 
   & :global(.mantine-List-itemLabel) {
@@ -19,11 +26,13 @@
 
   .removeButton {
     margin-left: auto;
+    /* Keeps the button centered if its parent isn't fully aligned */
+    align-self: center;
   }
+}
 
-  .selectedItem {
-    background-color: var(--mantine-primary-color-light-hover);
-  }
+.item[data-selected='true'] {
+  background-color: var(--mantine-primary-color-light-hover);
 }
 
 .item[data-dnd-dragging] {
