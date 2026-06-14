@@ -5,10 +5,6 @@
   "license": "MIT",
   "type": "module",
   "packageManager": "pnpm@11.2.2",
-  "scripts": {
-    "build": "nx build",
-    "lint": "nx lint"
-  },
   "devDependencies": {
     "@eslint-react/eslint-plugin": "^5.8.17",
     "@eslint/js": "^10.0.1",

@@ -4,15 +4,10 @@
   "FixtureChannelDefinitions.addNewItemPlaceholder": "Kanaldefinition hinzufügen",
   "FixtureChannelDefinitions.details": "Kanaldefinition Details",
   "FixtureChannelDefinitions.listTitle": "Kanaldefinitionen",
-  "FixtureChannelDefinitions.title": "Kanaldefinitionen",
   "FixtureChannelRangeTable.description": "Beschreibung",
   "FixtureChannelRangeTable.dmxEnd": "DMX Ende",
   "FixtureChannelRangeTable.dmxStart": "DMX Start",
   "FixtureChannelRangeTable.ranges": "Bereiche:",
-  "FixtureForm.addChannelMode": "Add channel mode",
-  "FixtureForm.channelAssignments": "Kanalzuordnungen",
-  "FixtureForm.channelModes": "Kanalmodi:",
-  "FixtureForm.channelsForMode": "Channels for mode:",
   "FixtureForm.fixtureName": "Fixture Name:",
   "FixtureForm.fixtureNamePlaceholder": "Name des Fixtures eingeben",
   "FixtureForm.validation.fixtureName": "Fixture Name muss mindestens 3 Zeichen lang sein",
@@ -27,6 +22,7 @@
   "GlobalMessages.Cancel": "Abbrechen",
   "GlobalMessages.Error": "Fehler!",
   "GlobalMessages.Save": "Speichern",
+  "GlobalMessages.Warning": "Warnung!",
   "LanguageSwitcher.language": "Sprache",
   "SelectableList.itemAlreadyExists": "Eintrag existiert schon"
 }

@@ -29,7 +29,13 @@ nx run frontend:start
 To extract translation keys from the source code and update the translation files, run the following command:
 
 ```bash
-nx run frontend:extract-i18n
+nx run frontend:i18n-extract
+```
+
+To verify that translation files are in sync (missing and extra keys), run:
+
+```bash
+nx run frontend:i18n-verify
 ```
 
 To generate TypeScript types for the GraphQL schema, run the following command:

@@ -21,10 +21,17 @@
         "port": 3001
       }
     },
-    "extract-i18n": {
+    "i18n-extract": {
       "executor": "nx:run-commands",
       "options": {
         "command": "formatjs extract 'src/**/*.{ts,tsx,js,jsx}' --ignore='**/*.d.ts' --out-file src/lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]' --format simple --additional-function-names t --pragma formatjs --throws",
+        "cwd": "apps/frontend"
+      }
+    },
+    "i18n-verify": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "formatjs verify 'src/lang/**/*.json' --source-locale en --missing-keys --extra-keys",
         "cwd": "apps/frontend"
       }
     },

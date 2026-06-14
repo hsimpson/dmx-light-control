@@ -7,7 +7,7 @@
   "FixtureChannelRangeTable.description": "Description",
   "FixtureChannelRangeTable.dmxEnd": "DMX End",
   "FixtureChannelRangeTable.dmxStart": "DMX Start",
-  "FixtureChannelRangeTable.ranges": "Ranges:",
+  "FixtureChannelRangeTable.ranges": "Ranges",
   "FixtureForm.fixtureName": "Fixture name:",
   "FixtureForm.fixtureNamePlaceholder": "Enter fixture name",
   "FixtureForm.validation.fixtureName": "Fixture name must be at least 3 characters long",
