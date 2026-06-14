@@ -168,24 +168,6 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
 
         <FixtureChannelDefinitions fixtureChannelDefinitions={fixture?.fixtureChannelDefinitions ?? []} />
 
-        <Flex direction="row" gap="5rem">
-          <Flex direction="column" gap="md">
-            {/* <Text size="sm">
-              {t({
-                id: 'FixtureForm.channelsForMode',
-                defaultMessage: 'Channels for mode:',
-              })}
-            </Text> */}
-
-            {/* <List withPadding listStyleType="none">
-              {getChannelsForMode(
-                selectedChannelMode ?? '', // Fallback to empty string if channelMode is null
-                fixture?.channelAssignments ?? [],
-              ).map(channel => getChannelItem(channel))}
-            </List> */}
-          </Flex>
-        </Flex>
-
         <Button type="submit" mt="sm" w="fit-content" style={{ alignSelf: 'flex-end' }}>
           {t(globalMessages.save)}
         </Button>

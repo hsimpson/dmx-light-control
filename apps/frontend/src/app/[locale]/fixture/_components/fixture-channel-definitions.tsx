@@ -4,9 +4,11 @@ import SelectableList from '@/components/selectable-list/selectable-list';
 import { ICON_SIZE } from '@/lib/constants';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { orderSorter } from '@/shared/sorter';
-import { FixtureChannelDefinition } from '@/shared/types/fixtures';
+import { FixtureChannelDefinition, FixtureChannelRange } from '@/shared/types/fixtures';
 import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
+import { globalMessages } from '@/lib/i18n/global-messages';
 import { Flex, Text } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { ApertureIcon, LightbulbIcon, PencilIcon, RectangleIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import FixtureChannelRangeTable from './fixture-channel-range-table';
@@ -70,6 +72,48 @@ const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannel
     setChannelDefinitions(newChannelDefinitions);
   };
 
+  const handleChannelRangeAdd = (start: number, end: number, description: string) => {
+    if (!selectedChannelDefinition) {
+      return;
+    }
+
+    if (selectedChannelDefinition.fixtureChannelRanges.some(r => r.description === description)) {
+      notifications.show({
+        color: 'red',
+        title: t(globalMessages.error),
+        message: t({ id: 'SelectableList.itemAlreadyExists', defaultMessage: 'Item already exists' }),
+      });
+      return;
+    }
+
+    const newRange: Partial<FixtureChannelRange> = {
+      dmxStart: start,
+      dmxEnd: end,
+      description,
+    };
+    const newChannelRanges = [...selectedChannelDefinition.fixtureChannelRanges, newRange as FixtureChannelRange];
+    const newChannelDefinition = { ...selectedChannelDefinition, fixtureChannelRanges: newChannelRanges };
+    const newChannelDefinitions = channelDefinitions.map(cd =>
+      cd === selectedChannelDefinition ? newChannelDefinition : cd,
+    );
+    setChannelDefinitions(newChannelDefinitions);
+    setSelectedChannelDefinition(newChannelDefinition);
+  };
+
+  const handleChannelRangeDelete = (rangeToDelete: FixtureChannelRange) => {
+    if (!selectedChannelDefinition) {
+      return;
+    }
+
+    const newChannelRanges = selectedChannelDefinition.fixtureChannelRanges.filter(r => r !== rangeToDelete);
+    const newChannelDefinition = { ...selectedChannelDefinition, fixtureChannelRanges: newChannelRanges };
+    const newChannelDefinitions = channelDefinitions.map(cd =>
+      cd === selectedChannelDefinition ? newChannelDefinition : cd,
+    );
+    setChannelDefinitions(newChannelDefinitions);
+    setSelectedChannelDefinition(newChannelDefinition);
+  };
+
   return (
     <Flex direction="row" gap="xl">
       <Flex direction="column" gap="md">
@@ -108,8 +152,11 @@ const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannel
           })}
         </Text>
 
-        <Text size="sm">Ranges</Text>
-        <FixtureChannelRangeTable fixtureChannelRanges={selectedChannelDefinition?.fixtureChannelRanges ?? []} />
+        <FixtureChannelRangeTable
+          fixtureChannelRanges={selectedChannelDefinition?.fixtureChannelRanges ?? []}
+          onAdd={handleChannelRangeAdd}
+          onDelete={handleChannelRangeDelete}
+        />
       </Flex>
     </Flex>
   );
