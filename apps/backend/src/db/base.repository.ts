@@ -1,5 +1,5 @@
 import * as schema from '@/db/schema';
-import { BuildQueryResult, DBQueryConfig, ExtractTablesWithRelations } from 'drizzle-orm';
+import { BuildQueryResult, DBQueryConfig, ExtractTablesWithRelations, sql } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres/driver';
 import { AnyPgTable } from 'drizzle-orm/pg-core';
 
@@ -57,5 +57,31 @@ export abstract class BaseRepository<
   ): Promise<QueryResult<TTableName, TConfig>[]> {
     // @ts-expect-error - Drizzle generic relational query type limitation
     return this.queryDb.query[this.tableName].findMany(config);
+  }
+
+  public async create(
+    data: Record<string, unknown> | Record<string, unknown>[],
+  ): Promise<QueryResult<TTableName, true>[]> {
+    // @ts-expect-error - Drizzle insert type limitation
+    return this.queryDb.insert(this.table).values(data).returning();
+  }
+
+  public async updateByPublicId(
+    publicId: string,
+    data: Record<string, unknown>,
+  ): Promise<QueryResult<TTableName, true>[]> {
+    // @ts-expect-error - All tables have publicId from pk spread
+    return this.queryDb
+      .update(this.table)
+      .set(data)
+      .where(sql`${this.table}.publicId = ${publicId}`)
+      .returning();
+  }
+
+  public async deleteManyBy(
+    where: (fields: TableT, { eq }: { eq: (left: unknown, right: unknown) => unknown }) => unknown,
+  ): Promise<void> {
+    // @ts-expect-error - Drizzle delete type limitation
+    await this.queryDb.delete(this.table).where(where);
   }
 }

@@ -1,7 +1,7 @@
 info:
-  name: vendors
+  name: fixtureVendors
   type: graphql
-  seq: 4
+  seq: 2
 
 graphql:
   method: POST
@@ -10,7 +10,7 @@ graphql:
   body:
     query: |
       query {
-        vendors {
+        fixtureVendors {
           createdAt
           name
           publicId

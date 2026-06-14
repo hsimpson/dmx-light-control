@@ -4,7 +4,16 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "packageManager": "pnpm@11.2.2",
+  "engines": {
+    "node": "24.16.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.7.0",
+      "onFail": "download"
+    }
+  },
   "devDependencies": {
     "@eslint-react/eslint-plugin": "^5.8.17",
     "@eslint/js": "^10.0.1",
