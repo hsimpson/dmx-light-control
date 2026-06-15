@@ -8,11 +8,13 @@ import { DrizzlePGModule } from '@knaadh/nestjs-drizzle-pg';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GraphQLModule } from '@nestjs/graphql';
 import { GraphQLUUID } from 'graphql-scalars';
 import { DB_PROVIDER } from './db/db.provider';
 import { FixturesModule } from './fixtures/fixtures.module';
+import { GlobalGqlExceptionFilter } from './shared/graphql-exception.filter';
 
 @Module({
   imports: [
@@ -31,6 +33,17 @@ import { FixturesModule } from './fixtures/fixtures.module';
       autoSchemaFile: true,
       sortSchema: true,
       resolvers: { UUID: GraphQLUUID },
+      formatError: formattedError => {
+        if (process.env.NODE_ENV === 'production') {
+          const { stacktrace, ...extensions } = formattedError.extensions ?? {};
+          return {
+            ...formattedError,
+            extensions,
+          };
+        }
+
+        return formattedError;
+      },
     }),
     EventEmitterModule.forRoot(),
     DmxModule,
@@ -38,7 +51,13 @@ import { FixturesModule } from './fixtures/fixtures.module';
     IoBridgeModule,
     FixturesModule,
   ],
-  providers: [AppEventEmitter],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: GlobalGqlExceptionFilter,
+    },
+    AppEventEmitter,
+  ],
   exports: [AppEventEmitter],
 })
 export class AppModule {}

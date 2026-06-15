@@ -1,16 +1,14 @@
 import { pk, timestamps } from '@/db/columns.helpers';
-import { relations } from 'drizzle-orm';
-import { integer, pgEnum, pgTable, unique, varchar } from 'drizzle-orm/pg-core';
+import * as d from 'drizzle-orm/pg-core';
+import { integer, pgEnum, unique, varchar } from 'drizzle-orm/pg-core';
 import { FixtureChannelPreset } from '../channel-presets';
-import fixtureChannelAssignment from './fixture-channel-assignment.entity';
-import fixtureChannelRange from './fixture-channel-range.entity';
 import fixture from './fixture.entity';
 
 type PresetValue = (typeof FixtureChannelPreset)[keyof typeof FixtureChannelPreset];
 const presetValues = Object.values(FixtureChannelPreset) as [PresetValue, ...PresetValue[]];
 export const presetEnum = pgEnum('preset', presetValues);
 
-const fixtureChannelDefinition = pgTable(
+const fixtureChannelDefinition = d.snakeCase.table(
   'fixture_channel_definitions',
   {
     ...pk,
@@ -25,16 +23,5 @@ const fixtureChannelDefinition = pgTable(
   },
   table => [unique().on(table.fixtureId, table.name)],
 );
-
-export const fixtureChannelDefinitionRelations = relations(fixtureChannelDefinition, ({ one, many }) => ({
-  fixture: one(fixture, {
-    fields: [fixtureChannelDefinition.fixtureId],
-    references: [fixture.id],
-  }),
-  fixtureChannelRanges: many(fixtureChannelRange),
-  fixtureChannelAssignments: many(fixtureChannelAssignment),
-}));
-
-export type FixtureChannelDefinition = typeof fixtureChannelDefinition.$inferSelect;
 
 export default fixtureChannelDefinition;

@@ -41,7 +41,6 @@ nx run infra:db-logs
 nx serve backend              # builds + watches + starts, auto-depends on infra:db-start
 nx run backend:build
 nx run backend:drizzle-generate -- --name <migration_name>
-nx run backend:drizzle-drop
 nx run backend:drizzle-migrate
 nx run backend:drizzle-seed   # uses tsx runner
 nx run backend:drizzle-studio

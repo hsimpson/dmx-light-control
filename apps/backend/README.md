@@ -14,12 +14,6 @@ The backend uses Drizzle ORM for database interactions. The database schema is d
 nx run backend:drizzle-generate --name <migration_name>
 ```
 
-To drop a migration, use the following command:
-
-```bash
-nx run backend:drizzle-drop
-```
-
 To apply migrations, use the following command:
 
 ```bash

@@ -3,6 +3,7 @@ import * as schema from '@/db/schema';
 import { DrizzlePGConfig } from '@knaadh/nestjs-drizzle-pg';
 import { ConfigurableModuleOptionsFactory, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { relations } from './relations';
 
 @Injectable()
 export class DbConfigService implements ConfigurableModuleOptionsFactory<DrizzlePGConfig, 'create'> {
@@ -26,8 +27,7 @@ export class DbConfigService implements ConfigurableModuleOptionsFactory<Drizzle
           database: dbConfig.name,
         },
       },
-      // use snake_case for the database columns
-      config: { schema, casing: 'snake_case' },
+      config: { schema, relations },
     };
   };
 }

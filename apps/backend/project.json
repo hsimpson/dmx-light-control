@@ -81,13 +81,6 @@
         "cwd": "{projectRoot}"
       }
     },
-    "drizzle-drop": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "drizzle-kit drop --config=./src/db/drizzle.config.ts",
-        "cwd": "{projectRoot}"
-      }
-    },
     "drizzle-migrate": {
       "executor": "nx:run-commands",
       "options": {

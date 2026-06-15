@@ -1,10 +1,9 @@
 import { pk, timestamps } from '@/db/columns.helpers';
-import { relations } from 'drizzle-orm';
-import { integer, pgTable, unique, varchar } from 'drizzle-orm/pg-core';
-import fixtureChannelAssignment from './fixture-channel-assignment.entity';
+import * as d from 'drizzle-orm/pg-core';
+import { integer, unique, varchar } from 'drizzle-orm/pg-core';
 import fixture from './fixture.entity';
 
-const fixtureChannelMode = pgTable(
+const fixtureChannelMode = d.snakeCase.table(
   'fixture_channel_modes',
   {
     ...pk,
@@ -17,15 +16,5 @@ const fixtureChannelMode = pgTable(
   },
   table => [unique().on(table.fixtureId, table.name)],
 );
-
-export const fixtureChannelModeRelations = relations(fixtureChannelMode, ({ one, many }) => ({
-  fixture: one(fixture, {
-    fields: [fixtureChannelMode.fixtureId],
-    references: [fixture.id],
-  }),
-  fixtureChannelAssignments: many(fixtureChannelAssignment),
-}));
-
-export type FixtureChannelMode = typeof fixtureChannelMode.$inferSelect;
 
 export default fixtureChannelMode;

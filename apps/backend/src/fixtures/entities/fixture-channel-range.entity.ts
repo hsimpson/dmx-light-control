@@ -1,9 +1,10 @@
 import { pk, timestamps } from '@/db/columns.helpers';
-import { relations, sql } from 'drizzle-orm';
-import { check, integer, pgTable, varchar } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+import * as d from 'drizzle-orm/pg-core';
+import { check, integer, varchar } from 'drizzle-orm/pg-core';
 import fixtureChannelDefinition from './fixture-channel-definition.entity';
 
-const fixtureChannelRange = pgTable(
+const fixtureChannelRange = d.snakeCase.table(
   'fixture_channel_ranges',
   {
     ...pk,
@@ -21,14 +22,5 @@ const fixtureChannelRange = pgTable(
     check('valid_range_order', sql`${table.dmxStart} <= ${table.dmxEnd}`),
   ],
 );
-
-export const fixtureChannelRangeRelations = relations(fixtureChannelRange, ({ one }) => ({
-  fixtureChannelDefinition: one(fixtureChannelDefinition, {
-    fields: [fixtureChannelRange.fixtureChannelDefinitionId],
-    references: [fixtureChannelDefinition.id],
-  }),
-}));
-
-export type FixtureChannelRange = typeof fixtureChannelRange.$inferSelect;
 
 export default fixtureChannelRange;
