@@ -36,6 +36,7 @@ export const relations = defineRelations(schema, r => ({
       from: r.fixtureChannelMode.fixtureId,
       to: r.fixture.id,
     }),
+    fixtureChannelAssignments: r.many.fixtureChannelAssignment(),
   },
 
   fixtureChannelAssignment: {

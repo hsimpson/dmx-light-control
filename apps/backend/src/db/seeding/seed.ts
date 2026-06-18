@@ -15,7 +15,6 @@ import { fixtures } from './data/fixtures/fixtures';
 async function main() {
   const db = drizzle({
     connection: resolveDatabaseUrl(),
-    casing: 'snake_case',
   });
 
   await reset(db, schema);

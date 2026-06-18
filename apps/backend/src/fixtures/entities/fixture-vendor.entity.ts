@@ -1,8 +1,8 @@
 import { pk, timestamps } from '@/db/columns.helpers';
+import * as d from 'drizzle-orm/pg-core';
+import { varchar } from 'drizzle-orm/pg-core';
 
-import { pgTable, varchar } from 'drizzle-orm/pg-core';
-
-const fixtureVendor = pgTable('fixture_vendors', {
+const fixtureVendor = d.snakeCase.table('fixture_vendors', {
   ...pk,
   name: varchar({ length: 255 }).notNull().unique(),
 

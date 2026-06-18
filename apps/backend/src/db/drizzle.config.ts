@@ -9,7 +9,4 @@ export default defineConfig({
   dbCredentials: {
     url: resolveDatabaseUrl(),
   },
-  // migrations: {
-  //   prefix: 'timestamp',
-  // },
 });
