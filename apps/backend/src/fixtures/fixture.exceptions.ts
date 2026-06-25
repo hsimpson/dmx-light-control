@@ -27,3 +27,13 @@ export class FixtureNotFoundException extends BaseDomainError {
     this.name = 'FixtureNotFoundError';
   }
 }
+
+export class FixtureVendorNotFoundException extends BaseDomainError {
+  public readonly code = 'VENDOR_NOT_FOUND';
+  public override readonly statusCode = HttpStatus.NOT_FOUND;
+
+  public constructor(vendorId: string) {
+    super(`Vendor with ID ${vendorId} could not be found.`);
+    this.name = 'VendorNotFoundError';
+  }
+}

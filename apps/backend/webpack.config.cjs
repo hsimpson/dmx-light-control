@@ -1,30 +1,39 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { join } = require('node:path');
 
-// Export a function so the @nx/webpack:webpack executor can pass its options
-// (including `watch: true`) into the config. When the config is an object,
-// the executor ignores the watch option and webpack always exits after one build,
-// causing @nx/js:node to restart in an infinite loop.
+/** Known webpack config options (webpack CLI schema) */
+const VALID_WEBPACK_OPTIONS = new Set([
+  'amd', 'bail', 'cache', 'context', 'dependencies', 'devServer', 'devtool',
+  'dotenv', 'entry', 'experiments', 'extends', 'externals', 'externalsPresets',
+  'externalsType', 'ignoreWarnings', 'infrastructureLogging', 'loader', 'mode',
+  'module', 'name', 'node', 'optimization', 'output', 'parallelism', 'performance',
+  'plugins', 'profile', 'recordsInputPath', 'recordsOutputPath', 'recordsPath',
+  'resolve', 'resolveLoader', 'snapshot', 'stats', 'target', 'validate', 'watch',
+  'watchOptions',
+]);
+
 module.exports = function webpackConfig(config, { options } = {}) {
+  /** @type {import('webpack').Configuration} */
+  const mergedConfig = { ...config };
+
+  // Filter out unknown properties from the inferred plugin's options
+  for (const key of Object.keys(mergedConfig)) {
+    if (!VALID_WEBPACK_OPTIONS.has(key)) {
+      delete mergedConfig[key];
+    }
+  }
+
   const isDevMode = process.env.NODE_ENV !== 'production';
 
-  config.output = {
+  mergedConfig.output = {
     path: join(__dirname, '../../dist/apps/backend'),
-    // clean only for production — in dev/watch mode, cleaning deletes output
-    // files before they're rewritten, which can confuse file watchers
     clean: !isDevMode,
     ...(isDevMode && {
       devtoolModuleFilenameTemplate: '[absolute-resource-path]',
     }),
   };
 
-  // Propagate the watch option from the executor so webpack stays running
-  // in watch mode and emits an event on each recompile
-  if (options?.watch) {
-    config.watch = true;
-  }
-
-  config.plugins = [
+  mergedConfig.plugins = [
     new NxAppWebpackPlugin({
       target: 'node',
       compiler: 'tsc',
@@ -38,5 +47,5 @@ module.exports = function webpackConfig(config, { options } = {}) {
     }),
   ];
 
-  return config;
+  return mergedConfig;
 };

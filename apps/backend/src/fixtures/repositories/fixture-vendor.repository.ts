@@ -18,4 +18,10 @@ export class FixtureVendorRepository {
       where: { publicId },
     });
   }
+
+  public async findOneByName(name: string): Promise<InferSelectModel<typeof schema.fixtureVendor> | undefined> {
+    return await this.db.query.fixtureVendor.findFirst({
+      where: { name },
+    });
+  }
 }

@@ -1,4 +1,4 @@
-import { FixtureNotFoundException } from '@/shared/exceptions';
+import { FixtureNotFoundException, FixtureVendorNotFoundException } from '@/fixtures/fixture.exceptions';
 import { Injectable } from '@nestjs/common';
 import { InferSelectModel } from 'drizzle-orm/table';
 import { UpdateFixtureInput } from './dto/update-fixture.dto';
@@ -29,6 +29,14 @@ export class FixtureService {
     const updateData: Partial<InferSelectModel<typeof fixture>> = {};
     if (input.name) {
       updateData.name = input.name;
+    }
+
+    if (input.vendorPublicId) {
+      const vendor = await this.vendorRepository.findOneByPublicId(input.vendorPublicId);
+      if (!vendor) {
+        throw new FixtureVendorNotFoundException(input.vendorPublicId);
+      }
+      updateData.vendorId = vendor.id ?? undefined;
     }
 
     if (Object.keys(updateData).length) {

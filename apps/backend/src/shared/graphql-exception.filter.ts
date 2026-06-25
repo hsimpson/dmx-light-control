@@ -2,7 +2,7 @@
 import { ArgumentsHost, Catch, Logger } from '@nestjs/common';
 import { GqlExceptionFilter } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
-import { BaseDomainError } from './exceptions';
+import { BaseDomainError } from '../fixtures/fixture.exceptions';
 
 interface NestHttpExceptionResponse {
   message: string | string[];
