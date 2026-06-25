@@ -1,8 +1,9 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { plainToInstance } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
 import { FixtureVendorDto } from './dto/fixture-vendor.dto';
 import { FixtureDto } from './dto/fixture.dto';
+import { UpdateFixtureInput } from './dto/update-fixture.dto';
 import { FixtureService } from './fixture.service';
 
 @Resolver()
@@ -51,12 +52,12 @@ export class FixtureResolver {
   //   return plainToInstance(FixtureDto, fixture);
   // }
 
-  // @Mutation(() => FixtureDto, {
-  //   name: 'updateFixture',
-  //   description: 'update an existing fixture',
-  // })
-  // public async updateFixture(@Args('input') input: UpdateFixtureInput): Promise<FixtureDto> {
-  //   const fixture = await this.fixtureService.updateFixture(input);
-  //   return plainToInstance(FixtureDto, fixture);
-  // }
+  @Mutation(() => FixtureDto, {
+    name: 'updateFixture',
+    description: 'update an existing fixture',
+  })
+  public async updateFixture(@Args('input') input: UpdateFixtureInput): Promise<FixtureDto> {
+    const fixture = await this.fixtureService.updateFixture(input);
+    return plainToInstance(FixtureDto, fixture);
+  }
 }

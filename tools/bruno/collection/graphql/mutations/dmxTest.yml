@@ -1,7 +1,7 @@
 info:
   name: dmxTest
   type: graphql
-  seq: 3
+  seq: 2
 
 graphql:
   method: POST
@@ -15,12 +15,72 @@ graphql:
     variables: |
       {
         "channelValues": {
-          "dmxValues": [
-            {
-              "channel": 1,
-              "value": 127
+          "dmxValues": {
+            "literal": {
+              "kind": "ListValue",
+              "values": [
+                {
+                  "kind": "ObjectValue",
+                  "fields": [
+                    {
+                      "kind": "ObjectField",
+                      "name": {
+                        "kind": "Name",
+                        "value": "channel",
+                        "loc": {
+                          "start": 3,
+                          "end": 10
+                        }
+                      },
+                      "value": {
+                        "kind": "IntValue",
+                        "value": "1",
+                        "loc": {
+                          "start": 12,
+                          "end": 13
+                        }
+                      },
+                      "loc": {
+                        "start": 3,
+                        "end": 13
+                      }
+                    },
+                    {
+                      "kind": "ObjectField",
+                      "name": {
+                        "kind": "Name",
+                        "value": "value",
+                        "loc": {
+                          "start": 15,
+                          "end": 20
+                        }
+                      },
+                      "value": {
+                        "kind": "IntValue",
+                        "value": "127",
+                        "loc": {
+                          "start": 22,
+                          "end": 25
+                        }
+                      },
+                      "loc": {
+                        "start": 15,
+                        "end": 25
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": 1,
+                    "end": 27
+                  }
+                }
+              ],
+              "loc": {
+                "start": 0,
+                "end": 28
+              }
             }
-          ]
+          }
         }
       }
 

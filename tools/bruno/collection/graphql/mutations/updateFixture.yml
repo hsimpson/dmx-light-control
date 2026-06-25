@@ -1,52 +1,15 @@
 info:
   name: updateFixture
   type: graphql
-  seq: 5
+  seq: 4
 
 graphql:
   method: POST
   url: "{{backendUrl}}/graphql"
-  auth: inherit
   body:
     query: |
-      mutation($input: FixtureInput!) {
+      mutation($input: UpdateFixtureInput!) {
         updateFixture(input: $input) {
-          createdAt
-          fixtureChannelDefinitions {
-            createdAt
-            fixtureChannelAssignments {
-              channelNumber
-              createdAt
-              publicId
-              updatedAt
-            }
-            fixtureChannelRanges {
-              createdAt
-              description
-              dmxEnd
-              dmxStart
-              publicId
-              updatedAt
-            }
-            name
-            order
-            preset
-            publicId
-            updatedAt
-          }
-          fixtureChannelModes {
-            createdAt
-            fixtureChannelAssignments {
-              channelNumber
-              createdAt
-              publicId
-              updatedAt
-            }
-            name
-            order
-            publicId
-            updatedAt
-          }
           fixtureVendor {
             createdAt
             name
@@ -61,13 +24,13 @@ graphql:
     variables: |
       {
         "input": {
-          "fixtureChannelDefinitions": [],
-          "fixtureChannelModes": [],
-          "name": null,
-          "publicId": null,
-          "vendorId": null
+          "name": "Mega TriPar Profile Plus",
+          "publicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
+          "vendorName": null,
+          "vendorPublicId": null
         }
       }
+  auth: inherit
 
 settings:
   encodeUrl: true

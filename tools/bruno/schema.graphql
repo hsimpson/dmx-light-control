@@ -1,6 +1,6 @@
 input ChannelValuesInput {
   """The list of DMX channel values"""
-  dmxValues: [DmxValueInput!]! = [{channel: 1, value: 127}]
+  dmxValues: [DmxValueInput!]! = [{ channel: 1, value: 127 }]
 }
 
 """
@@ -30,14 +30,6 @@ type FixtureChannelAssignmentDto {
   updatedAt: DateTime!
 }
 
-input FixtureChannelAssignmentInput {
-  """The number of the channel assignment"""
-  channelNumber: Int!
-
-  """The public ID of the channel assignment (used for updates)"""
-  publicId: UUID
-}
-
 type FixtureChannelDefinitionDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
@@ -64,23 +56,6 @@ type FixtureChannelDefinitionDto {
   updatedAt: DateTime!
 }
 
-input FixtureChannelDefinitionInput {
-  """The channel ranges of the channel definition"""
-  fixtureChannelRanges: [FixtureChannelRangeInput!]!
-
-  """The name of the channel definition"""
-  name: String!
-
-  """The order of the channel definition"""
-  order: Int!
-
-  """The preset of the channel definition"""
-  preset: FixtureChannelPreset!
-
-  """The public ID of the channel definition (used for updates)"""
-  publicId: UUID
-}
-
 type FixtureChannelModeDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
@@ -99,20 +74,6 @@ type FixtureChannelModeDto {
 
   """The date and time when the entity was last updated"""
   updatedAt: DateTime!
-}
-
-input FixtureChannelModeInput {
-  """The channel assignments of the channel mode"""
-  fixtureChannelAssignments: [FixtureChannelAssignmentInput!]!
-
-  """The name of the channel mode"""
-  name: String!
-
-  """The order of the channel mode"""
-  order: Int!
-
-  """The public ID of the channel mode (used for updates)"""
-  publicId: UUID
 }
 
 """The preset of a fixture channel assignment"""
@@ -150,20 +111,6 @@ type FixtureChannelRangeDto {
   updatedAt: DateTime!
 }
 
-input FixtureChannelRangeInput {
-  """The description of the channel range"""
-  description: String!
-
-  """The DMX end value of the channel range (0-255)"""
-  dmxEnd: Int!
-
-  """The DMX start value of the channel range (0-255)"""
-  dmxStart: Int!
-
-  """The public ID of the channel range (used for updates)"""
-  publicId: UUID
-}
-
 type FixtureDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
@@ -185,23 +132,6 @@ type FixtureDto {
 
   """The date and time when the entity was last updated"""
   updatedAt: DateTime!
-}
-
-input FixtureInput {
-  """The channel definitions of the fixture"""
-  fixtureChannelDefinitions: [FixtureChannelDefinitionInput!]!
-
-  """The channel modes of the fixture"""
-  fixtureChannelModes: [FixtureChannelModeInput!]!
-
-  """The name of the fixture"""
-  name: String!
-
-  """The public ID of the fixture (used for updates)"""
-  publicId: UUID
-
-  """The vendor ID of the fixture"""
-  vendorId: Float!
 }
 
 type FixtureVendorDto {
@@ -238,9 +168,6 @@ type Mutation {
   """Close the specified MIDI ports"""
   closePorts: Boolean
 
-  """create a new fixture"""
-  createFixture(input: FixtureInput!): FixtureDto!
-
   """test dmx resolver"""
   dmxTest(channelValues: ChannelValuesInput!): String!
 
@@ -248,7 +175,7 @@ type Mutation {
   openPorts(openPortsDto: OpenPortsInput!): Boolean
 
   """update an existing fixture"""
-  updateFixture(input: FixtureInput!): FixtureDto!
+  updateFixture(input: UpdateFixtureInput!): FixtureDto!
 }
 
 input OpenPortsInput {
@@ -277,3 +204,17 @@ type Query {
 A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier.
 """
 scalar UUID
+
+input UpdateFixtureInput {
+  """The name of the fixture"""
+  name: String
+
+  """The public ID of the fixture"""
+  publicId: UUID!
+
+  """The name of the vendor"""
+  vendorName: String
+
+  """The public ID of the vendor"""
+  vendorPublicId: UUID
+}

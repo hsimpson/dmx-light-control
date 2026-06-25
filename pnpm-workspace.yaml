@@ -14,5 +14,4 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   usb: true
-# minimumReleaseAge: 10080 # 7 days in minutes
-minimumReleaseAge: 7200 # 5 days in minutes
+minimumReleaseAge: 10080 # 7 days in minutes

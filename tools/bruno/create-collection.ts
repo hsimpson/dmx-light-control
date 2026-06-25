@@ -104,7 +104,7 @@ function buildDefaultValue(type: GraphQLType): unknown {
 
   const obj: Record<string, unknown> = {};
   for (const field of Object.values(type.getFields())) {
-    obj[field.name] = field.defaultValue !== undefined ? field.defaultValue : buildDefaultValue(field.type);
+    obj[field.name] = field.default ?? buildDefaultValue(field.type);
   }
   return obj;
 }
@@ -114,7 +114,7 @@ function buildVariables(field: GraphQLField<unknown, unknown>): string {
   if (!field.args.length) return '{}';
   const vars: Record<string, unknown> = {};
   for (const arg of field.args) {
-    vars[arg.name] = arg.defaultValue !== undefined ? arg.defaultValue : buildDefaultValue(arg.type);
+    vars[arg.name] = arg.default ?? buildDefaultValue(arg.type);
   }
   return JSON.stringify(vars, null, 2);
 }
