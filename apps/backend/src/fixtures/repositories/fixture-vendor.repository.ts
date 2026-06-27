@@ -24,4 +24,12 @@ export class FixtureVendorRepository {
       where: { name },
     });
   }
+
+  public async createOne(data: {
+    name: string;
+    publicId: string;
+  }): Promise<InferSelectModel<typeof schema.fixtureVendor> | undefined> {
+    const [result] = await this.db.insert(schema.fixtureVendor).values(data).returning();
+    return result;
+  }
 }

@@ -37,3 +37,23 @@ export class FixtureVendorNotFoundException extends BaseDomainError {
     this.name = 'VendorNotFoundError';
   }
 }
+
+export class FixtureVendorAlreadyExistsException extends BaseDomainError {
+  public readonly code = 'VENDOR_ALREADY_EXISTS';
+  public override readonly statusCode = HttpStatus.CONFLICT;
+
+  public constructor(vendorName: string) {
+    super(`Vendor with name ${vendorName} already exists.`);
+    this.name = 'VendorAlreadyExistsError';
+  }
+}
+
+export class FixtureVendorCreationFailedException extends BaseDomainError {
+  public readonly code = 'VENDOR_CREATION_FAILED';
+  public override readonly statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+
+  public constructor(vendorName: string) {
+    super(`Failed to create vendor with name ${vendorName}.`);
+    this.name = 'VendorCreationFailedError';
+  }
+}

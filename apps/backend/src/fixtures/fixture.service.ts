@@ -1,4 +1,9 @@
-import { FixtureNotFoundException, FixtureVendorNotFoundException } from '@/fixtures/fixture.exceptions';
+import {
+  FixtureNotFoundException,
+  FixtureVendorAlreadyExistsException,
+  FixtureVendorCreationFailedException,
+  FixtureVendorNotFoundException,
+} from '@/fixtures/fixture.exceptions';
 import { Injectable } from '@nestjs/common';
 import { InferSelectModel } from 'drizzle-orm/table';
 import { UpdateFixtureInput } from './dto/update-fixture.dto';
@@ -37,6 +42,20 @@ export class FixtureService {
         throw new FixtureVendorNotFoundException(input.vendorPublicId);
       }
       updateData.vendorId = vendor.id ?? undefined;
+    } else if (input.vendorName) {
+      const vendor = await this.vendorRepository.findOneByName(input.vendorName);
+      if (vendor) {
+        throw new FixtureVendorAlreadyExistsException(input.vendorName);
+      }
+      const newVendor = await this.vendorRepository.createOne({
+        name: input.vendorName,
+        publicId: crypto.randomUUID(),
+      });
+
+      if (!newVendor) {
+        throw new FixtureVendorCreationFailedException(input.vendorName);
+      }
+      updateData.vendorId = newVendor.id ?? undefined;
     }
 
     if (Object.keys(updateData).length) {
