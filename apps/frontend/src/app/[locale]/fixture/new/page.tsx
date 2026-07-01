@@ -18,7 +18,7 @@ export const AddFixturePage = () => {
   return (
     <>
       <Title order={1}>{t({ id: 'AddFixturePage.title', defaultMessage: 'Add Fixture' })}</Title>
-      <FixtureForm vendors={vendorsData?.vendors ?? []} />
+      <FixtureForm vendors={vendorsData?.fixtureVendors ?? []} />
     </>
   );
 };

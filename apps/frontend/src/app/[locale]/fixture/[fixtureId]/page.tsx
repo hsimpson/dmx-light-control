@@ -26,7 +26,7 @@ const EditFixturePage = () => {
   return (
     <>
       <Title order={1}>{t({ id: 'EditFixturePage.title', defaultMessage: 'Edit Fixture' })}</Title>
-      <FixtureForm fixture={fixtureData?.fixture ?? undefined} vendors={vendorsData?.vendors ?? []} />
+      <FixtureForm fixture={fixtureData?.fixture ?? undefined} vendors={vendorsData?.fixtureVendors ?? []} />
     </>
   );
 };

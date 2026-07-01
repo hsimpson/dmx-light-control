@@ -13,7 +13,7 @@ type Fixture = GetFixturesQuery['fixtures'][number];
 
 type FixtureFormProps = {
   fixture?: Fixture;
-  vendors: GetVendorsQuery['vendors'];
+  vendors: GetVendorsQuery['fixtureVendors'];
 };
 
 // const getChannelsForMode = (channelMode: string, channelAssignments: ChannelAssignment): Channel[] => {
