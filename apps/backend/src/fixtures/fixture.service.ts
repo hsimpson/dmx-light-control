@@ -36,24 +36,24 @@ export class FixtureService {
       updateData.name = input.name;
     }
 
-    if (input.vendorPublicId) {
-      const vendor = await this.vendorRepository.findOneByPublicId(input.vendorPublicId);
+    if (input.vendor?.publicId) {
+      const vendor = await this.vendorRepository.findOneByPublicId(input.vendor.publicId);
       if (!vendor) {
-        throw new FixtureVendorNotFoundException(input.vendorPublicId);
+        throw new FixtureVendorNotFoundException(input.vendor.publicId);
       }
       updateData.vendorId = vendor.id ?? undefined;
-    } else if (input.vendorName) {
-      const vendor = await this.vendorRepository.findOneByName(input.vendorName);
-      if (vendor) {
-        throw new FixtureVendorAlreadyExistsException(input.vendorName);
+    } else if (input.vendor?.name) {
+      const existingVendor = await this.vendorRepository.findOneByName(input.vendor.name);
+      if (existingVendor) {
+        throw new FixtureVendorAlreadyExistsException(input.vendor.name);
       }
       const newVendor = await this.vendorRepository.createOne({
-        name: input.vendorName,
+        name: input.vendor.name,
         publicId: crypto.randomUUID(),
       });
 
       if (!newVendor) {
-        throw new FixtureVendorCreationFailedException(input.vendorName);
+        throw new FixtureVendorCreationFailedException(input.vendor.name);
       }
       updateData.vendorId = newVendor.id ?? undefined;
     }

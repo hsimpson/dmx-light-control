@@ -6,10 +6,47 @@ info:
 graphql:
   method: POST
   url: "{{backendUrl}}/graphql"
+  auth: inherit
   body:
     query: |
       mutation($input: UpdateFixtureInput!) {
         updateFixture(input: $input) {
+          createdAt
+          fixtureChannelDefinitions {
+            createdAt
+            fixtureChannelAssignments {
+              channelNumber
+              createdAt
+              publicId
+              updatedAt
+            }
+            fixtureChannelRanges {
+              createdAt
+              description
+              dmxEnd
+              dmxStart
+              publicId
+              updatedAt
+            }
+            name
+            order
+            preset
+            publicId
+            updatedAt
+          }
+          fixtureChannelModes {
+            createdAt
+            fixtureChannelAssignments {
+              channelNumber
+              createdAt
+              publicId
+              updatedAt
+            }
+            name
+            order
+            publicId
+            updatedAt
+          }
           fixtureVendor {
             createdAt
             name
@@ -24,13 +61,14 @@ graphql:
     variables: |
       {
         "input": {
-          "name": "Mega TriPar Profile Plus",
-          "publicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
-          "vendorName": null,
-          "vendorPublicId": null
+          "name": null,
+          "publicId": null,
+          "vendor": {
+            "name": null,
+            "publicId": null
+          }
         }
       }
-  auth: inherit
 
 settings:
   encodeUrl: true

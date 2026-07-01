@@ -1,8 +1,8 @@
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
 import { Field, Float, InputType, Int } from '@nestjs/graphql';
-import { GraphQLUUID } from 'graphql-scalars';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
+import { GraphQLUUID } from 'graphql-scalars';
 
 @InputType()
 export class FixtureVendorInput {
@@ -10,9 +10,10 @@ export class FixtureVendorInput {
   @IsOptional()
   public publicId?: string;
 
-  @Field({ description: 'The name of the vendor' })
+  @Field({ nullable: true, description: 'The name of the vendor' })
+  @IsOptional()
   @IsString()
-  public name: string;
+  public name?: string;
 }
 
 @InputType()
