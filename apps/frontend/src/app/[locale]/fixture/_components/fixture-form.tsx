@@ -2,7 +2,8 @@
 
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { GetFixturesQuery, GetVendorsQuery } from '@/shared/types/graphql/graphql';
+import { GetFixturesQuery, GetVendorsQuery, UpdateFixtureDocument } from '@/shared/types/graphql/graphql';
+import { useMutation } from '@apollo/client/react';
 import { Button, Combobox, Flex, InputBase, TextInput, useCombobox } from '@mantine/core';
 import { schemaResolver, useForm } from '@mantine/form';
 import { useState } from 'react';
@@ -16,13 +17,9 @@ type FixtureFormProps = {
   vendors: GetVendorsQuery['fixtureVendors'];
 };
 
-// const getChannelsForMode = (channelMode: string, channelAssignments: ChannelAssignment): Channel[] => {
-//   const assignment = channelAssignments.find(a => a.channelMode === channelMode);
-//   return assignment?.channels ?? [];
-// };
-
 const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const { t } = useTranslation();
+  const [updateFixture] = useMutation(UpdateFixtureDocument);
 
   const vendorNames = vendors.map(vendor => vendor.name);
 
@@ -59,8 +56,6 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const [comboBoxValue, setComboBoxValue] = useState(fixture?.fixtureVendor.name ?? null);
   const [comboBoxSearch, setComboBoxSearch] = useState(fixture?.fixtureVendor.name ?? '');
 
-  const [channelDefinitionsToRemove, setChannelDefinitionsToRemove] = useState<string[]>([]);
-
   const exactOptionMatch = comboBoxData.some(item => item === comboBoxSearch);
   const filteredOptions = exactOptionMatch
     ? comboBoxData
@@ -81,8 +76,18 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
     validate: schemaResolver(schema, { sync: true }),
   });
 
-  const onSubmit = (values: FixtureFormValues) => {
+  const onSubmit = async (values: FixtureFormValues) => {
     console.log(values);
+    if (fixture) {
+      await updateFixture({
+        variables: {
+          input: {
+            publicId: fixture.publicId,
+            name: values.fixtureName,
+          },
+        },
+      });
+    }
   };
 
   return (
