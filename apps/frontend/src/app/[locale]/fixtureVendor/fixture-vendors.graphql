@@ -1,0 +1,12 @@
+fragment VendorFields on FixtureVendorDto {
+  publicId
+  name
+  createdAt
+  updatedAt
+}
+
+query GetFixtureVendors {
+  fixtureVendors {
+    ...VendorFields
+  }
+}

@@ -17,4 +17,12 @@ export const globalMessages = defineMessages({
     id: 'GlobalMessages.Warning',
     defaultMessage: 'Warning!',
   },
+  createdAt: {
+    id: 'GlobalMessages.CreatedAt',
+    defaultMessage: 'Created at',
+  },
+  updatedAt: {
+    id: 'GlobalMessages.UpdatedAt',
+    defaultMessage: 'Updated at',
+  },
 });

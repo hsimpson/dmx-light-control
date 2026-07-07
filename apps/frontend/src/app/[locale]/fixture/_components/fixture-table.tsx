@@ -1,6 +1,8 @@
 'use client';
 
+import { DateTime } from '@/components/date-time';
 import { Loading } from '@/components/loading';
+import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { orderSorter } from '@/shared/sorter';
 import { GetFixturesDocument } from '@/shared/types/graphql/graphql';
@@ -56,6 +58,16 @@ const FixtureTable = () => {
               .map(cm => cm.name)
               .join(', ');
           },
+        },
+        {
+          accessor: 'createdAt',
+          title: t(globalMessages.createdAt),
+          render: fixture => <DateTime date={fixture.createdAt} />,
+        },
+        {
+          accessor: 'updatedAt',
+          title: t(globalMessages.updatedAt),
+          render: fixture => <DateTime date={fixture.updatedAt} />,
         },
       ]}
       onRowClick={record => {

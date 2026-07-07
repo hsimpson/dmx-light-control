@@ -19,10 +19,17 @@
   "FixtureList.Table.vendor": "Hersteller",
   "FixtureList.add": "Fixture hinzufügen",
   "FixtureList.title": "Fixtureliste",
+  "FixtureVendorList.Table.name": "Name",
+  "FixtureVendorList.title": "Fixture Vendor list",
   "GlobalMessages.Cancel": "Abbrechen",
+  "GlobalMessages.CreatedAt": "Erstellt am",
   "GlobalMessages.Error": "Fehler!",
   "GlobalMessages.Save": "Speichern",
+  "GlobalMessages.UpdatedAt": "Aktualisiert am",
   "GlobalMessages.Warning": "Warnung!",
   "LanguageSwitcher.language": "Sprache",
+  "NavBar.FixtureVendors": "Fixture Hersteller",
+  "NavBar.Fixtures": "Fixtures",
+  "NavBar.Home": "Home",
   "SelectableList.itemAlreadyExists": "Eintrag existiert schon"
 }

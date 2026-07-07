@@ -2,7 +2,7 @@
 
 import { Loading } from '@/components/loading';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { GetFixtureDocument, GetVendorsDocument } from '@/shared/types/graphql/graphql';
+import { GetFixtureDocument, GetFixtureVendorsDocument } from '@/shared/types/graphql/graphql';
 import { useQuery } from '@apollo/client/react';
 import { Title } from '@mantine/core';
 import { useParams } from 'next/navigation';
@@ -17,7 +17,7 @@ const EditFixturePage = () => {
     skip: !fixtureId,
   });
 
-  const { data: vendorsData, loading: vendorsLoading } = useQuery(GetVendorsDocument);
+  const { data: vendorsData, loading: vendorsLoading } = useQuery(GetFixtureVendorsDocument);
 
   if (fixtureLoading || vendorsLoading) {
     return <Loading />;

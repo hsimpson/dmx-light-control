@@ -2,7 +2,7 @@
 
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { GetFixturesQuery, GetVendorsQuery, UpdateFixtureDocument } from '@/shared/types/graphql/graphql';
+import { GetFixturesQuery, GetFixtureVendorsQuery, UpdateFixtureDocument } from '@/shared/types/graphql/graphql';
 import { useMutation } from '@apollo/client/react';
 import { Button, Combobox, Flex, InputBase, TextInput, useCombobox } from '@mantine/core';
 import { schemaResolver, useForm } from '@mantine/form';
@@ -14,7 +14,7 @@ type Fixture = GetFixturesQuery['fixtures'][number];
 
 type FixtureFormProps = {
   fixture?: Fixture;
-  vendors: GetVendorsQuery['fixtureVendors'];
+  vendors: GetFixtureVendorsQuery['fixtureVendors'];
 };
 
 const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
