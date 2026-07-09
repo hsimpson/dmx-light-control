@@ -22,7 +22,8 @@ DMX lighting control system. NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run frontend:graphql-codegen`       | Generate GraphQL types   |
 | `nx run frontend:i18n-extract`          | Extract translations     |
 
-**Package manager:** `pnpm`. **Node:** 24.18.0. **pnpm:** ^11.9.0.
+**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.18.0. **pnpm:** ^11.9.0.
+**Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
 
 ## Architecture
 

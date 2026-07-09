@@ -13,6 +13,14 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type DeleteFixtureVendorPayload {
+  """True if a vendor was deleted, false if no vendor matched the public id"""
+  deleted: Boolean!
+
+  """The public id of the vendor that was requested for deletion"""
+  publicId: UUID!
+}
+
 input DmxValueInput {
   """The DMX channel number (1-512)"""
   channel: Int!
@@ -185,7 +193,7 @@ type Mutation {
   createFixtureVendor(input: CreateFixtureVendorInput!): FixtureVendorDto!
 
   """delete a fixture vendor by public id"""
-  deleteFixtureVendor(publicId: UUID!): Boolean!
+  deleteFixtureVendor(publicId: UUID!): DeleteFixtureVendorPayload!
 
   """test dmx resolver"""
   dmxTest(channelValues: ChannelValuesInput!): String!

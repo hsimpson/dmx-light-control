@@ -10,11 +10,11 @@ import FixtureForm from '../_components/fixture-form';
 
 const EditFixturePage = () => {
   const { t } = useTranslation();
-  const { fixtureId } = useParams<{ fixtureId: string }>();
+  const { publicId } = useParams<{ publicId: string }>();
 
   const { data: fixtureData, loading: fixtureLoading } = useQuery(GetFixtureDocument, {
-    variables: { fixtureId },
-    skip: !fixtureId,
+    variables: { publicId },
+    skip: !publicId,
   });
 
   const { data: vendorsData, loading: vendorsLoading } = useQuery(GetFixtureVendorsDocument);

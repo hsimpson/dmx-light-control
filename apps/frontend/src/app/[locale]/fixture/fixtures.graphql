@@ -63,8 +63,8 @@ query GetFixtures {
   }
 }
 
-query GetFixture($fixtureId: UUID!) {
-  fixture(fixtureId: $fixtureId) {
+query GetFixture($publicId: UUID!) {
+  fixture(publicId: $publicId) {
     ...FixtureFields
   }
 }

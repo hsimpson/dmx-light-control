@@ -30,7 +30,11 @@ export class FixtureVendorRepository {
     return result;
   }
 
-  public async deleteOneByPublicId(publicId: string): Promise<void> {
-    await this.db.delete(schema.fixtureVendor).where(eq(schema.fixtureVendor.publicId, publicId));
+  public async deleteOneByPublicId(publicId: string): Promise<boolean> {
+    const deleted = await this.db
+      .delete(schema.fixtureVendor)
+      .where(eq(schema.fixtureVendor.publicId, publicId))
+      .returning({ publicId: schema.fixtureVendor.publicId });
+    return deleted.length > 0;
   }
 }

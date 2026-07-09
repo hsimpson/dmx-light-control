@@ -10,7 +10,10 @@ graphql:
   body:
     query: |
       mutation($publicId: UUID!) {
-        deleteFixtureVendor(publicId: $publicId)
+        deleteFixtureVendor(publicId: $publicId) {
+          deleted
+          publicId
+        }
       }
     variables: |
       {

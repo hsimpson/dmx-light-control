@@ -68,8 +68,9 @@ export class FixtureService {
     return await this.fixtureRepository.findOneByPublicId(input.publicId);
   }
 
-  public async deleteFixtureVendorByPublicId(publicId: string) {
-    await this.vendorRepository.deleteOneByPublicId(publicId);
+  public async deleteFixtureVendorByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {
+    const deleted = await this.vendorRepository.deleteOneByPublicId(publicId);
+    return { publicId, deleted };
   }
 
   public async createFixtureVendor(input: CreateFixtureVendorInput) {

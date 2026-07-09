@@ -2,6 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { plainToInstance } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
 import { CreateFixtureVendorInput } from './dto/create-fixture-vendor.dto';
+import { DeleteFixtureVendorPayload } from './dto/delete-fixture-vendor-payload.dto';
 import { FixtureVendorDto } from './dto/fixture-vendor.dto';
 import { FixtureDto } from './dto/fixture.dto';
 import { UpdateFixtureInput } from './dto/update-fixture.dto';
@@ -53,14 +54,15 @@ export class FixtureResolver {
     return plainToInstance(FixtureDto, fixture);
   }
 
-  @Mutation(() => Boolean, {
+  @Mutation(() => DeleteFixtureVendorPayload, {
     name: 'deleteFixtureVendor',
     description: 'delete a fixture vendor by public id',
   })
   public async deleteFixtureVendorByPublicId(
     @Args('publicId', { type: () => GraphQLUUID }) publicId: string,
-  ): Promise<void> {
-    await this.fixtureService.deleteFixtureVendorByPublicId(publicId);
+  ): Promise<DeleteFixtureVendorPayload> {
+    const result = await this.fixtureService.deleteFixtureVendorByPublicId(publicId);
+    return plainToInstance(DeleteFixtureVendorPayload, result);
   }
 
   @Mutation(() => FixtureVendorDto, {
