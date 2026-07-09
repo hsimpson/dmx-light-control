@@ -3,6 +3,11 @@ input ChannelValuesInput {
   dmxValues: [DmxValueInput!]! = [{channel: 1, value: 127}]
 }
 
+input CreateFixtureVendorInput {
+  """The name of the fixture vendor"""
+  name: String!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -176,6 +181,12 @@ type Mutation {
   """Close the specified MIDI ports"""
   closePorts: Boolean
 
+  """create a new fixture vendor"""
+  createFixtureVendor(input: CreateFixtureVendorInput!): FixtureVendorDto!
+
+  """delete a fixture vendor by public id"""
+  deleteFixtureVendor(publicId: UUID!): Boolean!
+
   """test dmx resolver"""
   dmxTest(channelValues: ChannelValuesInput!): String!
 
@@ -196,7 +207,7 @@ input OpenPortsInput {
 
 type Query {
   """get fixture by external id"""
-  fixture(fixtureId: UUID!): FixtureDto
+  fixture(publicId: UUID!): FixtureDto
 
   """get all fixture vendors"""
   fixtureVendors: [FixtureVendorDto!]!

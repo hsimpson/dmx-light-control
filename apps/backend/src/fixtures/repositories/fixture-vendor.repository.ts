@@ -2,7 +2,7 @@ import { InjectDb } from '@/db/drizzle-db/drizzle-db.provider';
 import { relations } from '@/db/relations';
 import * as schema from '@/db/schema';
 import { Injectable } from '@nestjs/common';
-import { InferSelectModel } from 'drizzle-orm';
+import { eq, InferSelectModel } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 @Injectable()
@@ -25,11 +25,12 @@ export class FixtureVendorRepository {
     });
   }
 
-  public async createOne(data: {
-    name: string;
-    publicId: string;
-  }): Promise<InferSelectModel<typeof schema.fixtureVendor> | undefined> {
+  public async createOne(data: { name: string }): Promise<InferSelectModel<typeof schema.fixtureVendor> | undefined> {
     const [result] = await this.db.insert(schema.fixtureVendor).values(data).returning();
     return result;
+  }
+
+  public async deleteOneByPublicId(publicId: string): Promise<void> {
+    await this.db.delete(schema.fixtureVendor).where(eq(schema.fixtureVendor.publicId, publicId));
   }
 }

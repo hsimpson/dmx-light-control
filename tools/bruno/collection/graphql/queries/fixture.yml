@@ -9,8 +9,8 @@ graphql:
   auth: inherit
   body:
     query: |
-      query($fixtureId: UUID!) {
-        fixture(fixtureId: $fixtureId) {
+      query($publicId: UUID!) {
+        fixture(publicId: $publicId) {
           createdAt
           fixtureChannelDefinitions {
             createdAt
@@ -60,7 +60,7 @@ graphql:
       }
     variables: |
       {
-        "fixtureId": null
+        "publicId": null
       }
 
 settings:

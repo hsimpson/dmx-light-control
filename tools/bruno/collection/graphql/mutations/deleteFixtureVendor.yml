@@ -1,7 +1,7 @@
 info:
-  name: dmxTest
+  name: deleteFixtureVendor
   type: graphql
-  seq: 4
+  seq: 3
 
 graphql:
   method: POST
@@ -9,14 +9,12 @@ graphql:
   auth: inherit
   body:
     query: |
-      mutation($channelValues: ChannelValuesInput!) {
-        dmxTest(channelValues: $channelValues)
+      mutation($publicId: UUID!) {
+        deleteFixtureVendor(publicId: $publicId)
       }
     variables: |
       {
-        "channelValues": {
-          "dmxValues": []
-        }
+        "publicId": null
       }
 
 settings:

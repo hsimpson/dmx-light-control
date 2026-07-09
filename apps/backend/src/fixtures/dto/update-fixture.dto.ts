@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import { GraphQLUUID } from 'graphql-scalars';
 import { FixtureVendorInput } from './fixture.input';
 
@@ -12,6 +12,7 @@ export class UpdateFixtureInput {
   @Field({ nullable: true, description: 'The name of the fixture' })
   @IsOptional()
   @IsString()
+  @Length(1, 255)
   public name?: string;
 
   @Field(() => FixtureVendorInput, { nullable: true, description: 'The vendor of the fixture' })

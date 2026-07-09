@@ -6,6 +6,7 @@ import {
 } from '@/fixtures/fixture.exceptions';
 import { Injectable } from '@nestjs/common';
 import { InferSelectModel } from 'drizzle-orm/table';
+import { CreateFixtureVendorInput } from './dto/create-fixture-vendor.dto';
 import { UpdateFixtureInput } from './dto/update-fixture.dto';
 import { fixture } from './entities';
 import { FixtureVendorRepository } from './repositories/fixture-vendor.repository';
@@ -49,7 +50,6 @@ export class FixtureService {
       }
       const newVendor = await this.vendorRepository.createOne({
         name: input.vendor.name,
-        publicId: crypto.randomUUID(),
       });
 
       if (!newVendor) {
@@ -66,5 +66,13 @@ export class FixtureService {
     }
 
     return await this.fixtureRepository.findOneByPublicId(input.publicId);
+  }
+
+  public async deleteFixtureVendorByPublicId(publicId: string) {
+    await this.vendorRepository.deleteOneByPublicId(publicId);
+  }
+
+  public async createFixtureVendor(input: CreateFixtureVendorInput) {
+    return this.vendorRepository.createOne(input);
   }
 }

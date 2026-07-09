@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { plainToInstance } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
+import { CreateFixtureVendorInput } from './dto/create-fixture-vendor.dto';
 import { FixtureVendorDto } from './dto/fixture-vendor.dto';
 import { FixtureDto } from './dto/fixture.dto';
 import { UpdateFixtureInput } from './dto/update-fixture.dto';
@@ -34,23 +35,14 @@ export class FixtureResolver {
     nullable: true,
   })
   public async getFixtureByExternalId(
-    @Args('fixtureId', { type: () => GraphQLUUID }) fixtureId: string,
+    @Args('publicId', { type: () => GraphQLUUID }) publicId: string,
   ): Promise<FixtureDto | null> {
-    const fixture = await this.fixtureService.getFixtureByPublicId(fixtureId);
+    const fixture = await this.fixtureService.getFixtureByPublicId(publicId);
     if (!fixture) {
       return null;
     }
     return plainToInstance(FixtureDto, fixture);
   }
-
-  // @Mutation(() => FixtureDto, {
-  //   name: 'createFixture',
-  //   description: 'create a new fixture',
-  // })
-  // public async createFixture(@Args('input') input: FixtureInput): Promise<FixtureDto> {
-  //   const fixture = await this.fixtureService.createFixture(input);
-  //   return plainToInstance(FixtureDto, fixture);
-  // }
 
   @Mutation(() => FixtureDto, {
     name: 'updateFixture',
@@ -59,5 +51,24 @@ export class FixtureResolver {
   public async updateFixture(@Args('input') input: UpdateFixtureInput): Promise<FixtureDto> {
     const fixture = await this.fixtureService.updateFixture(input);
     return plainToInstance(FixtureDto, fixture);
+  }
+
+  @Mutation(() => Boolean, {
+    name: 'deleteFixtureVendor',
+    description: 'delete a fixture vendor by public id',
+  })
+  public async deleteFixtureVendorByPublicId(
+    @Args('publicId', { type: () => GraphQLUUID }) publicId: string,
+  ): Promise<void> {
+    await this.fixtureService.deleteFixtureVendorByPublicId(publicId);
+  }
+
+  @Mutation(() => FixtureVendorDto, {
+    name: 'createFixtureVendor',
+    description: 'create a new fixture vendor',
+  })
+  public async createFixtureVendor(@Args('input') input: CreateFixtureVendorInput): Promise<FixtureVendorDto> {
+    const vendor = await this.fixtureService.createFixtureVendor(input);
+    return plainToInstance(FixtureVendorDto, vendor);
   }
 }
