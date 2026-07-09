@@ -10,19 +10,21 @@ DMX lighting control system. NestJS backend + Next.js frontend in Nx monorepo.
 
 ## Commands
 
-| Command                                 | Description              |
-| --------------------------------------- | ------------------------ |
-| `nx serve backend`                      | Backend dev server       |
-| `nx serve frontend` / `nx dev frontend` | Frontend dev (port 3001) |
-| `nx build backend/frontend`             | Production build         |
-| `nx typecheck backend/frontend`         | Type check               |
-| `nx lint backend/frontend`              | Lint                     |
-| `drizzle-kit generate`                  | Generate migrations      |
-| `drizzle-kit migrate`                   | Run migrations           |
-| `nx run frontend:graphql-codegen`       | Generate GraphQL types   |
-| `nx run frontend:i18n-extract`          | Extract translations     |
+| Command                                 | Description                           |
+| --------------------------------------- | ------------------------------------- |
+| `nx serve backend`                      | Backend dev server                    |
+| `nx dev frontend` / `nx start frontend` | Frontend dev (port 3001) / prod start |
+| `nx build backend/frontend`             | Production build                      |
+| `nx typecheck backend/frontend`         | Type check                            |
+| `nx lint backend/frontend`              | Lint                                  |
+| `nx run backend:drizzle-generate`       | Generate migrations                   |
+| `nx run backend:drizzle-migrate`        | Run migrations                        |
+| `nx run backend:drizzle-seed`           | Seed database                         |
+| `nx run backend:drizzle-studio`         | Open Drizzle Studio                   |
+| `nx run frontend:graphql-codegen`       | Generate GraphQL types                |
+| `nx run frontend:i18n-extract`          | Extract translations                  |
 
-**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.18.0. **pnpm:** ^11.9.0.
+**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.18.0. **pnpm:** ^11.10.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
 
 ## Architecture
@@ -30,11 +32,11 @@ DMX lighting control system. NestJS backend + Next.js frontend in Nx monorepo.
 ### Backend (`apps/backend/src/`)
 
 - NestJS + Apollo GraphQL on Fastify
-- Domain-driven modules: `FixturesModule`, `DmxModule`, `MidiModule`, `IoBridgeModule`
+- Domain module `FixturesModule`; IO modules `DmxModule`, `MidiModule`, `IoBridgeModule` (under `io/`)
 - Pattern: Service → Resolver → DTO (inject repositories, not DB directly)
 - Repositories use `InjectDb()` for typed Drizzle connection
 - Events: `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`
-- CLI commands via `nest-commander` (`dmx-sniffer`, `dmx-send`)
+- CLI command via `nest-commander`: `dmx-sniffer` (Linux-only)
 - Global `DrizzleDbModule` exports DB; `@/` path alias → `apps/backend/src/`
 - IO layer: `io/dmx/`, `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
 

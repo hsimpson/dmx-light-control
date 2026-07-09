@@ -2,20 +2,16 @@
 
 ## Development setup
 
-- Install Docker and Docker Compose for running the local database. It does'nt matter which docker engine you use, as long as it supports `docker´ and `docker compose`.
+- Install Docker and Docker Compose for running the local database. It doesn't matter which docker engine you use, as long as it supports `docker` and `docker compose`.
 - Install Node.js (version 24 or higher).
-- Install pnpm package manager
-- Install Nx globally:
-
-```bash
-npm install -g nx
-```
-
+- Install pnpm package manager (version 11 or higher).
 - Install project dependencies:
 
 ```bash
 pnpm install
 ```
+
+Nx is provided by the workspace — run `nx` commands directly (no global install or `pnpm` prefix needed).
 
 - copy .env.example to .env and fill in the required environment variables
 

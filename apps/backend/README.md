@@ -11,7 +11,7 @@ The backend uses a PostgreSQL database to store information about fixtures, vend
 The backend uses Drizzle ORM for database interactions. The database schema is defined in `src/db/schema.ts`, and migrations are generated in the `src/db/migrations` directory. To generate a new migration after modifying the schema, run the following command:
 
 ```bash
-nx run backend:drizzle-generate --name <migration_name>
+nx run backend:drizzle-generate -- --name <migration_name>
 ```
 
 To apply migrations, use the following command:
