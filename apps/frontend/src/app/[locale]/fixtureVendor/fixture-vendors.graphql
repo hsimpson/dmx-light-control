@@ -10,3 +10,16 @@ query GetFixtureVendors {
     ...VendorFields
   }
 }
+
+mutation DeleteFixtureVendor($publicId: UUID!) {
+  deleteFixtureVendor(publicId: $publicId) {
+    publicId
+    deleted
+  }
+}
+
+mutation CreateFixtureVendor($name: String!) {
+  createFixtureVendor(input: { name: $name }) {
+    ...VendorFields
+  }
+}

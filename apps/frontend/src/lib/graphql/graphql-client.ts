@@ -30,6 +30,28 @@ const errorLink = new ErrorLink(({ error }) => {
 });
 
 export const graphqlClient = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    // Every entity in this schema extends BaseDto and is identified by `publicId`.
+    // Key cached objects by `publicId` when present, falling back to `id` for
+    // any type that does not use the BaseDto convention.
+    dataIdFromObject: object => {
+      const obj = object as {
+        __typename?: string;
+        id?: string | number | null | undefined;
+        publicId?: string | number | null | undefined;
+      };
+      const typename = obj.__typename;
+      if (typename === undefined) {
+        return undefined;
+      }
+      if (obj.publicId !== null && obj.publicId !== undefined) {
+        return `${typename}:${obj.publicId}`;
+      }
+      if (obj.id !== null && obj.id !== undefined) {
+        return `${typename}:${obj.id}`;
+      }
+      return undefined;
+    },
+  }),
   link: ApolloLink.from([errorLink, httpLink]),
 });
