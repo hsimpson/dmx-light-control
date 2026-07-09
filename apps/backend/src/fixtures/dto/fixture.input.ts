@@ -3,7 +3,7 @@ import { IsOptional, IsString } from 'class-validator';
 import { GraphQLUUID } from 'graphql-scalars';
 
 @InputType()
-export class FixtureVendorInput {
+export class UpdateFixtureVendorInput {
   @Field(() => GraphQLUUID, { description: 'The public ID of the vendor (used for updates)', nullable: true })
   @IsOptional()
   public publicId?: string;

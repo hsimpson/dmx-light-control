@@ -6,6 +6,7 @@ import { GetFixturesQuery, GetFixtureVendorsQuery, UpdateFixtureDocument } from 
 import { useMutation } from '@apollo/client/react';
 import { Button, Combobox, Flex, InputBase, TextInput, useCombobox } from '@mantine/core';
 import { schemaResolver, useForm } from '@mantine/form';
+import { notifications } from '@mantine/notifications';
 import { useState } from 'react';
 import { z } from 'zod/v4';
 import FixtureChannelDefinitions from './fixture-channel-definitions';
@@ -22,6 +23,7 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const [updateFixture] = useMutation(UpdateFixtureDocument);
 
   const vendorNames = vendors.map(vendor => vendor.name);
+  const vendorPublicIdByName = new Map(vendors.map(vendor => [vendor.name, vendor.publicId]));
 
   const schema = z.object({
     fixtureName: z.string().min(3, {
@@ -54,6 +56,7 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
 
   const [comboBoxData, setComboBoxData] = useState(vendorNames);
   const [comboBoxValue, setComboBoxValue] = useState(fixture?.fixtureVendor.name ?? null);
+  const [comboBoxPublicId, setComboBoxPublicId] = useState(fixture?.fixtureVendor.publicId ?? null);
   const [comboBoxSearch, setComboBoxSearch] = useState(fixture?.fixtureVendor.name ?? '');
 
   const exactOptionMatch = comboBoxData.some(item => item === comboBoxSearch);
@@ -77,15 +80,39 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   });
 
   const onSubmit = async (values: FixtureFormValues) => {
-    console.log(values);
-    if (fixture) {
+    if (!fixture) {
+      return;
+    }
+
+    const vendorInput = comboBoxPublicId ? { publicId: comboBoxPublicId } : { name: values.vendor };
+
+    try {
       await updateFixture({
         variables: {
           input: {
             publicId: fixture.publicId,
             name: values.fixtureName,
+            vendor: vendorInput,
           },
         },
+      });
+
+      notifications.show({
+        color: 'green',
+        title: t(globalMessages.success),
+        message: t({
+          id: 'FixtureForm.notification.updateSuccess',
+          defaultMessage: 'Fixture updated successfully',
+        }),
+      });
+    } catch {
+      notifications.show({
+        color: 'red',
+        title: t(globalMessages.error),
+        message: t({
+          id: 'FixtureForm.notification.updateError',
+          defaultMessage: 'Failed to update fixture',
+        }),
       });
     }
   };
@@ -98,15 +125,20 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
           withinPortal={false}
           onOptionSubmit={val => {
             let selectedValue: string;
+            let selectedPublicId: string | null;
 
             if (val === '$create') {
               setComboBoxData(current => [...current, comboBoxSearch]);
               setComboBoxValue(comboBoxSearch);
+              setComboBoxPublicId(null);
               selectedValue = comboBoxSearch;
+              selectedPublicId = null;
             } else {
               setComboBoxValue(val);
               setComboBoxSearch(val);
+              setComboBoxPublicId(vendorPublicIdByName.get(val) ?? null);
               selectedValue = val;
+              selectedPublicId = vendorPublicIdByName.get(val) ?? null;
             }
 
             // Update the form value

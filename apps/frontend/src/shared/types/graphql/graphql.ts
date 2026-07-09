@@ -19,20 +19,20 @@ export const enum FixtureChannelPreset {
   ShutterStrobeSlowFast = 'ShutterStrobeSlowFast'
 };
 
-export type FixtureVendorInput = {
-  /** The name of the vendor */
-  name?: string | null | undefined;
-  /** The public ID of the vendor (used for updates) */
-  publicId?: string | null | undefined;
-};
-
 export type UpdateFixtureInput = {
   /** The name of the fixture */
   name?: string | null | undefined;
   /** The public ID of the fixture */
   publicId: string;
   /** The vendor of the fixture */
-  vendor?: FixtureVendorInput | null | undefined;
+  vendor?: UpdateFixtureVendorInput | null | undefined;
+};
+
+export type UpdateFixtureVendorInput = {
+  /** The name of the vendor */
+  name?: string | null | undefined;
+  /** The public ID of the vendor (used for updates) */
+  publicId?: string | null | undefined;
 };
 
 export type FixtureChannelAssignmentFieldsFragment = { publicId: string, channelNumber: number, createdAt: Date, updatedAt: Date };

@@ -161,14 +161,6 @@ type FixtureVendorDto {
   updatedAt: DateTime!
 }
 
-input FixtureVendorInput {
-  """The name of the vendor"""
-  name: String
-
-  """The public ID of the vendor (used for updates)"""
-  publicId: UUID
-}
-
 type MidiDeviceDto {
   """The name of the MIDI device"""
   name: String!
@@ -240,5 +232,13 @@ input UpdateFixtureInput {
   publicId: UUID!
 
   """The vendor of the fixture"""
-  vendor: FixtureVendorInput
+  vendor: UpdateFixtureVendorInput
+}
+
+input UpdateFixtureVendorInput {
+  """The name of the vendor"""
+  name: String
+
+  """The public ID of the vendor (used for updates)"""
+  publicId: UUID
 }

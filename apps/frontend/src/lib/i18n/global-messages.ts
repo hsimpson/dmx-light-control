@@ -13,6 +13,10 @@ export const globalMessages = defineMessages({
     id: 'GlobalMessages.Error',
     defaultMessage: 'Error!',
   },
+  success: {
+    id: 'GlobalMessages.Success',
+    defaultMessage: 'Success!',
+  },
   warning: {
     id: 'GlobalMessages.Warning',
     defaultMessage: 'Warning!',

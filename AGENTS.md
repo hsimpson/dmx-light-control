@@ -23,6 +23,7 @@ DMX lighting control system. NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run backend:drizzle-studio`         | Open Drizzle Studio                   |
 | `nx run frontend:graphql-codegen`       | Generate GraphQL types                |
 | `nx run frontend:i18n-extract`          | Extract translations                  |
+| `nx run frontend:i18n-verify`           | Verify translation files are in sync  |
 
 **Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.18.0. **pnpm:** ^11.10.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
@@ -117,3 +118,10 @@ fixtures/
 - IO layer is Linux-focused (`/dev/usbmon`, serial ports)
 - Production hides stack traces from GraphQL errors
 - `BaseDomainError` → `GlobalGqlExceptionFilter` maps to GraphQL errors with `code` + `http.status` extension
+
+## Internationalization (i18n)
+
+- Translations live in `apps/frontend/src/lang/{en,de}.json`; keys are referenced via `t({ id, defaultMessage })` from `react-intl` (see `useTranslation()`).
+- **When you change, add, or remove any i18n string, you MUST keep all language files in sync** — add/update/remove the key in every locale file (`en.json`, `de.json`, …). Use the `defaultMessage` as the English (`en.json`) value.
+- Keep keys sorted alphabetically within each language file.
+- After editing translations, run `nx run frontend:i18n-extract` to refresh extracted keys, then `nx run frontend:i18n-verify` to confirm no missing or extra keys remain.
