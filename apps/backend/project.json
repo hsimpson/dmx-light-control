@@ -80,6 +80,13 @@
         "command": "drizzle-kit studio --config=./src/db/drizzle.config.ts",
         "cwd": "{projectRoot}"
       }
+    },
+    "erd": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx src/db/generate-erd.ts",
+        "cwd": "{projectRoot}"
+      }
     }
   },
   "tags": []

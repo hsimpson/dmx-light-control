@@ -26,6 +26,16 @@ To seed the database with initial data, use the following command:
 nx run backend:drizzle-seed
 ```
 
+### Entity Relationship Diagram
+
+The database schema can be visualized as a Mermaid ER diagram. It is generated from the Drizzle schema and written to [`docs/database-schema.md`](docs/database-schema.md):
+
+```bash
+nx run backend:erd
+```
+
+The output file is auto-generated — do not edit it manually. Re-run the command after changing the schema to keep it in sync.
+
 ## Backend commands
 
 To run the backend application, use the following command:
