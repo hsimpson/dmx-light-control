@@ -1,4 +1,5 @@
 /// <reference types="vitest/globals" />
+import 'reflect-metadata';
 import { InjectDb, DRIZZLE_DB_PROVIDER } from './drizzle-db.provider';
 
 describe('drizzle-db.provider', () => {
@@ -10,5 +11,13 @@ describe('drizzle-db.provider', () => {
     expect(typeof InjectDb).toBe('function');
     const decorator = InjectDb();
     expect(typeof decorator).toBe('function');
+  });
+
+  it('InjectDb applies the DRIZZLE_DB_PROVIDER token', () => {
+    class Test {
+      @InjectDb() public db!: unknown;
+    }
+    const props = Reflect.getMetadata('self:properties_metadata', Test) as Array<{ key: string; type: unknown }> | undefined;
+    expect(props?.some((p) => p.key === 'db' && p.type === DRIZZLE_DB_PROVIDER)).toBe(true);
   });
 });
