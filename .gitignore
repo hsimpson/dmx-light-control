@@ -2,6 +2,7 @@
 .nx/cache
 .nx/workspace-data
 .VSCodeCounter
+coverage/
 dist/
 node_modules/
 

@@ -5,7 +5,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { CommandFactory } from 'nest-commander';
 import { AppModule } from './app.module';
 
-function registerGlobals(app: INestApplication) {
+export function registerGlobals(app: INestApplication) {
   app.useGlobalPipes(
     new ValidationPipe({
       // TODO: disable error messages in production
@@ -22,7 +22,7 @@ function registerGlobals(app: INestApplication) {
   );
 }
 
-async function bootstrap() {
+export async function bootstrap() {
   // If CLI args are passed (e.g. `node main.js dmx-sniffer`), run as command
   if (process.argv.length > 2) {
     await CommandFactory.run(AppModule, ['log', 'warn', 'error']);
@@ -38,4 +38,10 @@ async function bootstrap() {
   Logger.log(`🚀 Application is running on: http://localhost:${port}`);
 }
 
-void bootstrap();
+// Only auto-run when executed as the entry point (e.g. `node main.js`).
+// When imported by tests, `require.main` differs from this module, so
+// `bootstrap()` is not invoked and the module stays side-effect free.
+const isMainModule = typeof require !== 'undefined' && require.main === module;
+if (isMainModule) {
+  void bootstrap();
+}
