@@ -1,5 +1,4 @@
 /// <reference types="vitest/globals" />
-import { vi } from 'vitest';
 
 const ORIGINAL_ENV = process.env;
 
