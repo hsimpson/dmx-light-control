@@ -90,8 +90,8 @@ describe('SerialSendService', () => {
     ]);
     // valid channel 3 → frame buffer index 3 set to 200
     expect((service as any).dmxFrame[3]).toBe(200);
-    // invalid entries did not throw and did not start the loop (port.isOpen is true in mock,
-    // so the listener DOES call startSendingLoop → setInterval is invoked)
+    // invalid entries were skipped without throwing; because port.isOpen is true in the mock,
+    // the listener also calls startSendingLoop → setInterval is invoked
     expect(global.setInterval).toHaveBeenCalled();
   });
 
