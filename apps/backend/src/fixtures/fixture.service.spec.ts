@@ -127,4 +127,23 @@ describe('FixtureService', () => {
     expect(fixtureRepo.updateOneByPublicId).not.toHaveBeenCalled();
     expect(res).toBe('r');
   });
+
+  it('updateFixture with vendor.publicId sets vendorId to undefined when vendor has no id', async () => {
+    const { service, vendorRepo, fixtureRepo } = build();
+    (vendorRepo.findOneByPublicId as any).mockResolvedValue({});
+    (fixtureRepo.updateOneByPublicId as any).mockResolvedValue({ id: 1 });
+    (fixtureRepo.findOneByPublicId as any).mockResolvedValue('r');
+    await service.updateFixture({ publicId: 'p', vendor: { publicId: 'vp' } } as any);
+    expect(fixtureRepo.updateOneByPublicId).toHaveBeenCalledWith('p', { vendorId: undefined });
+  });
+
+  it('updateFixture with vendor.name sets vendorId to undefined when new vendor has no id', async () => {
+    const { service, vendorRepo, fixtureRepo } = build();
+    (vendorRepo.findOneByName as any).mockResolvedValue(undefined);
+    (vendorRepo.createOne as any).mockResolvedValue({});
+    (fixtureRepo.updateOneByPublicId as any).mockResolvedValue({ id: 1 });
+    (fixtureRepo.findOneByPublicId as any).mockResolvedValue('r');
+    await service.updateFixture({ publicId: 'p', vendor: { name: 'new' } } as any);
+    expect(fixtureRepo.updateOneByPublicId).toHaveBeenCalledWith('p', { vendorId: undefined });
+  });
 });

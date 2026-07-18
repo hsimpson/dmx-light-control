@@ -30,6 +30,7 @@ vi.mock('serialport', () => ({
 
 describe('SerialSendService', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.spyOn(global, 'setInterval').mockReturnValue(1 as unknown as NodeJS.Timeout);
     vi.spyOn(global, 'clearInterval').mockImplementation(() => undefined);
   });
@@ -116,5 +117,100 @@ describe('SerialSendService', () => {
     service.onModuleInit();
     (service as any).port.isOpen = false;
     expect(() => (service as any).closePort()).not.toThrow();
+  });
+
+  it('logs and warns when port fails to open', () => {
+    const { service } = build();
+    fakePort.open.mockImplementationOnce((cb: (err?: Error) => void) => cb(new Error('boom')));
+    const errorSpy = vi.spyOn((service as any).logger, 'error').mockImplementation(() => undefined);
+    const warnSpy = vi.spyOn((service as any).logger, 'warn').mockImplementation(() => undefined);
+    service.onModuleInit();
+    expect(errorSpy).toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalled();
+    errorSpy.mockRestore();
+    warnSpy.mockRestore();
+  });
+
+  it('handles serial port errors by stopping the loop', () => {
+    const { service } = build();
+    service.onModuleInit();
+    const errorCallback = (fakePort.on as ReturnType<typeof vi.fn>).mock.calls.find(
+      (c: any[]) => c[0] === 'error',
+    )?.[1];
+    expect(typeof errorCallback).toBe('function');
+    const stopSpy = vi.spyOn((service as any), 'stopSendingLoop').mockImplementation(() => undefined);
+    const errorSpy = vi.spyOn((service as any).logger, 'error').mockImplementation(() => undefined);
+    errorCallback(new Error('port failure'));
+    expect(errorSpy).toHaveBeenCalled();
+    expect(stopSpy).toHaveBeenCalled();
+    errorSpy.mockRestore();
+    stopSpy.mockRestore();
+  });
+
+  it('logs an error when the frame write fails', () => {
+    const { service } = build();
+    service.onModuleInit();
+    (service as any).port.isOpen = true;
+    fakePort.write.mockImplementationOnce((_buf: unknown, cb: (err?: Error) => void) => cb(new Error('write boom')));
+    const errorSpy = vi.spyOn((service as any).logger, 'error').mockImplementation(() => undefined);
+    (service as any).sendDmxFrame();
+    expect(errorSpy).toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
+  it('does not start the loop from the listener when the port is closed', () => {
+    const { service, eventEmitter } = build();
+    service.onModuleInit();
+    (service as any).port.isOpen = false;
+    const listener = (eventEmitter as any).on.mock.calls[0][1];
+    listener([{ channel: 3, value: 200 }]);
+    expect(global.setInterval).not.toHaveBeenCalled();
+  });
+
+  it('interval callback is a no-op when the port is closed or not sending', () => {
+    const { service } = build();
+    service.onModuleInit();
+    (service as any).startSendingLoop();
+    const callback = (global.setInterval as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+    (service as any).port.isOpen = false;
+    (service as any).isSending = true;
+    callback();
+    (service as any).port.isOpen = true;
+    (service as any).isSending = false;
+    callback();
+    expect(fakePort.set).not.toHaveBeenCalled();
+  });
+
+  it('sendDmxFrame returns early when the break set reports an error', () => {
+    const { service } = build();
+    service.onModuleInit();
+    (service as any).port.isOpen = true;
+    fakePort.set.mockImplementationOnce((_opts: unknown, cb: (err?: Error) => void) => cb(new Error('brk boom')));
+    expect(() => (service as any).sendDmxFrame()).not.toThrow();
+    expect(fakePort.write).not.toHaveBeenCalled();
+  });
+
+  it('sendDmxFrame returns early when the unbreak set reports an error', () => {
+    const { service } = build();
+    service.onModuleInit();
+    (service as any).port.isOpen = true;
+    let call = 0;
+    fakePort.set.mockImplementation((_opts: unknown, cb: (err?: Error) => void) => {
+      call += 1;
+      cb(call === 1 ? undefined : new Error('unbrk boom'));
+    });
+    expect(() => (service as any).sendDmxFrame()).not.toThrow();
+    expect(fakePort.write).not.toHaveBeenCalled();
+  });
+
+  it('closePort logs an error when closing fails', () => {
+    const { service } = build();
+    service.onModuleInit();
+    (service as any).port.isOpen = true;
+    fakePort.close.mockImplementationOnce((cb: (err?: Error) => void) => cb(new Error('close boom')));
+    const errorSpy = vi.spyOn((service as any).logger, 'error').mockImplementation(() => undefined);
+    (service as any).closePort();
+    expect(errorSpy).toHaveBeenCalled();
+    errorSpy.mockRestore();
   });
 });

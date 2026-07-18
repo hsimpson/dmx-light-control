@@ -96,6 +96,31 @@ describe('UsbDeviceService', () => {
     expect(detachKernelDriver).toHaveBeenCalledWith(0);
   });
 
+  it('openDevice skips detachKernelDriver when the method is absent', async () => {
+    // First claim rejects (enters the catch/detach branch), second claim succeeds
+    // so the device is configured and the success log fires.
+    const claimInterface = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('busy'))
+      .mockResolvedValueOnce(undefined);
+    const device = {
+      opened: false,
+      transferOut: vi.fn().mockResolvedValue(undefined),
+      open: vi.fn().mockResolvedValue(undefined),
+      claimInterface,
+      selectConfiguration: vi.fn().mockResolvedValue(undefined),
+      configuration: { interfaces: [{}] },
+    } as any;
+    const svc = build();
+    const logSpy = vi.spyOn((svc as any).logger, 'log').mockImplementation(() => undefined);
+    await (svc as any).openDevice(device);
+    expect(device.open).toHaveBeenCalled();
+    expect(claimInterface).toHaveBeenCalledTimes(2);
+    expect(device.selectConfiguration).toHaveBeenCalledWith(1);
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
   it('openDevice logs error when open throws', async () => {
     const device = {
       opened: false,
@@ -108,5 +133,24 @@ describe('UsbDeviceService', () => {
     await (svc as any).openDevice(device);
     expect(spy).toHaveBeenCalled();
     spy.mockRestore();
+  });
+
+  it('openDevice skips interface claim when no configuration is present', async () => {
+    const claimInterface = vi.fn().mockResolvedValue(undefined);
+    const device = {
+      opened: false,
+      open: vi.fn().mockResolvedValue(undefined),
+      claimInterface,
+      selectConfiguration: vi.fn().mockResolvedValue(undefined),
+      configuration: undefined,
+    } as any;
+    const svc = build();
+    const logSpy = vi.spyOn((svc as any).logger, 'log').mockImplementation(() => undefined);
+    await (svc as any).openDevice(device);
+    expect(device.open).toHaveBeenCalled();
+    expect(claimInterface).toHaveBeenCalledTimes(1);
+    expect(device.selectConfiguration).toHaveBeenCalledWith(1);
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
   });
 });

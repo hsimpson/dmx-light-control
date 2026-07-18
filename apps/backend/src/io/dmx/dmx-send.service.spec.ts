@@ -78,4 +78,42 @@ describe('DmxSendService', () => {
     (service as any).sendDmxFrame();
     expect(global.setInterval).toHaveBeenCalled();
   });
+
+  it('interval callback sends frame when sending and device present', async () => {
+    const { service, usbDeviceService } = build();
+    await service.startSending();
+    (service as any).sendDmxFrame();
+    const callback = (global.setInterval as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+    expect(typeof callback).toBe('function');
+    await callback();
+    expect(usbDeviceService.send).toHaveBeenCalled();
+  });
+
+  it('interval callback is a no-op when not sending', async () => {
+    const { service, usbDeviceService } = build();
+    (service as any).device = fakeDevice;
+    (service as any).sendDmxFrame();
+    (service as any)._isSending = false;
+    const callback = (global.setInterval as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+    await callback();
+    expect(usbDeviceService.send).not.toHaveBeenCalled();
+  });
+
+  it('does not start sending again when already sending on channel update', () => {
+    const { service, eventEmitter, usbDeviceService } = build();
+    service.onModuleInit();
+    const listener = (eventEmitter as any).on.mock.calls[0][1];
+    (service as any)._isSending = true;
+    listener([{ channel: 5, value: 128 }]);
+    expect(usbDeviceService.getDeviceBySerial).not.toHaveBeenCalled();
+  });
+
+  it('logs None when no device is found on start', async () => {
+    const { service, usbDeviceService } = build();
+    usbDeviceService.getDeviceBySerial.mockResolvedValue(undefined);
+    const logSpy = vi.spyOn((service as any).logger, 'log').mockImplementation(() => undefined);
+    await service.startSending();
+    expect(logSpy).toHaveBeenCalledWith('Found device: None');
+    logSpy.mockRestore();
+  });
 });

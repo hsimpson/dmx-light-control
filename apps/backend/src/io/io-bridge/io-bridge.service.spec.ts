@@ -70,4 +70,12 @@ describe('IoBridgeService', () => {
     expect((eventEmitter as any).emit).toHaveBeenCalledWith('dmx.channelValues', [{ channel: 1, value: 255 }]);
     expect((eventEmitter as any).emit).toHaveBeenCalledWith('dmx.channelValues', [{ channel: 10, value: 255 }]);
   });
+
+  it('handles status bytes outside the handled ranges as zero value', () => {
+    const { service, eventEmitter } = build();
+    service.onModuleInit();
+    const listener = (eventEmitter as any).on.mock.calls.find((c: any[]) => c[0] === 'midi.inputMessage')[1];
+    listener([192, 0, 0]); // Program Change: note 0 -> channel 1, status outside ranges -> dmxValue 0
+    expect((eventEmitter as any).emit).toHaveBeenCalledWith('dmx.channelValues', [{ channel: 1, value: 0 }]);
+  });
 });
