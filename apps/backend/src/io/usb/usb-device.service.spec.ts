@@ -1,6 +1,6 @@
 /// <reference types="vitest/globals" />
-import { UsbDeviceService } from './usb-device.service';
 import { vi } from 'vitest';
+import { UsbDeviceService } from './usb-device.service';
 
 const { fakeWebUSB } = vi.hoisted(() => ({
   fakeWebUSB: {
@@ -99,10 +99,7 @@ describe('UsbDeviceService', () => {
   it('openDevice skips detachKernelDriver when the method is absent', async () => {
     // First claim rejects (enters the catch/detach branch), second claim succeeds
     // so the device is configured and the success log fires.
-    const claimInterface = vi
-      .fn()
-      .mockRejectedValueOnce(new Error('busy'))
-      .mockResolvedValueOnce(undefined);
+    const claimInterface = vi.fn().mockRejectedValueOnce(new Error('busy')).mockResolvedValueOnce(undefined);
     const device = {
       opened: false,
       transferOut: vi.fn().mockResolvedValue(undefined),

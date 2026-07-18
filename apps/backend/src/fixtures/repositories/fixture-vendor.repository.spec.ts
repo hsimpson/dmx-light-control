@@ -1,6 +1,6 @@
 /// <reference types="vitest/globals" />
-import { FixtureVendorRepository } from './fixture-vendor.repository';
 import { vi } from 'vitest';
+import { FixtureVendorRepository } from './fixture-vendor.repository';
 
 function build() {
   const db = {

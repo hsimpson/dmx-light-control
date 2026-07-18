@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
+import { vi } from 'vitest';
 import { MidiResolver } from './midi.resolver';
 import { MidiService } from './midi.service';
-import { vi } from 'vitest';
 
 function build() {
   const midiService = {

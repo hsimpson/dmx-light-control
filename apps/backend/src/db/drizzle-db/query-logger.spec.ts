@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
-import { DrizzleLogWriter } from './query-logger';
 import { Logger } from '@nestjs/common';
 import { vi } from 'vitest';
+import { DrizzleLogWriter } from './query-logger';
 
 describe('DrizzleLogWriter', () => {
   it('writes the message via the DRIZZLE logger debug', () => {

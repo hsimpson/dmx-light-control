@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
-import { IoBridgeService } from './io-bridge.service';
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { vi } from 'vitest';
+import { IoBridgeService } from './io-bridge.service';
 
 describe('IoBridgeService', () => {
   function build() {

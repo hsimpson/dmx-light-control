@@ -1,9 +1,9 @@
 /// <reference types="vitest/globals" />
+import { EventsModule } from '@/events/events.module';
 import 'reflect-metadata';
 import { MidiModule } from './midi.module';
-import { MidiService } from './midi.service';
 import { MidiResolver } from './midi.resolver';
-import { EventsModule } from '@/events/events.module';
+import { MidiService } from './midi.service';
 
 describe('MidiModule', () => {
   it('is defined as an NgModule with correct metadata', () => {

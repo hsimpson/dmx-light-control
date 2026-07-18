@@ -1,14 +1,14 @@
 /// <reference types="vitest/globals" />
-import { FixtureService } from './fixture.service';
-import { FixtureVendorRepository } from './repositories/fixture-vendor.repository';
-import { FixtureRepository } from './repositories/fixture.repository';
+import { vi } from 'vitest';
 import {
   FixtureNotFoundException,
   FixtureVendorAlreadyExistsException,
   FixtureVendorCreationFailedException,
   FixtureVendorNotFoundException,
 } from './fixture.exceptions';
-import { vi } from 'vitest';
+import { FixtureService } from './fixture.service';
+import { FixtureVendorRepository } from './repositories/fixture-vendor.repository';
+import { FixtureRepository } from './repositories/fixture.repository';
 
 function build() {
   const vendorRepo = {
@@ -70,9 +70,9 @@ describe('FixtureService', () => {
   it('updateFixture with vendor.publicId throws when vendor missing', async () => {
     const { service, vendorRepo, fixtureRepo } = build();
     (vendorRepo.findOneByPublicId as any).mockResolvedValue(undefined);
-    await expect(
-      service.updateFixture({ publicId: 'p', vendor: { publicId: 'vp' } } as any),
-    ).rejects.toBeInstanceOf(FixtureVendorNotFoundException);
+    await expect(service.updateFixture({ publicId: 'p', vendor: { publicId: 'vp' } } as any)).rejects.toBeInstanceOf(
+      FixtureVendorNotFoundException,
+    );
     expect(fixtureRepo.updateOneByPublicId).not.toHaveBeenCalled();
   });
 
@@ -88,18 +88,18 @@ describe('FixtureService', () => {
   it('updateFixture with vendor.name throws when name already exists', async () => {
     const { service, vendorRepo } = build();
     (vendorRepo.findOneByName as any).mockResolvedValue({ id: 1 });
-    await expect(
-      service.updateFixture({ publicId: 'p', vendor: { name: 'dup' } } as any),
-    ).rejects.toBeInstanceOf(FixtureVendorAlreadyExistsException);
+    await expect(service.updateFixture({ publicId: 'p', vendor: { name: 'dup' } } as any)).rejects.toBeInstanceOf(
+      FixtureVendorAlreadyExistsException,
+    );
   });
 
   it('updateFixture with vendor.name throws when creation fails', async () => {
     const { service, vendorRepo } = build();
     (vendorRepo.findOneByName as any).mockResolvedValue(undefined);
     (vendorRepo.createOne as any).mockResolvedValue(undefined);
-    await expect(
-      service.updateFixture({ publicId: 'p', vendor: { name: 'new' } } as any),
-    ).rejects.toBeInstanceOf(FixtureVendorCreationFailedException);
+    await expect(service.updateFixture({ publicId: 'p', vendor: { name: 'new' } } as any)).rejects.toBeInstanceOf(
+      FixtureVendorCreationFailedException,
+    );
   });
 
   it('updateFixture with vendor.name creates vendor and updates', async () => {

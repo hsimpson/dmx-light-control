@@ -1,10 +1,10 @@
 /// <reference types="vitest/globals" />
 import 'reflect-metadata';
-import { DmxModule } from './dmx.module';
+import { SerialSendService } from '../serial/serial-send.service';
 import { DmxSnifferCommand } from './dmx-sniffer.command';
 import { DmxSnifferService } from './dmx-sniffer.service';
+import { DmxModule } from './dmx.module';
 import { DmxResolver } from './dmx.resolver';
-import { SerialSendService } from '../serial/serial-send.service';
 
 describe('DmxModule', () => {
   it('is an NgModule providing the dmx domain classes', () => {

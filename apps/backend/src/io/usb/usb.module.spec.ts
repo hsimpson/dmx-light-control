@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
 import 'reflect-metadata';
-import { UsbModule } from './usb.module';
 import { UsbDeviceService } from './usb-device.service';
+import { UsbModule } from './usb.module';
 
 describe('UsbModule', () => {
   it('is defined as an NgModule', () => {

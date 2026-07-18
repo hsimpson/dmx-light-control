@@ -1,6 +1,6 @@
 /// <reference types="vitest/globals" />
 import 'reflect-metadata';
-import { InjectDb, DRIZZLE_DB_PROVIDER } from './drizzle-db.provider';
+import { DRIZZLE_DB_PROVIDER, InjectDb } from './drizzle-db.provider';
 
 describe('drizzle-db.provider', () => {
   it('exposes the provider token', () => {
@@ -17,7 +17,8 @@ describe('drizzle-db.provider', () => {
     class Test {
       @InjectDb() public db!: unknown;
     }
-    const props = Reflect.getMetadata('self:properties_metadata', Test) as Array<{ key: string; type: unknown }> | undefined;
-    expect(props?.some((p) => p.key === 'db' && p.type === DRIZZLE_DB_PROVIDER)).toBe(true);
+    const props = Reflect.getMetadata('self:properties_metadata', Test) as
+      Array<{ key: string; type: unknown }> | undefined;
+    expect(props?.some(p => p.key === 'db' && p.type === DRIZZLE_DB_PROVIDER)).toBe(true);
   });
 });

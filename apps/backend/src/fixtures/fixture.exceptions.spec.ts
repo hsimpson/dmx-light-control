@@ -1,4 +1,5 @@
 /// <reference types="vitest/globals" />
+import { HttpStatus } from '@nestjs/common';
 import {
   BaseDomainError,
   FixtureNotFoundException,
@@ -6,7 +7,6 @@ import {
   FixtureVendorCreationFailedException,
   FixtureVendorNotFoundException,
 } from './fixture.exceptions';
-import { HttpStatus } from '@nestjs/common';
 
 describe('fixture exceptions', () => {
   it('BaseDomainError sets INTERNAL_SERVER_ERROR by default', () => {

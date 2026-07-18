@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
 import 'reflect-metadata';
-import { EventsModule } from './events.module';
 import { AppEventEmitter } from './app-event-emitter';
+import { EventsModule } from './events.module';
 
 describe('EventsModule', () => {
   it('is an NgModule providing and exporting AppEventEmitter', () => {

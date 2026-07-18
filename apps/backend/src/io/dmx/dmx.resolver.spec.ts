@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
-import { DmxResolver } from './dmx.resolver';
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { vi } from 'vitest';
+import { DmxResolver } from './dmx.resolver';
 
 describe('DmxResolver', () => {
   it('emits dmx.channelValues and returns success string', () => {

@@ -1,9 +1,9 @@
 /// <reference types="vitest/globals" />
-import { GlobalGqlExceptionFilter } from './graphql-exception.filter';
 import { BaseDomainError } from '@/fixtures/fixture.exceptions';
 import { ArgumentsHost } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
 import { vi } from 'vitest';
+import { GlobalGqlExceptionFilter } from './graphql-exception.filter';
 
 function build() {
   const filter = new GlobalGqlExceptionFilter();
@@ -76,8 +76,6 @@ describe('GlobalGqlExceptionFilter', () => {
 
   it('isNestHttpException returns true for valid shape', () => {
     const { filter } = build();
-    expect(
-      (filter as any).isNestHttpException({ getResponse: () => ({}), getStatus: () => 1 }),
-    ).toBe(true);
+    expect((filter as any).isNestHttpException({ getResponse: () => ({}), getStatus: () => 1 })).toBe(true);
   });
 });

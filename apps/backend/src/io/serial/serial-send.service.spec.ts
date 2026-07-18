@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
-import { SerialSendService } from './serial-send.service';
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { vi } from 'vitest';
+import { SerialSendService } from './serial-send.service';
 
 const { fakePort } = vi.hoisted(() => ({
   fakePort: {
@@ -138,7 +138,7 @@ describe('SerialSendService', () => {
       (c: any[]) => c[0] === 'error',
     )?.[1];
     expect(typeof errorCallback).toBe('function');
-    const stopSpy = vi.spyOn((service as any), 'stopSendingLoop').mockImplementation(() => undefined);
+    const stopSpy = vi.spyOn(service as any, 'stopSendingLoop').mockImplementation(() => undefined);
     const errorSpy = vi.spyOn((service as any).logger, 'error').mockImplementation(() => undefined);
     errorCallback(new Error('port failure'));
     expect(errorSpy).toHaveBeenCalled();

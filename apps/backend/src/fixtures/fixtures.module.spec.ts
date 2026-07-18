@@ -1,8 +1,8 @@
 /// <reference types="vitest/globals" />
 import 'reflect-metadata';
-import { FixturesModule } from './fixtures.module';
 import { FixtureResolver } from './fixture.resolver';
 import { FixtureService } from './fixture.service';
+import { FixturesModule } from './fixtures.module';
 import { FixtureVendorRepository } from './repositories/fixture-vendor.repository';
 import { FixtureRepository } from './repositories/fixture.repository';
 

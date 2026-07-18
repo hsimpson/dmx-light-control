@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
-import { MidiService } from './midi.service';
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { vi } from 'vitest';
+import { MidiService } from './midi.service';
 
 const { inputMock, outputMock } = vi.hoisted(() => ({
   inputMock: {

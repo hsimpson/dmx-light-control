@@ -1,8 +1,8 @@
 /// <reference types="vitest/globals" />
-import { FixtureResolver } from './fixture.resolver';
-import { FixtureService } from './fixture.service';
 import { plainToInstance } from 'class-transformer';
 import { vi } from 'vitest';
+import { FixtureResolver } from './fixture.resolver';
+import { FixtureService } from './fixture.service';
 
 function build() {
   const fixtureService = {

@@ -1,14 +1,12 @@
 /// <reference types="vitest/globals" />
+import { vi } from 'vitest';
 import { DmxSnifferCommand } from './dmx-sniffer.command';
 import { DmxSnifferService } from './dmx-sniffer.service';
-import { vi } from 'vitest';
 
 describe('DmxSnifferCommand', () => {
-  const exitSpy = vi
-    .spyOn(process, 'exit')
-    .mockImplementation(((code?: number) => {
-      throw new Error(`process.exit called with ${code}`);
-    }) as never);
+  const exitSpy = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
+    throw new Error(`process.exit called with ${code}`);
+  }) as never);
   const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
   afterEach(() => {

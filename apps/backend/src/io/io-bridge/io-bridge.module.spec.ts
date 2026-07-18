@@ -1,7 +1,7 @@
 /// <reference types="vitest/globals" />
+import { EventsModule } from '@/events/events.module';
 import 'reflect-metadata';
 import { IoBridgeModule } from './io-bridge.module';
-import { EventsModule } from '@/events/events.module';
 import { IoBridgeService } from './io-bridge.service';
 
 describe('IoBridgeModule', () => {

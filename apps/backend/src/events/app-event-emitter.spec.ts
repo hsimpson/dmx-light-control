@@ -1,6 +1,6 @@
 /// <reference types="vitest/globals" />
-import { AppEventEmitter } from './app-event-emitter';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { AppEventEmitter } from './app-event-emitter';
 
 describe('AppEventEmitter', () => {
   it('constructs from an EventEmitter2 instance', () => {

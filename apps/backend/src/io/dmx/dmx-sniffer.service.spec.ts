@@ -1,7 +1,6 @@
 /// <reference types="vitest/globals" />
-import { parseFrames } from './dmx-sniffer.service';
-import { DmxSnifferService } from './dmx-sniffer.service';
 import { vi } from 'vitest';
+import { DmxSnifferService, parseFrames } from './dmx-sniffer.service';
 
 describe('parseFrames', () => {
   it('splits concatenated usbmon packets and returns leftover', () => {
@@ -13,7 +12,9 @@ describe('parseFrames', () => {
     const data = Buffer.from([0, 1, 2, 3]);
     const packet = Buffer.concat([header, data]);
     const frames: Array<[Buffer, Buffer]> = [];
-    const leftover = parseFrames(Buffer.concat([packet, packet, packet.subarray(0, 10)]), (h, d) => frames.push([h, d]));
+    const leftover = parseFrames(Buffer.concat([packet, packet, packet.subarray(0, 10)]), (h, d) =>
+      frames.push([h, d]),
+    );
     expect(frames).toHaveLength(2);
     expect(leftover.length).toBe(10);
   });
