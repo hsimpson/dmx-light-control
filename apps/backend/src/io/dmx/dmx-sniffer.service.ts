@@ -15,7 +15,7 @@ const _OFFSET_STATUS = 28; // i32: URB status
 const _OFFSET_LENGTH = 32; // u32: requested data length
 const OFFSET_LEN_CAP = 36; // u32: captured data bytes appended after header
 
-function parseFrames(buf: Buffer, onFrame: (header: Buffer, data: Buffer) => void): Buffer {
+export function parseFrames(buf: Buffer, onFrame: (header: Buffer, data: Buffer) => void): Buffer {
   let offset = 0;
   while (offset + USBMON_HEADER_SIZE <= buf.length) {
     const lenCap = buf.readUInt32LE(offset + OFFSET_LEN_CAP);
