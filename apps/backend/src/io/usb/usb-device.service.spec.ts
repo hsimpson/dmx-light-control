@@ -9,8 +9,7 @@ const { fakeWebUSB } = vi.hoisted(() => ({
 
 vi.mock('usb', () => ({
   WebUSB: class {
-    constructor(_opts: unknown) {}
-    getDevices = fakeWebUSB.getDevices;
+    public getDevices = fakeWebUSB.getDevices;
   },
 }));
 

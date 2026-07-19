@@ -22,18 +22,18 @@ const { inputMock, outputMock } = vi.hoisted(() => ({
 vi.mock('midi', () => ({
   default: {
     Input: class {
-      getPortCount = inputMock.getPortCount;
-      getPortName = inputMock.getPortName;
-      openPort = inputMock.openPort;
-      closePort = inputMock.closePort;
-      on = inputMock.on;
+      public getPortCount = inputMock.getPortCount;
+      public getPortName = inputMock.getPortName;
+      public openPort = inputMock.openPort;
+      public closePort = inputMock.closePort;
+      public on = inputMock.on;
     },
     Output: class {
-      getPortCount = outputMock.getPortCount;
-      getPortName = outputMock.getPortName;
-      openPort = outputMock.openPort;
-      closePort = outputMock.closePort;
-      sendMessage = outputMock.sendMessage;
+      public getPortCount = outputMock.getPortCount;
+      public getPortName = outputMock.getPortName;
+      public openPort = outputMock.openPort;
+      public closePort = outputMock.closePort;
+      public sendMessage = outputMock.sendMessage;
     },
   },
   Input: class {},

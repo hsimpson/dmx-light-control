@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { MidiResolver } from './midi.resolver';
 import { MidiService } from './midi.service';
+import { OpenPortsInput } from './dto/open-ports.dto';
 
 function build() {
   const midiService = {
@@ -22,7 +23,7 @@ describe('MidiResolver', () => {
 
   it('openPorts delegates and returns true', () => {
     const { resolver, midiService } = build();
-    expect(resolver.openPorts({ inputPort: 1, outputPort: 1 } as any)).toBe(true);
+    expect(resolver.openPorts({ inputPort: 1, outputPort: 1 } as OpenPortsInput)).toBe(true);
     expect(midiService.openPorts).toHaveBeenCalled();
   });
 
