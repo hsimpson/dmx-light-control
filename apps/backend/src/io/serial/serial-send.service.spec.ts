@@ -107,7 +107,7 @@ describe('SerialSendService', () => {
   it('setChannelValues ignores invalid channel/value and applies valid ones', () => {
     const { service, eventEmitter } = build();
     service.onModuleInit();
-    const listener = eventEmitter.on.mock.calls[0][1] as (values: DmxValue[]) => void;
+    const listener = eventEmitter.on.mock.calls[0]?.[1] as (values: DmxValue[]) => void;
     listener([
       { channel: 0, value: 1 },
       { channel: 513, value: 1 },
@@ -195,7 +195,7 @@ describe('SerialSendService', () => {
     const { service, eventEmitter } = build();
     service.onModuleInit();
     service.port.isOpen = false;
-    const listener = eventEmitter.on.mock.calls[0][1] as (values: DmxValue[]) => void;
+    const listener = eventEmitter.on.mock.calls[0]?.[1] as (values: DmxValue[]) => void;
     listener([{ channel: 3, value: 200 }]);
     expect(global.setInterval).not.toHaveBeenCalled();
   });
