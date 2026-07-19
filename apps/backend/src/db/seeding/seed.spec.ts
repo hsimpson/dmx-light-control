@@ -7,7 +7,6 @@ const deleteMock = vi.fn().mockReturnThis();
 const whereMock = vi.fn().mockResolvedValue(undefined);
 const updateMock = vi.fn().mockReturnThis();
 const setMock = vi.fn().mockReturnThis();
-const returningMock = vi.fn().mockResolvedValue([]);
 const findManyMock = vi.fn().mockResolvedValue([]);
 
 const db = {

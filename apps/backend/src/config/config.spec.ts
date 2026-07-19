@@ -30,6 +30,6 @@ describe('config', () => {
 
   it('throws when an env variable is missing', () => {
     delete process.env.BACKEND_PORT;
-    expect(() => loadConfig()).toThrowError('Environment variable BACKEND_PORT is not defined');
+    expect(() => loadConfig()).toThrow('Environment variable BACKEND_PORT is not defined');
   });
 });

@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, type Mock, afterEach } from 'vitest';
 
-const writeFileSync = vi.fn();
-const mkdirSync = vi.fn();
+const writeFileSync: Mock<(path: string, data: string) => void> = vi.fn();
+const mkdirSync: Mock<(path: string) => void> = vi.fn();
 
 vi.mock('node:fs', () => ({
   mkdirSync,
@@ -27,7 +27,7 @@ describe('generate-erd', () => {
     await import('./generate-erd');
     expect(mkdirSync).toHaveBeenCalled();
     expect(writeFileSync).toHaveBeenCalled();
-    const content = writeFileSync.mock.calls[0]?.[1] as string;
+    const content = writeFileSync.mock.calls[0]?.[1];
     expect(content).toContain('```mermaid');
     expect(content).toContain('erDiagram');
   });
@@ -64,7 +64,7 @@ describe('generate-erd', () => {
     process.argv = ['node', 'generate-erd.ts', '--out', 'degenerate/out.md'];
     vi.resetModules();
     await import('./generate-erd');
-    const content = writeFileSync.mock.calls[0]?.[1] as string;
+    const content = writeFileSync.mock.calls[0]?.[1];
     expect(content).toContain('weird');
     expect(content).toContain('unknown');
     expect(content).toContain('id');
