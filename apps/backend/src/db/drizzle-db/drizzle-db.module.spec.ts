@@ -1,4 +1,4 @@
-import { describe, it, expect, assert } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { DrizzleDbModule } from './drizzle-db.module';
 
 describe('DrizzleDbModule', () => {
@@ -11,7 +11,7 @@ describe('DrizzleDbModule', () => {
     expect(mod.providers).toHaveLength(1);
     expect(mod.exports).toHaveLength(1);
 
-    const provider = mod.providers[0] as { provide: string; useFactory: () => unknown };
+    const provider = (mod.providers ?? [])[0] as { provide: string; useFactory: () => unknown };
     expect(provider.provide).toBe('DrizzleDbProvider');
     // useFactory returns a drizzle instance (we just assert it is defined/object)
     expect(provider.useFactory()).toBeDefined();

@@ -2,7 +2,7 @@ import { ClassSerializerInterceptor, INestApplication, Logger, ValidationPipe } 
 import { NestFactory, Reflector } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { CommandFactory } from 'nest-commander';
-import { describe, it, Mock, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { AppModule } from './app.module';
 import { bootstrap, registerGlobals } from './main';
 

@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { BaseDto } from './base.dto';
 
 class Concrete extends BaseDto {
-  public publicId = 'id';
-  public createdAt = new Date();
-  public updatedAt = new Date();
+  public override publicId = 'id';
+  public override createdAt = new Date();
+  public override updatedAt = new Date();
 }
 
 describe('BaseDto', () => {

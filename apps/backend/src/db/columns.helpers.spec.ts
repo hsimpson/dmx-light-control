@@ -1,21 +1,25 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { pk, timestamps } from './columns.helpers';
+
+type ColumnWithConfig = { config: Record<string, unknown> };
+
+const configOf = (column: unknown): Record<string, unknown> => (column as ColumnWithConfig).config;
 
 describe('columns.helpers', () => {
   it('exposes a generated identity integer primary key and a random uuid publicId', () => {
-    expect(pk.id.config.primaryKey).toBe(true);
-    expect(pk.id.config.dataType).toBe('number int32');
-    expect(pk.id.config.generatedIdentity).toEqual({ type: 'always' });
+    expect(configOf(pk.id).primaryKey).toBe(true);
+    expect(configOf(pk.id).dataType).toBe('number int32');
+    expect(configOf(pk.id).generatedIdentity).toEqual({ type: 'always' });
 
-    expect(pk.publicId.config.dataType).toBe('string uuid');
-    expect(pk.publicId.config.hasDefault).toBe(true);
-    expect(pk.publicId.config.default).toBeDefined();
+    expect(configOf(pk.publicId).dataType).toBe('string uuid');
+    expect(configOf(pk.publicId).hasDefault).toBe(true);
+    expect(configOf(pk.publicId).default).toBeDefined();
   });
 
   it('exposes createdAt and updatedAt timestamp columns', () => {
-    expect(timestamps.createdAt.config.dataType).toBe('object date');
-    expect(timestamps.createdAt.config.hasDefault).toBe(true);
-    expect(timestamps.updatedAt.config.dataType).toBe('object date');
-    expect(timestamps.updatedAt.config.hasDefault).toBe(true);
+    expect(configOf(timestamps.createdAt).dataType).toBe('object date');
+    expect(configOf(timestamps.createdAt).hasDefault).toBe(true);
+    expect(configOf(timestamps.updatedAt).dataType).toBe('object date');
+    expect(configOf(timestamps.updatedAt).hasDefault).toBe(true);
   });
 });
