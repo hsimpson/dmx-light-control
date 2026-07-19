@@ -2,61 +2,62 @@ import { describe, it, expect, vi } from 'vitest';
 import { plainToInstance } from 'class-transformer';
 import { FixtureResolver } from './fixture.resolver';
 import { FixtureService } from './fixture.service';
+import { FixtureVendorDto } from './dto/fixture-vendor.dto';
 
 function build() {
   const fixtureService = {
-    getAllVendors: vi.fn(),
-    getAllFixtures: vi.fn(),
-    getFixtureByPublicId: vi.fn(),
-    updateFixture: vi.fn(),
-    deleteFixtureVendorByPublicId: vi.fn(),
-    createFixtureVendor: vi.fn(),
-  } as unknown as FixtureService;
-  const resolver = new FixtureResolver(fixtureService);
+    getAllVendors: vi.fn<() => Promise<unknown[]>>(),
+    getAllFixtures: vi.fn<() => Promise<unknown[]>>(),
+    getFixtureByPublicId: vi.fn<() => Promise<unknown>>(),
+    updateFixture: vi.fn<() => Promise<unknown>>(),
+    deleteFixtureVendorByPublicId: vi.fn<() => Promise<{ publicId: string; deleted: boolean }>>(),
+    createFixtureVendor: vi.fn<() => Promise<unknown>>(),
+  };
+  const resolver = new FixtureResolver(fixtureService as unknown as FixtureService);
   return { resolver, fixtureService };
 }
 
 describe('FixtureResolver', () => {
   it('getAllVendors returns plainToInstance result', async () => {
     const { resolver, fixtureService } = build();
-    (fixtureService.getAllVendors as any).mockResolvedValue([{ name: 'v' }]);
+    fixtureService.getAllVendors.mockResolvedValue([{ name: 'v' }]);
     const res = await resolver.getAllVendors();
-    expect(res).toEqual(plainToInstance(Object as any, [{ name: 'v' }]));
+    expect(res).toEqual(plainToInstance(FixtureVendorDto, [{ name: 'v' }]));
   });
 
   it('getAllFixtures returns plainToInstance result', async () => {
     const { resolver, fixtureService } = build();
-    (fixtureService.getAllFixtures as any).mockResolvedValue([{ name: 'f' }]);
+    fixtureService.getAllFixtures.mockResolvedValue([{ name: 'f' }]);
     expect(await resolver.getAllFixtures()).toBeDefined();
   });
 
   it('getFixtureByExternalId returns null when not found', async () => {
     const { resolver, fixtureService } = build();
-    (fixtureService.getFixtureByPublicId as any).mockResolvedValue(undefined);
+    fixtureService.getFixtureByPublicId.mockResolvedValue(undefined);
     expect(await resolver.getFixtureByExternalId('p')).toBeNull();
   });
 
   it('getFixtureByExternalId returns instance when found', async () => {
     const { resolver, fixtureService } = build();
-    (fixtureService.getFixtureByPublicId as any).mockResolvedValue({ name: 'f' });
+    fixtureService.getFixtureByPublicId.mockResolvedValue({ name: 'f' });
     expect(await resolver.getFixtureByExternalId('p')).toBeDefined();
   });
 
   it('updateFixture delegates', async () => {
     const { resolver, fixtureService } = build();
-    (fixtureService.updateFixture as any).mockResolvedValue({ name: 'f' });
-    expect(await resolver.updateFixture({ publicId: 'p' } as any)).toBeDefined();
+    fixtureService.updateFixture.mockResolvedValue({ name: 'f' });
+    expect(await resolver.updateFixture({ publicId: 'p' })).toBeDefined();
   });
 
   it('deleteFixtureVendorByPublicId delegates', async () => {
     const { resolver, fixtureService } = build();
-    (fixtureService.deleteFixtureVendorByPublicId as any).mockResolvedValue({ publicId: 'p', deleted: true });
+    fixtureService.deleteFixtureVendorByPublicId.mockResolvedValue({ publicId: 'p', deleted: true });
     expect(await resolver.deleteFixtureVendorByPublicId('p')).toBeDefined();
   });
 
   it('createFixtureVendor delegates', async () => {
     const { resolver, fixtureService } = build();
-    (fixtureService.createFixtureVendor as any).mockResolvedValue({ name: 'v' });
-    expect(await resolver.createFixtureVendor({ name: 'v' } as any)).toBeDefined();
+    fixtureService.createFixtureVendor.mockResolvedValue({ name: 'v' });
+    expect(await resolver.createFixtureVendor({ name: 'v' })).toBeDefined();
   });
 });

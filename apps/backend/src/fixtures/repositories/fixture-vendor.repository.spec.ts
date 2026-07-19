@@ -3,10 +3,15 @@ import { FixtureVendorRepository } from './fixture-vendor.repository';
 
 function build() {
   const db = {
-    query: { fixtureVendor: { findMany: vi.fn(), findFirst: vi.fn() } },
+    query: {
+      fixtureVendor: {
+        findMany: vi.fn<() => Promise<unknown[]>>(),
+        findFirst: vi.fn<() => Promise<unknown>>(),
+      },
+    },
     insert: vi.fn().mockReturnThis(),
     values: vi.fn().mockReturnThis(),
-    returning: vi.fn().mockResolvedValue([{ id: 1 }]),
+    returning: vi.fn<() => Promise<unknown[]>>().mockResolvedValue([{ id: 1 }]),
     delete: vi.fn().mockReturnThis(),
     where: vi.fn().mockReturnThis(),
   };
@@ -17,19 +22,19 @@ function build() {
 describe('FixtureVendorRepository', () => {
   it('findMany returns all vendors', async () => {
     const { repo, db } = build();
-    (db.query.fixtureVendor.findMany as any).mockResolvedValue(['v']);
+    db.query.fixtureVendor.findMany.mockResolvedValue(['v']);
     expect(await repo.findMany()).toEqual(['v']);
   });
 
   it('findOneByPublicId queries first', async () => {
     const { repo, db } = build();
-    (db.query.fixtureVendor.findFirst as any).mockResolvedValue('v');
+    db.query.fixtureVendor.findFirst.mockResolvedValue('v');
     expect(await repo.findOneByPublicId('p')).toBe('v');
   });
 
   it('findOneByName queries first by name', async () => {
     const { repo, db } = build();
-    (db.query.fixtureVendor.findFirst as any).mockResolvedValue('v');
+    db.query.fixtureVendor.findFirst.mockResolvedValue('v');
     expect(await repo.findOneByName('n')).toBe('v');
   });
 
@@ -49,7 +54,7 @@ describe('FixtureVendorRepository', () => {
 
   it('deleteOneByPublicId returns false when nothing deleted', async () => {
     const { repo, db } = build();
-    (db.returning as any).mockResolvedValue([]);
+    db.returning.mockResolvedValue([]);
     expect(await repo.deleteOneByPublicId('p')).toBe(false);
   });
 });
