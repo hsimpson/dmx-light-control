@@ -49,7 +49,7 @@ export class DmxSnifferService {
 
       // Character devices like usbmon return one packet per read() syscall.
       // Using a manual loop avoids createReadStream treating a blocking read as EOF.
-      console.log('⏳ Waiting for USB packets...');
+      this.logger.log('⏳ Waiting for USB packets...');
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       while (true) {
@@ -90,15 +90,15 @@ export class DmxSnifferService {
             message += `Ch 449-512: ${[...frame.subarray(449, 513)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
             message += '\n';
 
-            console.log(message);
+            this.logger.log(message);
           }
         });
       }
     } catch (e: unknown) {
       if (e instanceof Error) {
-        console.error(`❌ Error: ${e.message}`);
+        this.logger.error(`❌ Error: ${e.message}`);
       } else {
-        console.error('❌ An unknown error occurred.');
+        this.logger.error('❌ An unknown error occurred.');
       }
     } finally {
       await fh?.close();

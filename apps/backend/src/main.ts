@@ -8,7 +8,7 @@ import { AppModule } from './app.module';
 export function registerGlobals(app: INestApplication) {
   app.useGlobalPipes(
     new ValidationPipe({
-      // TODO: disable error messages in production
+      // REVIEW: disable error messages in production
       disableErrorMessages: false,
       whitelist: true,
       transform: true,
