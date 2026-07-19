@@ -17,19 +17,19 @@ describe('DmxSnifferCommand', () => {
   });
 
   it('parseBus converts to number', () => {
-    const cmd = new DmxSnifferCommand({} as any);
+    const cmd = new DmxSnifferCommand({} as unknown as DmxSnifferService);
     expect(cmd.parseBus('3')).toBe(3);
   });
 
   it('parseAddress converts to number', () => {
-    const cmd = new DmxSnifferCommand({} as any);
+    const cmd = new DmxSnifferCommand({} as unknown as DmxSnifferService);
     expect(cmd.parseAddress('7')).toBe(7);
   });
 
   it('run exits on non-linux platforms', async () => {
     const platform = process.platform;
     Object.defineProperty(process, 'platform', { value: 'darwin' });
-    const cmd = new DmxSnifferCommand({} as any);
+    const cmd = new DmxSnifferCommand({} as unknown as DmxSnifferService);
     await expect(cmd.run([], {})).rejects.toThrow();
     expect(exitSpy).toHaveBeenCalledWith(1);
     Object.defineProperty(process, 'platform', { value: platform });
@@ -37,7 +37,7 @@ describe('DmxSnifferCommand', () => {
 
   it('run exits when bus or address missing', async () => {
     Object.defineProperty(process, 'platform', { value: 'linux' });
-    const cmd = new DmxSnifferCommand({} as any);
+    const cmd = new DmxSnifferCommand({} as unknown as DmxSnifferService);
     await expect(cmd.run([], {})).rejects.toThrow();
     expect(exitSpy).toHaveBeenCalledWith(1);
   });

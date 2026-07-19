@@ -1,17 +1,39 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { Logger } from '@nestjs/common';
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import { AppEventEmitter } from '@/events/app-event-emitter';
+import { UsbDeviceService } from '@/io/usb/usb-device.service';
 import { DmxSendService } from './dmx-send.service';
 
-const fakeDevice = { productName: 'FTDI', opened: true, transferOut: vi.fn().mockResolvedValue(undefined) } as any;
+const fakeDevice = {
+  productName: 'FTDI',
+  opened: true,
+  transferOut: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
+} as unknown as USBDevice;
+
+type DmxSendServicePrivate = {
+  logger: Logger;
+  dmxFrame: Uint8Array;
+  device?: USBDevice;
+  _isSending: boolean;
+  sendDmxFrame: () => void;
+};
 
 function build() {
-  const usbDeviceService = {
-    getDeviceBySerial: vi.fn().mockResolvedValue(fakeDevice),
-    send: vi.fn().mockResolvedValue(undefined),
-  } as any;
-  const eventEmitter = { emit: vi.fn(), on: vi.fn() } as unknown as AppEventEmitter;
-  const service = new DmxSendService(usbDeviceService, eventEmitter);
-  return { service, usbDeviceService, eventEmitter };
+  const usbDeviceServiceMock = {
+    getDeviceBySerial: vi.fn<() => Promise<USBDevice | undefined>>(),
+    send: vi.fn<() => Promise<void>>(),
+  };
+  usbDeviceServiceMock.getDeviceBySerial.mockResolvedValue(fakeDevice);
+  usbDeviceServiceMock.send.mockResolvedValue(undefined);
+  const eventEmitterMock = {
+    emit: vi.fn<(event: string, payload?: unknown) => boolean>(),
+    on: vi.fn<(event: string, listener: (...args: unknown[]) => void) => void>(),
+  };
+  const service = new DmxSendService(
+    usbDeviceServiceMock as unknown as UsbDeviceService,
+    eventEmitterMock as unknown as AppEventEmitter,
+  );
+  return { service, usbDeviceServiceMock, eventEmitterMock };
 }
 
 describe('DmxSendService', () => {
@@ -23,9 +45,9 @@ describe('DmxSendService', () => {
   });
 
   it('registers a dmx.channelValues listener on init', () => {
-    const { service, eventEmitter } = build();
+    const { service, eventEmitterMock } = build();
     service.onModuleInit();
-    expect((eventEmitter as any).on).toHaveBeenCalledWith('dmx.channelValues', expect.any(Function));
+    expect(eventEmitterMock.on).toHaveBeenCalledWith('dmx.channelValues', expect.any(Function));
   });
 
   it('isSending reflects state', () => {
@@ -34,9 +56,9 @@ describe('DmxSendService', () => {
   });
 
   it('startSending resolves a device and sends a frame', async () => {
-    const { service, usbDeviceService } = build();
+    const { service, usbDeviceServiceMock } = build();
     await service.startSending();
-    expect(usbDeviceService.getDeviceBySerial).toHaveBeenCalledWith('A50285BI');
+    expect(usbDeviceServiceMock.getDeviceBySerial).toHaveBeenCalledWith('A50285BI');
     expect(service.isSending()).toBe(true);
   });
 
@@ -49,11 +71,13 @@ describe('DmxSendService', () => {
   });
 
   it('setChannelValues ignores out-of-range channel and value', () => {
-    const { service, eventEmitter } = build();
-    const warn = vi.spyOn((service as any).logger, 'warn');
+    const { service, eventEmitterMock } = build();
+    const warn = vi
+      .spyOn((service as unknown as DmxSendServicePrivate).logger, 'warn')
+      .mockImplementation(() => undefined);
     service.onModuleInit();
-    const listener = (eventEmitter as any).on.mock.calls[0][1];
-    listener([
+    const listener = eventEmitterMock.on.mock.calls[0]?.[1];
+    listener?.([
       { channel: 0, value: 10 },
       { channel: 513, value: 10 },
       { channel: 1, value: -1 },
@@ -62,55 +86,59 @@ describe('DmxSendService', () => {
     ]);
     // four out-of-range entries are rejected (warn), one valid entry applied
     expect(warn).toHaveBeenCalledTimes(4);
-    expect((service as any).dmxFrame[5]).toBe(128);
+    expect((service as unknown as DmxSendServicePrivate).dmxFrame[5]).toBe(128);
   });
 
   it('sendDmxFrame does nothing when no device', () => {
     const { service } = build();
     // device is undefined until startSending; call directly
-    expect(() => (service as any).sendDmxFrame()).not.toThrow();
+    expect(() => {
+      (service as unknown as DmxSendServicePrivate).sendDmxFrame();
+    }).not.toThrow();
   });
 
   it('sendDmxFrame schedules interval when device present', async () => {
     const { service } = build();
     await service.startSending();
-    (service as any).sendDmxFrame();
+    (service as unknown as DmxSendServicePrivate).sendDmxFrame();
     expect(global.setInterval).toHaveBeenCalled();
   });
 
   it('interval callback sends frame when sending and device present', async () => {
-    const { service, usbDeviceService } = build();
+    const { service, usbDeviceServiceMock } = build();
     await service.startSending();
-    (service as any).sendDmxFrame();
-    const callback = (global.setInterval as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+    (service as unknown as DmxSendServicePrivate).sendDmxFrame();
+    const callback = (global.setInterval as unknown as Mock<(...args: unknown[]) => unknown>).mock.calls[0]?.[0];
     expect(typeof callback).toBe('function');
     await callback();
-    expect(usbDeviceService.send).toHaveBeenCalled();
+    expect(usbDeviceServiceMock.send).toHaveBeenCalled();
   });
 
   it('interval callback is a no-op when not sending', async () => {
-    const { service, usbDeviceService } = build();
-    (service as any).device = fakeDevice;
-    (service as any).sendDmxFrame();
-    (service as any)._isSending = false;
-    const callback = (global.setInterval as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+    const { service, usbDeviceServiceMock } = build();
+    (service as unknown as DmxSendServicePrivate).device = fakeDevice;
+    (service as unknown as DmxSendServicePrivate).sendDmxFrame();
+    (service as unknown as DmxSendServicePrivate)._isSending = false;
+    const callback = (global.setInterval as unknown as Mock<(...args: unknown[]) => unknown>).mock.calls[0]?.[0];
     await callback();
-    expect(usbDeviceService.send).not.toHaveBeenCalled();
+    expect(usbDeviceServiceMock.send).not.toHaveBeenCalled();
   });
 
   it('does not start sending again when already sending on channel update', () => {
-    const { service, eventEmitter, usbDeviceService } = build();
+    const { service, eventEmitterMock, usbDeviceServiceMock } = build();
     service.onModuleInit();
-    const listener = (eventEmitter as any).on.mock.calls[0][1];
-    (service as any)._isSending = true;
-    listener([{ channel: 5, value: 128 }]);
-    expect(usbDeviceService.getDeviceBySerial).not.toHaveBeenCalled();
+    const listener = eventEmitterMock.on.mock.calls[0]?.[1];
+    (service as unknown as DmxSendServicePrivate)._isSending = true;
+    listener?.([{ channel: 5, value: 128 }]);
+    expect(usbDeviceServiceMock.getDeviceBySerial).not.toHaveBeenCalled();
   });
 
   it('logs None when no device is found on start', async () => {
-    const { service, usbDeviceService } = build();
-    usbDeviceService.getDeviceBySerial.mockResolvedValue(undefined);
-    const logSpy = vi.spyOn((service as any).logger, 'log').mockImplementation(() => undefined);
+    const { service, usbDeviceServiceMock } = build();
+    usbDeviceServiceMock.getDeviceBySerial.mockResolvedValue(undefined);
+    const logSpy = vi
+      .spyOn((service as unknown as DmxSendServicePrivate).logger, 'log')
+      .mockImplementation(() => undefined);
     await service.startSending();
     expect(logSpy).toHaveBeenCalledWith('Found device: None');
     logSpy.mockRestore();
