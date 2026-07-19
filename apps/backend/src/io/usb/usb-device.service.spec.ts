@@ -1,6 +1,13 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { UsbDeviceService } from './usb-device.service';
 
+type ServiceWithLogger = {
+  logger: {
+    log: (...args: unknown[]) => void;
+    error: (...args: unknown[]) => void;
+  };
+};
+
 const { fakeWebUSB } = vi.hoisted(() => ({
   fakeWebUSB: {
     getDevices: vi.fn(),
@@ -52,7 +59,10 @@ describe('UsbDeviceService', () => {
 
   it('send transfers out when already opened', async () => {
     const transferOut = vi.fn().mockResolvedValue(undefined);
-    const device = { opened: true, transferOut } as any;
+    const device = {
+      opened: true,
+      transferOut,
+    } as unknown as USBDevice;
     const svc = build();
     await svc.send(device, new ArrayBuffer(8));
     expect(transferOut).toHaveBeenCalledWith(2, expect.any(ArrayBuffer));
@@ -68,7 +78,7 @@ describe('UsbDeviceService', () => {
       claimInterface,
       selectConfiguration: vi.fn().mockResolvedValue(undefined),
       configuration: { interfaces: [{}] },
-    } as any;
+    } as unknown as USBDevice;
     const svc = build();
     await svc.send(device, new ArrayBuffer(8));
     expect(device.open).toHaveBeenCalled();
@@ -88,7 +98,7 @@ describe('UsbDeviceService', () => {
       detachKernelDriver,
       selectConfiguration: vi.fn().mockResolvedValue(undefined),
       configuration: { interfaces: [{}] },
-    } as any;
+    } as unknown as USBDevice;
     const svc = build();
     await svc.send(device, new ArrayBuffer(8));
     expect(detachKernelDriver).toHaveBeenCalledWith(0);
@@ -105,10 +115,10 @@ describe('UsbDeviceService', () => {
       claimInterface,
       selectConfiguration: vi.fn().mockResolvedValue(undefined),
       configuration: { interfaces: [{}] },
-    } as any;
+    } as unknown as USBDevice;
     const svc = build();
-    const logSpy = vi.spyOn((svc as any).logger, 'log').mockImplementation(() => undefined);
-    await (svc as any).openDevice(device);
+    const logSpy = vi.spyOn((svc as unknown as ServiceWithLogger).logger, 'log').mockImplementation(() => undefined);
+    await (svc as unknown as { openDevice: (device: USBDevice) => Promise<void> }).openDevice(device);
     expect(device.open).toHaveBeenCalled();
     expect(claimInterface).toHaveBeenCalledTimes(2);
     expect(device.selectConfiguration).toHaveBeenCalledWith(1);
@@ -122,10 +132,10 @@ describe('UsbDeviceService', () => {
       open: vi.fn().mockRejectedValue(new Error('fail')),
       claimInterface: vi.fn().mockRejectedValue(new Error('busy')),
       configuration: { interfaces: [{}] },
-    } as any;
+    } as unknown as USBDevice;
     const svc = build();
-    const spy = vi.spyOn((svc as any).logger, 'error').mockImplementation(() => undefined);
-    await (svc as any).openDevice(device);
+    const spy = vi.spyOn((svc as unknown as ServiceWithLogger).logger, 'error').mockImplementation(() => undefined);
+    await (svc as unknown as { openDevice: (device: USBDevice) => Promise<void> }).openDevice(device);
     expect(spy).toHaveBeenCalled();
     spy.mockRestore();
   });
@@ -138,10 +148,10 @@ describe('UsbDeviceService', () => {
       claimInterface,
       selectConfiguration: vi.fn().mockResolvedValue(undefined),
       configuration: undefined,
-    } as any;
+    } as unknown as USBDevice;
     const svc = build();
-    const logSpy = vi.spyOn((svc as any).logger, 'log').mockImplementation(() => undefined);
-    await (svc as any).openDevice(device);
+    const logSpy = vi.spyOn((svc as unknown as ServiceWithLogger).logger, 'log').mockImplementation(() => undefined);
+    await (svc as unknown as { openDevice: (device: USBDevice) => Promise<void> }).openDevice(device);
     expect(device.open).toHaveBeenCalled();
     expect(claimInterface).toHaveBeenCalledTimes(1);
     expect(device.selectConfiguration).toHaveBeenCalledWith(1);

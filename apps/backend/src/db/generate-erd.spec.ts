@@ -48,7 +48,7 @@ describe('generate-erd', () => {
       primary: false,
       getSQLType: () => '!!!',
     };
-    const fakeTable = Object.create(PgTableClass.prototype);
+    const fakeTable = Object.create(PgTableClass.prototype) as Record<symbol, unknown>;
     fakeTable[S('Name')] = 'weird';
     fakeTable[S('Schema')] = undefined;
     fakeTable[S('Columns')] = { blank: fakeColumn };

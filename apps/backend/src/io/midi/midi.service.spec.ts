@@ -1,21 +1,23 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { MidiService } from './midi.service';
 
+type MidiCallback = (...args: unknown[]) => void;
+
 const { inputMock, outputMock } = vi.hoisted(() => ({
   inputMock: {
-    getPortCount: vi.fn().mockReturnValue(2),
-    getPortName: vi.fn().mockReturnValue('dev'),
-    openPort: vi.fn(),
-    closePort: vi.fn(),
-    on: vi.fn(),
+    getPortCount: vi.fn<() => number>().mockReturnValue(2),
+    getPortName: vi.fn<() => string>().mockReturnValue('dev'),
+    openPort: vi.fn<(port: number) => void>(),
+    closePort: vi.fn<() => void>(),
+    on: vi.fn<(event: string, cb: MidiCallback) => void>(),
   },
   outputMock: {
-    getPortCount: vi.fn().mockReturnValue(1),
-    getPortName: vi.fn().mockReturnValue('out'),
-    openPort: vi.fn(),
-    closePort: vi.fn(),
-    sendMessage: vi.fn(),
+    getPortCount: vi.fn<() => number>().mockReturnValue(1),
+    getPortName: vi.fn<() => string>().mockReturnValue('out'),
+    openPort: vi.fn<(port: number) => void>(),
+    closePort: vi.fn<() => void>(),
+    sendMessage: vi.fn<(msg: number[]) => void>(),
   },
 }));
 
@@ -42,13 +44,16 @@ vi.mock('midi', () => ({
 }));
 
 describe('MidiService', () => {
-  let eventEmitter: { emit: ReturnType<typeof vi.fn>; on: ReturnType<typeof vi.fn> };
+  let eventEmitter: AppEventEmitter;
   let service: MidiService;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    eventEmitter = { emit: vi.fn(), on: vi.fn() };
-    service = new MidiService(eventEmitter as unknown as AppEventEmitter);
+    eventEmitter = {
+      emit: vi.fn<(event: string, payload?: unknown) => boolean>(),
+      on: vi.fn<(event: string, listener: (...args: unknown[]) => void) => void>(),
+    } as unknown as AppEventEmitter;
+    service = new MidiService(eventEmitter);
   });
 
   it('registers message + sendMessage listeners on construction', () => {
@@ -57,22 +62,22 @@ describe('MidiService', () => {
   });
 
   it('forwards incoming midi messages from the input to midi.inputMessage', () => {
-    const messageCallback = inputMock.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
+    const messageCallback = inputMock.on.mock.calls.find((c: unknown[]) => c[0] === 'message')?.[1];
     expect(typeof messageCallback).toBe('function');
-    messageCallback(0, [144, 1, 100]);
+    messageCallback?.(0, [144, 1, 100]);
     expect(eventEmitter.emit).toHaveBeenCalledWith('midi.inputMessage', [144, 1, 100]);
   });
 
-  it('sends midi messages when midi.sendMessage is emitted', async () => {
-    const sendCallback = (eventEmitter.on as ReturnType<typeof vi.fn>).mock.calls.find(
-      (c: any[]) => c[0] === 'midi.sendMessage',
-    )?.[1];
+  it('sends midi messages when midi.sendMessage is emitted', () => {
+    const sendCallback = (
+      eventEmitter.on as unknown as Mock<(event: string, listener: MidiCallback) => void>
+    ).mock.calls.find((c: unknown[]) => c[0] === 'midi.sendMessage')?.[1];
     expect(typeof sendCallback).toBe('function');
-    const spy = vi.spyOn(global, 'setTimeout').mockImplementation((cb: any) => {
+    const spy = vi.spyOn(global, 'setTimeout').mockImplementation((cb: MidiCallback) => {
       cb();
       return 0 as unknown as NodeJS.Timeout;
     });
-    await sendCallback([144, 1, 100]);
+    sendCallback?.([144, 1, 100]);
     expect(outputMock.sendMessage).toHaveBeenCalledWith([144, 1, 100]);
     spy.mockRestore();
   });
@@ -86,7 +91,7 @@ describe('MidiService', () => {
   });
 
   it('openPorts opens both and emits events', () => {
-    service.openPorts({ inputPort: 0, outputPort: 0 } as any);
+    service.openPorts({ inputPort: 0, outputPort: 0 });
     expect(inputMock.openPort).toHaveBeenCalledWith(0);
     expect(outputMock.openPort).toHaveBeenCalledWith(0);
     expect(eventEmitter.emit).toHaveBeenCalledWith('midi.inputOpened');
@@ -100,16 +105,19 @@ describe('MidiService', () => {
   });
 
   it('handleMidiMessage emits midi.inputMessage', () => {
-    (service as any).handleMidiMessage(0, [144, 1, 100]);
+    (service as unknown as { handleMidiMessage: (port: number, data: number[]) => void }).handleMidiMessage(
+      0,
+      [144, 1, 100],
+    );
     expect(eventEmitter.emit).toHaveBeenCalledWith('midi.inputMessage', [144, 1, 100]);
   });
 
   it('sendMidiMessage sends and waits', async () => {
-    const spy = vi.spyOn(global, 'setTimeout').mockImplementation((cb: any) => {
+    const spy = vi.spyOn(global, 'setTimeout').mockImplementation((cb: MidiCallback) => {
       cb();
       return 0 as unknown as NodeJS.Timeout;
     });
-    await (service as any).sendMidiMessage([144, 1, 100]);
+    await (service as unknown as { sendMidiMessage: (data: number[]) => Promise<void> }).sendMidiMessage([144, 1, 100]);
     expect(outputMock.sendMessage).toHaveBeenCalledWith([144, 1, 100]);
     spy.mockRestore();
   });

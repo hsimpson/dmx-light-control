@@ -17,7 +17,7 @@ describe('drizzle-db.provider', () => {
     class Test {
       @InjectDb() public db!: unknown;
     }
-    const props = Reflect.getMetadata('self:properties_metadata', Test) as
+    const props = Reflect.getMetadata('self:properties_metadata', Test) as unknown as
       { key: string; type: unknown }[] | undefined;
     expect(props?.some(p => p.key === 'db' && p.type === DRIZZLE_DB_PROVIDER)).toBe(true);
   });

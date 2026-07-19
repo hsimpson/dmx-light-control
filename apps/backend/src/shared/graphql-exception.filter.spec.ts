@@ -46,7 +46,9 @@ describe('GlobalGqlExceptionFilter', () => {
 
   it('maps a generic Error to INTERNAL_SERVER_ERROR and logs', () => {
     const { filter, host } = build();
-    const spy = vi.spyOn((filter as unknown as { logger: { error: (...a: unknown[]) => void } }).logger, 'error').mockImplementation(() => undefined);
+    const spy = vi
+      .spyOn((filter as unknown as { logger: { error: (...a: unknown[]) => void } }).logger, 'error')
+      .mockImplementation(() => undefined);
     const result = filter.catch(new Error('boom'), host);
     expect(result.extensions.code).toBe('INTERNAL_SERVER_ERROR');
     expect(spy).toHaveBeenCalled();
@@ -55,7 +57,9 @@ describe('GlobalGqlExceptionFilter', () => {
 
   it('maps a non-Error to INTERNAL_SERVER_ERROR and logs', () => {
     const { filter, host } = build();
-    const spy = vi.spyOn((filter as unknown as { logger: { error: (...a: unknown[]) => void } }).logger, 'error').mockImplementation(() => undefined);
+    const spy = vi
+      .spyOn((filter as unknown as { logger: { error: (...a: unknown[]) => void } }).logger, 'error')
+      .mockImplementation(() => undefined);
     const result = filter.catch('weird', host);
     expect(result.extensions.code).toBe('INTERNAL_SERVER_ERROR');
     expect(spy).toHaveBeenCalled();
@@ -64,16 +68,25 @@ describe('GlobalGqlExceptionFilter', () => {
 
   it('isNestHttpException returns false for null', () => {
     const { filter } = build();
-    expect((filter as unknown as { isNestHttpException: (e: unknown) => boolean }).isNestHttpException(null)).toBe(false);
+    expect((filter as unknown as { isNestHttpException: (e: unknown) => boolean }).isNestHttpException(null)).toBe(
+      false,
+    );
   });
 
   it('isNestHttpException returns false for object missing functions', () => {
     const { filter } = build();
-    expect((filter as unknown as { isNestHttpException: (e: unknown) => boolean }).isNestHttpException({ getResponse: 1 })).toBe(false);
+    expect(
+      (filter as unknown as { isNestHttpException: (e: unknown) => boolean }).isNestHttpException({ getResponse: 1 }),
+    ).toBe(false);
   });
 
   it('isNestHttpException returns true for valid shape', () => {
     const { filter } = build();
-    expect((filter as unknown as { isNestHttpException: (e: unknown) => boolean }).isNestHttpException({ getResponse: () => ({}), getStatus: () => 1 })).toBe(true);
+    expect(
+      (filter as unknown as { isNestHttpException: (e: unknown) => boolean }).isNestHttpException({
+        getResponse: () => ({}),
+        getStatus: () => 1,
+      }),
+    ).toBe(true);
   });
 });
