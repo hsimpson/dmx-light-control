@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';
-import { describe, it, expect, vi, type Mock } from 'vitest';
+import { describe, expect, it, vi, type Mock } from 'vitest';
 import { DmxSnifferService, parseFrames } from './dmx-sniffer.service';
 
 type WithLogger = {

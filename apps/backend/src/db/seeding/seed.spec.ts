@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 const insertMock = vi.fn().mockReturnThis();
 const valuesMock = vi.fn().mockResolvedValue(undefined);

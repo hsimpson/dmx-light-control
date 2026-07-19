@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
 import { BaseDomainError } from '@/fixtures/fixture.exceptions';
 import { ArgumentsHost } from '@nestjs/common';
+import { describe, expect, it, vi } from 'vitest';
 import { GlobalGqlExceptionFilter } from './graphql-exception.filter';
 
 function build() {

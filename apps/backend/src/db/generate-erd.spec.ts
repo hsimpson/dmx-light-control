@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, type Mock, afterEach } from 'vitest';
+import { afterEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 const writeFileSync: Mock<(path: string, data: string) => void> = vi.fn();
 const mkdirSync: Mock<(path: string) => void> = vi.fn();

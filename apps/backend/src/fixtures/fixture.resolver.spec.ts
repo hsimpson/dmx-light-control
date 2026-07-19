@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
 import { plainToInstance } from 'class-transformer';
+import { describe, expect, it, vi } from 'vitest';
+import { FixtureVendorDto } from './dto/fixture-vendor.dto';
 import { FixtureResolver } from './fixture.resolver';
 import { FixtureService } from './fixture.service';
-import { FixtureVendorDto } from './dto/fixture-vendor.dto';
 
 function build() {
   const fixtureService = {

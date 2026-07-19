@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import { AppEventEmitter } from '@/events/app-event-emitter';
-import { SerialSendService } from './serial-send.service';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { DmxValue } from '../dmx/types/dmx.types';
+import { SerialSendService } from './serial-send.service';
 
 const { fakePort } = vi.hoisted(() => ({
   fakePort: {

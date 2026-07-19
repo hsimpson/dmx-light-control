@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common';
-import { describe, it, expect, vi } from 'vitest';
 import { AppEventEmitter } from '@/events/app-event-emitter';
+import { Logger } from '@nestjs/common';
+import { describe, expect, it, vi } from 'vitest';
 import { IoBridgeService } from './io-bridge.service';
 
 describe('IoBridgeService', () => {

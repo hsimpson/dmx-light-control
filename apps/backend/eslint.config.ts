@@ -14,13 +14,4 @@ export default [
       '@typescript-eslint/no-extraneous-class': 'off',
     },
   },
-
-  // test specs: `expect(obj.method).toHaveBeenCalledWith(...)` is a known
-  // false-positive for unbound-method; disable only here
-  {
-    files: ['**/*.spec.ts'],
-    rules: {
-      '@typescript-eslint/unbound-method': 'off',
-    },
-  },
 ];

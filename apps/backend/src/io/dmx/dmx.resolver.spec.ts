@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
 import { AppEventEmitter } from '@/events/app-event-emitter';
-import { ChannelValuesInput } from './dto/dmx-set-channel-values.dto';
+import { describe, expect, it, vi } from 'vitest';
 import { DmxResolver } from './dmx.resolver';
+import { ChannelValuesInput } from './dto/dmx-set-channel-values.dto';
 
 describe('DmxResolver', () => {
   it('emits dmx.channelValues and returns success string', () => {

@@ -1,7 +1,7 @@
-import { Logger } from '@nestjs/common';
-import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { UsbDeviceService } from '@/io/usb/usb-device.service';
+import { Logger } from '@nestjs/common';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { DmxSendService } from './dmx-send.service';
 
 const fakeDevice = {

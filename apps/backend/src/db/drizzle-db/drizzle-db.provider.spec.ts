@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import 'reflect-metadata';
+import { describe, expect, it } from 'vitest';
 import { DRIZZLE_DB_PROVIDER, InjectDb } from './drizzle-db.provider';
 
 describe('drizzle-db.provider', () => {

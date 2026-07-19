@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, afterEach, afterAll } from 'vitest';
+import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 import { DmxSnifferCommand } from './dmx-sniffer.command';
 import { DmxSnifferService } from './dmx-sniffer.service';
 

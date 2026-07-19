@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { MidiResolver } from './midi.resolver';
 import { MidiService } from './midi.service';
 

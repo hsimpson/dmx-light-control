@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { AppEventEmitter } from '@/events/app-event-emitter';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { MidiService } from './midi.service';
 
 type MidiCallback = (...args: unknown[]) => void;
