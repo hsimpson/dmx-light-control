@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect } from 'vitest';
 import { EventsModule } from '@/events/events.module';
 import 'reflect-metadata';
 import { MidiModule } from './midi.module';

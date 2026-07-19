@@ -1,9 +1,8 @@
-/// <reference types="vitest/globals" />
 import { ClassSerializerInterceptor, INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { CommandFactory } from 'nest-commander';
-import { Mock, vi } from 'vitest';
+import { describe, it, Mock, vi } from 'vitest';
 import { AppModule } from './app.module';
 import { bootstrap, registerGlobals } from './main';
 

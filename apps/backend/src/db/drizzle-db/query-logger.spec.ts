@@ -1,6 +1,5 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect, vi } from 'vitest';
 import { Logger } from '@nestjs/common';
-import { vi } from 'vitest';
 import { DrizzleLogWriter } from './query-logger';
 
 describe('DrizzleLogWriter', () => {

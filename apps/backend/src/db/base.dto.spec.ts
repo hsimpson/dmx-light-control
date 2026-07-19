@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect } from 'vitest';
 import { BaseDto } from './base.dto';
 
 class Concrete extends BaseDto {

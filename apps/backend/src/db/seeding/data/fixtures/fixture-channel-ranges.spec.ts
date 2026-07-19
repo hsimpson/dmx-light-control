@@ -1,5 +1,4 @@
-/// <reference types="vitest/globals" />
-
+import { describe, it, expect } from 'vitest';
 import { fixtureChannelRanges } from './fixture-channel-ranges';
 
 describe('seed data: fixtureChannelRanges', () => {

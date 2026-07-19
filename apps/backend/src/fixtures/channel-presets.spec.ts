@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect } from 'vitest';
 import { FixtureChannelPreset, fixtureChannelPresetsName } from './channel-presets';
 
 describe('channel-presets', () => {

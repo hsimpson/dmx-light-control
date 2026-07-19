@@ -1,5 +1,4 @@
-/// <reference types="vitest/globals" />
-import { vi } from 'vitest';
+import { describe, it, expect, vi, afterEach, afterAll } from 'vitest';
 import { DmxSnifferCommand } from './dmx-sniffer.command';
 import { DmxSnifferService } from './dmx-sniffer.service';
 

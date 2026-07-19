@@ -1,5 +1,4 @@
-/// <reference types="vitest/globals" />
-import { vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { UsbDeviceService } from './usb-device.service';
 
 const { fakeWebUSB } = vi.hoisted(() => ({

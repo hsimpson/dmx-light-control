@@ -1,6 +1,5 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { AppEventEmitter } from '@/events/app-event-emitter';
-import { vi } from 'vitest';
 import { SerialSendService } from './serial-send.service';
 
 const { fakePort } = vi.hoisted(() => ({

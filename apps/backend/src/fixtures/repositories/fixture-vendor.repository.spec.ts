@@ -1,5 +1,4 @@
-/// <reference types="vitest/globals" />
-import { vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { FixtureVendorRepository } from './fixture-vendor.repository';
 
 function build() {

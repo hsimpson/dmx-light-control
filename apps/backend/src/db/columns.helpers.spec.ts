@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect } from 'vitest';
 import { pk, timestamps } from './columns.helpers';
 
 describe('columns.helpers', () => {

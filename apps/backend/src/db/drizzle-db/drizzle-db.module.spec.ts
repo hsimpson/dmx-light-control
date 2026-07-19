@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect, assert } from 'vitest';
 import { DrizzleDbModule } from './drizzle-db.module';
 
 describe('DrizzleDbModule', () => {

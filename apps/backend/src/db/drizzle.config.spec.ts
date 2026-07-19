@@ -1,5 +1,4 @@
-/// <reference types="vitest/globals" />
-import { vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('@/db/connection', () => ({
   resolveDatabaseUrl: () => 'postgresql://mock',

@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect } from 'vitest';
 import 'reflect-metadata';
 import { UsbDeviceService } from './usb-device.service';
 import { UsbModule } from './usb.module';

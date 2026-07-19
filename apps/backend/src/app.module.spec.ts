@@ -1,5 +1,4 @@
-/// <reference types="vitest/globals" />
-
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 const ORIGINAL_ENV = process.env;
 
 beforeAll(() => {

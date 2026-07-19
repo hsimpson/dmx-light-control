@@ -1,6 +1,5 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect, vi } from 'vitest';
 import { plainToInstance } from 'class-transformer';
-import { vi } from 'vitest';
 import { FixtureResolver } from './fixture.resolver';
 import { FixtureService } from './fixture.service';
 

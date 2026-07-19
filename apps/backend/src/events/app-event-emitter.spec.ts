@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect } from 'vitest';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AppEventEmitter } from './app-event-emitter';
 

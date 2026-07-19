@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect } from 'vitest';
 import 'reflect-metadata';
 import { DRIZZLE_DB_PROVIDER, InjectDb } from './drizzle-db.provider';
 

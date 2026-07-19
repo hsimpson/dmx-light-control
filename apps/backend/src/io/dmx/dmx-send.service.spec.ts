@@ -1,6 +1,5 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { AppEventEmitter } from '@/events/app-event-emitter';
-import { vi } from 'vitest';
 import { DmxSendService } from './dmx-send.service';
 
 const fakeDevice = { productName: 'FTDI', opened: true, transferOut: vi.fn().mockResolvedValue(undefined) } as any;

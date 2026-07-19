@@ -1,6 +1,5 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect, vi } from 'vitest';
 import { AppEventEmitter } from '@/events/app-event-emitter';
-import { vi } from 'vitest';
 import { DmxResolver } from './dmx.resolver';
 
 describe('DmxResolver', () => {

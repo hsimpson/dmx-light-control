@@ -1,8 +1,7 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect, vi } from 'vitest';
 import { BaseDomainError } from '@/fixtures/fixture.exceptions';
 import { ArgumentsHost } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
-import { vi } from 'vitest';
 import { GlobalGqlExceptionFilter } from './graphql-exception.filter';
 
 function build() {

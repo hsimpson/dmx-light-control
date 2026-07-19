@@ -1,6 +1,5 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { vi } from 'vitest';
 import { TypedEventEmitter } from './typed-event-emitter';
 
 type Events = { 'a.event': { x: number }; 'b.event': undefined };

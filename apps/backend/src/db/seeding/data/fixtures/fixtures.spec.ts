@@ -1,5 +1,4 @@
-/// <reference types="vitest/globals" />
-
+import { describe, it, expect } from 'vitest';
 import { fixtures } from './fixtures';
 
 describe('seed data: fixtures', () => {

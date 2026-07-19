@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect } from 'vitest';
 import 'reflect-metadata';
 import { SerialSendService } from '../serial/serial-send.service';
 import { DmxSnifferCommand } from './dmx-sniffer.command';

@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect } from 'vitest';
 import 'reflect-metadata';
 import { AppEventEmitter } from './app-event-emitter';
 import { EventsModule } from './events.module';

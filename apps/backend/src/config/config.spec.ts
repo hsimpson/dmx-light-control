@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { loadConfig } from './config';
 
 describe('config', () => {
