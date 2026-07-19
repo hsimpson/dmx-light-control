@@ -2,6 +2,13 @@ import fs from 'node:fs/promises';
 import { describe, it, expect, vi, type Mock } from 'vitest';
 import { DmxSnifferService, parseFrames } from './dmx-sniffer.service';
 
+type WithLogger = {
+  logger: {
+    log: (...args: unknown[]) => void;
+    error: (...args: unknown[]) => void;
+  };
+};
+
 type ReadResult = { bytesRead: number; buffer: Buffer };
 
 type ReadMock = Mock<(buf: Buffer) => Promise<ReadResult>>;
@@ -65,10 +72,10 @@ describe('parseFrames', () => {
 describe('DmxSnifferService', () => {
   it('startSniffer reads packets, reassembles a 513-byte frame and logs', async () => {
     const service = new DmxSnifferService();
-    const logSpy = vi.spyOn(service.logger, 'log').mockImplementation(() => undefined);
-    const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
+    const logSpy = vi.spyOn((service as unknown as WithLogger).logger, 'log').mockImplementation(() => undefined);
+    const errorSpy = vi.spyOn((service as unknown as WithLogger).logger, 'error').mockImplementation(() => undefined);
     const logged: string[] = [];
-    vi.spyOn(service.logger, 'log').mockImplementation((...a: unknown[]) => {
+    vi.spyOn((service as unknown as WithLogger).logger, 'log').mockImplementation((...a: unknown[]) => {
       logged.push(a.map(String).join(' '));
     });
 
@@ -102,7 +109,7 @@ describe('DmxSnifferService', () => {
 
   it('startSniffer catches and logs Error instances', async () => {
     const service = new DmxSnifferService();
-    const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
+    const errorSpy = vi.spyOn((service as unknown as WithLogger).logger, 'error').mockImplementation(() => undefined);
     vi.spyOn(fs, 'open').mockRejectedValue(new Error('boom'));
     await service.startSniffer(1, 5);
     expect(errorSpy).toHaveBeenCalledWith('❌ Error: boom');
@@ -111,7 +118,7 @@ describe('DmxSnifferService', () => {
 
   it('startSniffer catches and logs unknown (non-Error) errors', async () => {
     const service = new DmxSnifferService();
-    const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
+    const errorSpy = vi.spyOn((service as unknown as WithLogger).logger, 'error').mockImplementation(() => undefined);
     vi.spyOn(fs, 'open').mockRejectedValue('boom');
     await service.startSniffer(1, 5);
     expect(errorSpy).toHaveBeenCalledWith('❌ An unknown error occurred.');
@@ -120,9 +127,9 @@ describe('DmxSnifferService', () => {
 
   it('startSniffer ignores packets that do not target the requested device/endpoint/type', async () => {
     const service = new DmxSnifferService();
-    const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
+    const errorSpy = vi.spyOn((service as unknown as WithLogger).logger, 'error').mockImplementation(() => undefined);
     const logged: string[] = [];
-    vi.spyOn(service.logger, 'log').mockImplementation((...a: unknown[]) => {
+    vi.spyOn((service as unknown as WithLogger).logger, 'log').mockImplementation((...a: unknown[]) => {
       logged.push(a.map(String).join(' '));
     });
 
@@ -146,9 +153,9 @@ describe('DmxSnifferService', () => {
 
   it('startSniffer ignores matching packets with zero-length data', async () => {
     const service = new DmxSnifferService();
-    const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
+    const errorSpy = vi.spyOn((service as unknown as WithLogger).logger, 'error').mockImplementation(() => undefined);
     const logged: string[] = [];
-    vi.spyOn(service.logger, 'log').mockImplementation((...a: unknown[]) => {
+    vi.spyOn((service as unknown as WithLogger).logger, 'log').mockImplementation((...a: unknown[]) => {
       logged.push(a.map(String).join(' '));
     });
 
@@ -177,9 +184,9 @@ describe('DmxSnifferService', () => {
 
   it('startSniffer ignores packets whose type is not submit (S)', async () => {
     const service = new DmxSnifferService();
-    const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
+    const errorSpy = vi.spyOn((service as unknown as WithLogger).logger, 'error').mockImplementation(() => undefined);
     const logged: string[] = [];
-    vi.spyOn(service.logger, 'log').mockImplementation((...a: unknown[]) => {
+    vi.spyOn((service as unknown as WithLogger).logger, 'log').mockImplementation((...a: unknown[]) => {
       logged.push(a.map(String).join(' '));
     });
 
@@ -210,9 +217,9 @@ describe('DmxSnifferService', () => {
 
   it('startSniffer skips leading non-start-code bytes before reassembling', async () => {
     const service = new DmxSnifferService();
-    const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
+    const errorSpy = vi.spyOn((service as unknown as WithLogger).logger, 'error').mockImplementation(() => undefined);
     const logged: string[] = [];
-    vi.spyOn(service.logger, 'log').mockImplementation((...a: unknown[]) => {
+    vi.spyOn((service as unknown as WithLogger).logger, 'log').mockImplementation((...a: unknown[]) => {
       logged.push(a.map(String).join(' '));
     });
 
@@ -255,9 +262,9 @@ describe('DmxSnifferService', () => {
 
   it('startSniffer continues after a zero-byte read', async () => {
     const service = new DmxSnifferService();
-    const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
+    const errorSpy = vi.spyOn((service as unknown as WithLogger).logger, 'error').mockImplementation(() => undefined);
     const logged: string[] = [];
-    vi.spyOn(service.logger, 'log').mockImplementation((...a: unknown[]) => {
+    vi.spyOn((service as unknown as WithLogger).logger, 'log').mockImplementation((...a: unknown[]) => {
       logged.push(a.map(String).join(' '));
     });
 

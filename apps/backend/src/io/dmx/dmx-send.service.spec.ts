@@ -110,7 +110,7 @@ describe('DmxSendService', () => {
     (service as unknown as DmxSendServicePrivate).sendDmxFrame();
     const callback = (global.setInterval as unknown as Mock<(...args: unknown[]) => unknown>).mock.calls[0]?.[0];
     expect(typeof callback).toBe('function');
-    await callback();
+    await (callback as () => Promise<void>)();
     expect(usbDeviceServiceMock.send).toHaveBeenCalled();
   });
 
@@ -120,7 +120,7 @@ describe('DmxSendService', () => {
     (service as unknown as DmxSendServicePrivate).sendDmxFrame();
     (service as unknown as DmxSendServicePrivate)._isSending = false;
     const callback = (global.setInterval as unknown as Mock<(...args: unknown[]) => unknown>).mock.calls[0]?.[0];
-    await callback();
+    await (callback as () => Promise<void>)();
     expect(usbDeviceServiceMock.send).not.toHaveBeenCalled();
   });
 
