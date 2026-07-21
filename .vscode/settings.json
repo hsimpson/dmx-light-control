@@ -43,5 +43,12 @@
   "i18n-ally.localesPaths": ["apps/frontend/src/lang"],
   "i18n-ally.regex.usageMatchAppend": ["[^\\w\\d](?:t)\\(.|\\s*?id?:\\s*'([a-zA-z].*?)'"],
   "i18n-ally.sortKeys": true,
-  "i18n-ally.sourceLanguage": "en"
+  "i18n-ally.sourceLanguage": "en",
+  "vsicons.associations.folders": [
+    {
+      "extensions": ["e2e-tests"],
+      "format": "svg",
+      "icon": "test"
+    }
+  ]
 }

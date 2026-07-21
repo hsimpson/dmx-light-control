@@ -1,15 +1,15 @@
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import { mergeConfig } from 'vitest/config';
 import baseConfig from '../../vitest.base';
 
 export default mergeConfig(baseConfig, {
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@': resolve(import.meta.dirname, 'src'),
     },
   },
   test: {
-    globals: true,
+    globalSetup: [resolve(import.meta.dirname, 'vitest.setup.ts')],
     root: import.meta.dirname,
     coverage: {
       reportsDirectory: '../../coverage/apps/backend',

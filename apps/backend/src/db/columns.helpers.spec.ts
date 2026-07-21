@@ -22,4 +22,11 @@ describe('columns.helpers', () => {
     expect(configOf(timestamps.updatedAt).dataType).toBe('object date');
     expect(configOf(timestamps.updatedAt).hasDefault).toBe(true);
   });
+
+  it('updatedAt.onUpdateFn returns a fresh Date on update', () => {
+    const onUpdateFn = (timestamps.updatedAt as unknown as { config: { onUpdateFn?: () => Date } }).config.onUpdateFn;
+    expect(typeof onUpdateFn).toBe('function');
+    const result = onUpdateFn?.();
+    expect(result).toBeInstanceOf(Date);
+  });
 });

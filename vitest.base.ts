@@ -7,7 +7,18 @@ export default defineConfig({
       provider: 'v8',
       reporter: [['text', { skipFull: false }], 'html', 'json', 'clover'],
       include: ['src/**/*.{ts,tsx}'],
-      exclude: [...coverageConfigDefaults.exclude, 'src/**/*.dto.ts'],
+      exclude: [
+        ...coverageConfigDefaults.exclude,
+        'src/**/*.dto.ts',
+        // Declaration-only / type-only files with no runtime logic
+        '**/src/config/types/**',
+        '**/src/events/types/**',
+        '**/src/io/dmx/types/**',
+        '**/src/io/midi/types/**',
+        '**/src/db/schema.ts',
+        '**/src/db/drizzle.config.ts',
+        '**/src/fixtures/entities/index.ts',
+      ],
       thresholds: {
         statements: 80,
         functions: 80,
