@@ -5,7 +5,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { CommandFactory } from 'nest-commander';
 import { AppModule } from './app.module';
 
-export function registerGlobals(app: INestApplication) {
+function registerGlobals(app: INestApplication) {
   app.useGlobalPipes(
     new ValidationPipe({
       // REVIEW: disable error messages in production
