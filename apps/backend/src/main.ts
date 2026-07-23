@@ -22,7 +22,7 @@ export function registerGlobals(app: INestApplication) {
   );
 }
 
-export async function bootstrap() {
+async function bootstrap() {
   // If CLI args are passed (e.g. `node main.js dmx-sniffer`), run as command
   if (process.argv.length > 2) {
     await CommandFactory.run(AppModule, ['log', 'warn', 'error']);
@@ -38,10 +38,4 @@ export async function bootstrap() {
   Logger.log(`🚀 Application is running on: http://localhost:${port}`);
 }
 
-// Only auto-run when executed as the entry point (e.g. `node main.js`).
-// When imported by tests, `require.main` differs from this module, so
-// `bootstrap()` is not invoked and the module stays side-effect free.
-const isMainModule = typeof require !== 'undefined' && require.main === module;
-if (isMainModule) {
-  void bootstrap();
-}
+void bootstrap();

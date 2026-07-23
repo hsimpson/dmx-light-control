@@ -44,13 +44,14 @@ interface EventEmitterHarness extends AppEventEmitter {
 interface SerialSendServiceHarness {
   onModuleInit: () => void;
   onModuleDestroy: () => void;
-  port: { isOpen: boolean };
+  port: { isOpen: boolean; set: Mock };
   dmxFrame: Uint8Array;
   isSending: boolean;
   logger: { error: Mock; warn: Mock; log: Mock; debug: Mock };
   startSendingLoop: () => void;
   stopSendingLoop: () => void;
   sendDmxFrame: () => void;
+  setChannelValues: (values: DmxValue[]) => void;
   closePort: () => void;
 }
 
@@ -108,6 +109,7 @@ describe('SerialSendService', () => {
     const { service, eventEmitter } = build();
     service.onModuleInit();
     const listener = eventEmitter.on.mock.calls[0]?.[1] as (values: DmxValue[]) => void;
+    const warnSpy = vi.spyOn(service.logger, 'warn').mockImplementation(() => undefined);
     listener([
       { channel: 0, value: 1 },
       { channel: 513, value: 1 },
@@ -117,9 +119,23 @@ describe('SerialSendService', () => {
     ]);
     // valid channel 3 → frame buffer index 3 set to 200
     expect(service.dmxFrame[3]).toBe(200);
-    // invalid entries were skipped without throwing; because port.isOpen is true in the mock,
-    // the listener also calls startSendingLoop → setInterval is invoked
+    // invalid channel entries (0, 513) trigger a warning each
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Invalid DMX channel'));
+    // invalid value entries (channel 1 with -1 and 256) trigger a warning each
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Invalid DMX value'));
+    // because port.isOpen is true in the mock, the listener also calls startSendingLoop → setInterval is invoked
     expect(global.setInterval).toHaveBeenCalled();
+  });
+
+  it('setChannelValues warns and skips out-of-range channels directly', () => {
+    const { service } = build();
+    const warnSpy = vi.spyOn(service.logger, 'warn').mockImplementation(() => undefined);
+    service.setChannelValues([
+      { channel: 0, value: 100 },
+      { channel: 513, value: 100 },
+    ]);
+    expect(warnSpy).toHaveBeenCalledTimes(2);
+    expect(service.dmxFrame[0]).toBe(0);
   });
 
   it('sendDmxFrame returns early when port not open', () => {
@@ -131,6 +147,37 @@ describe('SerialSendService', () => {
     }).not.toThrow();
   });
 
+  it('interval callback skips sending when the loop was stopped', () => {
+    const { service } = build();
+    service.onModuleInit();
+    service.port.isOpen = true;
+    service.startSendingLoop();
+    // capture the interval callback registered via setInterval
+    const callback = (global.setInterval as unknown as Mock).mock.calls[0]?.[0] as () => void;
+    // stop the loop so isSending becomes false, then fire the callback
+    service.stopSendingLoop();
+    const writeSpy = vi.spyOn(fakePort, 'write').mockImplementation(() => undefined);
+    callback();
+    expect(writeSpy).not.toHaveBeenCalled();
+  });
+
+  it('interval callback sends a frame while the loop is running', () => {
+    const { service } = build();
+    service.onModuleInit();
+    service.port.isOpen = true;
+    service.startSendingLoop();
+    const callback = (global.setInterval as unknown as Mock).mock.calls[0]?.[0] as () => void;
+    const setSpy = vi
+      .spyOn(fakePort, 'set')
+      .mockImplementation((_o: unknown, cb: (e?: Error) => void) => cb(undefined));
+    const writeSpy = vi.spyOn(fakePort, 'write').mockImplementation(() => {
+      return;
+    });
+    callback();
+    expect(setSpy).toHaveBeenCalled();
+    expect(writeSpy).toHaveBeenCalled();
+  });
+
   it('sendDmxFrame performs break/mab/write when open', () => {
     const { service } = build();
     service.onModuleInit();
@@ -138,6 +185,27 @@ describe('SerialSendService', () => {
     service.sendDmxFrame();
     expect(fakePort.set).toHaveBeenCalled();
     expect(fakePort.write).toHaveBeenCalled();
+  });
+
+  it('sendDmxFrame returns early when the break-release set() fails', () => {
+    const { service } = build();
+    service.onModuleInit();
+    service.port.isOpen = true;
+    // First set() (break) succeeds, second set() (break release) fails →
+    // exercises the `if (err1) return;` early-exit branch.
+    let setCall = 0;
+    const originalSet = service.port.set;
+    service.port.set = vi.fn((_o: unknown, cb: (e?: Error) => void) => {
+      setCall += 1;
+      cb(setCall >= 2 ? new Error('brk release failed') : undefined);
+    });
+    const writeSpy = vi.spyOn(fakePort, 'write').mockImplementation(() => undefined);
+    expect(() => {
+      service.sendDmxFrame();
+    }).not.toThrow();
+    expect(writeSpy).not.toHaveBeenCalled();
+    service.port.set = originalSet;
+    writeSpy.mockRestore();
   });
 
   it('closePort handles closed port gracefully', () => {
