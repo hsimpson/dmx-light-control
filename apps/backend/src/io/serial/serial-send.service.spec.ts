@@ -167,9 +167,9 @@ describe('SerialSendService', () => {
     service.port.isOpen = true;
     service.startSendingLoop();
     const callback = (global.setInterval as unknown as Mock).mock.calls[0]?.[0] as () => void;
-    const setSpy = vi
-      .spyOn(fakePort, 'set')
-      .mockImplementation((_o: unknown, cb: (e?: Error) => void) => cb(undefined));
+    const setSpy = vi.spyOn(fakePort, 'set').mockImplementation((_o: unknown, cb: (e?: Error) => void) => {
+      cb(undefined);
+    });
     const writeSpy = vi.spyOn(fakePort, 'write').mockImplementation(() => {
       return;
     });
