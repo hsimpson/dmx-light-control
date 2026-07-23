@@ -1,5 +1,5 @@
 import { AppModule } from '@/app.module';
-import { graphqlQuery } from '@/e2e-tests/graphql-test-client';
+import { graphqlQuery } from '@/testhelpers/graphql-test-client';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import gql from 'graphql-tag';

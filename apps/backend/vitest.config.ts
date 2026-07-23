@@ -2,7 +2,10 @@ import { resolve } from 'node:path';
 import { mergeConfig } from 'vitest/config';
 import baseConfig from '../../vitest.base';
 
+function nestDecoratorCoverageIgnorePlugin() {}
+
 export default mergeConfig(baseConfig, {
+  plugins: [nestDecoratorCoverageIgnorePlugin()],
   resolve: {
     alias: {
       '@': resolve(import.meta.dirname, 'src'),
