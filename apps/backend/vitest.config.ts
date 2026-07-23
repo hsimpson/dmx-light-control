@@ -1,8 +1,7 @@
 import { resolve } from 'node:path';
 import { mergeConfig } from 'vitest/config';
 import baseConfig from '../../vitest.base';
-
-function nestDecoratorCoverageIgnorePlugin() {}
+import { nestDecoratorCoverageIgnorePlugin } from './nest-decorator-coverage-ignore.plugin';
 
 export default mergeConfig(baseConfig, {
   plugins: [nestDecoratorCoverageIgnorePlugin()],
