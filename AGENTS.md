@@ -1,12 +1,14 @@
-# AGENTS Guidelines for this repository
+# DMX Lighting Control System
 
-DMX lighting control system. NestJS backend + Next.js frontend in Nx monorepo.
+NestJS backend + Next.js frontend in Nx monorepo.
 
-## Role
+## Agent behavior
 
-- Expert full-stack developer (NestJS, Next.js, Drizzle ORM, GraphQL, Nx)
-- Focus on software implementation; DMX512 knowledge is helpful but not required
-- Follow existing conventions strictly
+- **Think before coding:** State assumptions. If unclear or multi-interpretation, ask. Surface tradeoffs. Push back on overcomplication.
+- **Simplicity first:** Minimum code that solves the ask. No speculative features, abstractions, or config. No impossible-scenario error handling. Prefer a small rewrite over a bloated patch.
+- **Surgical changes:** Touch only what the task requires. No drive-by refactors or formatting. Match existing style. Mention unrelated dead code; don’t delete it. Remove only orphans your changes created.
+- **Goal-driven execution:** Define verifiable success (tests/commands). For multi-step work, brief plan + verify steps; loop until verified.
+- **Bias:** Caution over speed except truly trivial tasks.
 
 ## Commands
 
@@ -25,8 +27,44 @@ DMX lighting control system. NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run frontend:i18n-extract`          | Extract translations                  |
 | `nx run frontend:i18n-verify`           | Verify translation files are in sync  |
 
-**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.18.0. **pnpm:** ^11.10.0.
+**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.18.0. **pnpm:** ^11.17.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
+
+## Done means
+
+1. Typecheck and lint pass with zero errors `nx run-many --targets typecheck,lint`.
+2. Relevant tests run and pass (show output) `nx run-many --targets test`.
+3. When changing graphql resolvers or DTOs, regenerate GraphQL schema `nx run-many --targets graphql-schema` and OpenCollection requests `nx run-many --targets generate-opencollection`.
+4. When database schema has changed (entities, relations) regenerate erd diagrams `nx run-many --targets drizzle-erd`.
+5. **Harness health-check** (required when change set matches the triggers below — report `Harness: up to date` or `Harness: updated`).
+6. Conventional commit message ready when asked to commit.
+
+## Conventions
+
+- Clean architecture, domain-driven design, feature-based modules (resolver or controller/service/repository/DTO/entity colocated)
+- Repository pattern with `@InjectDb()` custom decorator + `DRIZZLE_PG_PROVIDER` token
+- Dynamic modules via `forRoot`/`forRootAsync`, config via plain object schemas + `InferConfigType`
+- Path aliases: `@/config`, `@/orm-postgres`, `@/auth`, `@/core` (single index export each), `@/foods/*` (wildcard)
+- `pnpm` (not npm/yarn), `nx` (not lerna/turborepo), Fastify (not Express), Drizzle (not Prisma/TypeORM)
+- No typecheck errors, no lint errors
+
+## Harness health-check
+
+Harness maintenance is part of **done**, not optional docs.
+
+**Triggers** (run the health-check when the change set includes any of these):
+
+- New or renamed apps, packages, or Nx targets
+- New or changed path aliases, module patterns, or stack versions
+- New commands, env vars, or architecture boundaries
+
+**If stale:** update **`AGENTS.md` in the same change set**. Keep `CLAUDE.md` / `.github/copilot-instructions.md` thin — edit overlays only if their overlay text is wrong.
+
+**If accurate:** no harness edit.
+
+**Report in the final response:** `Harness: up to date` or `Harness: updated` (one line + what changed). Skipping the check when it was required is incomplete work.
+
+**Rules:** never invent features into `AGENTS.md` — only document what exists in code. Prefer short diffs; do not turn this file into a second README.
 
 ## Architecture
 
