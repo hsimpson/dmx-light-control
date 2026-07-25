@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { FixtureRepository } from './fixture.repository';
+import { fixtureRelations, FixtureRepository } from './fixture.repository';
 
 function build() {
   const db = {
@@ -23,23 +23,23 @@ describe('FixtureRepository', () => {
     const { repo, db } = build();
     db.query.fixture.findMany.mockResolvedValue(['x']);
     expect(await repo.findMany()).toEqual(['x']);
+    expect(db.query.fixture.findMany).toHaveBeenCalledWith({ with: fixtureRelations });
   });
 
-  it('findOneByPublicId queries first by publicId', async () => {
+  it('findOneByPublicId queries first by publicId with relations', async () => {
     const { repo, db } = build();
     db.query.fixture.findFirst.mockResolvedValue('x');
     expect(await repo.findOneByPublicId('p')).toBe('x');
+    expect(db.query.fixture.findFirst).toHaveBeenCalledWith({
+      where: { publicId: 'p' },
+      with: fixtureRelations,
+    });
   });
 
-  it('updateOneByPublicId updates and returns first row', async () => {
+  it('inherits updateOneByPublicId from BaseRepository', async () => {
     const { repo, db } = build();
     expect(await repo.updateOneByPublicId('p', { name: 'n' })).toEqual({ id: 1 });
     expect(db.update).toHaveBeenCalled();
-    expect(db.where).toHaveBeenCalled();
-  });
-
-  it('updateOneByPublicId returns undefined when no row', async () => {
-    const { repo, db } = build();
     db.returning.mockResolvedValue([]);
     expect(await repo.updateOneByPublicId('p', {})).toBeUndefined();
   });

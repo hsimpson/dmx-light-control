@@ -1,32 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const {
-  mockPoolEnd,
-  mockSelect,
-  mockFrom,
-  mockInsert,
-  mockValues,
-  mockDrizzle,
-  mockResolveDatabaseUrl,
-} = vi.hoisted(() => {
-  const poolEnd = vi.fn().mockResolvedValue(undefined);
-  const from = vi.fn();
-  const select = vi.fn(() => ({ from }));
-  const values = vi.fn().mockResolvedValue(undefined);
-  const insert = vi.fn(() => ({ values }));
-  const drizzle = vi.fn();
-  const resolveDatabaseUrl = vi.fn(() => 'postgresql://test');
+const { mockPoolEnd, mockSelect, mockFrom, mockInsert, mockValues, mockDrizzle, mockResolveDatabaseUrl } = vi.hoisted(
+  () => {
+    const poolEnd = vi.fn().mockResolvedValue(undefined);
+    const from = vi.fn();
+    const select = vi.fn(() => ({ from }));
+    const values = vi.fn().mockResolvedValue(undefined);
+    const insert = vi.fn(() => ({ values }));
+    const drizzle = vi.fn();
+    const resolveDatabaseUrl = vi.fn(() => 'postgresql://test');
 
-  return {
-    mockPoolEnd: poolEnd,
-    mockSelect: select,
-    mockFrom: from,
-    mockInsert: insert,
-    mockValues: values,
-    mockDrizzle: drizzle,
-    mockResolveDatabaseUrl: resolveDatabaseUrl,
-  };
-});
+    return {
+      mockPoolEnd: poolEnd,
+      mockSelect: select,
+      mockFrom: from,
+      mockInsert: insert,
+      mockValues: values,
+      mockDrizzle: drizzle,
+      mockResolveDatabaseUrl: resolveDatabaseUrl,
+    };
+  },
+);
 
 vi.mock('pg', () => ({
   Pool: class {

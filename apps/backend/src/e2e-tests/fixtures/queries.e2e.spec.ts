@@ -114,9 +114,11 @@ describe('Fixture queries', () => {
 
     const body = await graphqlQuery<FixturesQuery>(app.getHttpAdapter().getInstance().server, query);
 
-    const fixture = body.data?.fixtures?.find(entry => entry.publicId === SEED_FIXTURE_PUBLIC_ID);
-    expect(fixture).toBeDefined();
-    expect(fixture?.fixtureVendor.name).toBe('American DJ');
+    const fixture = body.data?.fixtures.find(entry => entry.publicId === SEED_FIXTURE_PUBLIC_ID);
+    if (!fixture) {
+      throw new Error(`Expected fixture with publicId ${SEED_FIXTURE_PUBLIC_ID}`);
+    }
+    expect(fixture.fixtureVendor.name).toBe('American DJ');
   });
 
   it('should return a fixture by publicId', async () => {

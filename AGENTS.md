@@ -78,6 +78,7 @@ Harness maintenance is part of **done**, not optional docs.
 - Pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in resolvers (inject repositories, not DB directly)
 - Tests: Vitest unit/integration (`src/**/*.spec.ts`); GraphQL e2e in `src/e2e-tests/`; Testcontainers PostgreSQL in `vitest.setup.ts`
 - Repositories use `InjectDb()` for typed Drizzle connection
+- ORM repositories extend `BaseRepository` (`apps/backend/src/db/base.repository.ts`) for shared `publicId` CRUD; pass `relationalFind` for nested `with` graphs, add domain-specific methods as needed
 - Events: `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`
 - CLI command via `nest-commander`: `dmx-sniffer` (Linux-only)
 - Global `DrizzleDbModule` exports DB; `@/` path alias → `apps/backend/src/`
@@ -96,7 +97,7 @@ fixtures/
 │ └── *.dto.ts # @ObjectType() / @InputType() with class-validator
 ├── entities/ # Drizzle schemas (export default)
 │ └── index.ts # Re-exports
-└── repositories/ # Data access (InjectDb())
+└── repositories/ # Data access (extends BaseRepository, InjectDb())
 ```
 
 ### Frontend (`apps/frontend/`)
