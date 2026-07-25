@@ -51,6 +51,7 @@ interface SerialSendServiceHarness {
   startSendingLoop: () => void;
   stopSendingLoop: () => void;
   sendDmxFrame: () => void;
+  flushFrame: (err1: Error | null) => void;
   setChannelValues: (values: DmxValue[]) => void;
   closePort: () => void;
 }
@@ -246,16 +247,35 @@ describe('SerialSendService', () => {
     stopSpy.mockRestore();
   });
 
-  it('logs an error when the frame write fails', () => {
+  it('flushFrame logs and skips write when break release failed', () => {
+    const { service } = build();
+    const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
+    service.flushFrame(new Error('brk release failed'));
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Error releasing BREAK state'));
+    expect(fakePort.write).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
+  it('flushFrame writes the dmx buffer when break release succeeds', () => {
     const { service } = build();
     service.onModuleInit();
     service.port.isOpen = true;
     fakePort.write.mockImplementationOnce((_buf: unknown, cb: (err?: Error) => void) => {
+      cb(undefined);
+    });
+    service.flushFrame(null);
+    expect(fakePort.write).toHaveBeenCalled();
+  });
+
+  it('flushFrame logs when payload write fails', () => {
+    const { service } = build();
+    service.onModuleInit();
+    fakePort.write.mockImplementationOnce((_buf: unknown, cb: (err?: Error) => void) => {
       cb(new Error('write boom'));
     });
     const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
-    service.sendDmxFrame();
-    expect(errorSpy).toHaveBeenCalled();
+    service.flushFrame(null);
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Error flushing payload'));
     errorSpy.mockRestore();
   });
 
