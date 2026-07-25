@@ -36,7 +36,7 @@ export class DmxSendService implements OnModuleInit {
   }
 
   public async startSending(): Promise<void> {
-    // FIXME: device selection
+    // REVIEW: device selection
     this.device = await this.usbDeviceService.getDeviceBySerial('A50285BI');
     this.logger.log(`Found device: ${this.device ? this.device.productName : 'None'}`);
     this.sendDmxFrame();

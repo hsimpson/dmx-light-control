@@ -44,6 +44,25 @@ To run the backend application, use the following command:
 nx serve backend
 ```
 
+Typecheck and lint:
+
+```bash
+nx typecheck backend
+nx lint backend
+```
+
+## Testing
+
+Tests use Vitest with a Testcontainers PostgreSQL instance (see `vitest.setup.ts`).
+
+```bash
+nx test backend
+```
+
+- Unit/integration tests: `src/**/*.spec.ts`
+- GraphQL e2e tests: `src/e2e-tests/`
+- Test helpers: `src/testhelpers/`
+
 ## DMX Sniffer Command
 
 The `dmx-sniffer` command allows you to monitor DMX data from a specified USB device. To use this command, you need to provide the bus number and address of the USB device you want to monitor. This command is only supported on Linux, because it relies on `usbmon` kernel module to capture USB traffic.

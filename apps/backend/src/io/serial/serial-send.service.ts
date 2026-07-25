@@ -14,13 +14,13 @@ export class SerialSendService implements OnModuleInit, OnModuleDestroy {
 
   // Configuration constants
   private readonly REFRESH_RATE_MS = 33; // ~30 Hz refresh rate
-  // FIXME: hardcoded for now, consider making this user-configurable or auto-detectable in the future
+  // REVIEW: hardcoded for now, consider making this user-configurable or auto-detectable in the future
   private readonly SERIAL_PATH = '/dev/ttyUSB0'; // Default FTDI location on Ubuntu
 
   public constructor(private readonly eventEmitter: AppEventEmitter) {
     this.dmxFrame.fill(0); // Initialize everything to 0, including the start code at index 0
 
-    // FIXME: hardcoded for ADJ Mega TriPar Profile Plus to set the shutter/strob channel 5 to 32 (full open) for testing
+    // REVIEW: hardcoded for ADJ Mega TriPar Profile Plus to set the shutter/strob channel 5 to 32 (full open) for testing
     this.dmxFrame[5] = 32;
     this.dmxFrame[14] = 32;
   }
@@ -139,15 +139,26 @@ export class SerialSendService implements OnModuleInit, OnModuleDestroy {
       // The physical latency of executing these two commands back-to-back
       // at the system level typically yields an excellent ~100-200 microsecond break.
       this.port?.set({ brk: false }, err1 => {
-        if (err1) return;
-
-        // 3. Immediately dump the entire buffer
-        this.port?.write(Buffer.from(this.dmxFrame.buffer), err2 => {
-          if (err2) {
-            this.logger.error(`Error flushing payload: ${err2.message}`);
-          }
-        });
+        this.flushFrame(err1);
       });
+    });
+  }
+
+  /**
+   * Writes the DMX buffer to the serial port after the BREAK/MAB sequence.
+   * Skipped when the break-release `set()` reported an error.
+   */
+  private flushFrame(err1: Error | null): void {
+    if (err1) {
+      this.logger.error(`Error releasing BREAK state: ${err1.message}`);
+      return;
+    }
+
+    // 3. Immediately dump the entire buffer
+    this.port?.write(Buffer.from(this.dmxFrame.buffer), err2 => {
+      if (err2) {
+        this.logger.error(`Error flushing payload: ${err2.message}`);
+      }
     });
   }
 

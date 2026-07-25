@@ -14,7 +14,8 @@ import { loadConfig } from './config/config';
 import { resolveDatabaseUrl } from './db/connection';
 import { DrizzleDbModule } from './db/drizzle-db/drizzle-db.module';
 import { FixturesModule } from './fixtures/fixtures.module';
-import { GlobalGqlExceptionFilter } from './shared/graphql-exception.filter';
+import { GlobalGqlExceptionFilter } from './graphql/graphql-exception.filter';
+import { formatErrorHandler } from './graphql/graphql-format-error';
 
 @Module({
   imports: [
@@ -34,17 +35,7 @@ import { GlobalGqlExceptionFilter } from './shared/graphql-exception.filter';
       autoSchemaFile: true,
       sortSchema: true,
       resolvers: { UUID: GraphQLUUID },
-      formatError: formattedError => {
-        if (process.env.NODE_ENV === 'production') {
-          const { stacktrace, ...extensions } = formattedError.extensions ?? {};
-          return {
-            ...formattedError,
-            extensions,
-          };
-        }
-
-        return formattedError;
-      },
+      formatError: formatErrorHandler,
     }),
     EventEmitterModule.forRoot(),
     DmxModule,

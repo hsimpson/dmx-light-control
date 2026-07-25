@@ -7,8 +7,8 @@ export class DmxResolver {
   public constructor(private readonly eventEmitter: AppEventEmitter) {}
 
   @Mutation(() => String, {
-    name: 'dmxTest',
-    description: 'test dmx resolver',
+    name: 'setChannelValues',
+    description: 'Set DMX channel values',
   })
   public setChannelValues(
     @Args('channelValues', { type: () => ChannelValuesInput })

@@ -10,7 +10,16 @@ export default defineConfig(
   tseslint.configs.stylisticTypeChecked,
 
   {
-    ignores: ['coverage/**/*', 'dist/**/*', '**/eslint.config.ts', '**/prettier.config.ts'],
+    ignores: [
+      '**/eslint.config.ts',
+      '**/prettier.config.ts',
+      '**/vitest.config.ts',
+      '**/vitest.setup.ts',
+      'coverage/**/*',
+      'dist/**/*',
+      'vitest.base.ts',
+      'vitest.workspace.ts',
+    ],
   },
 
   // configuration for rules that require type information

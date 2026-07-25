@@ -4,26 +4,35 @@ This project contains the frontend code for the DMX Light Control application. I
 
 ## Development setup
 
-copy .env.example to .env and fill in the required environment variables
+Copy `.env.example` to `.env` and fill in the required environment variables. At minimum, set `NEXT_PUBLIC_GRAPHQL_API_URL` (backend must be reachable for GraphQL codegen).
+
+The app uses locale-based routing (`/de/...`, `/en/...`); default locale is `de`.
 
 ## Commands
 
-Serve the frontend application in development mode:
+Serve the frontend application in development mode (port **3001**):
 
 ```bash
-nx run frontend:dev
+nx dev frontend
 ```
 
 Build the frontend application for production:
 
 ```bash
-nx run frontend:build
+nx build frontend
 ```
 
-Start the frontend application in production mode:
+Start the frontend application in production mode (port **3001**):
 
 ```bash
-nx run frontend:start
+nx start frontend
+```
+
+Typecheck and lint:
+
+```bash
+nx typecheck frontend
+nx lint frontend
 ```
 
 To extract translation keys from the source code and update the translation files, run the following command:
