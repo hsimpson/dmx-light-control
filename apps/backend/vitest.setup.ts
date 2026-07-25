@@ -2,6 +2,7 @@ import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers
 import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { Client } from 'pg';
+import { seedFixtureData } from './src/testhelpers/seed-fixture-data';
 
 let dbTestContainer: StartedPostgreSqlContainer;
 
@@ -32,6 +33,8 @@ export async function setup() {
   }
 
   await client.end();
+
+  await seedFixtureData();
 }
 
 export async function teardown() {
