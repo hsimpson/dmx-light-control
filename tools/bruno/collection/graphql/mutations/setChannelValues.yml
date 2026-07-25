@@ -1,7 +1,7 @@
 info:
-  name: dmxTest
+  name: setChannelValues
   type: graphql
-  seq: 4
+  seq: 5
 
 graphql:
   method: POST
@@ -10,7 +10,7 @@ graphql:
   body:
     query: |
       mutation($channelValues: ChannelValuesInput!) {
-        dmxTest(channelValues: $channelValues)
+        setChannelValues(channelValues: $channelValues)
       }
     variables: |
       {

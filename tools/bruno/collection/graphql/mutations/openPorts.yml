@@ -1,7 +1,7 @@
 info:
   name: openPorts
   type: graphql
-  seq: 5
+  seq: 4
 
 graphql:
   method: POST

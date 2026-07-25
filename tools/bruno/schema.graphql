@@ -187,11 +187,11 @@ type Mutation {
   """delete a fixture vendor by public id"""
   deleteFixtureVendor(publicId: UUID!): DeleteFixtureVendorPayload!
 
-  """test dmx resolver"""
-  dmxTest(channelValues: ChannelValuesInput!): String!
-
   """Open the specified MIDI ports"""
   openPorts(openPortsDto: OpenPortsInput!): Boolean
+
+  """Set DMX channel values"""
+  setChannelValues(channelValues: ChannelValuesInput!): String!
 
   """update an existing fixture"""
   updateFixture(input: UpdateFixtureInput!): FixtureDto!
