@@ -28,4 +28,4 @@ Read all sub projects documentation carefully for more details.
 - [infra](infra/README.md) - Infrastructure code for deploying the application.
 - [backend](apps/backend/README.md) - The backend API for managing DMX light control.
 - [frontend](apps/frontend/README.md) - A web application for controlling DMX lights.
-- [bruno](tools/bruno/README.md) - A tool to creating bruno collections.
+- [bruno](tools/bruno/README.md) - A tool for creating Bruno API collections.

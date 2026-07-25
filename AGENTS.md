@@ -19,7 +19,10 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx build backend/frontend`             | Production build                      |
 | `nx typecheck backend/frontend`         | Type check                            |
 | `nx lint backend/frontend`              | Lint                                  |
+| `nx test backend`                       | Backend unit/integration + e2e tests  |
 | `nx run backend:drizzle-generate`       | Generate migrations                   |
+| `nx run backend:erd`                    | Regenerate database ER diagram        |
+| `nx run bruno:build`                    | Rebuild Bruno API collection          |
 | `nx run backend:drizzle-migrate`        | Run migrations                        |
 | `nx run backend:drizzle-seed`           | Seed database                         |
 | `nx run backend:drizzle-studio`         | Open Drizzle Studio                   |
@@ -34,17 +37,17 @@ NestJS backend + Next.js frontend in Nx monorepo.
 
 1. Typecheck and lint pass with zero errors `nx run-many --targets typecheck,lint`.
 2. Relevant tests run and pass (show output) `nx run-many --targets test`.
-3. When changing graphql resolvers or DTOs, regenerate GraphQL schema `nx run-many --targets graphql-schema` and OpenCollection requests `nx run-many --targets generate-opencollection`.
-4. When database schema has changed (entities, relations) regenerate erd diagrams `nx run-many --targets drizzle-erd`.
+3. When changing GraphQL resolvers or DTOs, run `nx test backend` (includes `graphql-schema.spec.ts`) and rebuild Bruno requests `nx run bruno:build`.
+4. When database schema has changed (entities, relations) regenerate ER diagram `nx run backend:erd`.
 5. **Harness health-check** (required when change set matches the triggers below — report `Harness: up to date` or `Harness: updated`).
 6. Conventional commit message ready when asked to commit.
 
 ## Conventions
 
-- Clean architecture, domain-driven design, feature-based modules (resolver or controller/service/repository/DTO/entity colocated)
-- Repository pattern with `@InjectDb()` custom decorator + `DRIZZLE_PG_PROVIDER` token
-- Dynamic modules via `forRoot`/`forRootAsync`, config via plain object schemas + `InferConfigType`
-- Path aliases: `@/config`, `@/orm-postgres`, `@/auth`, `@/core` (single index export each), `@/foods/*` (wildcard)
+- Clean architecture, domain-driven design, feature-based modules (resolver/service/repository/DTO/entity colocated)
+- Repository pattern with `@InjectDb()` custom decorator + `DRIZZLE_DB_PROVIDER` token
+- Dynamic modules via `forRoot` (`DrizzleDbModule`, `ConfigModule`); config via `loadConfig()` returning typed `Config`
+- Path aliases: backend `@/*` → `apps/backend/src/*`; frontend `@/*` → `apps/frontend/src/*`
 - `pnpm` (not npm/yarn), `nx` (not lerna/turborepo), Fastify (not Express), Drizzle (not Prisma/TypeORM)
 - No typecheck errors, no lint errors
 
@@ -72,7 +75,8 @@ Harness maintenance is part of **done**, not optional docs.
 
 - NestJS + Apollo GraphQL on Fastify
 - Domain module `FixturesModule`; IO modules `DmxModule`, `MidiModule`, `IoBridgeModule` (under `io/`)
-- Pattern: Service → Resolver → DTO (inject repositories, not DB directly)
+- Pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in resolvers (inject repositories, not DB directly)
+- Tests: Vitest unit/integration (`src/**/*.spec.ts`); GraphQL e2e in `src/e2e-tests/`; Testcontainers PostgreSQL in `vitest.setup.ts`
 - Repositories use `InjectDb()` for typed Drizzle connection
 - Events: `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`
 - CLI command via `nest-commander`: `dmx-sniffer` (Linux-only)
@@ -89,8 +93,7 @@ fixtures/
 ├── fixture.exceptions.ts # Extends BaseDomainError
 ├── channel-presets.ts # Enums/constants
 ├── dto/ # GraphQL DTOs
-│ ├── *.dto.ts # @ObjectType() extends BaseDto
-│ └── *.input.ts # @InputType() with class-validator
+│ └── *.dto.ts # @ObjectType() / @InputType() with class-validator
 ├── entities/ # Drizzle schemas (export default)
 │ └── index.ts # Re-exports
 └── repositories/ # Data access (InjectDb())
@@ -98,11 +101,11 @@ fixtures/
 
 ### Frontend (`apps/frontend/`)
 
-- Next.js App Router, locale-based routing (`[locale]/`)
-- Mantine v9 + CSS modules, Phosphor Icons (`weight="duotone"`)
-- Apollo Client v4; GraphQL codegen from `.graphql` files
-- i18n: `next-i18n-router`, German/English (`src/lang/en.json`, `de.json`)
-- `'use client'` for all client components; props use `*Properties` type
+- Next.js App Router, locale-based routing (`[locale]/`); locale middleware via `src/proxy.ts` + `next-i18n-router` (default locale: `de`)
+- Mantine v9 (primary styling); CSS modules used sparingly; Phosphor Icons (`weight="duotone"` common, `"fill"` for some actions)
+- Apollo Client v4; GraphQL codegen from `src/**/*.graphql` against remote schema (`NEXT_PUBLIC_GRAPHQL_API_URL`)
+- i18n: `next-i18n-router` + `react-intl`; German/English (`src/lang/en.json`, `de.json`)
+- `'use client'` on client boundary components (pages, wrappers); props types predominantly `*Props`
 - `@/` path alias → `apps/frontend/src/`
 - Apollo Client setup: `lib/graphql/graphql-client.ts` + `apollo-wrapper.tsx`
 
@@ -112,7 +115,7 @@ fixtures/
 - Entities: `d.snakeCase.table('name', { ...pk, ...timestamps, fields })`
 - Repositories: one per entity/group, use `InferSelectModel`/`InferInsertModel`
 - Migrations: `src/db/migrations/` (timestamped); seeding: `src/db/seeding/seed.ts`
-- Query logging: `DrizzleLogWriter` wrapping NestJS `Logger`
+- Query logging: `DrizzleLogWriter` wrapping NestJS `Logger` (exists but currently disabled in `DrizzleDbModule`)
 
 ## Coding Conventions
 
@@ -147,12 +150,12 @@ fixtures/
 
 ### React
 
-- `'use client'`, functional only, `AppShell` layout (header + navbar)
+- `'use client'` on client boundary components; functional only; `AppShell` layout (header + navbar)
 
 ## Important Notes
 
-- No tests exist yet (no `*.spec.ts` files)
-- `FIXME` comments mark incomplete implementations (device selection, hardcoded serial paths)
+- No frontend tests yet (no `*.spec.ts` under `apps/frontend/`); backend uses Vitest with e2e tests in `src/e2e-tests/`
+- `REVIEW` comments mark incomplete implementations (device selection, hardcoded serial paths)
 - IO layer is Linux-focused (`/dev/usbmon`, serial ports)
 - Production hides stack traces from GraphQL errors
 - `BaseDomainError` → `GlobalGqlExceptionFilter` maps to GraphQL errors with `code` + `http.status` extension
