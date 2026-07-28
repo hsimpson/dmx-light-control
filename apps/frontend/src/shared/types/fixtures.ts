@@ -8,3 +8,5 @@ export type FixtureChannelDefinition = GetFixturesQuery['fixtures'][number]['fix
 
 export type FixtureChannelRange =
   GetFixturesQuery['fixtures'][number]['fixtureChannelDefinitions'][number]['fixtureChannelRanges'][number];
+
+export type FixtureChannelMode = GetFixturesQuery['fixtures'][number]['fixtureChannelModes'][number];

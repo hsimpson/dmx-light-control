@@ -4,6 +4,8 @@
   "FixtureChannelDefinitions.addNewItemPlaceholder": "Kanaldefinition hinzufügen",
   "FixtureChannelDefinitions.details": "Kanaldefinition Details",
   "FixtureChannelDefinitions.listTitle": "Kanaldefinitionen",
+  "FixtureChannelModes.addNewItemPlaceholder": "Kanalmodus hinzufügen",
+  "FixtureChannelModes.listTitle": "Kanalmodi",
   "FixtureChannelRangeTable.description": "Beschreibung",
   "FixtureChannelRangeTable.dmxEnd": "DMX Ende",
   "FixtureChannelRangeTable.dmxStart": "DMX Start",

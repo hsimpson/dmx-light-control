@@ -10,6 +10,7 @@ import { notifications } from '@mantine/notifications';
 import { useState } from 'react';
 import { z } from 'zod/v4';
 import FixtureChannelDefinitions from './fixture-channel-definitions';
+import FixtureChannelModes from './fixture-channel-modes';
 
 type Fixture = GetFixturesQuery['fixtures'][number];
 
@@ -125,20 +126,17 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
           withinPortal={false}
           onOptionSubmit={val => {
             let selectedValue: string;
-            let selectedPublicId: string | null;
 
             if (val === '$create') {
               setComboBoxData(current => [...current, comboBoxSearch]);
               setComboBoxValue(comboBoxSearch);
               setComboBoxPublicId(null);
               selectedValue = comboBoxSearch;
-              selectedPublicId = null;
             } else {
               setComboBoxValue(val);
               setComboBoxSearch(val);
               setComboBoxPublicId(vendorPublicIdByName.get(val) ?? null);
               selectedValue = val;
-              selectedPublicId = vendorPublicIdByName.get(val) ?? null;
             }
 
             // Update the form value
@@ -204,6 +202,7 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
         />
 
         <FixtureChannelDefinitions fixtureChannelDefinitions={fixture?.fixtureChannelDefinitions ?? []} />
+        <FixtureChannelModes fixtureChannelModes={fixture?.fixtureChannelModes ?? []} />
 
         <Button type="submit" mt="sm" w="fit-content" style={{ alignSelf: 'flex-end' }}>
           {t(globalMessages.save)}
