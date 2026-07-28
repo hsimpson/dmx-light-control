@@ -9,7 +9,8 @@ import { useState } from 'react';
 import SelectableListItem from './selectable-list-item';
 
 type SelectableListProps<ItemType> = {
-  addNewItemPlaceholder: string;
+  addNewItem?: boolean;
+  addNewItemPlaceholder?: string;
   items: ItemType[];
   accessor: keyof ItemType;
   keyAccessor: keyof ItemType;
@@ -21,6 +22,7 @@ type SelectableListProps<ItemType> = {
 };
 
 const SelectableList = <ItemType,>({
+  addNewItem,
   addNewItemPlaceholder,
   items,
   accessor,
@@ -71,32 +73,34 @@ const SelectableList = <ItemType,>({
 
   return (
     <Flex direction="column" gap="md">
-      <Flex direction="row" gap="xs" align="center">
-        <TextInput
-          style={{ flex: 1 }}
-          placeholder={addNewItemPlaceholder}
-          value={addItem}
-          onChange={event => {
-            setAddItem(event.currentTarget.value);
-          }}
-          onKeyDown={event => {
-            if (event.key === 'Enter' && addItem.trim()) {
+      {addNewItem && (
+        <Flex direction="row" gap="xs" align="center">
+          <TextInput
+            style={{ flex: 1 }}
+            placeholder={addNewItemPlaceholder}
+            value={addItem}
+            onChange={event => {
+              setAddItem(event.currentTarget.value);
+            }}
+            onKeyDown={event => {
+              if (event.key === 'Enter' && addItem.trim()) {
+                handleAddItem(addItem);
+              }
+            }}
+          />
+          <ActionIcon
+            variant="filled"
+            size="lg"
+            radius="lg"
+            disabled={!addItem.trim()}
+            onClick={() => {
               handleAddItem(addItem);
-            }
-          }}
-        />
-        <ActionIcon
-          variant="filled"
-          size="lg"
-          radius="lg"
-          disabled={!addItem.trim()}
-          onClick={() => {
-            handleAddItem(addItem);
-          }}
-        >
-          <ListPlusIcon size={ICON_SIZE} weight="fill" />
-        </ActionIcon>
-      </Flex>
+            }}
+          >
+            <ListPlusIcon size={ICON_SIZE} weight="fill" />
+          </ActionIcon>
+        </Flex>
+      )}
       <DragDropProvider>
         <List listStyleType="none">
           <Flex direction="column" gap="xs">

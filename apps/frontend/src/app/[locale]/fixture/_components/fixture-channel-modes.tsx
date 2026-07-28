@@ -4,6 +4,7 @@ import { orderSorter } from '@/shared/sorter';
 import { FixtureChannelMode } from '@/shared/types/fixtures';
 import { Flex, Text } from '@mantine/core';
 import { useState } from 'react';
+import FixtureChannelDefinitionItem from './fixture-channel-definition-item';
 
 type FixtureChannelModesProps = {
   fixtureChannelModes: FixtureChannelMode[];
@@ -29,8 +30,6 @@ const FixtureChannelModes = ({ fixtureChannelModes }: FixtureChannelModesProps) 
     setChannelModes(prev => prev.filter(mode => mode.name !== item.name));
   };
 
-  console.log(selectedChannelMode);
-
   return (
     <Flex direction="row" gap="xl">
       <Flex direction="column" gap="md">
@@ -41,6 +40,7 @@ const FixtureChannelModes = ({ fixtureChannelModes }: FixtureChannelModesProps) 
           })}
         </Text>
         <SelectableList
+          addNewItem
           addNewItemPlaceholder={t({
             id: 'FixtureChannelModes.addNewItemPlaceholder',
             defaultMessage: 'Add new channel mode',
@@ -52,6 +52,20 @@ const FixtureChannelModes = ({ fixtureChannelModes }: FixtureChannelModesProps) 
           onSelectedItemChange={handleSelectedChannelModeChange}
           onItemAdd={handleChannelModeAdd}
           onItemRemove={handleChannelModeRemove}
+        />
+      </Flex>
+      <Flex direction="column" gap="md">
+        <Text size="md">
+          {t({
+            id: 'FixtureChannelModes.assignmentsListTitle',
+            defaultMessage: 'Channel mode assignments',
+          })}
+        </Text>
+        <SelectableList
+          items={selectedChannelMode?.fixtureChannelAssignments ?? []}
+          accessor="publicId"
+          keyAccessor="publicId"
+          itemRenderer={item => <FixtureChannelDefinitionItem channelDefinition={item.fixtureChannelDefinition} />}
         />
       </Flex>
     </Flex>

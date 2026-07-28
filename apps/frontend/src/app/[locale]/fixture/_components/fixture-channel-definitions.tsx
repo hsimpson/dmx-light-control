@@ -1,47 +1,19 @@
 'use client';
 
 import SelectableList from '@/components/selectable-list/selectable-list';
-import { ICON_SIZE } from '@/lib/constants';
+import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { orderSorter } from '@/shared/sorter';
 import { FixtureChannelDefinition, FixtureChannelRange } from '@/shared/types/fixtures';
 import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
-import { globalMessages } from '@/lib/i18n/global-messages';
 import { Flex, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { ApertureIcon, LightbulbIcon, PencilIcon, RectangleIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
+import FixtureChannelDefinitionItem from './fixture-channel-definition-item';
 import FixtureChannelRangeTable from './fixture-channel-range-table';
 
 type FixtureChannelDefinitionsProps = {
   fixtureChannelDefinitions: FixtureChannelDefinition[];
-};
-
-const getPresetIcon = (preset: FixtureChannelPreset) => {
-  const size = ICON_SIZE;
-
-  switch (preset) {
-    case FixtureChannelPreset.IntensityRed:
-      return <RectangleIcon size={size} weight="duotone" color="red" />;
-    case FixtureChannelPreset.IntensityGreen:
-      return <RectangleIcon size={size} weight="duotone" color="green" />;
-    case FixtureChannelPreset.IntensityBlue:
-      return <RectangleIcon size={size} weight="duotone" color="blue" />;
-    case FixtureChannelPreset.IntensityWhite:
-      return <RectangleIcon size={size} weight="duotone" color="white" />;
-    case FixtureChannelPreset.IntensityAmber:
-      return <RectangleIcon size={size} weight="duotone" color="orange" />;
-    case FixtureChannelPreset.IntensityUv:
-      return <RectangleIcon size={size} weight="duotone" color="purple" />;
-    case FixtureChannelPreset.IntensityDimmer:
-    case FixtureChannelPreset.IntensityMasterDimmer:
-      return <LightbulbIcon size={size} weight="duotone" color="orange" />;
-    case FixtureChannelPreset.ShutterStrobeFastSlow:
-    case FixtureChannelPreset.ShutterStrobeSlowFast:
-      return <ApertureIcon size={size} weight="duotone" color="orange" />;
-    case FixtureChannelPreset.Custom:
-      return <PencilIcon size={size} weight="duotone" color="orange" />;
-  }
 };
 
 const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannelDefinitionsProps) => {
@@ -124,6 +96,7 @@ const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannel
           })}
         </Text>
         <SelectableList
+          addNewItem
           addNewItemPlaceholder={t({
             id: 'FixtureChannelDefinitions.addNewItemPlaceholder',
             defaultMessage: 'Add Channel Definition',
@@ -131,12 +104,7 @@ const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannel
           items={channelDefinitions}
           accessor="name"
           keyAccessor="name"
-          itemRenderer={item => (
-            <Flex direction="row" align="center" gap="sm">
-              {getPresetIcon(item.preset)}
-              <span>{item.name}</span>
-            </Flex>
-          )}
+          itemRenderer={item => <FixtureChannelDefinitionItem channelDefinition={item} />}
           selectedItem={selectedChannelDefinition}
           onSelectedItemChange={handleSelectedChannelDefinitionChange}
           onItemAdd={handleChannelDefinitionAdd}
