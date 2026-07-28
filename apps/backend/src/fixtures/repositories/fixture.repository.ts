@@ -7,7 +7,17 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 export const fixtureRelations = {
   fixtureChannelDefinitions: { with: { fixtureChannelAssignments: true, fixtureChannelRanges: true } },
-  fixtureChannelModes: { with: { fixtureChannelAssignments: true } },
+  fixtureChannelModes: {
+    with: {
+      fixtureChannelAssignments: {
+        with: {
+          fixtureChannelDefinition: {
+            with: { fixtureChannelRanges: true },
+          },
+        },
+      },
+    },
+  },
   fixtureVendor: true,
 } as const;
 

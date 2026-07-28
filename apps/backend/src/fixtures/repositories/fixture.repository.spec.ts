@@ -19,6 +19,20 @@ function build() {
 }
 
 describe('FixtureRepository', () => {
+  it('loads channel definitions nested under mode assignments', () => {
+    expect(fixtureRelations.fixtureChannelModes).toEqual({
+      with: {
+        fixtureChannelAssignments: {
+          with: {
+            fixtureChannelDefinition: {
+              with: { fixtureChannelRanges: true },
+            },
+          },
+        },
+      },
+    });
+  });
+
   it('findMany queries with relations', async () => {
     const { repo, db } = build();
     db.query.fixture.findMany.mockResolvedValue(['x']);

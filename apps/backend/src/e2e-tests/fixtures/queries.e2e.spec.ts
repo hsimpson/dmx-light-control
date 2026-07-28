@@ -38,6 +38,24 @@ type FixtureQuery = {
   } | null;
 };
 
+type FixtureWithModeAssignmentsQuery = {
+  fixture: {
+    publicId: string;
+    fixtureChannelModes: {
+      name: string;
+      fixtureChannelAssignments: {
+        channelNumber: number;
+        fixtureChannelDefinition: {
+          name: string;
+          order: number;
+          publicId: string;
+          preset: string;
+        };
+      }[];
+    }[];
+  } | null;
+};
+
 const ORIGINAL_ENV = process.env;
 const UNKNOWN_FIXTURE_PUBLIC_ID = '00000000-0000-4000-8000-000000000000';
 
@@ -161,5 +179,44 @@ describe('Fixture queries', () => {
     });
 
     expect(body.data?.fixture).toBeNull();
+  });
+
+  it('should return channel definitions on mode channel assignments', async () => {
+    const query = gql`
+      query ($publicId: UUID!) {
+        fixture(publicId: $publicId) {
+          publicId
+          fixtureChannelModes {
+            name
+            fixtureChannelAssignments {
+              channelNumber
+              fixtureChannelDefinition {
+                name
+                order
+                publicId
+                preset
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const body = await graphqlQuery<FixtureWithModeAssignmentsQuery>(app.getHttpAdapter().getInstance().server, query, {
+      variables: {
+        publicId: SEED_FIXTURE_PUBLIC_ID,
+      },
+    });
+
+    const modes = body.data?.fixture?.fixtureChannelModes ?? [];
+    expect(modes.length).toBeGreaterThan(0);
+
+    const assignments = modes.flatMap(mode => mode.fixtureChannelAssignments);
+    expect(assignments.length).toBeGreaterThan(0);
+    for (const assignment of assignments) {
+      expect(assignment.fixtureChannelDefinition.publicId).toBeTruthy();
+      expect(assignment.fixtureChannelDefinition.name).toBeTruthy();
+      expect(assignment.fixtureChannelDefinition.preset).toBeTruthy();
+    }
   });
 });

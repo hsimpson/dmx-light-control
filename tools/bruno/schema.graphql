@@ -36,6 +36,9 @@ type FixtureChannelAssignmentDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
 
+  """The channel definition assigned to this channel number"""
+  fixtureChannelDefinition: FixtureChannelDefinitionDto!
+
   """The public id, unique identifier of the entity"""
   publicId: UUID!
 

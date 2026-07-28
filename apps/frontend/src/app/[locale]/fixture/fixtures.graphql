@@ -1,6 +1,17 @@
 fragment FixtureChannelAssignmentFields on FixtureChannelAssignmentDto {
   publicId
   channelNumber
+  fixtureChannelDefinition {
+    publicId
+    name
+    order
+    preset
+    fixtureChannelRanges {
+      ...FixtureChannelRangeFields
+    }
+    createdAt
+    updatedAt
+  }
   createdAt
   updatedAt
 }

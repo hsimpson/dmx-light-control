@@ -17,6 +17,16 @@ graphql:
             fixtureChannelAssignments {
               channelNumber
               createdAt
+              fixtureChannelDefinition {
+                createdAt
+                fixtureChannelAssignments
+                fixtureChannelRanges
+                name
+                order
+                preset
+                publicId
+                updatedAt
+              }
               publicId
               updatedAt
             }
@@ -39,6 +49,16 @@ graphql:
             fixtureChannelAssignments {
               channelNumber
               createdAt
+              fixtureChannelDefinition {
+                createdAt
+                fixtureChannelAssignments
+                fixtureChannelRanges
+                name
+                order
+                preset
+                publicId
+                updatedAt
+              }
               publicId
               updatedAt
             }
