@@ -1,6 +1,7 @@
 # directories
 .nx/cache
 .nx/workspace-data
+.pnpm-store
 .VSCodeCounter
 coverage/
 dist/
