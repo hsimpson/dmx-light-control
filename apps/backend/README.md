@@ -26,6 +26,12 @@ To seed the database with initial data, use the following command:
 nx run backend:drizzle-seed
 ```
 
+To open Drizzle Studio:
+
+```bash
+nx run backend:drizzle-studio
+```
+
 ### Entity Relationship Diagram
 
 The database schema can be visualized as a Mermaid ER diagram. It is generated from the Drizzle schema and written to [`docs/database-schema.md`](docs/database-schema.md):
@@ -43,6 +49,8 @@ To run the backend application, use the following command:
 ```bash
 nx serve backend
 ```
+
+`nx serve backend` also starts the local DB via `infra:db-start` (Docker required).
 
 Typecheck and lint:
 

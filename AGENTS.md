@@ -12,23 +12,28 @@ NestJS backend + Next.js frontend in Nx monorepo.
 
 ## Commands
 
-| Command                                 | Description                           |
-| --------------------------------------- | ------------------------------------- |
-| `nx serve backend`                      | Backend dev server                    |
-| `nx dev frontend` / `nx start frontend` | Frontend dev (port 3001) / prod start |
-| `nx build backend/frontend`             | Production build                      |
-| `nx typecheck backend/frontend`         | Type check                            |
-| `nx lint backend/frontend`              | Lint                                  |
-| `nx test backend`                       | Backend unit/integration + e2e tests  |
-| `nx run backend:drizzle-generate`       | Generate migrations                   |
-| `nx run backend:erd`                    | Regenerate database ER diagram        |
-| `nx run bruno:build`                    | Rebuild Bruno API collection          |
-| `nx run backend:drizzle-migrate`        | Run migrations                        |
-| `nx run backend:drizzle-seed`           | Seed database                         |
-| `nx run backend:drizzle-studio`         | Open Drizzle Studio                   |
-| `nx run frontend:graphql-codegen`       | Generate GraphQL types                |
-| `nx run frontend:i18n-extract`          | Extract translations                  |
-| `nx run frontend:i18n-verify`           | Verify translation files are in sync  |
+| Command                                 | Description                                     |
+| --------------------------------------- | ----------------------------------------------- |
+| `nx serve backend`                      | Backend dev server (also runs `infra:db-start`) |
+| `nx run infra:db-start`                 | Start local Postgres (Docker)                   |
+| `nx run infra:db-stop`                  | Stop local Postgres                             |
+| `nx run infra:db-reset`                 | Reset local Postgres (removes volumes)          |
+| `nx run infra:db-logs`                  | Tail local Postgres logs                        |
+| `nx dev frontend` / `nx start frontend` | Frontend dev (port 3001) / prod start           |
+| `nx build backend/frontend`             | Production build                                |
+| `nx typecheck backend/frontend`         | Type check                                      |
+| `nx lint backend/frontend`              | Lint                                            |
+| `nx test backend`                       | Backend unit/integration + e2e tests            |
+| `nx run backend:drizzle-generate`       | Generate migrations                             |
+| `nx run backend:erd`                    | Regenerate database ER diagram                  |
+| `nx run backend:dmx-sniffer`            | DMX USB sniffer CLI (Linux-only)                |
+| `nx run bruno:build`                    | Rebuild Bruno API collection                    |
+| `nx run backend:drizzle-migrate`        | Run migrations                                  |
+| `nx run backend:drizzle-seed`           | Seed database                                   |
+| `nx run backend:drizzle-studio`         | Open Drizzle Studio                             |
+| `nx run frontend:graphql-codegen`       | Generate GraphQL types                          |
+| `nx run frontend:i18n-extract`          | Extract translations                            |
+| `nx run frontend:i18n-verify`           | Verify translation files are in sync            |
 
 **Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.19.0. **pnpm:** ^11.20.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
@@ -61,7 +66,7 @@ Harness maintenance is part of **done**, not optional docs.
 - New or changed path aliases, module patterns, or stack versions
 - New commands, env vars, or architecture boundaries
 
-**If stale:** update **`AGENTS.md` in the same change set**. Keep `CLAUDE.md` / `.github/copilot-instructions.md` thin — edit overlays only if their overlay text is wrong.
+**If stale:** update **`AGENTS.md` in the same change set**. If `CLAUDE.md` / `.github/copilot-instructions.md` exist, keep them thin — edit overlays only if their overlay text is wrong.
 
 **If accurate:** no harness edit.
 
@@ -75,7 +80,7 @@ Harness maintenance is part of **done**, not optional docs.
 
 - NestJS + Apollo GraphQL on Fastify
 - Domain module `FixturesModule`; IO modules `DmxModule`, `MidiModule`, `IoBridgeModule` (under `io/`)
-- Pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in resolvers (inject repositories, not DB directly)
+- Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). IO resolvers may emit events or call services without repositories.
 - Tests: Vitest unit/integration (`src/**/*.spec.ts`); GraphQL e2e in `src/e2e-tests/`; Testcontainers PostgreSQL in `vitest.setup.ts`
 - Repositories use `InjectDb()` for typed Drizzle connection
 - ORM repositories extend `BaseRepository` (`apps/backend/src/db/base.repository.ts`) for shared `publicId` CRUD; pass `relationalFind` for nested `with` graphs, add domain-specific methods as needed
@@ -108,7 +113,7 @@ fixtures/
 - i18n: `next-i18n-router` + `react-intl`; German/English (`src/lang/en.json`, `de.json`)
 - `'use client'` on client boundary components (pages, wrappers); props types predominantly `*Props`
 - `@/` path alias → `apps/frontend/src/`
-- Apollo Client setup: `lib/graphql/graphql-client.ts` + `apollo-wrapper.tsx`
+- Apollo Client setup: `lib/graphql/graphql-client.ts` + `lib/graphql/apollo-wrapper.tsx`
 
 ### Database (`apps/backend/src/db/`)
 

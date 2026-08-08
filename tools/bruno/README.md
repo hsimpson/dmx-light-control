@@ -1,11 +1,18 @@
 # Bruno tools
 
-This project can create a [bruno](https://www.usebruno.com/) collection in the [opencollection](https://www.opencollection.com/) format.
+Builds a [Bruno](https://www.usebruno.com/) API collection in [OpenCollection](https://www.opencollection.com/) YAML (`.yml` requests under `collection/`, rooted by `collection/opencollection.yml`).
 
 ## Commands
 
-To build the bruno collection and a graphql schema (for debugging) run the following command:
+Requires a running backend (default port from `BACKEND_PORT`, else 3000).
 
 ```bash
 nx run bruno:build
 ```
+
+This regenerates:
+
+- `schema.graphql` (introspection dump for debugging)
+- `collection/graphql/queries/*.yml` and `collection/graphql/mutations/*.yml` (one request per root field)
+
+It does not rewrite `collection/opencollection.yml` or `collection/environments/`.

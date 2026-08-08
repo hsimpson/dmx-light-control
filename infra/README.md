@@ -2,6 +2,8 @@
 
 This project contains infrastructure code for getting the local database up and running within a docker container.
 
+Compose file: `docker-compose.yml` (PostgreSQL). Commands load env from the repo root `../.env` (copy from `.env.example`).
+
 ## Commands
 
 To start the database container, run the following command:

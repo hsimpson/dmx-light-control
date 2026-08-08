@@ -3,8 +3,8 @@
 ## Development setup
 
 - Install Docker and Docker Compose for running the local database. It doesn't matter which docker engine you use, as long as it supports `docker` and `docker compose`.
-- Install Node.js (version 24 or higher).
-- Install pnpm package manager (version 11 or higher).
+- Install Node.js **24.19.0** (see `package.json` `engines`).
+- Install pnpm **^11.20.0** (see `package.json` `devEngines`).
 - Install project dependencies:
 
 ```bash
@@ -25,7 +25,7 @@ See [Projects](#projects) for a detailed documentation of each sub-project.
 
 Read all sub projects documentation carefully for more details.
 
-- [infra](infra/README.md) - Infrastructure code for deploying the application.
+- [infra](infra/README.md) - Local Docker infrastructure (PostgreSQL database).
 - [backend](apps/backend/README.md) - The backend API for managing DMX light control.
 - [frontend](apps/frontend/README.md) - A web application for controlling DMX lights.
 - [bruno](tools/bruno/README.md) - A tool for creating Bruno API collections.
