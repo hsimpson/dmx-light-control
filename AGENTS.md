@@ -35,7 +35,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run frontend:i18n-extract`          | Extract translations                            |
 | `nx run frontend:i18n-verify`           | Verify translation files are in sync            |
 
-**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.19.0. **pnpm:** ^11.20.0.
+**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.19.0. **pnpm:** ^11.21.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
 
 ## Done means
