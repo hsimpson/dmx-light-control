@@ -81,6 +81,7 @@ graphql:
     variables: |
       {
         "input": {
+          "channelModes": [],
           "name": null,
           "publicId": null,
           "vendor": {

@@ -57,3 +57,33 @@ export class FixtureVendorCreationFailedException extends BaseDomainError {
     this.name = 'VendorCreationFailedError';
   }
 }
+
+export class ChannelModeNotFoundException extends BaseDomainError {
+  public readonly code = 'CHANNEL_MODE_NOT_FOUND';
+  public override readonly statusCode = HttpStatus.NOT_FOUND;
+
+  public constructor(channelModeId: string) {
+    super(`Channel mode with ID ${channelModeId} could not be found.`);
+    this.name = 'ChannelModeNotFoundError';
+  }
+}
+
+export class ChannelModeAlreadyExistsException extends BaseDomainError {
+  public readonly code = 'CHANNEL_MODE_ALREADY_EXISTS';
+  public override readonly statusCode = HttpStatus.CONFLICT;
+
+  public constructor(channelModeName: string) {
+    super(`Channel mode with name ${channelModeName} already exists.`);
+    this.name = 'ChannelModeAlreadyExistsError';
+  }
+}
+
+export class ChannelDefinitionNotFoundException extends BaseDomainError {
+  public readonly code = 'CHANNEL_DEFINITION_NOT_FOUND';
+  public override readonly statusCode = HttpStatus.NOT_FOUND;
+
+  public constructor(channelDefinitionId: string) {
+    super(`Channel definition with ID ${channelDefinitionId} could not be found.`);
+    this.name = 'ChannelDefinitionNotFoundError';
+  }
+}

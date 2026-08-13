@@ -1,11 +1,15 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  ChannelDefinitionNotFoundException,
+  ChannelModeAlreadyExistsException,
+  ChannelModeNotFoundException,
   FixtureNotFoundException,
   FixtureVendorAlreadyExistsException,
   FixtureVendorCreationFailedException,
   FixtureVendorNotFoundException,
 } from './fixture.exceptions';
 import { FixtureService } from './fixture.service';
+import { FixtureChannelModeRepository } from './repositories/fixture-channel-mode.repository';
 import { FixtureVendorRepository } from './repositories/fixture-vendor.repository';
 import { FixtureRepository } from './repositories/fixture.repository';
 
@@ -22,12 +26,23 @@ function build() {
     findOneByPublicId: vi.fn<() => Promise<unknown>>(),
     updateOneByPublicId: vi.fn<() => Promise<unknown>>(),
   };
+  const channelModeRepo = {
+    replaceAllForFixture: vi.fn<() => Promise<void>>(),
+  };
   const service = new FixtureService(
     vendorRepo as unknown as FixtureVendorRepository,
     fixtureRepo as unknown as FixtureRepository,
+    channelModeRepo as unknown as FixtureChannelModeRepository,
   );
-  return { service, vendorRepo, fixtureRepo };
+  return { service, vendorRepo, fixtureRepo, channelModeRepo };
 }
+
+const fixtureGraph = {
+  id: 1,
+  publicId: 'p',
+  fixtureChannelDefinitions: [{ id: 10, publicId: 'def-1' }],
+  fixtureChannelModes: [{ id: 20, publicId: 'mode-1' }],
+};
 
 describe('FixtureService', () => {
   it('getAllVendors delegates to vendor repo', async () => {
@@ -145,5 +160,95 @@ describe('FixtureService', () => {
     fixtureRepo.findOneByPublicId.mockResolvedValue('r');
     await service.updateFixture({ publicId: 'p', vendor: { name: 'new' } });
     expect(fixtureRepo.updateOneByPublicId).toHaveBeenCalledWith('p', { vendorId: undefined });
+  });
+
+  it('updateFixture omits channelModes and does not replace modes', async () => {
+    const { service, fixtureRepo, channelModeRepo } = build();
+    fixtureRepo.findOneByPublicId.mockResolvedValue(fixtureGraph);
+    await service.updateFixture({ publicId: 'p' });
+    expect(channelModeRepo.replaceAllForFixture).not.toHaveBeenCalled();
+  });
+
+  it('updateFixture with empty channelModes replaces with an empty list', async () => {
+    const { service, fixtureRepo, channelModeRepo } = build();
+    fixtureRepo.findOneByPublicId.mockResolvedValue(fixtureGraph);
+    await service.updateFixture({ publicId: 'p', channelModes: [] });
+    expect(channelModeRepo.replaceAllForFixture).toHaveBeenCalledWith(1, []);
+  });
+
+  it('updateFixture with channelModes throws when fixture is missing', async () => {
+    const { service, fixtureRepo } = build();
+    fixtureRepo.findOneByPublicId.mockResolvedValue(undefined);
+    await expect(service.updateFixture({ publicId: 'p', channelModes: [] })).rejects.toBeInstanceOf(
+      FixtureNotFoundException,
+    );
+  });
+
+  it('updateFixture with channelModes throws when a mode publicId is unknown', async () => {
+    const { service, fixtureRepo, channelModeRepo } = build();
+    fixtureRepo.findOneByPublicId.mockResolvedValue(fixtureGraph);
+    await expect(
+      service.updateFixture({
+        publicId: 'p',
+        channelModes: [{ publicId: 'missing-mode', name: 'x', assignments: [] }],
+      }),
+    ).rejects.toBeInstanceOf(ChannelModeNotFoundException);
+    expect(channelModeRepo.replaceAllForFixture).not.toHaveBeenCalled();
+  });
+
+  it('updateFixture with channelModes throws when names are duplicated', async () => {
+    const { service, fixtureRepo, channelModeRepo } = build();
+    fixtureRepo.findOneByPublicId.mockResolvedValue(fixtureGraph);
+    await expect(
+      service.updateFixture({
+        publicId: 'p',
+        channelModes: [
+          { name: 'dup', assignments: [] },
+          { name: 'dup', assignments: [] },
+        ],
+      }),
+    ).rejects.toBeInstanceOf(ChannelModeAlreadyExistsException);
+    expect(channelModeRepo.replaceAllForFixture).not.toHaveBeenCalled();
+  });
+
+  it('updateFixture with channelModes throws when a definition publicId is unknown', async () => {
+    const { service, fixtureRepo, channelModeRepo } = build();
+    fixtureRepo.findOneByPublicId.mockResolvedValue(fixtureGraph);
+    await expect(
+      service.updateFixture({
+        publicId: 'p',
+        channelModes: [{ name: 'x', assignments: [{ channelDefinitionPublicId: 'missing-def' }] }],
+      }),
+    ).rejects.toBeInstanceOf(ChannelDefinitionNotFoundException);
+    expect(channelModeRepo.replaceAllForFixture).not.toHaveBeenCalled();
+  });
+
+  it('updateFixture with channelModes maps definitions and replaces modes', async () => {
+    const { service, fixtureRepo, channelModeRepo } = build();
+    fixtureRepo.findOneByPublicId.mockResolvedValueOnce(fixtureGraph).mockResolvedValueOnce('reloaded');
+    const res = await service.updateFixture({
+      publicId: 'p',
+      channelModes: [
+        { publicId: 'mode-1', name: 'kept', assignments: [{ channelDefinitionPublicId: 'def-1' }] },
+        { name: 'new', assignments: [] },
+      ],
+    });
+    expect(channelModeRepo.replaceAllForFixture).toHaveBeenCalledWith(1, [
+      { publicId: 'mode-1', name: 'kept', assignments: [{ channelDefinitionId: 10 }] },
+      { name: 'new', assignments: [] },
+    ]);
+    expect(res).toBe('reloaded');
+  });
+
+  it('updateFixture with channelModes maps unique violations to ChannelModeAlreadyExistsException', async () => {
+    const { service, fixtureRepo, channelModeRepo } = build();
+    fixtureRepo.findOneByPublicId.mockResolvedValue(fixtureGraph);
+    channelModeRepo.replaceAllForFixture.mockRejectedValue(Object.assign(new Error('unique'), { code: '23505' }));
+    await expect(
+      service.updateFixture({
+        publicId: 'p',
+        channelModes: [{ name: 'dup', assignments: [] }],
+      }),
+    ).rejects.toBeInstanceOf(ChannelModeAlreadyExistsException);
   });
 });

@@ -10,7 +10,7 @@ import { notifications } from '@mantine/notifications';
 import { useState } from 'react';
 import { z } from 'zod/v4';
 import FixtureChannelDefinitions from './fixture-channel-definitions';
-import FixtureChannelModes from './fixture-channel-modes';
+import FixtureChannelModes, { toChannelModeSaveInputs, toEditorChannelModes } from './fixture-channel-modes';
 
 type Fixture = GetFixturesQuery['fixtures'][number];
 
@@ -59,6 +59,7 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const [comboBoxValue, setComboBoxValue] = useState(fixture?.fixtureVendor.name ?? null);
   const [comboBoxPublicId, setComboBoxPublicId] = useState(fixture?.fixtureVendor.publicId ?? null);
   const [comboBoxSearch, setComboBoxSearch] = useState(fixture?.fixtureVendor.name ?? '');
+  const [channelModes, setChannelModes] = useState(() => toEditorChannelModes(fixture?.fixtureChannelModes ?? []));
 
   const exactOptionMatch = comboBoxData.some(item => item === comboBoxSearch);
   const filteredOptions = exactOptionMatch
@@ -88,15 +89,20 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
     const vendorInput = comboBoxPublicId ? { publicId: comboBoxPublicId } : { name: values.vendor };
 
     try {
-      await updateFixture({
+      const { data } = await updateFixture({
         variables: {
           input: {
             publicId: fixture.publicId,
             name: values.fixtureName,
             vendor: vendorInput,
+            channelModes: toChannelModeSaveInputs(channelModes),
           },
         },
       });
+
+      if (data?.updateFixture.fixtureChannelModes) {
+        setChannelModes(toEditorChannelModes(data.updateFixture.fixtureChannelModes));
+      }
 
       notifications.show({
         color: 'green',
@@ -202,7 +208,11 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
         />
 
         <FixtureChannelDefinitions fixtureChannelDefinitions={fixture?.fixtureChannelDefinitions ?? []} />
-        <FixtureChannelModes fixtureChannelModes={fixture?.fixtureChannelModes ?? []} />
+        <FixtureChannelModes
+          channelModes={channelModes}
+          persistedChannelDefinitions={fixture?.fixtureChannelDefinitions ?? []}
+          onChannelModesChange={setChannelModes}
+        />
 
         <Button type="submit" mt="sm" w="fit-content" style={{ alignSelf: 'flex-end' }}>
           {t(globalMessages.save)}

@@ -38,6 +38,7 @@ const SelectableListItem = ({
       {children}
       {canDelete && (
         <ActionIcon
+          type="button"
           className={styles.removeButton}
           onClick={event => {
             event.stopPropagation();

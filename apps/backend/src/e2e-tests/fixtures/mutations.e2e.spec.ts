@@ -18,6 +18,17 @@ type UpdateFixtureMutation = {
   updateFixture: {
     name: string;
     publicId: string;
+    fixtureChannelModes: {
+      name: string;
+      order: number;
+      publicId: string;
+      fixtureChannelAssignments: {
+        channelNumber: number;
+        fixtureChannelDefinition: {
+          publicId: string;
+        };
+      }[];
+    }[];
   };
 };
 
@@ -27,6 +38,74 @@ type DeleteFixtureVendorMutation = {
     publicId: string;
   };
 };
+
+type FixtureChannelModesQuery = {
+  fixture: {
+    fixtureChannelDefinitions: { publicId: string }[];
+    fixtureChannelModes: UpdateFixtureMutation['updateFixture']['fixtureChannelModes'];
+  } | null;
+};
+
+type ChannelModeInput = {
+  publicId?: string;
+  name: string;
+  assignments: { channelDefinitionPublicId: string }[];
+};
+
+const UPDATE_FIXTURE_WITH_MODES = gql`
+  mutation ($input: UpdateFixtureInput!) {
+    updateFixture(input: $input) {
+      name
+      publicId
+      fixtureChannelModes {
+        name
+        order
+        publicId
+        fixtureChannelAssignments {
+          channelNumber
+          fixtureChannelDefinition {
+            publicId
+          }
+        }
+      }
+    }
+  }
+`;
+
+const GET_FIXTURE_CHANNEL_MODES = gql`
+  query ($publicId: UUID!) {
+    fixture(publicId: $publicId) {
+      fixtureChannelDefinitions {
+        publicId
+      }
+      fixtureChannelModes {
+        name
+        order
+        publicId
+        fixtureChannelAssignments {
+          channelNumber
+          fixtureChannelDefinition {
+            publicId
+          }
+        }
+      }
+    }
+  }
+`;
+
+function toChannelModeInputs(modes: UpdateFixtureMutation['updateFixture']['fixtureChannelModes']): ChannelModeInput[] {
+  return [...modes]
+    .sort((a, b) => a.order - b.order)
+    .map(mode => ({
+      publicId: mode.publicId,
+      name: mode.name,
+      assignments: [...mode.fixtureChannelAssignments]
+        .sort((a, b) => a.channelNumber - b.channelNumber)
+        .map(assignment => ({
+          channelDefinitionPublicId: assignment.fixtureChannelDefinition.publicId,
+        })),
+    }));
+}
 
 const ORIGINAL_ENV = process.env;
 
@@ -153,5 +232,98 @@ describe('Fixture mutations', () => {
 
     expect(body.data?.deleteFixtureVendor.publicId).toBe(publicId);
     expect(body.data?.deleteFixtureVendor.deleted).toBe(true);
+  });
+
+  it('should add, reorder, replace assignments, and remove channel modes via updateFixture', async () => {
+    const server = app.getHttpAdapter().getInstance().server;
+    const loaded = await graphqlQuery<FixtureChannelModesQuery>(server, GET_FIXTURE_CHANNEL_MODES, {
+      variables: { publicId: SEED_FIXTURE_PUBLIC_ID },
+    });
+    const fixture = loaded.data?.fixture;
+    expect(fixture).toBeDefined();
+    const original = toChannelModeInputs(fixture?.fixtureChannelModes ?? []);
+    const definitionPublicId = fixture?.fixtureChannelDefinitions[0]?.publicId;
+    if (!definitionPublicId) {
+      throw new Error('Seed fixture is missing channel definitions');
+    }
+
+    const updateModes = async (channelModes: ChannelModeInput[]) => {
+      const body = await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_WITH_MODES, {
+        variables: {
+          input: {
+            publicId: SEED_FIXTURE_PUBLIC_ID,
+            channelModes,
+          },
+        },
+      });
+      expect(body.errors).toBeUndefined();
+      expect(body.data?.updateFixture).toBeDefined();
+      return body.data?.updateFixture;
+    };
+
+    try {
+      const withNew = await updateModes([...original, { name: 'E2E extra mode', assignments: [] }]);
+      const extra = withNew?.fixtureChannelModes.find(mode => mode.name === 'E2E extra mode');
+      expect(extra).toBeDefined();
+      expect(extra?.order).toBe(original.length);
+      expect(extra?.fixtureChannelAssignments).toEqual([]);
+
+      const extraInput: ChannelModeInput = {
+        publicId: extra?.publicId,
+        name: 'E2E extra mode',
+        assignments: [],
+      };
+      const reordered = await updateModes([extraInput, ...original]);
+      const reorderedByOrder = [...(reordered?.fixtureChannelModes ?? [])].sort((a, b) => a.order - b.order);
+      expect(reorderedByOrder[0]?.name).toBe('E2E extra mode');
+
+      const withAssignment = await updateModes([
+        {
+          ...extraInput,
+          publicId: extra?.publicId,
+          assignments: [{ channelDefinitionPublicId: definitionPublicId }],
+        },
+        ...original,
+      ]);
+      const extraWithAssignment = withAssignment?.fixtureChannelModes.find(mode => mode.publicId === extra?.publicId);
+      expect(extraWithAssignment?.fixtureChannelAssignments).toHaveLength(1);
+      expect(extraWithAssignment?.fixtureChannelAssignments[0]?.channelNumber).toBe(1);
+      expect(extraWithAssignment?.fixtureChannelAssignments[0]?.fixtureChannelDefinition.publicId).toBe(
+        definitionPublicId,
+      );
+
+      const restored = await updateModes(original);
+      expect(restored?.fixtureChannelModes.some(mode => mode.name === 'E2E extra mode')).toBe(false);
+      expect(restored?.fixtureChannelModes).toHaveLength(original.length);
+    } finally {
+      await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_WITH_MODES, {
+        variables: {
+          input: {
+            publicId: SEED_FIXTURE_PUBLIC_ID,
+            channelModes: original,
+          },
+        },
+      });
+    }
+  });
+
+  it('should reject unknown channel definitions when replacing channel modes', async () => {
+    const server = app.getHttpAdapter().getInstance().server;
+    const body = await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_WITH_MODES, {
+      variables: {
+        input: {
+          publicId: SEED_FIXTURE_PUBLIC_ID,
+          channelModes: [
+            {
+              name: 'invalid mode',
+              assignments: [{ channelDefinitionPublicId: '00000000-0000-4000-8000-000000000000' }],
+            },
+          ],
+        },
+      },
+    });
+
+    expect(body.data?.updateFixture).toBeUndefined();
+    expect(body.errors?.[0]?.message).toContain('00000000-0000-4000-8000-000000000000');
   });
 });

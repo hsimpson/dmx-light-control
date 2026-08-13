@@ -1,7 +1,9 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsOptional, IsString, IsUUID, Length } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { GraphQLUUID } from 'graphql-scalars';
 import { UpdateFixtureVendorInput } from './fixture.input';
+import { UpdateFixtureChannelModeInput } from './update-fixture-channel-mode.dto';
 
 @InputType()
 export class UpdateFixtureInput {
@@ -18,4 +20,14 @@ export class UpdateFixtureInput {
   @Field(() => UpdateFixtureVendorInput, { nullable: true, description: 'The vendor of the fixture' })
   @IsOptional()
   public vendor?: UpdateFixtureVendorInput;
+
+  @Field(() => [UpdateFixtureChannelModeInput], {
+    nullable: true,
+    description: 'Replace the fixture channel modes when provided; omit to leave modes unchanged',
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UpdateFixtureChannelModeInput)
+  public channelModes?: UpdateFixtureChannelModeInput[];
 }

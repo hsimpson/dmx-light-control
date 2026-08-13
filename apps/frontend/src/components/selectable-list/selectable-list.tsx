@@ -1,6 +1,7 @@
 import { ICON_SIZE } from '@/lib/constants';
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
+import { arrayMove } from '@dnd-kit/helpers';
 import { DragDropProvider } from '@dnd-kit/react';
 import { ActionIcon, Flex, List, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
@@ -19,7 +20,19 @@ type SelectableListProps<ItemType> = {
   onSelectedItemChange?: (item?: ItemType) => void;
   onItemAdd?: (itemToAdd: string) => void;
   onItemRemove?: (itemToRemove: ItemType) => void;
+  onItemReorder?: (items: ItemType[]) => void;
 };
+
+function isSortableSource(source: unknown): source is { initialIndex: number; index: number } {
+  return (
+    typeof source === 'object' &&
+    source !== null &&
+    'initialIndex' in source &&
+    'index' in source &&
+    typeof source.initialIndex === 'number' &&
+    typeof source.index === 'number'
+  );
+}
 
 const SelectableList = <ItemType,>({
   addNewItem,
@@ -32,6 +45,7 @@ const SelectableList = <ItemType,>({
   onSelectedItemChange,
   onItemAdd,
   onItemRemove,
+  onItemReorder,
 }: SelectableListProps<ItemType>) => {
   const [addItem, setAddItem] = useState('');
   const { t } = useTranslation();
@@ -83,12 +97,16 @@ const SelectableList = <ItemType,>({
               setAddItem(event.currentTarget.value);
             }}
             onKeyDown={event => {
-              if (event.key === 'Enter' && addItem.trim()) {
-                handleAddItem(addItem);
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                if (addItem.trim()) {
+                  handleAddItem(addItem);
+                }
               }
             }}
           />
           <ActionIcon
+            type="button"
             variant="filled"
             size="lg"
             radius="lg"
@@ -101,7 +119,18 @@ const SelectableList = <ItemType,>({
           </ActionIcon>
         </Flex>
       )}
-      <DragDropProvider>
+      <DragDropProvider
+        onDragEnd={event => {
+          if (!onItemReorder || event.operation.canceled) {
+            return;
+          }
+          const source = event.operation.source;
+          if (!isSortableSource(source) || source.initialIndex === source.index) {
+            return;
+          }
+          onItemReorder(arrayMove(items, source.initialIndex, source.index));
+        }}
+      >
         <List listStyleType="none">
           <Flex direction="column" gap="xs">
             {items.map((item, index) => (
@@ -113,7 +142,7 @@ const SelectableList = <ItemType,>({
                 onClick={() => {
                   handleSelectedItemChange(item);
                 }}
-                canDelete
+                canDelete={Boolean(onItemRemove)}
                 onDelete={() => {
                   handleRemoveItem(item);
                 }}

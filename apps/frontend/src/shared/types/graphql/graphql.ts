@@ -19,7 +19,23 @@ export const enum FixtureChannelPreset {
   ShutterStrobeSlowFast = 'ShutterStrobeSlowFast'
 };
 
+export type UpdateFixtureChannelAssignmentInput = {
+  /** The public ID of the channel definition to assign */
+  channelDefinitionPublicId: string;
+};
+
+export type UpdateFixtureChannelModeInput = {
+  /** The channel assignments of the channel mode, in channel-number order */
+  assignments: Array<UpdateFixtureChannelAssignmentInput>;
+  /** The name of the channel mode */
+  name: string;
+  /** The public ID of an existing channel mode; omit to create */
+  publicId?: string | null | undefined;
+};
+
 export type UpdateFixtureInput = {
+  /** Replace the fixture channel modes when provided; omit to leave modes unchanged */
+  channelModes?: Array<UpdateFixtureChannelModeInput> | null | undefined;
   /** The name of the fixture */
   name?: string | null | undefined;
   /** The public ID of the fixture */
