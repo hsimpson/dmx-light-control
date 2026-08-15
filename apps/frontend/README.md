@@ -1,12 +1,12 @@
 # Frontend project
 
-This project contains the frontend code for the DMX Light Control application. It is built using Next.js and provides a user interface for controlling DMX lights through the backend API.
+This project contains the frontend code for the DMX Light Control application. It is a Next.js App Router app (port **3001**) that talks to the backend GraphQL API.
 
 ## Development setup
 
-Copy `.env.example` to `.env` and fill in the required environment variables. At minimum, set `NEXT_PUBLIC_GRAPHQL_API_URL` (backend must be reachable for GraphQL codegen).
+Copy `.env.example` to `.env`. The only variable is `NEXT_PUBLIC_GRAPHQL_API_URL` (default `http://localhost:3000/graphql`). The backend must be reachable for GraphQL codegen.
 
-The app uses locale-based routing (`/de/...`, `/en/...`); default locale is `de`.
+Locale routing uses `src/proxy.ts` (Next.js 16 proxy; there is no `middleware.ts`) with `next-i18n-router`. URLs are prefixed (`/de/...`, `/en/...`); default locale is `de`.
 
 ## Commands
 
@@ -35,7 +35,7 @@ nx typecheck frontend
 nx lint frontend
 ```
 
-Unit and component tests (Vitest, colocated `*.spec.ts` / `*.spec.tsx`):
+Unit and component tests (Vitest, colocated under `src/` as `*.spec.ts` / `*.spec.tsx`). Coverage reports go to `coverage/apps/frontend`:
 
 ```bash
 nx test frontend
@@ -60,7 +60,7 @@ To verify that translation files are in sync (missing and extra keys), run:
 nx run frontend:i18n-verify
 ```
 
-To generate TypeScript types for the GraphQL schema, run the following command:
+To generate TypeScript types for the GraphQL schema (`src/**/*.graphql` → `src/shared/types/graphql/`), run:
 
 ```bash
 nx run frontend:graphql-codegen

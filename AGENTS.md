@@ -12,34 +12,35 @@ NestJS backend + Next.js frontend in Nx monorepo.
 
 ## Commands
 
-| Command                                 | Description                                     |
-| --------------------------------------- | ----------------------------------------------- |
-| `nx serve backend`                      | Backend dev server (also runs `infra:db-start`) |
-| `nx run infra:db-start`                 | Start local Postgres (Docker)                   |
-| `nx run infra:db-stop`                  | Stop local Postgres                             |
-| `nx run infra:db-reset`                 | Reset local Postgres (removes volumes)          |
-| `nx run infra:db-logs`                  | Tail local Postgres logs                        |
-| `nx dev frontend` / `nx start frontend` | Frontend dev (port 3001) / prod start           |
-| `nx build backend/frontend`             | Production build                                |
-| `nx typecheck backend/frontend`         | Type check                                      |
-| `nx lint backend/frontend`              | Lint                                            |
-| `nx test backend`                       | Backend unit/integration + e2e tests            |
-| `nx test frontend`                      | Frontend Vitest unit/component tests            |
-| `nx test frontend --coverage`           | Frontend coverage under `coverage/apps/frontend` |
-| `nx e2e frontend`                       | Playwright e2e (mocked GraphQL, no backend)     |
-| `nx run backend:drizzle-generate`       | Generate migrations                             |
-| `nx run backend:erd`                    | Regenerate database ER diagram                  |
-| `nx run backend:dmx-sniffer`            | DMX USB sniffer CLI (Linux-only)                |
-| `nx run bruno:build`                    | Rebuild Bruno API collection                    |
-| `nx run backend:drizzle-migrate`        | Run migrations                                  |
-| `nx run backend:drizzle-seed`           | Seed database                                   |
-| `nx run backend:drizzle-studio`         | Open Drizzle Studio                             |
-| `nx run frontend:graphql-codegen`       | Generate GraphQL types                          |
-| `nx run frontend:i18n-extract`          | Extract translations                            |
-| `nx run frontend:i18n-verify`           | Verify translation files are in sync            |
+| Command                                 | Description                                                        |
+| --------------------------------------- | ------------------------------------------------------------------ |
+| `nx serve backend`                      | Backend dev server (also runs `infra:db-start`)                    |
+| `nx run infra:db-start`                 | Start local Postgres (Docker)                                      |
+| `nx run infra:db-stop`                  | Stop local Postgres                                                |
+| `nx run infra:db-reset`                 | Reset local Postgres (removes volumes)                             |
+| `nx run infra:db-logs`                  | Tail local Postgres logs                                           |
+| `nx dev frontend` / `nx start frontend` | Frontend dev (port 3001) / prod start                              |
+| `nx build backend/frontend`             | Production build                                                   |
+| `nx typecheck backend/frontend`         | Type check                                                         |
+| `nx lint backend/frontend`              | Lint                                                               |
+| `nx test backend`                       | Backend unit/integration + e2e tests                               |
+| `nx test frontend`                      | Frontend Vitest unit/component tests                               |
+| `nx test frontend --coverage`           | Frontend coverage under `coverage/apps/frontend`                   |
+| `nx e2e frontend`                       | Playwright e2e (mocked GraphQL, no backend)                        |
+| `nx run backend:drizzle-generate`       | Generate migrations                                                |
+| `nx run backend:erd`                    | Write Mermaid ER diagram to `apps/backend/docs/database-schema.md` |
+| `nx run backend:dmx-sniffer`            | DMX USB sniffer CLI (Linux-only)                                   |
+| `nx run bruno:build`                    | Rebuild Bruno API collection                                       |
+| `nx run backend:drizzle-migrate`        | Run migrations                                                     |
+| `nx run backend:drizzle-seed`           | Seed database                                                      |
+| `nx run backend:drizzle-studio`         | Open Drizzle Studio                                                |
+| `nx run frontend:graphql-codegen`       | Generate GraphQL types                                             |
+| `nx run frontend:i18n-extract`          | Extract translations                                               |
+| `nx run frontend:i18n-verify`           | Verify translation files are in sync                               |
 
 **Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.19.0. **pnpm:** ^11.21.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
+**Env (`.env.example`):** `NODE_ENV`, `BACKEND_PORT` (HTTP; GraphQL at `/graphql`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts`.
 
 ## Done means
 
@@ -54,7 +55,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 
 - Clean architecture, domain-driven design, feature-based modules (resolver/service/repository/DTO/entity colocated)
 - Repository pattern with `@InjectDb()` custom decorator + `DRIZZLE_DB_PROVIDER` token
-- Dynamic modules via `forRoot` (`DrizzleDbModule`, `ConfigModule`); config via `loadConfig()` returning typed `Config`
+- `DrizzleDbModule.forRoot` (project dynamic module); NestJS `ConfigModule.forRoot` loads `loadConfig()` → typed `Config`
 - Path aliases: backend `@/*` → `apps/backend/src/*`; frontend `@/*` → `apps/frontend/src/*`
 - `pnpm` (not npm/yarn), `nx` (not lerna/turborepo), Fastify (not Express), Drizzle (not Prisma/TypeORM)
 - No typecheck errors, no lint errors
@@ -81,18 +82,20 @@ Harness maintenance is part of **done**, not optional docs.
 
 ### Backend (`apps/backend/src/`)
 
-- NestJS + Apollo GraphQL on Fastify
-- Domain module `FixturesModule`; IO modules `DmxModule`, `MidiModule`, `IoBridgeModule` (under `io/`)
+- NestJS + Apollo GraphQL on Fastify (`autoSchemaFile: true`)
+- Domain module: `FixturesModule` only. `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` is imported by `DmxModule`. `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
 - Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). IO resolvers may emit events or call services without repositories.
-- Tests: Vitest unit/integration (`src/**/*.spec.ts`); GraphQL e2e in `src/e2e-tests/`; Testcontainers PostgreSQL in `vitest.setup.ts`
+- Tests: Vitest unit/integration (`src/**/*.spec.ts`); GraphQL e2e in `src/e2e-tests/`; Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
 - Repositories use `InjectDb()` for typed Drizzle connection
 - ORM repositories extend `BaseRepository` (`apps/backend/src/db/base.repository.ts`) for shared `publicId` CRUD; pass `relationalFind` for nested `with` graphs, add domain-specific methods as needed
-- Events: `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`
+- Events: `AppEventEmitter` extends `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`; IO modules import `EventsModule`
 - CLI command via `nest-commander`: `dmx-sniffer` (Linux-only)
 - Global `DrizzleDbModule` exports DB; `@/` path alias → `apps/backend/src/`
 - IO layer: `io/dmx/`, `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
 
 ### Domain module structure (e.g. `fixtures/`)
+
+Only domain module today: `fixtures/`.
 
 ```text
 fixtures/
@@ -110,9 +113,9 @@ fixtures/
 
 ### Frontend (`apps/frontend/`)
 
-- Next.js App Router, locale-based routing (`[locale]/`); locale middleware via `src/proxy.ts` + `next-i18n-router` (default locale: `de`)
+- Next.js 16 App Router, locale-based routing (`src/app/[locale]/`); locale proxy via `src/proxy.ts` + `next-i18n-router` (default locale: `de`, `prefixDefault: true`). There is no `middleware.ts`.
 - Mantine v9 (primary styling); CSS modules used sparingly; Phosphor Icons (`weight="duotone"` common, `"fill"` for some actions)
-- Apollo Client v4; GraphQL codegen from `src/**/*.graphql` against remote schema (`NEXT_PUBLIC_GRAPHQL_API_URL`)
+- Apollo Client v4; GraphQL codegen from `src/**/*.graphql` against remote schema (`NEXT_PUBLIC_GRAPHQL_API_URL`); types written to `src/shared/types/graphql/`
 - i18n: `next-i18n-router` + `react-intl`; German/English (`src/lang/en.json`, `de.json`)
 - `'use client'` on client boundary components (pages, wrappers); props types predominantly `*Props`
 - `@/` path alias → `apps/frontend/src/`
@@ -124,6 +127,7 @@ fixtures/
 - Entities: `d.snakeCase.table('name', { ...pk, ...timestamps, fields })`
 - Repositories: one per entity/group, use `InferSelectModel`/`InferInsertModel`
 - Migrations: `src/db/migrations/` (timestamped); seeding: `src/db/seeding/seed.ts`
+- ER diagram: `nx run backend:erd` → `apps/backend/docs/database-schema.md`
 - Query logging: `DrizzleLogWriter` wrapping NestJS `Logger` (exists but currently disabled in `DrizzleDbModule`)
 
 ## Coding Conventions
