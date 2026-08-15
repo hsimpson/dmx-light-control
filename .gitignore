@@ -6,6 +6,9 @@
 coverage/
 dist/
 node_modules/
+test-results/
+playwright-report/
+blob-report/
 
 # files
 .DS_Store

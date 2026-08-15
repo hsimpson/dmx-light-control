@@ -16,6 +16,16 @@ export default [
     ],
   },
 
+  {
+    files: ['**/*.spec.ts', '**/*.spec.tsx', 'e2e/**/*.ts', 'playwright.config.ts'],
+    languageOptions: {
+      parserOptions: {
+        projectService: false,
+        project: ['apps/frontend/tsconfig.spec.json'],
+      },
+    },
+  },
+
   // custom ESLint React rules
   {
     rules: {},

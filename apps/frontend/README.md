@@ -35,6 +35,19 @@ nx typecheck frontend
 nx lint frontend
 ```
 
+Unit and component tests (Vitest, colocated `*.spec.ts` / `*.spec.tsx`):
+
+```bash
+nx test frontend
+nx test frontend --coverage
+```
+
+Browser e2e (Playwright, mocked GraphQL, no backend required). Install Chromium once with `pnpm exec playwright install chromium`:
+
+```bash
+nx e2e frontend
+```
+
 To extract translation keys from the source code and update the translation files, run the following command:
 
 ```bash

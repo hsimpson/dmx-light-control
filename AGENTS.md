@@ -24,6 +24,9 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx typecheck backend/frontend`         | Type check                                      |
 | `nx lint backend/frontend`              | Lint                                            |
 | `nx test backend`                       | Backend unit/integration + e2e tests            |
+| `nx test frontend`                      | Frontend Vitest unit/component tests            |
+| `nx test frontend --coverage`           | Frontend coverage under `coverage/apps/frontend` |
+| `nx e2e frontend`                       | Playwright e2e (mocked GraphQL, no backend)     |
 | `nx run backend:drizzle-generate`       | Generate migrations                             |
 | `nx run backend:erd`                    | Regenerate database ER diagram                  |
 | `nx run backend:dmx-sniffer`            | DMX USB sniffer CLI (Linux-only)                |
@@ -160,7 +163,7 @@ fixtures/
 
 ## Important Notes
 
-- No frontend tests yet (no `*.spec.ts` under `apps/frontend/`); backend uses Vitest with e2e tests in `src/e2e-tests/`
+- Frontend: Vitest colocated `*.spec.ts` / `*.spec.tsx`; Playwright e2e in `apps/frontend/e2e/*.e2e.spec.ts` (mocked GraphQL). Install Chromium once with `pnpm exec playwright install chromium`. Backend uses Vitest with GraphQL e2e in `src/e2e-tests/`
 - `REVIEW` comments mark incomplete implementations (device selection, hardcoded serial paths)
 - IO layer is Linux-focused (`/dev/usbmon`, serial ports)
 - Production hides stack traces from GraphQL errors
