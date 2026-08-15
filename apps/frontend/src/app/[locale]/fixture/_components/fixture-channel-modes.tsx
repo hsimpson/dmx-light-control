@@ -2,16 +2,17 @@
 
 import SelectableList from '@/components/selectable-list/selectable-list';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { FixtureChannelDefinition, FixtureChannelMode } from '@/shared/types/fixtures';
+import { FixtureChannelMode } from '@/shared/types/fixtures';
 import { Flex, Select, Text } from '@mantine/core';
 import { useState } from 'react';
+import { EditorChannelDefinition } from './fixture-channel-definitions';
 import FixtureChannelDefinitionItem from './fixture-channel-definition-item';
 
 export type EditorChannelAssignment = {
   clientKey: string;
   publicId?: string;
   channelNumber: number;
-  fixtureChannelDefinition: FixtureChannelDefinition;
+  fixtureChannelDefinition: EditorChannelDefinition;
 };
 
 export type EditorChannelMode = {
@@ -30,7 +31,7 @@ export type ChannelModeSaveInput = {
 
 type FixtureChannelModesProps = {
   channelModes: EditorChannelMode[];
-  persistedChannelDefinitions: FixtureChannelDefinition[];
+  persistedChannelDefinitions: EditorChannelDefinition[];
   onChannelModesChange: (channelModes: EditorChannelMode[]) => void;
 };
 
@@ -48,7 +49,10 @@ export const toEditorChannelModes = (fixtureChannelModes: FixtureChannelMode[]):
           clientKey: assignment.publicId,
           publicId: assignment.publicId,
           channelNumber: assignment.channelNumber,
-          fixtureChannelDefinition: assignment.fixtureChannelDefinition,
+          fixtureChannelDefinition: {
+            ...assignment.fixtureChannelDefinition,
+            clientKey: assignment.fixtureChannelDefinition.publicId,
+          },
         })),
     }));
 
@@ -56,9 +60,11 @@ export const toChannelModeSaveInputs = (channelModes: EditorChannelMode[]): Chan
   channelModes.map(mode => ({
     ...(mode.publicId ? { publicId: mode.publicId } : {}),
     name: mode.name,
-    assignments: mode.fixtureChannelAssignments.map(assignment => ({
-      channelDefinitionPublicId: assignment.fixtureChannelDefinition.publicId,
-    })),
+    assignments: mode.fixtureChannelAssignments.flatMap(assignment =>
+      assignment.fixtureChannelDefinition.publicId
+        ? [{ channelDefinitionPublicId: assignment.fixtureChannelDefinition.publicId }]
+        : [],
+    ),
   }));
 
 const reindexModes = (modes: EditorChannelMode[]): EditorChannelMode[] =>
@@ -118,7 +124,7 @@ const FixtureChannelModes = ({
       return;
     }
     const definition = persistedChannelDefinitions.find(item => item.publicId === definitionPublicId);
-    if (!definition) {
+    if (!definition?.publicId) {
       return;
     }
     updateSelectedAssignments([
@@ -185,10 +191,9 @@ const FixtureChannelModes = ({
             id: 'FixtureChannelModes.addAssignmentPlaceholder',
             defaultMessage: 'Assign a channel definition',
           })}
-          data={persistedChannelDefinitions.map(definition => ({
-            value: definition.publicId,
-            label: definition.name,
-          }))}
+          data={persistedChannelDefinitions.flatMap(definition =>
+            definition.publicId ? [{ value: definition.publicId, label: definition.name }] : [],
+          )}
           value={null}
           onChange={handleAssignmentAdd}
         />

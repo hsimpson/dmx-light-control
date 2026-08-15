@@ -24,6 +24,13 @@ export type UpdateFixtureChannelAssignmentInput = {
   channelDefinitionPublicId: string;
 };
 
+export type UpdateFixtureChannelDefinitionInput = {
+  /** The new name of the channel definition */
+  name: string;
+  /** The public ID of the channel definition */
+  publicId: string;
+};
+
 export type UpdateFixtureChannelModeInput = {
   /** The channel assignments of the channel mode, in channel-number order */
   assignments: Array<UpdateFixtureChannelAssignmentInput>;
@@ -34,6 +41,8 @@ export type UpdateFixtureChannelModeInput = {
 };
 
 export type UpdateFixtureInput = {
+  /** Rename fixture channel definitions when provided; omit to leave definition names unchanged */
+  channelDefinitions?: Array<UpdateFixtureChannelDefinitionInput> | null | undefined;
   /** Replace the fixture channel modes when provided; omit to leave modes unchanged */
   channelModes?: Array<UpdateFixtureChannelModeInput> | null | undefined;
   /** The name of the fixture */

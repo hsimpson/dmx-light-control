@@ -2,7 +2,7 @@
   "AddFixturePage.title": "Add Fixture",
   "EditFixturePage.title": "Edit Fixture",
   "FixtureChannelDefinitions.addNewItemPlaceholder": "Add Channel Definition",
-  "FixtureChannelDefinitions.details": "Channel Definition Details",
+  "FixtureChannelDefinitions.details": "Channel ranges",
   "FixtureChannelDefinitions.listTitle": "Channel Definitions",
   "FixtureChannelModes.addAssignmentPlaceholder": "Assign a channel definition",
   "FixtureChannelModes.addNewItemPlaceholder": "Add new channel mode",
@@ -11,7 +11,6 @@
   "FixtureChannelRangeTable.description": "Description",
   "FixtureChannelRangeTable.dmxEnd": "DMX End",
   "FixtureChannelRangeTable.dmxStart": "DMX Start",
-  "FixtureChannelRangeTable.ranges": "Ranges",
   "FixtureForm.fixtureName": "Fixture name:",
   "FixtureForm.fixtureNamePlaceholder": "Enter fixture name",
   "FixtureForm.notification.updateError": "Failed to update fixture",
@@ -27,7 +26,6 @@
   "FixtureList.title": "Fixture list",
   "FixtureVendorList.Table.name": "Name",
   "FixtureVendorList.confirmDelete": "Delete vendor?",
-  "FixtureVendorList.confirmDeleteMessage": "Are you sure you want to delete the vendor \"{name}\"? This action cannot be undone.",
   "FixtureVendorList.create": "Add vendor",
   "FixtureVendorList.createError": "Failed to create vendor",
   "FixtureVendorList.created": "Vendor created",
@@ -46,5 +44,6 @@
   "NavBar.FixtureVendors": "Fixture Vendors",
   "NavBar.Fixtures": "Fixtures",
   "NavBar.Home": "Home",
-  "SelectableList.itemAlreadyExists": "Item already exists"
+  "SelectableList.itemAlreadyExists": "Item already exists",
+  "SelectableList.renameItem": "Rename"
 }

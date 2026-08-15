@@ -87,3 +87,13 @@ export class ChannelDefinitionNotFoundException extends BaseDomainError {
     this.name = 'ChannelDefinitionNotFoundError';
   }
 }
+
+export class ChannelDefinitionAlreadyExistsException extends BaseDomainError {
+  public readonly code = 'CHANNEL_DEFINITION_ALREADY_EXISTS';
+  public override readonly statusCode = HttpStatus.CONFLICT;
+
+  public constructor(channelDefinitionName: string) {
+    super(`Channel definition with name ${channelDefinitionName} already exists.`);
+    this.name = 'ChannelDefinitionAlreadyExistsError';
+  }
+}

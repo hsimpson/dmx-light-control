@@ -232,6 +232,14 @@ input UpdateFixtureChannelAssignmentInput {
   channelDefinitionPublicId: UUID!
 }
 
+input UpdateFixtureChannelDefinitionInput {
+  """The new name of the channel definition"""
+  name: String!
+
+  """The public ID of the channel definition"""
+  publicId: UUID!
+}
+
 input UpdateFixtureChannelModeInput {
   """The channel assignments of the channel mode, in channel-number order"""
   assignments: [UpdateFixtureChannelAssignmentInput!]!
@@ -244,7 +252,14 @@ input UpdateFixtureChannelModeInput {
 }
 
 input UpdateFixtureInput {
-  """Replace the fixture channel modes when provided; omit to leave modes unchanged"""
+  """
+  Rename fixture channel definitions when provided; omit to leave definition names unchanged
+  """
+  channelDefinitions: [UpdateFixtureChannelDefinitionInput!]
+
+  """
+  Replace the fixture channel modes when provided; omit to leave modes unchanged
+  """
   channelModes: [UpdateFixtureChannelModeInput!]
 
   """The name of the fixture"""

@@ -24,9 +24,15 @@
     gap: var(--mantine-spacing-xs);
   }
 
-  .removeButton {
+  .actions {
     margin-left: auto;
-    /* Keeps the button centered if its parent isn't fully aligned */
+    display: flex;
+    align-items: center;
+    gap: var(--mantine-spacing-xs);
+    align-self: center;
+  }
+
+  .removeButton {
     align-self: center;
   }
 }

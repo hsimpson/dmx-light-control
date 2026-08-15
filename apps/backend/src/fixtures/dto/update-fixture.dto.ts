@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import { IsArray, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { GraphQLUUID } from 'graphql-scalars';
 import { UpdateFixtureVendorInput } from './fixture.input';
+import { UpdateFixtureChannelDefinitionInput } from './update-fixture-channel-definition.dto';
 import { UpdateFixtureChannelModeInput } from './update-fixture-channel-mode.dto';
 
 @InputType()
@@ -20,6 +21,16 @@ export class UpdateFixtureInput {
   @Field(() => UpdateFixtureVendorInput, { nullable: true, description: 'The vendor of the fixture' })
   @IsOptional()
   public vendor?: UpdateFixtureVendorInput;
+
+  @Field(() => [UpdateFixtureChannelDefinitionInput], {
+    nullable: true,
+    description: 'Rename fixture channel definitions when provided; omit to leave definition names unchanged',
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UpdateFixtureChannelDefinitionInput)
+  public channelDefinitions?: UpdateFixtureChannelDefinitionInput[];
 
   @Field(() => [UpdateFixtureChannelModeInput], {
     nullable: true,

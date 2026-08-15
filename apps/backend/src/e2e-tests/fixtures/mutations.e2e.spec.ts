@@ -1,5 +1,6 @@
 import { AppModule } from '@/app.module';
 import { SerialSendService } from '@/io/serial/serial-send.service';
+import { fixtureChannelDefinitions } from '@/db/seeding/data/fixtures/fixture-channel-definitions';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
 import { SEED_FIXTURE_PUBLIC_ID } from '@/testhelpers/seed-fixture-data';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -18,6 +19,10 @@ type UpdateFixtureMutation = {
   updateFixture: {
     name: string;
     publicId: string;
+    fixtureChannelDefinitions: {
+      name: string;
+      publicId: string;
+    }[];
     fixtureChannelModes: {
       name: string;
       order: number;
@@ -46,6 +51,15 @@ type FixtureChannelModesQuery = {
   } | null;
 };
 
+type FixtureChannelDefinitionsQuery = {
+  fixture: {
+    fixtureChannelDefinitions: { publicId: string; name: string }[];
+  } | null;
+};
+
+const SEED_CHANNEL_DEFINITION_RED_PUBLIC_ID = fixtureChannelDefinitions[0]?.publicId;
+const SEED_CHANNEL_DEFINITION_GREEN_PUBLIC_ID = fixtureChannelDefinitions[1]?.publicId;
+
 type ChannelModeInput = {
   publicId?: string;
   name: string;
@@ -67,6 +81,29 @@ const UPDATE_FIXTURE_WITH_MODES = gql`
             publicId
           }
         }
+      }
+    }
+  }
+`;
+
+const UPDATE_FIXTURE_DEFINITIONS = gql`
+  mutation ($input: UpdateFixtureInput!) {
+    updateFixture(input: $input) {
+      publicId
+      fixtureChannelDefinitions {
+        publicId
+        name
+      }
+    }
+  }
+`;
+
+const GET_FIXTURE_CHANNEL_DEFINITIONS = gql`
+  query ($publicId: UUID!) {
+    fixture(publicId: $publicId) {
+      fixtureChannelDefinitions {
+        publicId
+        name
       }
     }
   }
@@ -325,5 +362,90 @@ describe('Fixture mutations', () => {
 
     expect(body.data?.updateFixture).toBeUndefined();
     expect(body.errors?.[0]?.message).toContain('00000000-0000-4000-8000-000000000000');
+  });
+
+  it('should rename a fixture channel definition via updateFixture', async () => {
+    const server = app.getHttpAdapter().getInstance().server;
+    const loaded = await graphqlQuery<FixtureChannelDefinitionsQuery>(server, GET_FIXTURE_CHANNEL_DEFINITIONS, {
+      variables: { publicId: SEED_FIXTURE_PUBLIC_ID },
+    });
+    const definitions = loaded.data?.fixture?.fixtureChannelDefinitions ?? [];
+    const target = definitions.find(definition => definition.publicId === SEED_CHANNEL_DEFINITION_RED_PUBLIC_ID);
+    const sibling = definitions.find(definition => definition.publicId === SEED_CHANNEL_DEFINITION_GREEN_PUBLIC_ID);
+    if (!target || !sibling) {
+      throw new Error('Seed fixture is missing Red/Green channel definitions');
+    }
+    const originalName = target.name;
+    const renamed = `${originalName} (E2E)`;
+
+    try {
+      const body = await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_DEFINITIONS, {
+        variables: {
+          input: {
+            publicId: SEED_FIXTURE_PUBLIC_ID,
+            channelDefinitions: [{ publicId: target.publicId, name: renamed }],
+          },
+        },
+      });
+
+      expect(body.errors).toBeUndefined();
+      const updated = body.data?.updateFixture.fixtureChannelDefinitions.find(
+        definition => definition.publicId === target.publicId,
+      );
+      expect(updated?.name).toBe(renamed);
+    } finally {
+      await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_DEFINITIONS, {
+        variables: {
+          input: {
+            publicId: SEED_FIXTURE_PUBLIC_ID,
+            channelDefinitions: [{ publicId: target.publicId, name: originalName }],
+          },
+        },
+      });
+    }
+  });
+
+  it('should reject renaming a channel definition to a sibling name', async () => {
+    const server = app.getHttpAdapter().getInstance().server;
+    const loaded = await graphqlQuery<FixtureChannelDefinitionsQuery>(server, GET_FIXTURE_CHANNEL_DEFINITIONS, {
+      variables: { publicId: SEED_FIXTURE_PUBLIC_ID },
+    });
+    const definitions = loaded.data?.fixture?.fixtureChannelDefinitions ?? [];
+    const target = definitions.find(definition => definition.publicId === SEED_CHANNEL_DEFINITION_RED_PUBLIC_ID);
+    const sibling = definitions.find(definition => definition.publicId === SEED_CHANNEL_DEFINITION_GREEN_PUBLIC_ID);
+    if (!target || !sibling) {
+      throw new Error('Seed fixture is missing Red/Green channel definitions');
+    }
+
+    const body = await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_DEFINITIONS, {
+      variables: {
+        input: {
+          publicId: SEED_FIXTURE_PUBLIC_ID,
+          channelDefinitions: [{ publicId: target.publicId, name: sibling.name }],
+        },
+      },
+    });
+
+    expect(body.data?.updateFixture).toBeUndefined();
+    expect(body.errors?.[0]?.message).toContain(sibling.name);
+  });
+
+  it('should reject renaming an unknown channel definition', async () => {
+    const unknownId = '00000000-0000-4000-8000-000000000000';
+    const body = await graphqlQuery<UpdateFixtureMutation>(
+      app.getHttpAdapter().getInstance().server,
+      UPDATE_FIXTURE_DEFINITIONS,
+      {
+        variables: {
+          input: {
+            publicId: SEED_FIXTURE_PUBLIC_ID,
+            channelDefinitions: [{ publicId: unknownId, name: 'Does not exist' }],
+          },
+        },
+      },
+    );
+
+    expect(body.data?.updateFixture).toBeUndefined();
+    expect(body.errors?.[0]?.message).toContain(unknownId);
   });
 });

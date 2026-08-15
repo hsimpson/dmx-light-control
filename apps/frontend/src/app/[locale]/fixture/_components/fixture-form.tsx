@@ -9,8 +9,16 @@ import { schemaResolver, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { useState } from 'react';
 import { z } from 'zod/v4';
-import FixtureChannelDefinitions from './fixture-channel-definitions';
-import FixtureChannelModes, { toChannelModeSaveInputs, toEditorChannelModes } from './fixture-channel-modes';
+import FixtureChannelDefinitions, {
+  EditorChannelDefinition,
+  toChannelDefinitionSaveInputs,
+  toEditorChannelDefinitions,
+} from './fixture-channel-definitions';
+import FixtureChannelModes, {
+  EditorChannelMode,
+  toChannelModeSaveInputs,
+  toEditorChannelModes,
+} from './fixture-channel-modes';
 
 type Fixture = GetFixturesQuery['fixtures'][number];
 
@@ -18,6 +26,28 @@ type FixtureFormProps = {
   fixture?: Fixture;
   vendors: GetFixtureVendorsQuery['fixtureVendors'];
 };
+
+const syncChannelModesWithDefinitions = (
+  modes: EditorChannelMode[],
+  definitions: EditorChannelDefinition[],
+): EditorChannelMode[] =>
+  modes.map(mode => ({
+    ...mode,
+    fixtureChannelAssignments: mode.fixtureChannelAssignments.map(assignment => {
+      const updatedDefinition = definitions.find(
+        definition =>
+          definition.publicId !== undefined && definition.publicId === assignment.fixtureChannelDefinition.publicId,
+      );
+      if (!updatedDefinition?.publicId) {
+        return assignment;
+      }
+
+      return {
+        ...assignment,
+        fixtureChannelDefinition: updatedDefinition,
+      };
+    }),
+  }));
 
 const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const { t } = useTranslation();
@@ -60,6 +90,9 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const [comboBoxPublicId, setComboBoxPublicId] = useState(fixture?.fixtureVendor.publicId ?? null);
   const [comboBoxSearch, setComboBoxSearch] = useState(fixture?.fixtureVendor.name ?? '');
   const [channelModes, setChannelModes] = useState(() => toEditorChannelModes(fixture?.fixtureChannelModes ?? []));
+  const [channelDefinitions, setChannelDefinitions] = useState(() =>
+    toEditorChannelDefinitions(fixture?.fixtureChannelDefinitions ?? []),
+  );
 
   const exactOptionMatch = comboBoxData.some(item => item === comboBoxSearch);
   const filteredOptions = exactOptionMatch
@@ -96,6 +129,7 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
             name: values.fixtureName,
             vendor: vendorInput,
             channelModes: toChannelModeSaveInputs(channelModes),
+            channelDefinitions: toChannelDefinitionSaveInputs(channelDefinitions),
           },
         },
       });
@@ -207,10 +241,16 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
           {...form.getInputProps('fixtureName')}
         />
 
-        <FixtureChannelDefinitions fixtureChannelDefinitions={fixture?.fixtureChannelDefinitions ?? []} />
+        <FixtureChannelDefinitions
+          channelDefinitions={channelDefinitions}
+          onChannelDefinitionsChange={nextDefinitions => {
+            setChannelDefinitions(nextDefinitions);
+            setChannelModes(currentModes => syncChannelModesWithDefinitions(currentModes, nextDefinitions));
+          }}
+        />
         <FixtureChannelModes
           channelModes={channelModes}
-          persistedChannelDefinitions={fixture?.fixtureChannelDefinitions ?? []}
+          persistedChannelDefinitions={channelDefinitions}
           onChannelModesChange={setChannelModes}
         />
 

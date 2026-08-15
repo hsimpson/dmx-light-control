@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { HttpStatus } from '@nestjs/common';
 import {
   BaseDomainError,
+  ChannelDefinitionAlreadyExistsException,
   ChannelDefinitionNotFoundException,
   ChannelModeAlreadyExistsException,
   ChannelModeNotFoundException,
@@ -66,5 +67,13 @@ describe('fixture exceptions', () => {
     expect(err.code).toBe('CHANNEL_DEFINITION_NOT_FOUND');
     expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
     expect(err.message).toContain('def-1');
+  });
+
+  it('ChannelDefinitionAlreadyExistsException maps to CONFLICT', () => {
+    const err = new ChannelDefinitionAlreadyExistsException('Red');
+    expect(err.code).toBe('CHANNEL_DEFINITION_ALREADY_EXISTS');
+    expect(err.statusCode).toBe(HttpStatus.CONFLICT);
+    expect(err.message).toBe('Channel definition with name Red already exists.');
+    expect(err.name).toBe('ChannelDefinitionAlreadyExistsError');
   });
 });

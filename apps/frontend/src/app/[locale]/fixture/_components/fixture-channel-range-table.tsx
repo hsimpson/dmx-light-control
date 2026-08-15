@@ -4,7 +4,7 @@ import { ICON_SIZE } from '@/lib/constants';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { dmxRangeSorter } from '@/shared/sorter';
 import { FixtureChannelRange } from '@/shared/types/fixtures';
-import { ActionIcon, Flex, Group, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Flex, Group, TextInput } from '@mantine/core';
 import { ListPlusIcon, TrashIcon } from '@phosphor-icons/react';
 import { DataTable } from 'mantine-datatable';
 import { useState } from 'react';
@@ -80,7 +80,6 @@ const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onDelete }: Fix
           <ListPlusIcon size={ICON_SIZE} weight="fill" />
         </ActionIcon>
       </Flex>
-      <Text size="sm">{t({ id: 'FixtureChannelRangeTable.ranges', defaultMessage: 'Ranges' })}</Text>
       <DataTable
         withColumnBorders
         striped

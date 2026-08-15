@@ -1,7 +1,7 @@
 import { ICON_SIZE } from '@/lib/constants';
 import { useSortable } from '@dnd-kit/react/sortable';
 import { ActionIcon, List } from '@mantine/core';
-import { DotsSixVerticalIcon, TrashIcon } from '@phosphor-icons/react';
+import { DotsSixVerticalIcon, PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
 import styles from './selectable-list-item.module.css';
 
@@ -11,8 +11,11 @@ type SelectableListItemProps = {
   children: ReactNode;
   isSelected?: boolean;
   canDelete?: boolean;
+  canRename?: boolean;
+  renameLabel?: string;
   onClick?: () => void;
   onDelete?: () => void;
+  onRename?: () => void;
 };
 
 const SelectableListItem = ({
@@ -21,8 +24,11 @@ const SelectableListItem = ({
   children,
   isSelected,
   canDelete,
+  canRename,
+  renameLabel,
   onClick,
   onDelete,
+  onRename,
 }: SelectableListItemProps) => {
   const { ref, isDragging, handleRef } = useSortable({ id, index });
 
@@ -36,19 +42,36 @@ const SelectableListItem = ({
     >
       <DotsSixVerticalIcon ref={handleRef} size={ICON_SIZE} />
       {children}
-      {canDelete && (
-        <ActionIcon
-          type="button"
-          className={styles.removeButton}
-          onClick={event => {
-            event.stopPropagation();
-            if (onDelete) {
-              onDelete();
-            }
-          }}
-        >
-          <TrashIcon size={ICON_SIZE} weight="fill" />
-        </ActionIcon>
+      {(Boolean(canRename) || Boolean(canDelete)) && (
+        <div className={styles.actions}>
+          {canRename && (
+            <ActionIcon
+              type="button"
+              aria-label={renameLabel}
+              title={renameLabel}
+              onClick={event => {
+                event.stopPropagation();
+                onRename?.();
+              }}
+            >
+              <PencilSimpleIcon size={ICON_SIZE} weight="fill" />
+            </ActionIcon>
+          )}
+          {canDelete && (
+            <ActionIcon
+              type="button"
+              className={styles.removeButton}
+              onClick={event => {
+                event.stopPropagation();
+                if (onDelete) {
+                  onDelete();
+                }
+              }}
+            >
+              <TrashIcon size={ICON_SIZE} weight="fill" />
+            </ActionIcon>
+          )}
+        </div>
       )}
     </List.Item>
   );

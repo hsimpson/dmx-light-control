@@ -2,7 +2,7 @@
   "AddFixturePage.title": "Fixture hinzufügen",
   "EditFixturePage.title": "Fixture bearbeiten",
   "FixtureChannelDefinitions.addNewItemPlaceholder": "Kanaldefinition hinzufügen",
-  "FixtureChannelDefinitions.details": "Kanaldefinition Details",
+  "FixtureChannelDefinitions.details": "Kanalbereiche",
   "FixtureChannelDefinitions.listTitle": "Kanaldefinitionen",
   "FixtureChannelModes.addAssignmentPlaceholder": "Kanaldefinition zuweisen",
   "FixtureChannelModes.addNewItemPlaceholder": "Kanalmodus hinzufügen",
@@ -11,7 +11,6 @@
   "FixtureChannelRangeTable.description": "Beschreibung",
   "FixtureChannelRangeTable.dmxEnd": "DMX Ende",
   "FixtureChannelRangeTable.dmxStart": "DMX Start",
-  "FixtureChannelRangeTable.ranges": "Bereiche:",
   "FixtureForm.fixtureName": "Fixture Name:",
   "FixtureForm.fixtureNamePlaceholder": "Name des Fixtures eingeben",
   "FixtureForm.notification.updateError": "Fixture konnte nicht aktualisiert werden",
@@ -27,7 +26,6 @@
   "FixtureList.title": "Fixtureliste",
   "FixtureVendorList.Table.name": "Name",
   "FixtureVendorList.confirmDelete": "Hersteller löschen?",
-  "FixtureVendorList.confirmDeleteMessage": "Möchten Sie den Hersteller \"{name}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
   "FixtureVendorList.create": "Hersteller hinzufügen",
   "FixtureVendorList.createError": "Hersteller konnte nicht erstellt werden",
   "FixtureVendorList.created": "Hersteller erstellt",
@@ -46,5 +44,6 @@
   "NavBar.FixtureVendors": "Fixture Hersteller",
   "NavBar.Fixtures": "Fixtures",
   "NavBar.Home": "Home",
-  "SelectableList.itemAlreadyExists": "Eintrag existiert schon"
+  "SelectableList.itemAlreadyExists": "Eintrag existiert schon",
+  "SelectableList.renameItem": "Umbenennen"
 }

@@ -12,36 +12,66 @@ import { useState } from 'react';
 import FixtureChannelDefinitionItem from './fixture-channel-definition-item';
 import FixtureChannelRangeTable from './fixture-channel-range-table';
 
-type FixtureChannelDefinitionsProps = {
-  fixtureChannelDefinitions: FixtureChannelDefinition[];
+export type EditorChannelDefinition = Omit<FixtureChannelDefinition, 'publicId'> & {
+  clientKey: string;
+  publicId?: string;
 };
 
-const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannelDefinitionsProps) => {
-  const { t } = useTranslation();
-  const [channelDefinitions, setChannelDefinitions] = useState(fixtureChannelDefinitions.toSorted(orderSorter));
-  const [selectedChannelDefinition, setSelectedChannelDefinition] = useState<FixtureChannelDefinition | undefined>(
-    channelDefinitions[0],
+export const toEditorChannelDefinitions = (
+  fixtureChannelDefinitions: FixtureChannelDefinition[],
+): EditorChannelDefinition[] =>
+  fixtureChannelDefinitions.toSorted(orderSorter).map(definition => ({
+    ...definition,
+    clientKey: definition.publicId,
+  }));
+
+export const toChannelDefinitionSaveInputs = (channelDefinitions: EditorChannelDefinition[]) =>
+  channelDefinitions.flatMap(definition =>
+    definition.publicId ? [{ publicId: definition.publicId, name: definition.name }] : [],
   );
 
-  const handleSelectedChannelDefinitionChange = (item?: FixtureChannelDefinition) => {
-    setSelectedChannelDefinition(item);
+type FixtureChannelDefinitionsProps = {
+  channelDefinitions: EditorChannelDefinition[];
+  onChannelDefinitionsChange: (channelDefinitions: EditorChannelDefinition[]) => void;
+};
+
+const FixtureChannelDefinitions = ({
+  channelDefinitions,
+  onChannelDefinitionsChange,
+}: FixtureChannelDefinitionsProps) => {
+  const { t } = useTranslation();
+  const [selectedClientKey, setSelectedClientKey] = useState(channelDefinitions[0]?.clientKey);
+  const selectedChannelDefinition =
+    channelDefinitions.find(definition => definition.clientKey === selectedClientKey) ?? channelDefinitions[0];
+
+  const handleSelectedChannelDefinitionChange = (item?: EditorChannelDefinition) => {
+    setSelectedClientKey(item?.clientKey);
   };
 
   const handleChannelDefinitionAdd = (name: string) => {
-    const newChannelDefinition: Partial<FixtureChannelDefinition> = {
+    const newChannelDefinition = {
+      clientKey: crypto.randomUUID(),
       name,
       preset: FixtureChannelPreset.Custom,
       fixtureChannelRanges: [],
       order: channelDefinitions.length,
-    };
-    const newChannelDefinitions = [...channelDefinitions, newChannelDefinition];
-    setChannelDefinitions(newChannelDefinitions as FixtureChannelDefinition[]);
-    handleSelectedChannelDefinitionChange(newChannelDefinition as FixtureChannelDefinition);
+    } as unknown as EditorChannelDefinition;
+    onChannelDefinitionsChange([...channelDefinitions, newChannelDefinition]);
+    handleSelectedChannelDefinitionChange(newChannelDefinition);
   };
 
-  const handleChannelDefinitionRemove = (itemToRemove: FixtureChannelDefinition) => {
-    const newChannelDefinitions = channelDefinitions.filter(i => i !== itemToRemove);
-    setChannelDefinitions(newChannelDefinitions);
+  const handleChannelDefinitionRemove = (itemToRemove: EditorChannelDefinition) => {
+    onChannelDefinitionsChange(
+      channelDefinitions.filter(definition => definition.clientKey !== itemToRemove.clientKey),
+    );
+  };
+
+  const handleChannelDefinitionRename = (item: EditorChannelDefinition, newName: string) => {
+    onChannelDefinitionsChange(
+      channelDefinitions.map(definition =>
+        definition.clientKey === item.clientKey ? { ...definition, name: newName } : definition,
+      ),
+    );
   };
 
   const handleChannelRangeAdd = (start: number, end: number, description: string) => {
@@ -65,11 +95,11 @@ const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannel
     };
     const newChannelRanges = [...selectedChannelDefinition.fixtureChannelRanges, newRange as FixtureChannelRange];
     const newChannelDefinition = { ...selectedChannelDefinition, fixtureChannelRanges: newChannelRanges };
-    const newChannelDefinitions = channelDefinitions.map(cd =>
-      cd === selectedChannelDefinition ? newChannelDefinition : cd,
+    onChannelDefinitionsChange(
+      channelDefinitions.map(definition =>
+        definition.clientKey === selectedChannelDefinition.clientKey ? newChannelDefinition : definition,
+      ),
     );
-    setChannelDefinitions(newChannelDefinitions);
-    setSelectedChannelDefinition(newChannelDefinition);
   };
 
   const handleChannelRangeDelete = (rangeToDelete: FixtureChannelRange) => {
@@ -79,11 +109,11 @@ const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannel
 
     const newChannelRanges = selectedChannelDefinition.fixtureChannelRanges.filter(r => r !== rangeToDelete);
     const newChannelDefinition = { ...selectedChannelDefinition, fixtureChannelRanges: newChannelRanges };
-    const newChannelDefinitions = channelDefinitions.map(cd =>
-      cd === selectedChannelDefinition ? newChannelDefinition : cd,
+    onChannelDefinitionsChange(
+      channelDefinitions.map(definition =>
+        definition.clientKey === selectedChannelDefinition.clientKey ? newChannelDefinition : definition,
+      ),
     );
-    setChannelDefinitions(newChannelDefinitions);
-    setSelectedChannelDefinition(newChannelDefinition);
   };
 
   return (
@@ -103,12 +133,13 @@ const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannel
           })}
           items={channelDefinitions}
           accessor="name"
-          keyAccessor="name"
+          keyAccessor="clientKey"
           itemRenderer={item => <FixtureChannelDefinitionItem channelDefinition={item} />}
           selectedItem={selectedChannelDefinition}
           onSelectedItemChange={handleSelectedChannelDefinitionChange}
           onItemAdd={handleChannelDefinitionAdd}
           onItemRemove={handleChannelDefinitionRemove}
+          onItemRename={handleChannelDefinitionRename}
         />
       </Flex>
 
@@ -116,7 +147,7 @@ const FixtureChannelDefinitions = ({ fixtureChannelDefinitions }: FixtureChannel
         <Text size="md">
           {t({
             id: 'FixtureChannelDefinitions.details',
-            defaultMessage: 'Channel Definition Details',
+            defaultMessage: 'Channel ranges',
           })}
         </Text>
 
