@@ -79,12 +79,12 @@ const FixtureChannelModes = ({
   onChannelModesChange,
 }: FixtureChannelModesProps) => {
   const { t } = useTranslation();
-  const [selectedName, setSelectedName] = useState(channelModes[0]?.name);
+  const [selectedClientKey, setSelectedClientKey] = useState(channelModes[0]?.clientKey);
   const [assignmentPickerKey, setAssignmentPickerKey] = useState(0);
-  const selectedChannelMode = channelModes.find(mode => mode.name === selectedName) ?? channelModes[0];
+  const selectedChannelMode = channelModes.find(mode => mode.clientKey === selectedClientKey) ?? channelModes[0];
 
   const handleSelectedChannelModeChange = (item?: EditorChannelMode) => {
-    setSelectedName(item?.name);
+    setSelectedClientKey(item?.clientKey);
   };
 
   const handleChannelModeAdd = (name: string) => {
@@ -95,7 +95,7 @@ const FixtureChannelModes = ({
       fixtureChannelAssignments: [],
     };
     onChannelModesChange([...channelModes, newChannelMode]);
-    setSelectedName(name);
+    setSelectedClientKey(newChannelMode.clientKey);
   };
 
   const handleChannelModeRemove = (item: EditorChannelMode) => {
@@ -104,6 +104,12 @@ const FixtureChannelModes = ({
 
   const handleChannelModeReorder = (reordered: EditorChannelMode[]) => {
     onChannelModesChange(reindexModes(reordered));
+  };
+
+  const handleChannelModeRename = (item: EditorChannelMode, newName: string) => {
+    onChannelModesChange(
+      channelModes.map(mode => (mode.clientKey === item.clientKey ? { ...mode, name: newName } : mode)),
+    );
   };
 
   const updateSelectedAssignments = (assignments: EditorChannelAssignment[]) => {
@@ -174,6 +180,7 @@ const FixtureChannelModes = ({
           onItemAdd={handleChannelModeAdd}
           onItemRemove={handleChannelModeRemove}
           onItemReorder={handleChannelModeReorder}
+          onItemRename={handleChannelModeRename}
         />
       </Flex>
       <Flex direction="column" gap="md">
