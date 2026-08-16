@@ -1,0 +1,57 @@
+info:
+  name: exportFixtures
+  type: graphql
+  seq: 1
+
+graphql:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body:
+    query: |
+      query {
+        exportFixtures {
+          fixtures {
+            channelDefinitions {
+              name
+              order
+              preset
+              publicId
+              ranges {
+                description
+                dmxEnd
+                dmxStart
+                publicId
+              }
+            }
+            channelModes {
+              assignments {
+                channelDefinitionPublicId
+                channelNumber
+              }
+              name
+              order
+              publicId
+            }
+            name
+            publicId
+            vendor {
+              name
+              publicId
+            }
+          }
+          schemaVersion
+          vendors {
+            name
+            publicId
+          }
+        }
+      }
+    variables: |
+      {}
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

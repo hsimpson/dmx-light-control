@@ -12,15 +12,15 @@ erDiagram
     fixture_channel_definitions ||--o{ fixture_channel_ranges : "fixture_channel_definition_id"
     fixtures {
         integer id PK
-        uuid public_id
+        uuid public_id UK
         integer vendor_id FK
-        varchar name
+        varchar name UK
         timestamp created_at
         timestamp updated_at
     }
     fixture_channel_assignments {
         integer id PK
-        uuid public_id
+        uuid public_id UK
         integer fixture_channel_mode_id FK,UK
         integer fixture_channel_definition_id FK
         integer channel_number UK
@@ -29,7 +29,7 @@ erDiagram
     }
     fixture_channel_definitions {
         integer id PK
-        uuid public_id
+        uuid public_id UK
         integer fixture_id FK,UK
         varchar name UK
         integer order
@@ -39,7 +39,7 @@ erDiagram
     }
     fixture_channel_modes {
         integer id PK
-        uuid public_id
+        uuid public_id UK
         integer fixture_id FK,UK
         varchar name UK
         integer order
@@ -48,7 +48,7 @@ erDiagram
     }
     fixture_channel_ranges {
         integer id PK
-        uuid public_id
+        uuid public_id UK
         integer fixture_channel_definition_id FK
         integer dmx_start
         integer dmx_end
@@ -58,8 +58,8 @@ erDiagram
     }
     fixture_vendors {
         integer id PK
-        uuid public_id
-        varchar name
+        uuid public_id UK
+        varchar name UK
         timestamp created_at
         timestamp updated_at
     }

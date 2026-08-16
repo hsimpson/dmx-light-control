@@ -16,5 +16,5 @@ export const pk: {
   publicId: ReturnType<typeof uuid>;
 } = {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  publicId: uuid().notNull().defaultRandom(),
+  publicId: uuid().notNull().defaultRandom().unique(),
 };

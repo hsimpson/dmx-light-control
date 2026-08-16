@@ -6,6 +6,8 @@ import {
   ChannelDefinitionNotFoundException,
   ChannelModeAlreadyExistsException,
   ChannelModeNotFoundException,
+  FixtureImportConflictException,
+  FixtureImportInvalidException,
   FixtureNotFoundException,
   FixtureVendorAlreadyExistsException,
   FixtureVendorCreationFailedException,
@@ -75,5 +77,19 @@ describe('fixture exceptions', () => {
     expect(err.statusCode).toBe(HttpStatus.CONFLICT);
     expect(err.message).toBe('Channel definition with name Red already exists.');
     expect(err.name).toBe('ChannelDefinitionAlreadyExistsError');
+  });
+
+  it('FixtureImportInvalidException maps to BAD_REQUEST', () => {
+    const err = new FixtureImportInvalidException('bad document');
+    expect(err.code).toBe('FIXTURE_IMPORT_INVALID');
+    expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(err.message).toBe('bad document');
+  });
+
+  it('FixtureImportConflictException maps to CONFLICT', () => {
+    const err = new FixtureImportConflictException('name clash');
+    expect(err.code).toBe('FIXTURE_IMPORT_CONFLICT');
+    expect(err.statusCode).toBe(HttpStatus.CONFLICT);
+    expect(err.message).toBe('name clash');
   });
 });

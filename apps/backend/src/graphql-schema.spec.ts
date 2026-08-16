@@ -2,6 +2,7 @@ import { GraphQLSchemaBuilderModule, GraphQLSchemaFactory } from '@nestjs/graphq
 import { Test } from '@nestjs/testing';
 import { describe, expect, it } from 'vitest';
 import { AppEventEmitter } from './events/app-event-emitter';
+import { FixtureImportExportService } from './fixtures/fixture-import-export.service';
 import { FixtureResolver } from './fixtures/fixture.resolver';
 import { FixtureService } from './fixtures/fixture.service';
 import { DmxResolver } from './io/dmx/dmx.resolver';
@@ -17,6 +18,7 @@ describe('GraphQL schema generation', () => {
         DmxResolver,
         MidiResolver,
         { provide: FixtureService, useValue: {} },
+        { provide: FixtureImportExportService, useValue: {} },
         { provide: AppEventEmitter, useValue: {} },
         { provide: MidiService, useValue: {} },
       ],
@@ -26,8 +28,8 @@ describe('GraphQL schema generation', () => {
     const schema = await factory.create([FixtureResolver, DmxResolver, MidiResolver]);
 
     expect(schema).toBeDefined();
-    expect(schema.getQueryType()).not.toBeNull();
-    expect(schema.getMutationType()).not.toBeNull();
+    expect(schema.getQueryType()?.getFields().exportFixtures).toBeDefined();
+    expect(schema.getMutationType()?.getFields().importFixtures).toBeDefined();
 
     await moduleRef.close();
   });

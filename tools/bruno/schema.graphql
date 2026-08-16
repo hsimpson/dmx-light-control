@@ -160,6 +160,95 @@ type FixtureDto {
   updatedAt: DateTime!
 }
 
+type FixtureExportAssignmentDto {
+  """The public ID of the assigned channel definition"""
+  channelDefinitionPublicId: UUID!
+
+  """The 1-based DMX channel number of the assignment"""
+  channelNumber: Int!
+}
+
+type FixtureExportDefinitionDto {
+  """The name of the channel definition"""
+  name: String!
+
+  """The order of the channel definition"""
+  order: Int!
+
+  """The preset of the channel definition"""
+  preset: FixtureChannelPreset!
+
+  """The public ID of the channel definition"""
+  publicId: UUID!
+
+  """The channel ranges of the channel definition"""
+  ranges: [FixtureExportRangeDto!]!
+}
+
+type FixtureExportDocumentDto {
+  """The fixtures included in the export"""
+  fixtures: [FixtureExportFixtureDto!]!
+
+  """The fixture export document schema version"""
+  schemaVersion: Int!
+
+  """All fixture vendors, including those without fixtures"""
+  vendors: [FixtureExportVendorDto!]!
+}
+
+type FixtureExportFixtureDto {
+  """The channel definitions of the fixture"""
+  channelDefinitions: [FixtureExportDefinitionDto!]!
+
+  """The channel modes of the fixture"""
+  channelModes: [FixtureExportModeDto!]!
+
+  """The name of the fixture"""
+  name: String!
+
+  """The public ID of the fixture"""
+  publicId: UUID!
+
+  """The vendor of the fixture"""
+  vendor: FixtureExportVendorDto!
+}
+
+type FixtureExportModeDto {
+  """The channel assignments of the channel mode"""
+  assignments: [FixtureExportAssignmentDto!]!
+
+  """The name of the channel mode"""
+  name: String!
+
+  """The order of the channel mode"""
+  order: Int!
+
+  """The public ID of the channel mode"""
+  publicId: UUID!
+}
+
+type FixtureExportRangeDto {
+  """The description of the channel range"""
+  description: String!
+
+  """The DMX end value of the channel range"""
+  dmxEnd: Int!
+
+  """The DMX start value of the channel range"""
+  dmxStart: Int!
+
+  """The public ID of the channel range"""
+  publicId: UUID!
+}
+
+type FixtureExportVendorDto {
+  """The name of the vendor"""
+  name: String!
+
+  """The public ID of the vendor"""
+  publicId: UUID!
+}
+
 type FixtureVendorDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
@@ -172,6 +261,106 @@ type FixtureVendorDto {
 
   """The date and time when the entity was last updated"""
   updatedAt: DateTime!
+}
+
+input ImportFixtureAssignmentInput {
+  """The name of the assigned channel definition when publicId is omitted"""
+  channelDefinitionName: String
+
+  """The public ID of the assigned channel definition in this fixture"""
+  channelDefinitionPublicId: UUID
+
+  """The 1-based DMX channel number of the assignment"""
+  channelNumber: Int!
+}
+
+input ImportFixtureDefinitionInput {
+  """The name of the channel definition"""
+  name: String!
+
+  """The order of the channel definition"""
+  order: Int!
+
+  """The preset of the channel definition"""
+  preset: FixtureChannelPreset!
+
+  """The public ID of the channel definition"""
+  publicId: UUID
+
+  """The channel ranges of the channel definition"""
+  ranges: [ImportFixtureRangeInput!]!
+}
+
+input ImportFixtureInput {
+  """The channel definitions of the fixture"""
+  channelDefinitions: [ImportFixtureDefinitionInput!]!
+
+  """The channel modes of the fixture"""
+  channelModes: [ImportFixtureModeInput!]!
+
+  """The name of the fixture"""
+  name: String!
+
+  """The public ID of the fixture"""
+  publicId: UUID
+
+  """The vendor of the fixture"""
+  vendor: ImportFixtureVendorInput!
+}
+
+input ImportFixtureModeInput {
+  """The channel assignments of the channel mode"""
+  assignments: [ImportFixtureAssignmentInput!]!
+
+  """The name of the channel mode"""
+  name: String!
+
+  """The order of the channel mode"""
+  order: Int!
+
+  """The public ID of the channel mode"""
+  publicId: UUID
+}
+
+input ImportFixtureRangeInput {
+  """The description of the channel range"""
+  description: String!
+
+  """The DMX end value of the channel range"""
+  dmxEnd: Int!
+
+  """The DMX start value of the channel range"""
+  dmxStart: Int!
+
+  """The public ID of the channel range"""
+  publicId: UUID
+}
+
+input ImportFixtureVendorInput {
+  """The name of the vendor"""
+  name: String!
+
+  """The public ID of the vendor"""
+  publicId: UUID
+}
+
+input ImportFixturesInput {
+  """The fixtures to import"""
+  fixtures: [ImportFixtureInput!]!
+
+  """The fixture export document schema version"""
+  schemaVersion: Int!
+
+  """Fixture vendors to upsert, including those without fixtures"""
+  vendors: [ImportFixtureVendorInput!]
+}
+
+type ImportFixturesPayload {
+  """The imported fixtures with related entities"""
+  fixtures: [FixtureDto!]!
+
+  """The number of fixtures upserted from the document"""
+  importedCount: Int!
 }
 
 type MidiDeviceDto {
@@ -203,6 +392,11 @@ type Mutation {
   """delete a fixture vendor by public id"""
   deleteFixtureVendor(publicId: UUID!): DeleteFixtureVendorPayload!
 
+  """
+  import fixtures and related entities from a versioned JSON document, upserting by publicId or name
+  """
+  importFixtures(document: ImportFixturesInput!): ImportFixturesPayload!
+
   """Open the specified MIDI ports"""
   openPorts(openPortsDto: OpenPortsInput!): Boolean
 
@@ -222,6 +416,11 @@ input OpenPortsInput {
 }
 
 type Query {
+  """
+  export all fixture vendors, fixtures, and related entities as a versioned JSON document
+  """
+  exportFixtures: FixtureExportDocumentDto!
+
   """get fixture by external id"""
   fixture(publicId: UUID!): FixtureDto
 

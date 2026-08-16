@@ -30,6 +30,7 @@ describe('generate-erd', () => {
     const content = writeFileSync.mock.calls[0]?.[1];
     expect(content).toContain('```mermaid');
     expect(content).toContain('erDiagram');
+    expect(content).toContain('uuid public_id UK');
   });
 
   it('honors the --out flag', async () => {

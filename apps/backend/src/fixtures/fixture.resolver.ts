@@ -4,14 +4,20 @@ import { GraphQLUUID } from 'graphql-scalars';
 import { CreateFixtureVendorInput } from './dto/create-fixture-vendor.dto';
 import { DeleteFixturePayload } from './dto/delete-fixture-payload.dto';
 import { DeleteFixtureVendorPayload } from './dto/delete-fixture-vendor-payload.dto';
+import { FixtureExportDocumentDto } from './dto/export-fixtures.dto';
 import { FixtureVendorDto } from './dto/fixture-vendor.dto';
 import { FixtureDto } from './dto/fixture.dto';
+import { ImportFixturesInput, ImportFixturesPayload } from './dto/import-fixtures.dto';
 import { UpdateFixtureInput } from './dto/update-fixture.dto';
+import { FixtureImportExportService } from './fixture-import-export.service';
 import { FixtureService } from './fixture.service';
 
 @Resolver()
 export class FixtureResolver {
-  public constructor(private readonly fixtureService: FixtureService) {}
+  public constructor(
+    private readonly fixtureService: FixtureService,
+    private readonly fixtureImportExportService: FixtureImportExportService,
+  ) {}
 
   @Query(() => [FixtureVendorDto], {
     name: 'fixtureVendors',
@@ -44,6 +50,15 @@ export class FixtureResolver {
       return null;
     }
     return plainToInstance(FixtureDto, fixture);
+  }
+
+  @Query(() => FixtureExportDocumentDto, {
+    name: 'exportFixtures',
+    description: 'export all fixture vendors, fixtures, and related entities as a versioned JSON document',
+  })
+  public async exportFixtures(): Promise<FixtureExportDocumentDto> {
+    const document = await this.fixtureImportExportService.exportFixtures();
+    return plainToInstance(FixtureExportDocumentDto, document);
   }
 
   @Mutation(() => FixtureDto, {
@@ -84,5 +99,17 @@ export class FixtureResolver {
   public async createFixtureVendor(@Args('input') input: CreateFixtureVendorInput): Promise<FixtureVendorDto> {
     const vendor = await this.fixtureService.createFixtureVendor(input);
     return plainToInstance(FixtureVendorDto, vendor);
+  }
+
+  @Mutation(() => ImportFixturesPayload, {
+    name: 'importFixtures',
+    description: 'import fixtures and related entities from a versioned JSON document, upserting by publicId or name',
+  })
+  public async importFixtures(@Args('document') document: ImportFixturesInput): Promise<ImportFixturesPayload> {
+    const result = await this.fixtureImportExportService.importFixtures(document);
+    return plainToInstance(ImportFixturesPayload, {
+      importedCount: result.importedCount,
+      fixtures: plainToInstance(FixtureDto, result.fixtures),
+    });
   }
 }

@@ -44,11 +44,23 @@ export const mockGraphql = async (page: Page) => {
     };
 
     let body: unknown = { data: {} };
-    if (postData.operationName === 'GetFixtures' || postData.query?.includes('fixtures {')) {
-      body = { data: { fixtures: [...fixtures] } };
+    if (postData.operationName === 'ExportFixtures' || postData.query?.includes('exportFixtures')) {
+      body = {
+        data: {
+          exportFixtures: {
+            schemaVersion: 1,
+            vendors: [],
+            fixtures: [],
+          },
+        },
+      };
+    } else if (postData.operationName === 'ImportFixtures' || postData.query?.includes('importFixtures')) {
+      body = { data: { importFixtures: { importedCount: 0, fixtures: [...fixtures] } } };
     } else if (postData.operationName === 'DeleteFixture' || postData.query?.includes('deleteFixture')) {
       fixtures.splice(0, fixtures.length);
       body = { data: { deleteFixture: { publicId: mockedFixture.publicId, deleted: true } } };
+    } else if (postData.operationName === 'GetFixtures' || postData.query?.includes('fixtures {')) {
+      body = { data: { fixtures: [...fixtures] } };
     }
 
     await route.fulfill({

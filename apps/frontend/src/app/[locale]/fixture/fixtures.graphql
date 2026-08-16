@@ -92,3 +92,51 @@ mutation DeleteFixture($publicId: UUID!) {
     deleted
   }
 }
+
+query ExportFixtures {
+  exportFixtures {
+    schemaVersion
+    vendors {
+      publicId
+      name
+    }
+    fixtures {
+      publicId
+      name
+      vendor {
+        publicId
+        name
+      }
+      channelDefinitions {
+        publicId
+        name
+        order
+        preset
+        ranges {
+          publicId
+          dmxStart
+          dmxEnd
+          description
+        }
+      }
+      channelModes {
+        publicId
+        name
+        order
+        assignments {
+          channelNumber
+          channelDefinitionPublicId
+        }
+      }
+    }
+  }
+}
+
+mutation ImportFixtures($document: ImportFixturesInput!) {
+  importFixtures(document: $document) {
+    importedCount
+    fixtures {
+      ...FixtureFields
+    }
+  }
+}

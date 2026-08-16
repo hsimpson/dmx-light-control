@@ -97,3 +97,23 @@ export class ChannelDefinitionAlreadyExistsException extends BaseDomainError {
     this.name = 'ChannelDefinitionAlreadyExistsError';
   }
 }
+
+export class FixtureImportInvalidException extends BaseDomainError {
+  public readonly code = 'FIXTURE_IMPORT_INVALID';
+  public override readonly statusCode = HttpStatus.BAD_REQUEST;
+
+  public constructor(message: string) {
+    super(message);
+    this.name = 'FixtureImportInvalidError';
+  }
+}
+
+export class FixtureImportConflictException extends BaseDomainError {
+  public readonly code = 'FIXTURE_IMPORT_CONFLICT';
+  public override readonly statusCode = HttpStatus.CONFLICT;
+
+  public constructor(message: string) {
+    super(message);
+    this.name = 'FixtureImportConflictError';
+  }
+}

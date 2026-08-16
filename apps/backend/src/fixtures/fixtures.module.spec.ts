@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import 'reflect-metadata';
+import { FixtureImportExportService } from './fixture-import-export.service';
 import { FixtureResolver } from './fixture.resolver';
 import { FixtureService } from './fixture.service';
 import { FixturesModule } from './fixtures.module';
@@ -17,6 +18,7 @@ describe('FixturesModule', () => {
     expect(providers).toContain(FixtureRepository);
     expect(providers).toContain(FixtureChannelDefinitionRepository);
     expect(providers).toContain(FixtureService);
+    expect(providers).toContain(FixtureImportExportService);
     expect(providers).toContain(FixtureResolver);
     // FixturesModule does not export anything (no exports key set on @Module)
     expect(exports).toBeUndefined();

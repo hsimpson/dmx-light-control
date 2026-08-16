@@ -241,7 +241,7 @@ export const fixtureChannelRanges: InferInsertModel<typeof fixtureChannelRange>[
     description: 'Mode 16',
   },
   {
-    publicId: 'd1e6b4f5-7c9a-4d8e-a1f3-4b2c9e8d6a1f',
+    publicId: '7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d',
     fixtureChannelDefinitionId: 9,
     dmxStart: 0,
     dmxEnd: 255,

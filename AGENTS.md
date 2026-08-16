@@ -9,34 +9,35 @@ NestJS backend + Next.js frontend in Nx monorepo.
 - **Surgical changes:** Touch only what the task requires. No drive-by refactors or formatting. Match existing style. Mention unrelated dead code; don’t delete it. Remove only orphans your changes created.
 - **Goal-driven execution:** Define verifiable success (tests/commands). For multi-step work, brief plan + verify steps; loop until verified.
 - **Bias:** Caution over speed except truly trivial tasks.
+- **Drizzle migrations:** Never generate with drizzle-kit’s random folder names (e.g. `rapid_beast`). Always ask the user for a new snake_case name first, then run `nx run backend:drizzle-generate -- --name <name>`.
 
 ## Commands
 
-| Command                                 | Description                                                        |
-| --------------------------------------- | ------------------------------------------------------------------ |
-| `nx serve backend`                      | Backend dev server (also runs `infra:db-start`)                    |
-| `nx run infra:db-start`                 | Start local Postgres (Docker)                                      |
-| `nx run infra:db-stop`                  | Stop local Postgres                                                |
-| `nx run infra:db-reset`                 | Reset local Postgres (removes volumes)                             |
-| `nx run infra:db-logs`                  | Tail local Postgres logs                                           |
-| `nx dev frontend` / `nx start frontend` | Frontend Next.js webpack-dev (port 3001) / prod start              |
-| `nx build backend/frontend`             | Production build                                                   |
-| `nx typecheck backend/frontend`         | Type check                                                         |
-| `nx lint backend/frontend`              | Lint                                                               |
-| `nx test backend`                       | Backend unit/integration + e2e tests                               |
-| `nx test frontend`                      | Frontend Vitest unit/component tests                               |
-| `nx test frontend --coverage`           | Frontend coverage under `coverage/apps/frontend`                   |
-| `nx e2e frontend`                       | Playwright e2e (mocked GraphQL, no backend)                        |
-| `nx run backend:drizzle-generate`       | Generate migrations                                                |
-| `nx run backend:erd`                    | Write Mermaid ER diagram to `apps/backend/docs/database-schema.md` |
-| `nx run backend:dmx-sniffer`            | DMX USB sniffer CLI (Linux-only)                                   |
-| `nx run bruno:build`                    | Rebuild Bruno API collection                                       |
-| `nx run backend:drizzle-migrate`        | Run migrations                                                     |
-| `nx run backend:drizzle-seed`           | Seed database                                                      |
-| `nx run backend:drizzle-studio`         | Open Drizzle Studio                                                |
-| `nx run frontend:graphql-codegen`       | Generate GraphQL types                                             |
-| `nx run frontend:i18n-extract`          | Extract translations                                               |
-| `nx run frontend:i18n-verify`           | Verify translation files are in sync                               |
+| Command                                            | Description                                                        |
+| -------------------------------------------------- | ------------------------------------------------------------------ |
+| `nx serve backend`                                 | Backend dev server (also runs `infra:db-start`)                    |
+| `nx run infra:db-start`                            | Start local Postgres (Docker)                                      |
+| `nx run infra:db-stop`                             | Stop local Postgres                                                |
+| `nx run infra:db-reset`                            | Reset local Postgres (removes volumes)                             |
+| `nx run infra:db-logs`                             | Tail local Postgres logs                                           |
+| `nx dev frontend` / `nx start frontend`            | Frontend Next.js webpack-dev (port 3001) / prod start              |
+| `nx build backend/frontend`                        | Production build                                                   |
+| `nx typecheck backend/frontend`                    | Type check                                                         |
+| `nx lint backend/frontend`                         | Lint                                                               |
+| `nx test backend`                                  | Backend unit/integration + e2e tests                               |
+| `nx test frontend`                                 | Frontend Vitest unit/component tests                               |
+| `nx test frontend --coverage`                      | Frontend coverage under `coverage/apps/frontend`                   |
+| `nx e2e frontend`                                  | Playwright e2e (mocked GraphQL, no backend)                        |
+| `nx run backend:drizzle-generate -- --name <name>` | Generate a migration (required snake_case `--name`; never omit it) |
+| `nx run backend:erd`                               | Write Mermaid ER diagram to `apps/backend/docs/database-schema.md` |
+| `nx run backend:dmx-sniffer`                       | DMX USB sniffer CLI (Linux-only)                                   |
+| `nx run bruno:build`                               | Rebuild Bruno API collection                                       |
+| `nx run backend:drizzle-migrate`                   | Run migrations                                                     |
+| `nx run backend:drizzle-seed`                      | Seed database                                                      |
+| `nx run backend:drizzle-studio`                    | Open Drizzle Studio                                                |
+| `nx run frontend:graphql-codegen`                  | Generate GraphQL types                                             |
+| `nx run frontend:i18n-extract`                     | Extract translations                                               |
+| `nx run frontend:i18n-verify`                      | Verify translation files are in sync                               |
 
 **Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.19.0. **pnpm:** ^11.21.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
@@ -126,7 +127,7 @@ fixtures/
 - Schema: `schema.ts` → `relations.ts` (`defineRelations()`) → `columns.helpers.ts` (`pk`, `timestamps`)
 - Entities: `d.snakeCase.table('name', { ...pk, ...timestamps, fields })`
 - Repositories: one per entity/group, use `InferSelectModel`/`InferInsertModel`
-- Migrations: `src/db/migrations/` (timestamped); seeding: `src/db/seeding/seed.ts`
+- Migrations: `src/db/migrations/` (timestamp + snake_case name from `--name`; never drizzle-kit random names); seeding: `src/db/seeding/seed.ts`
 - ER diagram: `nx run backend:erd` → `apps/backend/docs/database-schema.md`
 - Query logging: `DrizzleLogWriter` wrapping NestJS `Logger` (exists but currently disabled in `DrizzleDbModule`)
 

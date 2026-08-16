@@ -71,6 +71,11 @@ function collectEntities(): { entities: ErdEntity[]; ukColumnsByTable: Map<strin
     // Inline primary keys (e.g. `.primaryKey()`) are not surfaced via
     // `config.primaryKeys`; read the per-column `primary` flag instead.
     const ukColumns = new Set(config.uniqueConstraints.flatMap(uc => uc.columns.map(column => column.name)));
+    for (const column of config.columns) {
+      if ((column as { isUnique?: boolean }).isUnique) {
+        ukColumns.add(column.name);
+      }
+    }
     ukColumnsByTable.set(config.name, ukColumns);
 
     const attributes: ErdAttribute[] = config.columns.map(column => ({

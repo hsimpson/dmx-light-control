@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { FixtureImportExportService } from './fixture-import-export.service';
 import { FixtureResolver } from './fixture.resolver';
 import { FixtureService } from './fixture.service';
 import { FixtureChannelDefinitionRepository } from './repositories/fixture-channel-definition.repository';
@@ -13,6 +14,7 @@ import { FixtureRepository } from './repositories/fixture.repository';
     FixtureChannelModeRepository,
     FixtureChannelDefinitionRepository,
     FixtureService,
+    FixtureImportExportService,
     FixtureResolver,
   ],
 })

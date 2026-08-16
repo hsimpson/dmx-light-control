@@ -4,6 +4,8 @@ import { fixtureChannelRanges } from './fixture-channel-ranges';
 describe('seed data: fixtureChannelRanges', () => {
   it('contains the expected fixture channel range fixtures', () => {
     expect(fixtureChannelRanges.length).toBeGreaterThan(0);
+    const publicIds = fixtureChannelRanges.map(range => range.publicId);
+    expect(new Set(publicIds).size).toBe(publicIds.length);
     for (const v of fixtureChannelRanges) {
       expect(v).toHaveProperty('publicId');
       expect(v).toHaveProperty('dmxStart');

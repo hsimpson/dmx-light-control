@@ -14,6 +14,7 @@ describe('columns.helpers', () => {
     expect(configOf(pk.publicId).dataType).toBe('string uuid');
     expect(configOf(pk.publicId).hasDefault).toBe(true);
     expect(configOf(pk.publicId).default).toBeDefined();
+    expect(configOf(pk.publicId).isUnique).toBe(true);
   });
 
   it('exposes createdAt and updatedAt timestamp columns', () => {
