@@ -1,0 +1,50 @@
+fragment ProjectFields on ProjectDto {
+  publicId
+  name
+  createdAt
+  updatedAt
+}
+
+query GetProjects {
+  projects {
+    ...ProjectFields
+  }
+}
+
+mutation CreateProject($name: String!) {
+  createProject(input: { name: $name }) {
+    ...ProjectFields
+  }
+}
+
+mutation UpdateProject($input: UpdateProjectInput!) {
+  updateProject(input: $input) {
+    ...ProjectFields
+  }
+}
+
+mutation DeleteProject($publicId: UUID!) {
+  deleteProject(publicId: $publicId) {
+    publicId
+    deleted
+  }
+}
+
+query ExportProjects {
+  exportProjects {
+    schemaVersion
+    projects {
+      publicId
+      name
+    }
+  }
+}
+
+mutation ImportProjects($document: ImportProjectsInput!) {
+  importProjects(document: $document) {
+    importedCount
+    projects {
+      ...ProjectFields
+    }
+  }
+}

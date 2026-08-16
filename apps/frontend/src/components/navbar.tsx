@@ -1,7 +1,7 @@
 import { ICON_SIZE } from '@/lib/constants';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { NavLink } from '@mantine/core';
-import { FactoryIcon, HeadlightsIcon, HouseIcon } from '@phosphor-icons/react';
+import { FactoryIcon, FolderIcon, HeadlightsIcon, HouseIcon } from '@phosphor-icons/react';
 import { usePathname } from 'next/navigation';
 
 const NavBar = () => {
@@ -16,6 +16,12 @@ const NavBar = () => {
         href="/"
         active={currentPath === '/'}
         leftSection={<HouseIcon size={ICON_SIZE} weight="duotone" />}
+      />
+      <NavLink
+        label={t({ id: 'NavBar.Projects', defaultMessage: 'Projects' })}
+        href="/project/list"
+        active={currentPath.startsWith('/project')}
+        leftSection={<FolderIcon size={ICON_SIZE} weight="duotone" />}
       />
       <NavLink
         label={t({ id: 'NavBar.FixtureVendors', defaultMessage: 'Fixture Vendors' })}

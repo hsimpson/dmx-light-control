@@ -6,9 +6,11 @@ NestJS backend + Next.js frontend in Nx monorepo.
 
 - **Think before coding:** State assumptions. If unclear or multi-interpretation, ask. Surface tradeoffs. Push back on overcomplication.
 - **Simplicity first:** Minimum code that solves the ask. No speculative features, abstractions, or config. No impossible-scenario error handling. Prefer a small rewrite over a bloated patch.
-- **Surgical changes:** Touch only what the task requires. No drive-by refactors or formatting. Match existing style. Mention unrelated dead code; don’t delete it. Remove only orphans your changes created.
+- **Surgical changes:** Touch only what the task requires. No drive-by refactors. Do not reformat files you did not change. Match existing style. Mention unrelated dead code; don’t delete it. Remove only orphans your changes created.
 - **Goal-driven execution:** Define verifiable success (tests/commands). For multi-step work, brief plan + verify steps; loop until verified.
 - **Bias:** Caution over speed except truly trivial tasks.
+- **Prettier:** After creating or editing files, format those files with Prettier before you finish (`pnpm exec prettier --write <paths>`; config `prettier.config.ts`).
+- **Stop servers you start:** If you start `nx serve backend` or `nx dev frontend` / `nx start frontend` (or equivalent `next`/`node` processes on their ports), stop them when the task is done. Do not leave them running.
 - **Drizzle migrations:** Never generate with drizzle-kit’s random folder names (e.g. `rapid_beast`). Always ask the user for a new snake_case name first, then run `nx run backend:drizzle-generate -- --name <name>`.
 
 ## Commands
@@ -84,8 +86,8 @@ Harness maintenance is part of **done**, not optional docs.
 ### Backend (`apps/backend/src/`)
 
 - NestJS + Apollo GraphQL on Fastify (`autoSchemaFile: true`)
-- Domain module: `FixturesModule` only. `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` is imported by `DmxModule`. `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
-- Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). Import/export is Resolver → `FixtureImportExportService` (`InjectDb()` + repositories + transactions). IO resolvers may emit events or call services without repositories.
+- Domain modules: `FixturesModule`, `ProjectsModule`. `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` is imported by `DmxModule`. `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
+- Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). Import/export is Resolver → `FixtureImportExportService` / `ProjectImportExportService` (`InjectDb()` + repositories + transactions). IO resolvers may emit events or call services without repositories.
 - Tests: Vitest unit/integration (`src/**/*.spec.ts`); GraphQL e2e in `src/e2e-tests/`; Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
 - Repositories use `InjectDb()` for typed Drizzle connection
 - ORM repositories extend `BaseRepository` (`apps/backend/src/db/base.repository.ts`) for shared `publicId` CRUD; pass `relationalFind` for nested `with` graphs, add domain-specific methods as needed
@@ -94,9 +96,9 @@ Harness maintenance is part of **done**, not optional docs.
 - Global `DrizzleDbModule` exports DB; `@/` path alias → `apps/backend/src/`
 - IO layer: `io/dmx/`, `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
 
-### Domain module structure (e.g. `fixtures/`)
+### Domain module structure (e.g. `fixtures/`, `projects/`)
 
-Only domain module today: `fixtures/`.
+Domain modules today: `fixtures/`, `projects/`.
 
 ```text
 fixtures/
@@ -151,6 +153,7 @@ fixtures/
 ### Prettier
 
 - printWidth 120, single quotes, trailing comma all, arrow parens avoid
+- Format every file you create or change: `pnpm exec prettier --write <paths>`
 
 ### NestJS / GraphQL
 

@@ -8,6 +8,11 @@ input CreateFixtureVendorInput {
   name: String!
 }
 
+input CreateProjectInput {
+  """The name of the project"""
+  name: String!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -28,6 +33,16 @@ type DeleteFixtureVendorPayload {
   deleted: Boolean!
 
   """The public id of the vendor that was requested for deletion"""
+  publicId: UUID!
+}
+
+type DeleteProjectPayload {
+  """
+  True if a project was deleted, false if no project matched the public id
+  """
+  deleted: Boolean!
+
+  """The public id of the project that was requested for deletion"""
   publicId: UUID!
 }
 
@@ -363,6 +378,30 @@ type ImportFixturesPayload {
   importedCount: Int!
 }
 
+input ImportProjectInput {
+  """The name of the project"""
+  name: String!
+
+  """The public ID of the project"""
+  publicId: UUID
+}
+
+input ImportProjectsInput {
+  """The projects to import"""
+  projects: [ImportProjectInput!]!
+
+  """The project export document schema version"""
+  schemaVersion: Int!
+}
+
+type ImportProjectsPayload {
+  """The number of projects upserted from the document"""
+  importedCount: Int!
+
+  """The imported projects"""
+  projects: [ProjectDto!]!
+}
+
 type MidiDeviceDto {
   """The name of the MIDI device"""
   name: String!
@@ -386,16 +425,27 @@ type Mutation {
   """create a new fixture vendor"""
   createFixtureVendor(input: CreateFixtureVendorInput!): FixtureVendorDto!
 
+  """create a new project"""
+  createProject(input: CreateProjectInput!): ProjectDto!
+
   """delete a fixture by public id"""
   deleteFixture(publicId: UUID!): DeleteFixturePayload!
 
   """delete a fixture vendor by public id"""
   deleteFixtureVendor(publicId: UUID!): DeleteFixtureVendorPayload!
 
+  """delete a project by public id"""
+  deleteProject(publicId: UUID!): DeleteProjectPayload!
+
   """
   import fixtures and related entities from a versioned JSON document, upserting by publicId or name
   """
   importFixtures(document: ImportFixturesInput!): ImportFixturesPayload!
+
+  """
+  import projects from a versioned JSON document, upserting by publicId or name
+  """
+  importProjects(document: ImportProjectsInput!): ImportProjectsPayload!
 
   """Open the specified MIDI ports"""
   openPorts(openPortsDto: OpenPortsInput!): Boolean
@@ -405,6 +455,9 @@ type Mutation {
 
   """update an existing fixture"""
   updateFixture(input: UpdateFixtureInput!): FixtureDto!
+
+  """update an existing project"""
+  updateProject(input: UpdateProjectInput!): ProjectDto!
 }
 
 input OpenPortsInput {
@@ -415,11 +468,44 @@ input OpenPortsInput {
   outputPort: Int! = 1
 }
 
+type ProjectDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The name of the project"""
+  name: String!
+
+  """The public id, unique identifier of the entity"""
+  publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
+}
+
+type ProjectExportDocumentDto {
+  """The projects included in the export"""
+  projects: [ProjectExportProjectDto!]!
+
+  """The project export document schema version"""
+  schemaVersion: Int!
+}
+
+type ProjectExportProjectDto {
+  """The name of the project"""
+  name: String!
+
+  """The public ID of the project"""
+  publicId: UUID!
+}
+
 type Query {
   """
   export all fixture vendors, fixtures, and related entities as a versioned JSON document
   """
   exportFixtures: FixtureExportDocumentDto!
+
+  """export all projects as a versioned JSON document"""
+  exportProjects: ProjectExportDocumentDto!
 
   """get fixture by external id"""
   fixture(publicId: UUID!): FixtureDto
@@ -432,6 +518,12 @@ type Query {
 
   """Get the list of MIDI input and output devices"""
   getMidiDevices: MidiDevicesDto!
+
+  """get project by external id"""
+  project(publicId: UUID!): ProjectDto
+
+  """get all projects"""
+  projects: [ProjectDto!]!
 }
 
 """
@@ -490,4 +582,12 @@ input UpdateFixtureVendorInput {
 
   """The public ID of the vendor (used for updates)"""
   publicId: UUID
+}
+
+input UpdateProjectInput {
+  """The name of the project"""
+  name: String!
+
+  """The public ID of the project"""
+  publicId: UUID!
 }

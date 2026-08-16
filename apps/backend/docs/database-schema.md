@@ -63,4 +63,11 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
+    projects {
+        integer id PK
+        uuid public_id UK
+        varchar name UK
+        timestamp created_at
+        timestamp updated_at
+    }
 ```

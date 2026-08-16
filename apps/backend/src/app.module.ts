@@ -14,6 +14,7 @@ import { loadConfig } from './config/config';
 import { resolveDatabaseUrl } from './db/connection';
 import { DrizzleDbModule } from './db/drizzle-db/drizzle-db.module';
 import { FixturesModule } from './fixtures/fixtures.module';
+import { ProjectsModule } from './projects/projects.module';
 import { GlobalGqlExceptionFilter } from './graphql/graphql-exception.filter';
 import { formatErrorHandler } from './graphql/graphql-format-error';
 
@@ -42,6 +43,7 @@ import { formatErrorHandler } from './graphql/graphql-format-error';
     MidiModule,
     IoBridgeModule,
     FixturesModule,
+    ProjectsModule,
   ],
   providers: [
     {

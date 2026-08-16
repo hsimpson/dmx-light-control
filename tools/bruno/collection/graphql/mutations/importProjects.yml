@@ -1,0 +1,35 @@
+info:
+  name: importProjects
+  type: graphql
+  seq: 8
+
+graphql:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body:
+    query: |
+      mutation($document: ImportProjectsInput!) {
+        importProjects(document: $document) {
+          importedCount
+          projects {
+            createdAt
+            name
+            publicId
+            updatedAt
+          }
+        }
+      }
+    variables: |
+      {
+        "document": {
+          "projects": [],
+          "schemaVersion": null
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

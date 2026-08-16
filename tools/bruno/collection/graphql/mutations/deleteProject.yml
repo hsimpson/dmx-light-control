@@ -1,0 +1,27 @@
+info:
+  name: deleteProject
+  type: graphql
+  seq: 6
+
+graphql:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body:
+    query: |
+      mutation($publicId: UUID!) {
+        deleteProject(publicId: $publicId) {
+          deleted
+          publicId
+        }
+      }
+    variables: |
+      {
+        "publicId": null
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
