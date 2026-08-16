@@ -1,6 +1,6 @@
 # Backend
 
-This is the backend application for the DMX Light Control project. It is built using NestJS and provides a GraphQL API for controlling DMX fixtures, as well as a command-line interface for sniffing DMX data from USB devices.
+This is the backend application for the DMX Light Control project. It is built using NestJS and Fastify. GraphQL is served at `/graphql` on `BACKEND_PORT` (default 3000) for the fixture catalog (including import/export) and DMX/MIDI IO. There is also a Linux-only CLI for sniffing DMX data from USB devices.
 
 ## Database
 
@@ -51,6 +51,12 @@ nx serve backend
 ```
 
 `nx serve backend` also starts the local DB via `infra:db-start` (Docker required).
+
+Build for production:
+
+```bash
+nx build backend
+```
 
 Typecheck and lint:
 

@@ -26,6 +26,6 @@ See [Projects](#projects) for a detailed documentation of each sub-project.
 Read all sub projects documentation carefully for more details.
 
 - [infra](infra/README.md) - Local Docker infrastructure (PostgreSQL database).
-- [backend](apps/backend/README.md) - The backend API for managing DMX light control.
-- [frontend](apps/frontend/README.md) - A web application for controlling DMX lights.
+- [backend](apps/backend/README.md) - NestJS GraphQL API for fixture catalog data and DMX/MIDI IO.
+- [frontend](apps/frontend/README.md) - Next.js UI for fixture and fixture-vendor management.
 - [bruno](tools/bruno/README.md) - A tool for creating Bruno API collections.

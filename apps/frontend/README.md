@@ -1,12 +1,14 @@
 # Frontend project
 
-This project contains the frontend code for the DMX Light Control application. It is a Next.js App Router app (port **3001**) that talks to the backend GraphQL API.
+This project contains the frontend code for the DMX Light Control application. It is a Next.js App Router app (port **3001**) for fixture and fixture-vendor management; it talks to the backend GraphQL API.
 
 ## Development setup
 
 Copy `.env.example` to `.env`. The only variable is `NEXT_PUBLIC_GRAPHQL_API_URL` (default `http://localhost:3000/graphql`). The backend must be reachable for GraphQL codegen.
 
 Locale routing uses `src/proxy.ts` (Next.js 16 proxy; there is no `middleware.ts`) with `next-i18n-router`. URLs are prefixed (`/de/...`, `/en/...`); default locale is `de`.
+
+`nx dev frontend` runs `next dev --webpack` (not Turbopack).
 
 ## Commands
 

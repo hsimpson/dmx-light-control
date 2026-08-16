@@ -41,7 +41,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 
 **Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.19.0. **pnpm:** ^11.21.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
-**Env (`.env.example`):** `NODE_ENV`, `BACKEND_PORT` (HTTP; GraphQL at `/graphql`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts`.
+**Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; used for GraphQL stack-trace stripping), `BACKEND_PORT` (HTTP; GraphQL at `/graphql`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (`postgres:18.4`, same image as `infra/docker-compose.yml`).
 
 ## Done means
 
@@ -85,11 +85,11 @@ Harness maintenance is part of **done**, not optional docs.
 
 - NestJS + Apollo GraphQL on Fastify (`autoSchemaFile: true`)
 - Domain module: `FixturesModule` only. `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` is imported by `DmxModule`. `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
-- Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). IO resolvers may emit events or call services without repositories.
+- Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). Import/export is Resolver → `FixtureImportExportService` (`InjectDb()` + repositories + transactions). IO resolvers may emit events or call services without repositories.
 - Tests: Vitest unit/integration (`src/**/*.spec.ts`); GraphQL e2e in `src/e2e-tests/`; Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
 - Repositories use `InjectDb()` for typed Drizzle connection
 - ORM repositories extend `BaseRepository` (`apps/backend/src/db/base.repository.ts`) for shared `publicId` CRUD; pass `relationalFind` for nested `with` graphs, add domain-specific methods as needed
-- Events: `AppEventEmitter` extends `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`; IO modules import `EventsModule`
+- Events: `AppEventEmitter` extends `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`; IO modules import `EventsModule`. `AppModule` also provides `AppEventEmitter` and imports `EventEmitterModule.forRoot()`.
 - CLI command via `nest-commander`: `dmx-sniffer` (Linux-only)
 - Global `DrizzleDbModule` exports DB; `@/` path alias → `apps/backend/src/`
 - IO layer: `io/dmx/`, `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
@@ -101,7 +101,10 @@ Only domain module today: `fixtures/`.
 ```text
 fixtures/
 ├── fixtures.module.ts # NestJS module (providers only)
-├── fixture.service.ts # Business logic
+├── fixture.service.ts # CRUD business logic
+├── fixture-import-export.service.ts # export/import (InjectDb + transactions)
+├── fixture-export.mapper.ts
+├── fixture-import.validator.ts
 ├── fixture.resolver.ts # GraphQL queries/mutations
 ├── fixture.exceptions.ts # Extends BaseDomainError
 ├── channel-presets.ts # Enums/constants
@@ -109,7 +112,7 @@ fixtures/
 │ └── *.dto.ts # @ObjectType() / @InputType() with class-validator
 ├── entities/ # Drizzle schemas (export default)
 │ └── index.ts # Re-exports
-└── repositories/ # Data access (extends BaseRepository, InjectDb())
+└── repositories/ # Entity CRUD (extends BaseRepository, InjectDb())
 ```
 
 ### Frontend (`apps/frontend/`)
@@ -118,7 +121,7 @@ fixtures/
 - Mantine v9 (primary styling); CSS modules used sparingly; Phosphor Icons (`weight="duotone"` common, `"fill"` for some actions)
 - Apollo Client v4; GraphQL codegen from `src/**/*.graphql` against remote schema (`NEXT_PUBLIC_GRAPHQL_API_URL`); types written to `src/shared/types/graphql/`
 - i18n: `next-i18n-router` + `react-intl`; German/English (`src/lang/en.json`, `de.json`)
-- `'use client'` on client boundary components (pages, wrappers); props types predominantly `*Props`
+- `'use client'` on client boundary components (pages, wrappers); prop types named `*Props` or `*Properties`
 - `@/` path alias → `apps/frontend/src/`
 - Apollo Client setup: `lib/graphql/graphql-client.ts` + `lib/graphql/apollo-wrapper.tsx`
 
@@ -129,7 +132,7 @@ fixtures/
 - Repositories: one per entity/group, use `InferSelectModel`/`InferInsertModel`
 - Migrations: `src/db/migrations/` (timestamp + snake_case name from `--name`; never drizzle-kit random names); seeding: `src/db/seeding/seed.ts`
 - ER diagram: `nx run backend:erd` → `apps/backend/docs/database-schema.md`
-- Query logging: `DrizzleLogWriter` wrapping NestJS `Logger` (exists but currently disabled in `DrizzleDbModule`)
+- Query logging: `DrizzleLogWriter` wrapping NestJS `Logger` (exists but currently disabled in `apps/backend/src/db/drizzle-db/drizzle-db.module.ts`)
 
 ## Coding Conventions
 
@@ -160,7 +163,7 @@ fixtures/
 ### Drizzle ORM
 
 - `d.snakeCase.table()`, helpers `pk` + `timestamps` from `@/db/columns.helpers`
-- Relations in `relations.ts`; repository pattern for all DB access
+- Relations in `relations.ts`; repositories for entity CRUD; fixture import/export also uses `InjectDb()` and transactions
 
 ### React
 
@@ -170,7 +173,7 @@ fixtures/
 
 - Frontend: Vitest colocated `*.spec.ts` / `*.spec.tsx`; Playwright e2e in `apps/frontend/e2e/*.e2e.spec.ts` (mocked GraphQL). Install Chromium once with `pnpm exec playwright install chromium`. Backend uses Vitest with GraphQL e2e in `src/e2e-tests/`
 - `nx dev frontend` runs `next dev --webpack` (not Turbopack). Next 16 Turbopack exceeds Linux `fs.inotify.max_user_watches` on this pnpm tree and then reports missing modules (and PostCSS `picocolors` eval errors).
-- `REVIEW` comments mark incomplete implementations (device selection, hardcoded serial paths)
+- `REVIEW` comments mark incomplete implementations (DMX device selection, hardcoded serial paths, ValidationPipe `disableErrorMessages` in `main.ts`)
 - IO layer is Linux-focused (`/dev/usbmon`, serial ports)
 - Production hides stack traces from GraphQL errors
 - `BaseDomainError` → `GlobalGqlExceptionFilter` maps to GraphQL errors with `code` + `http.status` extension
