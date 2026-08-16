@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 import { mergeConfig } from 'vitest/config';
-import baseConfig from '../../vitest.base';
+import baseConfig from '../../vitest.base.ts';
 
 export default mergeConfig(baseConfig, {
   resolve: {

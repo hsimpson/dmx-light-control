@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
 import { coverageConfigDefaults, mergeConfig } from 'vitest/config';
-import baseConfig from '../../vitest.base';
+import baseConfig from '../../vitest.base.ts';
 
 export default mergeConfig(baseConfig, {
   plugins: [react()],
