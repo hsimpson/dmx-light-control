@@ -19,7 +19,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run infra:db-stop`                  | Stop local Postgres                                                |
 | `nx run infra:db-reset`                 | Reset local Postgres (removes volumes)                             |
 | `nx run infra:db-logs`                  | Tail local Postgres logs                                           |
-| `nx dev frontend` / `nx start frontend` | Frontend dev (port 3001) / prod start                              |
+| `nx dev frontend` / `nx start frontend` | Frontend Next.js webpack-dev (port 3001) / prod start              |
 | `nx build backend/frontend`             | Production build                                                   |
 | `nx typecheck backend/frontend`         | Type check                                                         |
 | `nx lint backend/frontend`              | Lint                                                               |
@@ -168,6 +168,7 @@ fixtures/
 ## Important Notes
 
 - Frontend: Vitest colocated `*.spec.ts` / `*.spec.tsx`; Playwright e2e in `apps/frontend/e2e/*.e2e.spec.ts` (mocked GraphQL). Install Chromium once with `pnpm exec playwright install chromium`. Backend uses Vitest with GraphQL e2e in `src/e2e-tests/`
+- `nx dev frontend` runs `next dev --webpack` (not Turbopack). Next 16 Turbopack exceeds Linux `fs.inotify.max_user_watches` on this pnpm tree and then reports missing modules (and PostCSS `picocolors` eval errors).
 - `REVIEW` comments mark incomplete implementations (device selection, hardcoded serial paths)
 - IO layer is Linux-focused (`/dev/usbmon`, serial ports)
 - Production hides stack traces from GraphQL errors
