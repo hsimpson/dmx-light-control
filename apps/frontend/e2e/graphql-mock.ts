@@ -29,15 +29,9 @@ export const mockedFixture = {
   ],
 };
 
-const graphqlPayload = (operationName?: string, query?: string) => {
-  if (operationName === 'GetFixtures' || query?.includes('fixtures {')) {
-    return { data: { fixtures: [mockedFixture] } };
-  }
-
-  return { data: {} };
-};
-
 export const mockGraphql = async (page: Page) => {
+  const fixtures = [mockedFixture];
+
   await page.route('**/graphql', async route => {
     if (route.request().method() === 'OPTIONS') {
       await route.fulfill({ status: 204 });
@@ -48,10 +42,19 @@ export const mockGraphql = async (page: Page) => {
       operationName?: string;
       query?: string;
     };
+
+    let body: unknown = { data: {} };
+    if (postData.operationName === 'GetFixtures' || postData.query?.includes('fixtures {')) {
+      body = { data: { fixtures: [...fixtures] } };
+    } else if (postData.operationName === 'DeleteFixture' || postData.query?.includes('deleteFixture')) {
+      fixtures.splice(0, fixtures.length);
+      body = { data: { deleteFixture: { publicId: mockedFixture.publicId, deleted: true } } };
+    }
+
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(graphqlPayload(postData.operationName, postData.query)),
+      body: JSON.stringify(body),
     });
   });
 };

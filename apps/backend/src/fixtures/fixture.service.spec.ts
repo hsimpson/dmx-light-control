@@ -27,6 +27,7 @@ function build() {
     findMany: vi.fn<() => Promise<unknown[]>>(),
     findOneByPublicId: vi.fn<() => Promise<unknown>>(),
     updateOneByPublicId: vi.fn<() => Promise<unknown>>(),
+    deleteOneByPublicId: vi.fn<() => Promise<boolean>>(),
   };
   const channelModeRepo = {
     replaceAllForFixture: vi.fn<() => Promise<void>>(),
@@ -74,6 +75,12 @@ describe('FixtureService', () => {
     const { service, vendorRepo } = build();
     vendorRepo.deleteOneByPublicId.mockResolvedValue(true);
     expect(await service.deleteFixtureVendorByPublicId('p')).toEqual({ publicId: 'p', deleted: true });
+  });
+
+  it('deleteFixtureByPublicId returns publicId and deleted flag', async () => {
+    const { service, fixtureRepo } = build();
+    fixtureRepo.deleteOneByPublicId.mockResolvedValue(true);
+    expect(await service.deleteFixtureByPublicId('p')).toEqual({ publicId: 'p', deleted: true });
   });
 
   it('createFixtureVendor delegates', async () => {

@@ -12,8 +12,12 @@ function build() {
     update: vi.fn().mockReturnThis(),
     set: vi.fn().mockReturnThis(),
     where: vi.fn().mockReturnThis(),
+    delete: vi.fn().mockReturnThis(),
     returning: vi.fn<() => Promise<unknown[]>>().mockResolvedValue([{ id: 1 }]),
   };
+  db.where.mockReturnValue({
+    returning: db.returning,
+  });
   const repo = new FixtureRepository(db as never);
   return { repo, db };
 }
@@ -56,5 +60,13 @@ describe('FixtureRepository', () => {
     expect(db.update).toHaveBeenCalled();
     db.returning.mockResolvedValue([]);
     expect(await repo.updateOneByPublicId('p', {})).toBeUndefined();
+  });
+
+  it('inherits deleteOneByPublicId from BaseRepository', async () => {
+    const { repo, db } = build();
+    db.returning.mockResolvedValue([{ publicId: 'p' }]);
+    expect(await repo.deleteOneByPublicId('p')).toBe(true);
+    db.returning.mockResolvedValue([]);
+    expect(await repo.deleteOneByPublicId('p')).toBe(false);
   });
 });

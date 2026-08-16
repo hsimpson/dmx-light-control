@@ -1,14 +1,19 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
-import { GetFixturesDocument } from '@/shared/types/graphql/graphql';
-import { screen } from '@testing-library/react';
+import { DeleteFixtureDocument, GetFixturesDocument } from '@/shared/types/graphql/graphql';
+import { notifications } from '@mantine/notifications';
+import { screen, waitFor, within } from '@testing-library/react';
 import { ReactNode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import FixtureTable from './fixture-table';
 
 const push = vi.fn();
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push }),
+}));
+
+vi.mock('@mantine/notifications', () => ({
+  notifications: { show: vi.fn() },
 }));
 
 vi.mock('mantine-datatable', () => ({
@@ -78,7 +83,17 @@ const fixture = {
   ],
 };
 
+const fixturesQueryMock = {
+  request: { query: GetFixturesDocument },
+  result: { data: { fixtures: [fixture] } },
+};
+
 describe('FixtureTable', () => {
+  beforeEach(() => {
+    push.mockClear();
+    vi.mocked(notifications.show).mockClear();
+  });
+
   it('shows a loader while the fixtures query is in flight', () => {
     renderWithProviders(<FixtureTable />, {
       apolloMocks: [
@@ -109,12 +124,7 @@ describe('FixtureTable', () => {
 
   it('renders vendor, fixture name, and channel modes from the query', async () => {
     const { user } = renderWithProviders(<FixtureTable />, {
-      apolloMocks: [
-        {
-          request: { query: GetFixturesDocument },
-          result: { data: { fixtures: [fixture] } },
-        },
-      ],
+      apolloMocks: [fixturesQueryMock],
     });
 
     expect(await screen.findByText('Acme Lights')).toBeInTheDocument();
@@ -123,5 +133,68 @@ describe('FixtureTable', () => {
 
     await user.click(screen.getByText('Spot 250'));
     expect(push).toHaveBeenCalledWith('/fixture/fix-1');
+  });
+
+  it('opens a confirm modal from trash without navigating', async () => {
+    const { user } = renderWithProviders(<FixtureTable />, {
+      apolloMocks: [fixturesQueryMock],
+    });
+
+    expect(await screen.findByText('Spot 250')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Delete fixture' }));
+
+    expect(push).not.toHaveBeenCalled();
+    expect(await screen.findByText('Delete fixture?')).toBeInTheDocument();
+  });
+
+  it('deletes a fixture after confirm', async () => {
+    const { user } = renderWithProviders(<FixtureTable />, {
+      apolloMocks: [
+        fixturesQueryMock,
+        {
+          request: { query: DeleteFixtureDocument, variables: { publicId: 'fix-1' } },
+          result: { data: { deleteFixture: { publicId: 'fix-1', deleted: true } } },
+        },
+      ],
+    });
+
+    expect(await screen.findByText('Spot 250')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Delete fixture' }));
+    await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Delete fixture' }));
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({
+          color: 'green',
+          title: 'Fixture deleted',
+          message: 'Spot 250',
+        }),
+      );
+    });
+  });
+
+  it('shows an error notification when delete fails', async () => {
+    const { user } = renderWithProviders(<FixtureTable />, {
+      apolloMocks: [
+        fixturesQueryMock,
+        {
+          request: { query: DeleteFixtureDocument, variables: { publicId: 'fix-1' } },
+          error: new Error('network'),
+        },
+      ],
+    });
+
+    expect(await screen.findByText('Spot 250')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Delete fixture' }));
+    await user.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Delete fixture' }));
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({
+          color: 'red',
+          message: 'Failed to delete fixture',
+        }),
+      );
+    });
   });
 });

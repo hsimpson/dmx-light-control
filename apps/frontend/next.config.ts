@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
       'mantine-datatable',
     ],
   },
-  webpack: (config, { dev }) => {
+  webpack: (config: { cache?: { type: 'memory' } }, { dev }) => {
     // PackFileCacheStrategy warns when persisting large CSS/module strings (Mantine).
     if (dev) {
       config.cache = { type: 'memory' };

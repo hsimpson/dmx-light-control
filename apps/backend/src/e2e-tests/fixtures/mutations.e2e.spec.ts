@@ -1,10 +1,17 @@
 import { AppModule } from '@/app.module';
-import { SerialSendService } from '@/io/serial/serial-send.service';
+import { DRIZZLE_DB_PROVIDER } from '@/db/drizzle-db/drizzle-db.provider';
+import { relations } from '@/db/relations';
+import * as schema from '@/db/schema';
 import { fixtureChannelDefinitions } from '@/db/seeding/data/fixtures/fixture-channel-definitions';
+import { FixtureChannelPreset } from '@/fixtures/channel-presets';
+import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
+import { SerialSendService } from '@/io/serial/serial-send.service';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
 import { SEED_FIXTURE_PUBLIC_ID } from '@/testhelpers/seed-fixture-data';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
+import { eq } from 'drizzle-orm';
+import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -42,6 +49,19 @@ type DeleteFixtureVendorMutation = {
     deleted: boolean;
     publicId: string;
   };
+};
+
+type DeleteFixtureMutation = {
+  deleteFixture: {
+    deleted: boolean;
+    publicId: string;
+  };
+};
+
+type GetFixtureQuery = {
+  fixture: {
+    publicId: string;
+  } | null;
 };
 
 type FixtureChannelModesQuery = {
@@ -447,5 +467,139 @@ describe('Fixture mutations', () => {
 
     expect(body.data?.updateFixture).toBeUndefined();
     expect(body.errors?.[0]?.message).toContain(unknownId);
+  });
+
+  it('should return deleted false when deleteFixture publicId does not exist', async () => {
+    const unknownId = '00000000-0000-4000-8000-000000000001';
+    const mutation = gql`
+      mutation ($publicId: UUID!) {
+        deleteFixture(publicId: $publicId) {
+          deleted
+          publicId
+        }
+      }
+    `;
+
+    const body = await graphqlQuery<DeleteFixtureMutation>(app.getHttpAdapter().getInstance().server, mutation, {
+      variables: {
+        publicId: unknownId,
+      },
+    });
+
+    expect(body.errors).toBeUndefined();
+    expect(body.data?.deleteFixture.publicId).toBe(unknownId);
+    expect(body.data?.deleteFixture.deleted).toBe(false);
+  });
+
+  it('should delete a fixture via deleteFixture', async () => {
+    const created = await app.get(FixtureRepository).createOne({
+      name: 'Fixture To Delete',
+      vendorId: 1,
+    });
+    const publicId = created?.publicId;
+    const fixtureId = created?.id;
+    if (typeof publicId !== 'string' || typeof fixtureId !== 'number') {
+      throw new Error('Failed to create fixture for delete e2e');
+    }
+
+    const db = app.get<NodePgDatabase<typeof relations>>(DRIZZLE_DB_PROVIDER);
+    const [definition] = await db
+      .insert(schema.fixtureChannelDefinition)
+      .values({
+        fixtureId,
+        name: 'Dimmer',
+        order: 0,
+        preset: FixtureChannelPreset.Custom,
+      })
+      .returning();
+    const [range] = await db
+      .insert(schema.fixtureChannelRange)
+      .values({
+        fixtureChannelDefinitionId: definition?.id ?? 0,
+        dmxStart: 0,
+        dmxEnd: 255,
+        description: 'Full',
+      })
+      .returning();
+    const [mode] = await db
+      .insert(schema.fixtureChannelMode)
+      .values({
+        fixtureId,
+        name: '1ch',
+        order: 0,
+      })
+      .returning();
+    const [assignment] = await db
+      .insert(schema.fixtureChannelAssignment)
+      .values({
+        fixtureChannelModeId: mode?.id ?? 0,
+        fixtureChannelDefinitionId: definition?.id ?? 0,
+        channelNumber: 1,
+      })
+      .returning();
+
+    expect(definition?.publicId).toBeDefined();
+    expect(range?.publicId).toBeDefined();
+    expect(mode?.publicId).toBeDefined();
+    expect(assignment?.publicId).toBeDefined();
+
+    const mutation = gql`
+      mutation ($publicId: UUID!) {
+        deleteFixture(publicId: $publicId) {
+          deleted
+          publicId
+        }
+      }
+    `;
+
+    const body = await graphqlQuery<DeleteFixtureMutation>(app.getHttpAdapter().getInstance().server, mutation, {
+      variables: {
+        publicId,
+      },
+    });
+
+    expect(body.data?.deleteFixture.publicId).toBe(publicId);
+    expect(body.data?.deleteFixture.deleted).toBe(true);
+
+    const loaded = await graphqlQuery<GetFixtureQuery>(
+      app.getHttpAdapter().getInstance().server,
+      gql`
+        query ($publicId: UUID!) {
+          fixture(publicId: $publicId) {
+            publicId
+          }
+        }
+      `,
+      { variables: { publicId } },
+    );
+    expect(loaded.data?.fixture).toBeNull();
+
+    expect(
+      await db
+        .select()
+        .from(schema.fixtureChannelDefinition)
+        .where(eq(schema.fixtureChannelDefinition.publicId, definition?.publicId ?? '')),
+    ).toEqual([]);
+    expect(
+      await db
+        .select()
+        .from(schema.fixtureChannelRange)
+        .where(eq(schema.fixtureChannelRange.publicId, range?.publicId ?? '')),
+    ).toEqual([]);
+    expect(
+      await db
+        .select()
+        .from(schema.fixtureChannelMode)
+        .where(eq(schema.fixtureChannelMode.publicId, mode?.publicId ?? '')),
+    ).toEqual([]);
+    expect(
+      await db
+        .select()
+        .from(schema.fixtureChannelAssignment)
+        .where(eq(schema.fixtureChannelAssignment.publicId, assignment?.publicId ?? '')),
+    ).toEqual([]);
+
+    const [vendor] = await db.select().from(schema.fixtureVendor).where(eq(schema.fixtureVendor.id, 1));
+    expect(vendor).toBeDefined();
   });
 });

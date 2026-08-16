@@ -13,6 +13,16 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type DeleteFixturePayload {
+  """
+  True if a fixture was deleted, false if no fixture matched the public id
+  """
+  deleted: Boolean!
+
+  """The public id of the fixture that was requested for deletion"""
+  publicId: UUID!
+}
+
 type DeleteFixtureVendorPayload {
   """True if a vendor was deleted, false if no vendor matched the public id"""
   deleted: Boolean!
@@ -186,6 +196,9 @@ type Mutation {
 
   """create a new fixture vendor"""
   createFixtureVendor(input: CreateFixtureVendorInput!): FixtureVendorDto!
+
+  """delete a fixture by public id"""
+  deleteFixture(publicId: UUID!): DeleteFixturePayload!
 
   """delete a fixture vendor by public id"""
   deleteFixtureVendor(publicId: UUID!): DeleteFixtureVendorPayload!

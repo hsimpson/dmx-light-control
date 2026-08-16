@@ -85,3 +85,10 @@ mutation UpdateFixture($input: UpdateFixtureInput!) {
     ...FixtureFields
   }
 }
+
+mutation DeleteFixture($publicId: UUID!) {
+  deleteFixture(publicId: $publicId) {
+    publicId
+    deleted
+  }
+}

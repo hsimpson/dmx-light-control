@@ -126,6 +126,11 @@ export class FixtureService {
     return { publicId, deleted };
   }
 
+  public async deleteFixtureByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {
+    const deleted = await this.fixtureRepository.deleteOneByPublicId(publicId);
+    return { publicId, deleted };
+  }
+
   public async createFixtureVendor(input: CreateFixtureVendorInput) {
     return this.vendorRepository.createOne(input);
   }

@@ -1,7 +1,7 @@
 info:
-  name: deleteFixtureVendor
+  name: deleteFixture
   type: graphql
-  seq: 4
+  seq: 3
 
 graphql:
   method: POST
@@ -10,7 +10,7 @@ graphql:
   body:
     query: |
       mutation($publicId: UUID!) {
-        deleteFixtureVendor(publicId: $publicId) {
+        deleteFixture(publicId: $publicId) {
           deleted
           publicId
         }
