@@ -41,7 +41,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run frontend:i18n-extract`                     | Extract translations                                               |
 | `nx run frontend:i18n-verify`                      | Verify translation files are in sync                               |
 
-**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.19.0. **pnpm:** ^11.21.0.
+**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.19.0. **pnpm:** ^11.22.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
 **Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; used for GraphQL stack-trace stripping), `BACKEND_PORT` (HTTP; GraphQL at `/graphql`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (`postgres:18.4`, same image as `infra/docker-compose.yml`).
 
