@@ -4,6 +4,7 @@ import {
   ChannelDefinitionNotFoundException,
   ChannelModeAlreadyExistsException,
   ChannelModeNotFoundException,
+  FixtureCreationFailedException,
   FixtureNotFoundException,
   FixtureVendorAlreadyExistsException,
   FixtureVendorCreationFailedException,
@@ -27,6 +28,7 @@ function build() {
     findMany: vi.fn<() => Promise<unknown[]>>(),
     findOneByPublicId: vi.fn<() => Promise<unknown>>(),
     updateOneByPublicId: vi.fn<() => Promise<unknown>>(),
+    createOne: vi.fn<() => Promise<unknown>>(),
     deleteOneByPublicId: vi.fn<() => Promise<boolean>>(),
   };
   const channelModeRepo = {
@@ -35,6 +37,7 @@ function build() {
   const channelDefinitionRepo = {
     updateOneByPublicId: vi.fn<() => Promise<unknown>>(),
     findOneByPublicId: vi.fn<() => Promise<unknown>>(),
+    createOneForFixture: vi.fn<() => Promise<unknown>>(),
   };
   const service = new FixtureService(
     vendorRepo as unknown as FixtureVendorRepository,
@@ -87,6 +90,93 @@ describe('FixtureService', () => {
     const { service, vendorRepo } = build();
     vendorRepo.createOne.mockResolvedValue('created');
     expect(await service.createFixtureVendor({ name: 'x' })).toBe('created');
+  });
+
+  it('createFixture with vendor.publicId creates fixture and reloads', async () => {
+    const { service, vendorRepo, fixtureRepo } = build();
+    vendorRepo.findOneByPublicId.mockResolvedValue({ id: 7 });
+    fixtureRepo.createOne.mockResolvedValue({ publicId: 'fp' });
+    fixtureRepo.findOneByPublicId.mockResolvedValue('reloaded');
+    const res = await service.createFixture({ name: 'My Fixture', vendor: { publicId: 'vp' } });
+    expect(fixtureRepo.createOne).toHaveBeenCalledWith({ name: 'My Fixture', vendorId: 7 });
+    expect(res).toBe('reloaded');
+  });
+
+  it('createFixture throws when the vendor publicId is unknown', async () => {
+    const { service, vendorRepo, fixtureRepo } = build();
+    vendorRepo.findOneByPublicId.mockResolvedValue(undefined);
+    await expect(service.createFixture({ name: 'x', vendor: { publicId: 'missing' } })).rejects.toBeInstanceOf(
+      FixtureVendorNotFoundException,
+    );
+    expect(fixtureRepo.createOne).not.toHaveBeenCalled();
+  });
+
+  it('createFixture reuses an existing vendor by name', async () => {
+    const { service, vendorRepo, fixtureRepo } = build();
+    vendorRepo.findOneByName.mockResolvedValue({ id: 3 });
+    fixtureRepo.createOne.mockResolvedValue({ publicId: 'fp' });
+    fixtureRepo.findOneByPublicId.mockResolvedValue('reloaded');
+    await service.createFixture({ name: 'x', vendor: { name: 'Existing' } });
+    expect(vendorRepo.createOne).not.toHaveBeenCalled();
+    expect(fixtureRepo.createOne).toHaveBeenCalledWith({ name: 'x', vendorId: 3 });
+  });
+
+  it('createFixture creates a new vendor when the name is unknown', async () => {
+    const { service, vendorRepo, fixtureRepo } = build();
+    vendorRepo.findOneByName.mockResolvedValue(undefined);
+    vendorRepo.createOne.mockResolvedValue({ id: 5 });
+    fixtureRepo.createOne.mockResolvedValue({ publicId: 'fp' });
+    fixtureRepo.findOneByPublicId.mockResolvedValue('reloaded');
+    await service.createFixture({ name: 'x', vendor: { name: 'New Vendor' } });
+    expect(vendorRepo.createOne).toHaveBeenCalledWith({ name: 'New Vendor' });
+    expect(fixtureRepo.createOne).toHaveBeenCalledWith({ name: 'x', vendorId: 5 });
+  });
+
+  it('createFixture throws when fixture creation fails', async () => {
+    const { service, vendorRepo, fixtureRepo } = build();
+    vendorRepo.findOneByName.mockResolvedValue({ id: 3 });
+    fixtureRepo.createOne.mockResolvedValue(undefined);
+    await expect(service.createFixture({ name: 'x', vendor: { name: 'V' } })).rejects.toBeInstanceOf(
+      FixtureCreationFailedException,
+    );
+  });
+
+  it('createFixture creates channel definitions for the new fixture', async () => {
+    const { service, vendorRepo, fixtureRepo, channelDefinitionRepo } = build();
+    vendorRepo.findOneByName.mockResolvedValue({ id: 3 });
+    fixtureRepo.createOne.mockResolvedValue({ id: 42, publicId: 'fp' });
+    fixtureRepo.findOneByPublicId.mockResolvedValueOnce({ ...fixtureGraph, id: 42 }).mockResolvedValueOnce('reloaded');
+    channelDefinitionRepo.createOneForFixture.mockResolvedValue({ id: 1 });
+    await service.createFixture({
+      name: 'x',
+      vendor: { name: 'V' },
+      channelDefinitions: [{ publicId: '', name: ' Red ' }],
+    });
+    expect(channelDefinitionRepo.createOneForFixture).toHaveBeenCalledWith(42, { name: 'Red' });
+  });
+
+  it('createFixture replaces channel modes for the new fixture', async () => {
+    const { service, vendorRepo, fixtureRepo, channelModeRepo } = build();
+    vendorRepo.findOneByName.mockResolvedValue({ id: 3 });
+    fixtureRepo.createOne.mockResolvedValue({ id: 42, publicId: 'fp' });
+    fixtureRepo.findOneByPublicId
+      .mockResolvedValueOnce({
+        ...fixtureGraph,
+        id: 42,
+        fixtureChannelDefinitions: [
+          { id: 10, publicId: 'def-1' },
+          { id: 11, publicId: 'def-2' },
+        ],
+      })
+      .mockResolvedValueOnce('reloaded');
+    await service.createFixture({
+      name: 'x',
+      vendor: { name: 'V' },
+      channelModes: [{ name: 'Default', assignments: [{ channelDefinitionPublicId: 'def-1' }] }],
+    });
+    expect(channelModeRepo.replaceAllForFixture).toHaveBeenCalledWith(42, [
+      { publicId: undefined, name: 'Default', assignments: [{ channelDefinitionId: 10 }] },
+    ]);
   });
 
   it('updateFixture with name only updates name', async () => {

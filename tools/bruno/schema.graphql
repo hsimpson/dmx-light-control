@@ -1,6 +1,20 @@
 input ChannelValuesInput {
   """The list of DMX channel values"""
-  dmxValues: [DmxValueInput!]! = [{channel: 1, value: 127}]
+  dmxValues: [DmxValueInput!]! = [{ channel: 1, value: 127 }]
+}
+
+input CreateFixtureInput {
+  """Channel definitions to create with the fixture"""
+  channelDefinitions: [UpdateFixtureChannelDefinitionInput!]
+
+  """Channel modes to create with the fixture"""
+  channelModes: [UpdateFixtureChannelModeInput!]
+
+  """The name of the fixture"""
+  name: String!
+
+  """The vendor of the fixture (existing publicId or new name)"""
+  vendor: UpdateFixtureVendorInput!
 }
 
 input CreateFixtureVendorInput {
@@ -421,6 +435,9 @@ type MidiDevicesDto {
 type Mutation {
   """Close the specified MIDI ports"""
   closePorts: Boolean
+
+  """create a new fixture; creates the vendor when only a name is given"""
+  createFixture(input: CreateFixtureInput!): FixtureDto!
 
   """create a new fixture vendor"""
   createFixtureVendor(input: CreateFixtureVendorInput!): FixtureVendorDto!

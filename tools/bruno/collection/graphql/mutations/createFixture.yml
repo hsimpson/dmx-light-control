@@ -1,7 +1,7 @@
 info:
-  name: updateFixture
+  name: createFixture
   type: graphql
-  seq: 12
+  seq: 2
 
 graphql:
   method: POST
@@ -9,8 +9,8 @@ graphql:
   auth: inherit
   body:
     query: |
-      mutation($input: UpdateFixtureInput!) {
-        updateFixture(input: $input) {
+      mutation($input: CreateFixtureInput!) {
+        createFixture(input: $input) {
           createdAt
           fixtureChannelDefinitions {
             createdAt
@@ -84,7 +84,6 @@ graphql:
           "channelDefinitions": [],
           "channelModes": [],
           "name": null,
-          "publicId": null,
           "vendor": {
             "name": null,
             "publicId": null

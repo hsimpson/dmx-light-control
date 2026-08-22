@@ -2,6 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { plainToInstance } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
 import { CreateFixtureVendorInput } from './dto/create-fixture-vendor.dto';
+import { CreateFixtureInput } from './dto/create-fixture.dto';
 import { DeleteFixturePayload } from './dto/delete-fixture-payload.dto';
 import { DeleteFixtureVendorPayload } from './dto/delete-fixture-vendor-payload.dto';
 import { FixtureExportDocumentDto } from './dto/export-fixtures.dto';
@@ -67,6 +68,15 @@ export class FixtureResolver {
   })
   public async updateFixture(@Args('input') input: UpdateFixtureInput): Promise<FixtureDto> {
     const fixture = await this.fixtureService.updateFixture(input);
+    return plainToInstance(FixtureDto, fixture);
+  }
+
+  @Mutation(() => FixtureDto, {
+    name: 'createFixture',
+    description: 'create a new fixture; creates the vendor when only a name is given',
+  })
+  public async createFixture(@Args('input') input: CreateFixtureInput): Promise<FixtureDto> {
+    const fixture = await this.fixtureService.createFixture(input);
     return plainToInstance(FixtureDto, fixture);
   }
 

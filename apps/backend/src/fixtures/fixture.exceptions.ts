@@ -28,6 +28,16 @@ export class FixtureNotFoundException extends BaseDomainError {
   }
 }
 
+export class FixtureCreationFailedException extends BaseDomainError {
+  public readonly code = 'FIXTURE_CREATION_FAILED';
+  public override readonly statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+
+  public constructor(fixtureName: string) {
+    super(`Failed to create fixture with name ${fixtureName}.`);
+    this.name = 'FixtureCreationFailedError';
+  }
+}
+
 export class FixtureVendorNotFoundException extends BaseDomainError {
   public readonly code = 'VENDOR_NOT_FOUND';
   public override readonly statusCode = HttpStatus.NOT_FOUND;

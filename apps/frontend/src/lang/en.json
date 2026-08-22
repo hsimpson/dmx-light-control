@@ -13,6 +13,8 @@
   "FixtureChannelRangeTable.dmxStart": "DMX Start",
   "FixtureForm.fixtureName": "Fixture name:",
   "FixtureForm.fixtureNamePlaceholder": "Enter fixture name",
+  "FixtureForm.notification.createError": "Failed to create fixture",
+  "FixtureForm.notification.createSuccess": "Fixture created successfully",
   "FixtureForm.notification.updateError": "Failed to update fixture",
   "FixtureForm.notification.updateSuccess": "Fixture updated successfully",
   "FixtureForm.validation.fixtureName": "Fixture name must be at least 3 characters long",

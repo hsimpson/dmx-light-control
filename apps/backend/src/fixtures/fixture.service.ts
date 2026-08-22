@@ -3,6 +3,7 @@ import {
   ChannelDefinitionNotFoundException,
   ChannelModeAlreadyExistsException,
   ChannelModeNotFoundException,
+  FixtureCreationFailedException,
   FixtureNotFoundException,
   FixtureVendorAlreadyExistsException,
   FixtureVendorCreationFailedException,
@@ -11,6 +12,8 @@ import {
 import { Injectable } from '@nestjs/common';
 import { InferSelectModel } from 'drizzle-orm/table';
 import { CreateFixtureVendorInput } from './dto/create-fixture-vendor.dto';
+import { CreateFixtureInput } from './dto/create-fixture.dto';
+import { UpdateFixtureVendorInput } from './dto/fixture.input';
 import { UpdateFixtureChannelDefinitionInput } from './dto/update-fixture-channel-definition.dto';
 import { UpdateFixtureChannelModeInput } from './dto/update-fixture-channel-mode.dto';
 import { UpdateFixtureInput } from './dto/update-fixture.dto';
@@ -133,6 +136,87 @@ export class FixtureService {
 
   public async createFixtureVendor(input: CreateFixtureVendorInput) {
     return this.vendorRepository.createOne(input);
+  }
+
+  public async createFixture(input: CreateFixtureInput) {
+    const vendor = await this.resolveVendor(input.vendor);
+    const vendorId = vendor.id;
+    if (typeof vendorId !== 'number') {
+      throw new FixtureVendorCreationFailedException(vendor.name);
+    }
+
+    const createdFixture = await this.fixtureRepository.createOne({
+      name: input.name,
+      vendorId,
+    });
+    if (!createdFixture) {
+      throw new FixtureCreationFailedException(input.name);
+    }
+
+    const createdPublicId = createdFixture.publicId;
+    if (typeof createdPublicId !== 'string') {
+      throw new FixtureCreationFailedException(input.name);
+    }
+
+    const loadedFixture = await this.fixtureRepository.findOneByPublicId(createdPublicId);
+    if (!loadedFixture) {
+      throw new FixtureNotFoundException(createdPublicId);
+    }
+
+    if (input.channelDefinitions !== undefined && input.channelDefinitions.length > 0) {
+      await this.createChannelDefinitions(loadedFixture, input.channelDefinitions);
+    }
+
+    if (input.channelModes !== undefined && input.channelModes.length > 0) {
+      await this.replaceChannelModes(loadedFixture, input.channelModes);
+    }
+
+    return await this.fixtureRepository.findOneByPublicId(createdPublicId);
+  }
+
+  private async resolveVendor(vendor: UpdateFixtureVendorInput) {
+    if (vendor.publicId) {
+      const existingVendor = await this.vendorRepository.findOneByPublicId(vendor.publicId);
+      if (!existingVendor) {
+        throw new FixtureVendorNotFoundException(vendor.publicId);
+      }
+      return existingVendor;
+    }
+
+    if (vendor.name) {
+      const existingVendor = await this.vendorRepository.findOneByName(vendor.name);
+      if (existingVendor) {
+        return existingVendor;
+      }
+      const newVendor = await this.vendorRepository.createOne({ name: vendor.name });
+      if (!newVendor) {
+        throw new FixtureVendorCreationFailedException(vendor.name);
+      }
+      return newVendor;
+    }
+
+    throw new FixtureVendorNotFoundException('unknown');
+  }
+
+  private async createChannelDefinitions(
+    loadedFixture: InferSelectModel<typeof fixture>,
+    channelDefinitions: UpdateFixtureChannelDefinitionInput[],
+  ): Promise<void> {
+    const graph = loadedFixture as FixtureChannelGraph;
+    if (typeof graph.id !== 'number') {
+      throw new FixtureNotFoundException(graph.publicId ?? '');
+    }
+
+    try {
+      for (const definition of channelDefinitions) {
+        await this.channelDefinitionRepository.createOneForFixture(graph.id, { name: definition.name.trim() });
+      }
+    } catch (error) {
+      if (isPostgresUniqueViolation(error)) {
+        throw new ChannelDefinitionAlreadyExistsException(channelDefinitions[0]?.name.trim() ?? 'channel definition');
+      }
+      throw error;
+    }
   }
 
   private async renameChannelDefinitions(

@@ -22,6 +22,17 @@ type CreateFixtureVendorMutation = {
   };
 };
 
+type CreateFixtureMutation = {
+  createFixture: {
+    name: string;
+    publicId: string;
+    fixtureVendor: {
+      name: string;
+      publicId: string;
+    };
+  };
+};
+
 type UpdateFixtureMutation = {
   updateFixture: {
     name: string;
@@ -223,6 +234,83 @@ describe('Fixture mutations', () => {
     expect(body.data?.createFixtureVendor.publicId).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
     );
+  });
+
+  it('should create a fixture via createFixture with a new vendor', async () => {
+    const mutation = gql`
+      mutation ($input: CreateFixtureInput!) {
+        createFixture(input: $input) {
+          name
+          publicId
+          fixtureVendor {
+            name
+            publicId
+          }
+        }
+      }
+    `;
+
+    const body = await graphqlQuery<CreateFixtureMutation>(app.getHttpAdapter().getInstance().server, mutation, {
+      variables: {
+        input: {
+          name: 'E2E Created Fixture',
+          vendor: { name: 'E2E Auto Vendor' },
+        },
+      },
+    });
+
+    expect(body.data?.createFixture.name).toBe('E2E Created Fixture');
+    expect(body.data?.createFixture.publicId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+    expect(body.data?.createFixture.fixtureVendor.name).toBe('E2E Auto Vendor');
+  });
+
+  it('should create a fixture via createFixture reusing an existing vendor publicId', async () => {
+    const vendorMutation = gql`
+      mutation ($input: CreateFixtureVendorInput!) {
+        createFixtureVendor(input: $input) {
+          publicId
+        }
+      }
+    `;
+
+    const vendorBody = await graphqlQuery<CreateFixtureVendorMutation>(
+      app.getHttpAdapter().getInstance().server,
+      vendorMutation,
+      {
+        variables: {
+          input: {
+            name: 'E2E Reuse Vendor',
+          },
+        },
+      },
+    );
+    const vendorPublicId = vendorBody.data?.createFixtureVendor.publicId;
+    expect(vendorPublicId).toBeDefined();
+
+    const mutation = gql`
+      mutation ($input: CreateFixtureInput!) {
+        createFixture(input: $input) {
+          name
+          publicId
+          fixtureVendor {
+            publicId
+          }
+        }
+      }
+    `;
+
+    const body = await graphqlQuery<CreateFixtureMutation>(app.getHttpAdapter().getInstance().server, mutation, {
+      variables: {
+        input: {
+          name: 'E2E Reuse Fixture',
+          vendor: { publicId: vendorPublicId },
+        },
+      },
+    });
+
+    expect(body.data?.createFixture.fixtureVendor.publicId).toBe(vendorPublicId);
   });
 
   it('should update a fixture via updateFixture', async () => {

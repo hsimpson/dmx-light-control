@@ -2,11 +2,17 @@
 
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { GetFixturesQuery, GetFixtureVendorsQuery, UpdateFixtureDocument } from '@/shared/types/graphql/graphql';
+import {
+  CreateFixtureDocument,
+  GetFixturesQuery,
+  GetFixtureVendorsQuery,
+  UpdateFixtureDocument,
+} from '@/shared/types/graphql/graphql';
 import { useMutation } from '@apollo/client/react';
 import { Button, Combobox, Flex, InputBase, TextInput, useCombobox } from '@mantine/core';
 import { schemaResolver, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { z } from 'zod/v4';
 import FixtureChannelDefinitions, {
@@ -51,7 +57,9 @@ const syncChannelModesWithDefinitions = (
 
 const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const { t } = useTranslation();
+  const router = useRouter();
   const [updateFixture] = useMutation(UpdateFixtureDocument);
+  const [createFixture] = useMutation(CreateFixtureDocument);
 
   const vendorNames = vendors.map(vendor => vendor.name);
   const vendorPublicIdByName = new Map(vendors.map(vendor => [vendor.name, vendor.publicId]));
@@ -115,45 +123,72 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   });
 
   const onSubmit = async (values: FixtureFormValues) => {
-    if (!fixture) {
-      return;
-    }
-
     const vendorInput = comboBoxPublicId ? { publicId: comboBoxPublicId } : { name: values.vendor };
 
     try {
-      const { data } = await updateFixture({
-        variables: {
-          input: {
-            publicId: fixture.publicId,
-            name: values.fixtureName,
-            vendor: vendorInput,
-            channelModes: toChannelModeSaveInputs(channelModes),
-            channelDefinitions: toChannelDefinitionSaveInputs(channelDefinitions),
+      if (fixture) {
+        const { data } = await updateFixture({
+          variables: {
+            input: {
+              publicId: fixture.publicId,
+              name: values.fixtureName,
+              vendor: vendorInput,
+              channelModes: toChannelModeSaveInputs(channelModes),
+              channelDefinitions: toChannelDefinitionSaveInputs(channelDefinitions),
+            },
           },
-        },
-      });
+        });
 
-      if (data?.updateFixture.fixtureChannelModes) {
-        setChannelModes(toEditorChannelModes(data.updateFixture.fixtureChannelModes));
+        if (data?.updateFixture.fixtureChannelModes) {
+          setChannelModes(toEditorChannelModes(data.updateFixture.fixtureChannelModes));
+        }
+
+        notifications.show({
+          color: 'green',
+          title: t(globalMessages.success),
+          message: t({
+            id: 'FixtureForm.notification.updateSuccess',
+            defaultMessage: 'Fixture updated successfully',
+          }),
+        });
+      } else {
+        const { data } = await createFixture({
+          variables: {
+            input: {
+              name: values.fixtureName,
+              vendor: vendorInput,
+              channelModes: toChannelModeSaveInputs(channelModes),
+              channelDefinitions: toChannelDefinitionSaveInputs(channelDefinitions),
+            },
+          },
+        });
+
+        const createdPublicId = data?.createFixture.publicId;
+        notifications.show({
+          color: 'green',
+          title: t(globalMessages.success),
+          message: t({
+            id: 'FixtureForm.notification.createSuccess',
+            defaultMessage: 'Fixture created successfully',
+          }),
+        });
+        if (createdPublicId) {
+          router.push(`/fixture/${createdPublicId}`);
+        }
       }
-
-      notifications.show({
-        color: 'green',
-        title: t(globalMessages.success),
-        message: t({
-          id: 'FixtureForm.notification.updateSuccess',
-          defaultMessage: 'Fixture updated successfully',
-        }),
-      });
     } catch {
       notifications.show({
         color: 'red',
         title: t(globalMessages.error),
-        message: t({
-          id: 'FixtureForm.notification.updateError',
-          defaultMessage: 'Failed to update fixture',
-        }),
+        message: fixture
+          ? t({
+              id: 'FixtureForm.notification.updateError',
+              defaultMessage: 'Failed to update fixture',
+            })
+          : t({
+              id: 'FixtureForm.notification.createError',
+              defaultMessage: 'Failed to create fixture',
+            }),
       });
     }
   };
