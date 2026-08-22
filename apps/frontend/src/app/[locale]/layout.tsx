@@ -30,12 +30,12 @@ const RootLayout = async ({ params, children }: LayoutProperties) => {
   return (
     <html lang={locale} {...mantineHtmlProps}>
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body>
         <ApolloWrapper>
           <IntlWrapper locale={locale}>
-            <MantineProvider defaultColorScheme="light">
+            <MantineProvider defaultColorScheme="auto">
               <Notifications />
               <App>{children}</App>
             </MantineProvider>
