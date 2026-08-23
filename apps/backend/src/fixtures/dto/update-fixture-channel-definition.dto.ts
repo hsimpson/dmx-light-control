@@ -1,6 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsString, IsUUID, Length } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import { GraphQLUUID } from 'graphql-scalars';
+import { FixtureChannelPreset } from '../channel-presets';
 
 @InputType()
 export class UpdateFixtureChannelDefinitionInput {
@@ -12,4 +13,12 @@ export class UpdateFixtureChannelDefinitionInput {
   @IsString()
   @Length(1, 255)
   public name: string;
+
+  @Field(() => FixtureChannelPreset, {
+    nullable: true,
+    description: 'The new preset of the channel definition',
+  })
+  @IsOptional()
+  @IsEnum(FixtureChannelPreset)
+  public preset?: FixtureChannelPreset;
 }

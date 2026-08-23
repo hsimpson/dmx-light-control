@@ -6,7 +6,7 @@ import { useTranslation } from '@/lib/i18n/use-translation';
 import { orderSorter } from '@/shared/sorter';
 import { FixtureChannelDefinition, FixtureChannelRange } from '@/shared/types/fixtures';
 import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
-import { Flex, Text } from '@mantine/core';
+import { Flex, Select, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useState } from 'react';
 import FixtureChannelDefinitionItem from './fixture-channel-definition-item';
@@ -27,7 +27,7 @@ export const toEditorChannelDefinitions = (
 
 export const toChannelDefinitionSaveInputs = (channelDefinitions: EditorChannelDefinition[]) =>
   channelDefinitions.flatMap(definition =>
-    definition.publicId ? [{ publicId: definition.publicId, name: definition.name }] : [],
+    definition.publicId ? [{ publicId: definition.publicId, name: definition.name, preset: definition.preset }] : [],
   );
 
 type FixtureChannelDefinitionsProps = {
@@ -70,6 +70,14 @@ const FixtureChannelDefinitions = ({
     onChannelDefinitionsChange(
       channelDefinitions.map(definition =>
         definition.clientKey === item.clientKey ? { ...definition, name: newName } : definition,
+      ),
+    );
+  };
+
+  const handleChannelDefinitionPresetChange = (item: EditorChannelDefinition, newPreset: FixtureChannelPreset) => {
+    onChannelDefinitionsChange(
+      channelDefinitions.map(definition =>
+        definition.clientKey === item.clientKey ? { ...definition, preset: newPreset } : definition,
       ),
     );
   };
@@ -150,6 +158,36 @@ const FixtureChannelDefinitions = ({
             defaultMessage: 'Channel ranges',
           })}
         </Text>
+
+        {selectedChannelDefinition && (
+          <Select
+            label={t({
+              id: 'FixtureChannelDefinitions.presetLabel',
+              defaultMessage: 'Preset',
+            })}
+            data={[
+              FixtureChannelPreset.Custom,
+              FixtureChannelPreset.IntensityRed,
+              FixtureChannelPreset.IntensityGreen,
+              FixtureChannelPreset.IntensityBlue,
+              FixtureChannelPreset.IntensityWhite,
+              FixtureChannelPreset.IntensityAmber,
+              FixtureChannelPreset.IntensityUv,
+              FixtureChannelPreset.IntensityMasterDimmer,
+              FixtureChannelPreset.IntensityDimmer,
+              FixtureChannelPreset.ShutterStrobeSlowFast,
+              FixtureChannelPreset.ShutterStrobeFastSlow,
+            ].map(preset => ({ value: preset, label: preset }))}
+            value={selectedChannelDefinition.preset}
+            onChange={preset => {
+              if (preset) {
+                handleChannelDefinitionPresetChange(selectedChannelDefinition, preset);
+              }
+            }}
+            allowDeselect={false}
+            w={240}
+          />
+        )}
 
         <FixtureChannelRangeTable
           fixtureChannelRanges={selectedChannelDefinition?.fixtureChannelRanges ?? []}

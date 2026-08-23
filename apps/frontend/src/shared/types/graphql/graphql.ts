@@ -125,6 +125,8 @@ export type UpdateFixtureChannelAssignmentInput = {
 export type UpdateFixtureChannelDefinitionInput = {
   /** The new name of the channel definition */
   name: string;
+  /** The new preset of the channel definition */
+  preset?: FixtureChannelPreset | null | undefined;
   /** The public ID of the channel definition */
   publicId: string;
 };

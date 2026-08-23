@@ -35,7 +35,7 @@ describe('toEditorChannelDefinitions', () => {
 });
 
 describe('toChannelDefinitionSaveInputs', () => {
-  it('drops rows without publicId and only sends publicId and name', () => {
+  it('drops rows without publicId and only sends publicId, name and preset', () => {
     const persisted: EditorChannelDefinition = {
       ...definition({ publicId: 'r', name: 'Red', order: 0 }),
       clientKey: 'r',
@@ -50,6 +50,8 @@ describe('toChannelDefinitionSaveInputs', () => {
       fixtureChannelRanges: [],
     };
 
-    expect(toChannelDefinitionSaveInputs([persisted, unsaved])).toEqual([{ publicId: 'r', name: 'Red' }]);
+    expect(toChannelDefinitionSaveInputs([persisted, unsaved])).toEqual([
+      { publicId: 'r', name: 'Red', preset: FixtureChannelPreset.Custom },
+    ]);
   });
 });

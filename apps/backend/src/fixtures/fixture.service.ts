@@ -242,7 +242,10 @@ export class FixtureService {
     try {
       for (const definition of channelDefinitions) {
         const name = definition.name.trim();
-        const updated = await this.channelDefinitionRepository.updateOneByPublicId(definition.publicId, { name });
+        const updated = await this.channelDefinitionRepository.updateOneByPublicId(definition.publicId, {
+          name,
+          ...(definition.preset !== undefined ? { preset: definition.preset } : {}),
+        });
         if (!updated) {
           throw new ChannelDefinitionNotFoundException(definition.publicId);
         }
