@@ -127,8 +127,10 @@ export type UpdateFixtureChannelDefinitionInput = {
   name: string;
   /** The new preset of the channel definition */
   preset?: FixtureChannelPreset | null | undefined;
-  /** The public ID of the channel definition */
-  publicId: string;
+  /** The public ID of the channel definition. Omit to create a new channel definition. */
+  publicId?: string | null | undefined;
+  /** Replace the channel ranges of the definition when provided; omit to leave ranges unchanged */
+  ranges?: Array<UpdateFixtureChannelRangeInput> | null | undefined;
 };
 
 export type UpdateFixtureChannelModeInput = {
@@ -138,6 +140,15 @@ export type UpdateFixtureChannelModeInput = {
   name: string;
   /** The public ID of an existing channel mode; omit to create */
   publicId?: string | null | undefined;
+};
+
+export type UpdateFixtureChannelRangeInput = {
+  /** The description of the range */
+  description: string;
+  /** The DMX end channel of the range */
+  dmxEnd: number;
+  /** The DMX start channel of the range */
+  dmxStart: number;
 };
 
 export type UpdateFixtureInput = {

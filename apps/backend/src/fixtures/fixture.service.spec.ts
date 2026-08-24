@@ -441,4 +441,17 @@ describe('FixtureService', () => {
     expect(channelDefinitionRepo.updateOneByPublicId).toHaveBeenCalledWith('def-1', { name: 'Amber' });
     expect(res).toBe('reloaded');
   });
+
+  it('updateFixture with channelDefinitions creates definitions without publicId', async () => {
+    const { service, fixtureRepo, channelDefinitionRepo } = build();
+    fixtureRepo.findOneByPublicId.mockResolvedValueOnce(fixtureGraph).mockResolvedValueOnce('reloaded');
+    channelDefinitionRepo.createOneForFixture.mockResolvedValue({ id: 2 });
+    const res = await service.updateFixture({
+      publicId: 'p',
+      channelDefinitions: [{ name: '  Amber  ' }],
+    });
+    expect(channelDefinitionRepo.createOneForFixture).toHaveBeenCalledWith(1, { name: 'Amber' });
+    expect(channelDefinitionRepo.updateOneByPublicId).not.toHaveBeenCalled();
+    expect(res).toBe('reloaded');
+  });
 });

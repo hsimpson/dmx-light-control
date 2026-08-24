@@ -35,9 +35,16 @@ describe('toEditorChannelDefinitions', () => {
 });
 
 describe('toChannelDefinitionSaveInputs', () => {
-  it('drops rows without publicId and only sends publicId, name and preset', () => {
+  it('sends publicId, name, preset and ranges; rows without publicId are created', () => {
     const persisted: EditorChannelDefinition = {
-      ...definition({ publicId: 'r', name: 'Red', order: 0 }),
+      ...definition({
+        publicId: 'r',
+        name: 'Red',
+        order: 0,
+        fixtureChannelRanges: [
+          { publicId: 'range-1', dmxStart: 0, dmxEnd: 255, description: 'off-full', createdAt: now, updatedAt: now },
+        ],
+      }),
       clientKey: 'r',
     };
     const unsaved: EditorChannelDefinition = {
@@ -51,7 +58,30 @@ describe('toChannelDefinitionSaveInputs', () => {
     };
 
     expect(toChannelDefinitionSaveInputs([persisted, unsaved])).toEqual([
-      { publicId: 'r', name: 'Red', preset: FixtureChannelPreset.Custom },
+      {
+        publicId: 'r',
+        name: 'Red',
+        preset: FixtureChannelPreset.Custom,
+        order: 0,
+        ranges: [{ dmxStart: 0, dmxEnd: 255, description: 'off-full' }],
+      },
+      { name: 'Amber', preset: FixtureChannelPreset.Custom, order: 1, ranges: [] },
     ]);
+  });
+
+  it('derives order from list position so reordering is persisted', () => {
+    const first: EditorChannelDefinition = {
+      ...definition({ publicId: 'r', name: 'Red', order: 0 }),
+      clientKey: 'r',
+    };
+    const second: EditorChannelDefinition = {
+      ...definition({ publicId: 'g', name: 'Green', order: 1 }),
+      clientKey: 'g',
+    };
+
+    const reordered = toChannelDefinitionSaveInputs([second, first]);
+
+    expect(reordered.map(item => item.order)).toEqual([0, 1]);
+    expect(reordered.map(item => item.name)).toEqual(['Green', 'Red']);
   });
 });

@@ -557,8 +557,18 @@ input UpdateFixtureChannelDefinitionInput {
   """The new name of the channel definition"""
   name: String!
 
-  """The public ID of the channel definition"""
-  publicId: UUID!
+  """The new preset of the channel definition"""
+  preset: FixtureChannelPreset
+
+  """
+  The public ID of the channel definition. Omit to create a new channel definition.
+  """
+  publicId: UUID
+
+  """
+  Replace the channel ranges of the definition when provided; omit to leave ranges unchanged
+  """
+  ranges: [UpdateFixtureChannelRangeInput!]
 }
 
 input UpdateFixtureChannelModeInput {
@@ -570,6 +580,17 @@ input UpdateFixtureChannelModeInput {
 
   """The public ID of an existing channel mode; omit to create"""
   publicId: UUID
+}
+
+input UpdateFixtureChannelRangeInput {
+  """The description of the range"""
+  description: String!
+
+  """The DMX end channel of the range"""
+  dmxEnd: Int!
+
+  """The DMX start channel of the range"""
+  dmxStart: Int!
 }
 
 input UpdateFixtureInput {

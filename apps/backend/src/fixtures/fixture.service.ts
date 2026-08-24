@@ -47,7 +47,6 @@ function isPostgresUniqueViolation(error: unknown): boolean {
   }
   return false;
 }
-
 @Injectable()
 export class FixtureService {
   public constructor(
@@ -209,7 +208,14 @@ export class FixtureService {
 
     try {
       for (const definition of channelDefinitions) {
-        await this.channelDefinitionRepository.createOneForFixture(graph.id, { name: definition.name.trim() });
+        const created = await this.channelDefinitionRepository.createOneForFixture(graph.id, {
+          name: definition.name.trim(),
+          ...(definition.preset !== undefined ? { preset: definition.preset } : {}),
+          ...(definition.order !== undefined ? { order: definition.order } : {}),
+        });
+        if (typeof created?.id === 'number' && definition.ranges !== undefined) {
+          await this.channelDefinitionRepository.replaceRangesForDefinition(created.id, definition.ranges);
+        }
       }
     } catch (error) {
       if (isPostgresUniqueViolation(error)) {
@@ -234,20 +240,39 @@ export class FixtureService {
       }
       seenNames.add(name);
 
-      if (!existingPublicIds.has(definition.publicId)) {
+      if (definition.publicId && !existingPublicIds.has(definition.publicId)) {
         throw new ChannelDefinitionNotFoundException(definition.publicId);
       }
+    }
+
+    if (typeof graph.id !== 'number') {
+      throw new FixtureNotFoundException(graph.publicId ?? '');
     }
 
     try {
       for (const definition of channelDefinitions) {
         const name = definition.name.trim();
+        if (!definition.publicId) {
+          const created = await this.channelDefinitionRepository.createOneForFixture(graph.id, {
+            name,
+            ...(definition.preset !== undefined ? { preset: definition.preset } : {}),
+            ...(definition.order !== undefined ? { order: definition.order } : {}),
+          });
+          if (typeof created?.id === 'number' && definition.ranges !== undefined) {
+            await this.channelDefinitionRepository.replaceRangesForDefinition(created.id, definition.ranges);
+          }
+          continue;
+        }
         const updated = await this.channelDefinitionRepository.updateOneByPublicId(definition.publicId, {
           name,
           ...(definition.preset !== undefined ? { preset: definition.preset } : {}),
+          ...(definition.order !== undefined ? { order: definition.order } : {}),
         });
         if (!updated) {
           throw new ChannelDefinitionNotFoundException(definition.publicId);
+        }
+        if (typeof updated.id === 'number' && definition.ranges !== undefined) {
+          await this.channelDefinitionRepository.replaceRangesForDefinition(updated.id, definition.ranges);
         }
       }
     } catch (error) {

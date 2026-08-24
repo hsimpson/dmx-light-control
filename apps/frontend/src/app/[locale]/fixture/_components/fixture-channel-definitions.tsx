@@ -26,9 +26,17 @@ export const toEditorChannelDefinitions = (
   }));
 
 export const toChannelDefinitionSaveInputs = (channelDefinitions: EditorChannelDefinition[]) =>
-  channelDefinitions.flatMap(definition =>
-    definition.publicId ? [{ publicId: definition.publicId, name: definition.name, preset: definition.preset }] : [],
-  );
+  channelDefinitions.map((definition, index) => ({
+    ...(definition.publicId ? { publicId: definition.publicId } : {}),
+    name: definition.name,
+    preset: definition.preset,
+    order: index,
+    ranges: definition.fixtureChannelRanges.map(range => ({
+      dmxStart: range.dmxStart,
+      dmxEnd: range.dmxEnd,
+      description: range.description,
+    })),
+  }));
 
 type FixtureChannelDefinitionsProps = {
   channelDefinitions: EditorChannelDefinition[];
@@ -80,6 +88,10 @@ const FixtureChannelDefinitions = ({
         definition.clientKey === item.clientKey ? { ...definition, preset: newPreset } : definition,
       ),
     );
+  };
+
+  const handleChannelDefinitionReorder = (reordered: EditorChannelDefinition[]) => {
+    onChannelDefinitionsChange(reordered);
   };
 
   const handleChannelRangeAdd = (start: number, end: number, description: string) => {
@@ -147,6 +159,7 @@ const FixtureChannelDefinitions = ({
           onSelectedItemChange={handleSelectedChannelDefinitionChange}
           onItemAdd={handleChannelDefinitionAdd}
           onItemRemove={handleChannelDefinitionRemove}
+          onItemReorder={handleChannelDefinitionReorder}
           onItemRename={handleChannelDefinitionRename}
         />
       </Flex>
