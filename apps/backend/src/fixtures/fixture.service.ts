@@ -206,8 +206,8 @@ export class FixtureService {
       throw new FixtureNotFoundException(graph.publicId ?? '');
     }
 
-    try {
-      for (const definition of channelDefinitions) {
+    for (const definition of channelDefinitions) {
+      try {
         const created = await this.channelDefinitionRepository.createOneForFixture(graph.id, {
           name: definition.name.trim(),
           ...(definition.preset !== undefined ? { preset: definition.preset } : {}),
@@ -216,12 +216,12 @@ export class FixtureService {
         if (typeof created?.id === 'number' && definition.ranges !== undefined) {
           await this.channelDefinitionRepository.replaceRangesForDefinition(created.id, definition.ranges);
         }
+      } catch (error) {
+        if (isPostgresUniqueViolation(error)) {
+          throw new ChannelDefinitionAlreadyExistsException(definition.name.trim());
+        }
+        throw error;
       }
-    } catch (error) {
-      if (isPostgresUniqueViolation(error)) {
-        throw new ChannelDefinitionAlreadyExistsException(channelDefinitions[0]?.name.trim() ?? 'channel definition');
-      }
-      throw error;
     }
   }
 
@@ -249,8 +249,8 @@ export class FixtureService {
       throw new FixtureNotFoundException(graph.publicId ?? '');
     }
 
-    try {
-      for (const definition of channelDefinitions) {
+    for (const definition of channelDefinitions) {
+      try {
         const name = definition.name.trim();
         if (!definition.publicId) {
           const created = await this.channelDefinitionRepository.createOneForFixture(graph.id, {
@@ -274,15 +274,15 @@ export class FixtureService {
         if (typeof updated.id === 'number' && definition.ranges !== undefined) {
           await this.channelDefinitionRepository.replaceRangesForDefinition(updated.id, definition.ranges);
         }
-      }
-    } catch (error) {
-      if (error instanceof ChannelDefinitionNotFoundException) {
+      } catch (error) {
+        if (error instanceof ChannelDefinitionNotFoundException) {
+          throw error;
+        }
+        if (isPostgresUniqueViolation(error)) {
+          throw new ChannelDefinitionAlreadyExistsException(definition.name.trim());
+        }
         throw error;
       }
-      if (isPostgresUniqueViolation(error)) {
-        throw new ChannelDefinitionAlreadyExistsException(channelDefinitions[0]?.name.trim() ?? 'channel definition');
-      }
-      throw error;
     }
   }
 

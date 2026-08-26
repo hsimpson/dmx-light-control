@@ -58,8 +58,8 @@ const syncChannelModesWithDefinitions = (
 const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const [updateFixture] = useMutation(UpdateFixtureDocument);
-  const [createFixture] = useMutation(CreateFixtureDocument);
+  const [updateFixture, { loading: isUpdating }] = useMutation(UpdateFixtureDocument);
+  const [createFixture, { loading: isCreating }] = useMutation(CreateFixtureDocument);
 
   const vendorNames = vendors.map(vendor => vendor.name);
   const vendorPublicIdByName = new Map(vendors.map(vendor => [vendor.name, vendor.publicId]));
@@ -139,6 +139,9 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
           },
         });
 
+        if (data?.updateFixture.fixtureChannelDefinitions) {
+          setChannelDefinitions(toEditorChannelDefinitions(data.updateFixture.fixtureChannelDefinitions));
+        }
         if (data?.updateFixture.fixtureChannelModes) {
           setChannelModes(toEditorChannelModes(data.updateFixture.fixtureChannelModes));
         }
@@ -289,7 +292,13 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
           onChannelModesChange={setChannelModes}
         />
 
-        <Button type="submit" mt="sm" w="fit-content" style={{ alignSelf: 'flex-end' }}>
+        <Button
+          type="submit"
+          mt="sm"
+          w="fit-content"
+          style={{ alignSelf: 'flex-end' }}
+          disabled={isUpdating || isCreating}
+        >
           {t(globalMessages.save)}
         </Button>
       </Flex>

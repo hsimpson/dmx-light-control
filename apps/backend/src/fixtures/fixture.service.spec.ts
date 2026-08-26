@@ -416,7 +416,11 @@ describe('FixtureService', () => {
     channelDefinitionRepo.updateOneByPublicId.mockRejectedValue(Object.assign(new Error('unique'), { code: '23505' }));
     await expect(
       service.updateFixture({ publicId: 'p', channelDefinitions: [{ publicId: 'def-1', name: 'Green' }] }),
-    ).rejects.toBeInstanceOf(ChannelDefinitionAlreadyExistsException);
+    ).rejects.toSatisfy((error: Error) => {
+      expect(error).toBeInstanceOf(ChannelDefinitionAlreadyExistsException);
+      expect(error.message).toContain('Green');
+      return true;
+    });
   });
 
   it('updateFixture with channelDefinitions maps unique violations nested on cause.code', async () => {
@@ -427,7 +431,29 @@ describe('FixtureService', () => {
     );
     await expect(
       service.updateFixture({ publicId: 'p', channelDefinitions: [{ publicId: 'def-1', name: 'Green' }] }),
-    ).rejects.toBeInstanceOf(ChannelDefinitionAlreadyExistsException);
+    ).rejects.toSatisfy((error: Error) => {
+      expect(error).toBeInstanceOf(ChannelDefinitionAlreadyExistsException);
+      expect(error.message).toContain('Green');
+      return true;
+    });
+  });
+
+  it('updateFixture with channelDefinitions reports the colliding definition name on unique violation', async () => {
+    const { service, fixtureRepo, channelDefinitionRepo } = build();
+    fixtureRepo.findOneByPublicId.mockResolvedValue(fixtureGraph);
+    channelDefinitionRepo.updateOneByPublicId.mockResolvedValue({ id: 10 });
+    channelDefinitionRepo.createOneForFixture.mockRejectedValue(Object.assign(new Error('unique'), { code: '23505' }));
+    await expect(
+      service.updateFixture({
+        publicId: 'p',
+        channelDefinitions: [{ publicId: 'def-1', name: 'Red' }, { name: 'Strobe' }],
+      }),
+    ).rejects.toSatisfy((error: Error) => {
+      expect(error).toBeInstanceOf(ChannelDefinitionAlreadyExistsException);
+      expect(error.message).toContain('Strobe');
+      expect(error.message).not.toContain('Red');
+      return true;
+    });
   });
 
   it('updateFixture with channelDefinitions trims names and reloads the fixture', async () => {
