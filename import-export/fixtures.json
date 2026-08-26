@@ -8,9 +8,181 @@
     {
       "publicId": "3ecfaac4-ec21-4e5e-bd23-505835b30ecc",
       "name": "eurolite"
+    },
+    {
+      "publicId": "c3528578-6995-4107-96eb-19010414ba24",
+      "name": "Stairville"
     }
   ],
   "fixtures": [
+    {
+      "publicId": "af168eb7-bac4-4240-93d9-196e1656f450",
+      "name": "LED CLS-18 QCL RGBW 18x8W",
+      "vendor": {
+        "publicId": "3ecfaac4-ec21-4e5e-bd23-505835b30ecc",
+        "name": "eurolite"
+      },
+      "channelDefinitions": [
+        {
+          "publicId": "8902ec7a-06c5-414e-831c-0b2629007289",
+          "name": "Red",
+          "order": 0,
+          "preset": "IntensityRed",
+          "ranges": [
+            {
+              "publicId": "58a76c2d-7ae0-4c57-bc6d-c2141f4f3f03",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Red (0 - 100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "51b0a0be-d997-46ff-9944-998ec91be069",
+          "name": "Green",
+          "order": 1,
+          "preset": "IntensityGreen",
+          "ranges": [
+            {
+              "publicId": "ffcf2058-5c4f-4a21-8f89-626b85823e00",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Green (0 - 100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
+          "name": "Blue",
+          "order": 2,
+          "preset": "IntensityBlue",
+          "ranges": [
+            {
+              "publicId": "c83fd4b2-842f-4719-8379-72ca48f01b01",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Blue (0 - 100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
+          "name": "White",
+          "order": 3,
+          "preset": "IntensityWhite",
+          "ranges": [
+            {
+              "publicId": "7434f52d-87f2-43ac-9d85-79ba539e931a",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "White (0 - 100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "c874a0ac-df1e-4e49-8131-2386646dcd71",
+          "name": "Dimmer",
+          "order": 4,
+          "preset": "IntensityMasterDimmer",
+          "ranges": [
+            {
+              "publicId": "5196e8dc-219d-42a4-a229-ba66855dfc15",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Dimmer (0 - 100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "93282597-1324-48a9-ac74-e5d9d6553657",
+          "name": "Functions",
+          "order": 5,
+          "preset": "Custom",
+          "ranges": [
+            {
+              "publicId": "2877d1d4-9f82-4134-a25b-b1df00573528",
+              "dmxStart": 0,
+              "dmxEnd": 0,
+              "description": "No Function"
+            },
+            {
+              "publicId": "d6f1ea3f-d665-4ffa-b27f-e41fd15663f7",
+              "dmxStart": 1,
+              "dmxEnd": 5,
+              "description": "Sound Control (15 colors)"
+            },
+            {
+              "publicId": "e2912017-97b2-4589-ac30-d6662e1b9bf0",
+              "dmxStart": 6,
+              "dmxEnd": 10,
+              "description": "No function"
+            },
+            {
+              "publicId": "f3fcd923-2957-45d9-a1ac-65b249e9cccb",
+              "dmxStart": 11,
+              "dmxEnd": 255,
+              "description": "Strobe (increasing)"
+            }
+          ]
+        }
+      ],
+      "channelModes": [
+        {
+          "publicId": "de7ba115-2902-4304-b669-373245cbe2ac",
+          "name": "4-channel mode",
+          "order": 0,
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864"
+            }
+          ]
+        },
+        {
+          "publicId": "827f5348-56af-4505-bfdb-573f5f47aaf1",
+          "name": "6-channel mode",
+          "order": 1,
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864"
+            },
+            {
+              "channelNumber": 5,
+              "channelDefinitionPublicId": "c874a0ac-df1e-4e49-8131-2386646dcd71"
+            },
+            {
+              "channelNumber": 6,
+              "channelDefinitionPublicId": "93282597-1324-48a9-ac74-e5d9d6553657"
+            }
+          ]
+        }
+      ]
+    },
     {
       "publicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
       "name": "Mega TriPar Profile Plus",
@@ -432,13 +604,771 @@
           "publicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
           "name": "9 channel mode",
           "order": 3,
-          "assignments": []
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de"
+            },
+            {
+              "channelNumber": 5,
+              "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95"
+            },
+            {
+              "channelNumber": 6,
+              "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119"
+            },
+            {
+              "channelNumber": 7,
+              "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f"
+            },
+            {
+              "channelNumber": 8,
+              "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4"
+            },
+            {
+              "channelNumber": 9,
+              "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba"
+            }
+          ]
         },
         {
           "publicId": "ff15eb13-055b-4a12-bafe-41af9a7e3d44",
           "name": "10 channel mode",
           "order": 4,
-          "assignments": []
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de"
+            },
+            {
+              "channelNumber": 5,
+              "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95"
+            },
+            {
+              "channelNumber": 6,
+              "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119"
+            },
+            {
+              "channelNumber": 7,
+              "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f"
+            },
+            {
+              "channelNumber": 8,
+              "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4"
+            },
+            {
+              "channelNumber": 9,
+              "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba"
+            },
+            {
+              "channelNumber": 10,
+              "channelDefinitionPublicId": "4ce86726-832b-424e-b7c0-ddd75fd98fcc"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "publicId": "5f34eb30-d45e-4025-b157-a09ae0f2f9cc",
+      "name": "CX-60 HEX",
+      "vendor": {
+        "publicId": "c3528578-6995-4107-96eb-19010414ba24",
+        "name": "Stairville"
+      },
+      "channelDefinitions": [],
+      "channelModes": []
+    },
+    {
+      "publicId": "7b46ef92-ea25-4cde-ba59-49c0c6b78f5e",
+      "name": "LED SLS-3 HCL 3x10W",
+      "vendor": {
+        "publicId": "3ecfaac4-ec21-4e5e-bd23-505835b30ecc",
+        "name": "eurolite"
+      },
+      "channelDefinitions": [
+        {
+          "publicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
+          "name": "Red",
+          "order": 0,
+          "preset": "IntensityRed",
+          "ranges": [
+            {
+              "publicId": "6b79877f-9472-4a17-a98f-8eec5e8d12d1",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Red (0-100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "124955a5-b62a-4d1b-9345-d546b0041284",
+          "name": "Green",
+          "order": 1,
+          "preset": "IntensityGreen",
+          "ranges": [
+            {
+              "publicId": "af764662-ca7f-4d85-8149-917ef8870bb0",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Green (0-100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
+          "name": "Blue",
+          "order": 2,
+          "preset": "IntensityBlue",
+          "ranges": [
+            {
+              "publicId": "62571a3a-8759-4357-852e-44ad3a0fcc26",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Blue (0-100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
+          "name": "White",
+          "order": 3,
+          "preset": "IntensityWhite",
+          "ranges": [
+            {
+              "publicId": "9e0c6e6e-4df6-4cb2-9853-ba3ab6113640",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "White (0-100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
+          "name": "Amber",
+          "order": 4,
+          "preset": "IntensityAmber",
+          "ranges": [
+            {
+              "publicId": "4cd55fd7-f5fc-4b26-8530-d471b6b6de88",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Amber (0-100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
+          "name": "UV",
+          "order": 5,
+          "preset": "IntensityUV",
+          "ranges": [
+            {
+              "publicId": "4202819b-39b4-48d7-aedc-0961ff6872ce",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "UV (0-100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
+          "name": "Dimmer",
+          "order": 6,
+          "preset": "IntensityMasterDimmer",
+          "ranges": [
+            {
+              "publicId": "2d8538d0-ae2f-4ca4-9fd2-92d621290439",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Dimmer (0-100%)"
+            }
+          ]
+        },
+        {
+          "publicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
+          "name": "Stobe",
+          "order": 7,
+          "preset": "ShutterStrobeSlowFast",
+          "ranges": [
+            {
+              "publicId": "1523e301-abda-45ae-aee1-40a0786098b4",
+              "dmxStart": 0,
+              "dmxEnd": 15,
+              "description": "Strobe off"
+            },
+            {
+              "publicId": "d6919204-a435-445c-a51e-545f65e43dd9",
+              "dmxStart": 16,
+              "dmxEnd": 255,
+              "description": "Strobe (increasing)"
+            }
+          ]
+        },
+        {
+          "publicId": "8a622a8d-651d-44e3-838c-adb278a87047",
+          "name": "Macros",
+          "order": 8,
+          "preset": "Custom",
+          "ranges": [
+            {
+              "publicId": "9a4c01aa-03df-44dd-8157-59e7d5c43938",
+              "dmxStart": 0,
+              "dmxEnd": 3,
+              "description": "Off"
+            },
+            {
+              "publicId": "8073a0d9-eed2-4837-ac1a-52a241d27045",
+              "dmxStart": 4,
+              "dmxEnd": 7,
+              "description": "Red"
+            },
+            {
+              "publicId": "4353e16f-c3d9-4758-a0e7-16b78128e3cc",
+              "dmxStart": 8,
+              "dmxEnd": 11,
+              "description": "Green"
+            },
+            {
+              "publicId": "3da84354-a0d4-4201-be68-03e3f57d4b30",
+              "dmxStart": 12,
+              "dmxEnd": 15,
+              "description": "Blue"
+            },
+            {
+              "publicId": "bb391cb2-a1af-4385-92e2-3846e7549599",
+              "dmxStart": 16,
+              "dmxEnd": 19,
+              "description": "White"
+            },
+            {
+              "publicId": "3c590c60-79d7-4d63-88da-3c3340c424e3",
+              "dmxStart": 20,
+              "dmxEnd": 23,
+              "description": "Amber"
+            },
+            {
+              "publicId": "8a7df69d-3f6c-4486-9819-6b31e2bf5967",
+              "dmxStart": 24,
+              "dmxEnd": 27,
+              "description": "UV"
+            },
+            {
+              "publicId": "360ebfb0-87b8-4e18-bfbe-2909ae201235",
+              "dmxStart": 28,
+              "dmxEnd": 31,
+              "description": "R+G"
+            },
+            {
+              "publicId": "38c72472-3bad-41c8-96b4-caa13c32e76c",
+              "dmxStart": 32,
+              "dmxEnd": 35,
+              "description": "R+B"
+            },
+            {
+              "publicId": "f3518e01-76a5-4ff0-8144-a25751b7fe33",
+              "dmxStart": 36,
+              "dmxEnd": 39,
+              "description": "R+W"
+            },
+            {
+              "publicId": "72ff5022-26a2-412e-af08-2a75ea2a119f",
+              "dmxStart": 40,
+              "dmxEnd": 43,
+              "description": "R+A"
+            },
+            {
+              "publicId": "45172a55-fe31-4f20-85a1-3448db96c040",
+              "dmxStart": 44,
+              "dmxEnd": 47,
+              "description": "R+UV"
+            },
+            {
+              "publicId": "18d0f3f3-1938-4cd1-8e0e-f5b43556a305",
+              "dmxStart": 48,
+              "dmxEnd": 51,
+              "description": "G+B"
+            },
+            {
+              "publicId": "e59f4d2b-2718-4c75-8061-8365befab86c",
+              "dmxStart": 52,
+              "dmxEnd": 55,
+              "description": "G+W"
+            },
+            {
+              "publicId": "80daa59a-b47d-4f4b-96e3-143eeb9111cf",
+              "dmxStart": 56,
+              "dmxEnd": 59,
+              "description": "G+A"
+            },
+            {
+              "publicId": "545819d8-3485-4928-81c2-f518ab40cd30",
+              "dmxStart": 60,
+              "dmxEnd": 63,
+              "description": "G+UV"
+            },
+            {
+              "publicId": "ec309ed0-e408-4b26-bb22-56754efc42e6",
+              "dmxStart": 64,
+              "dmxEnd": 67,
+              "description": "B+W"
+            },
+            {
+              "publicId": "4b568195-c43b-4b95-844b-210546bb10d1",
+              "dmxStart": 68,
+              "dmxEnd": 71,
+              "description": "B+A"
+            },
+            {
+              "publicId": "653f6150-bf7f-4a2f-9982-2a1af8261607",
+              "dmxStart": 72,
+              "dmxEnd": 75,
+              "description": "B+UV"
+            },
+            {
+              "publicId": "7bdb112c-a36e-4773-adc4-92401fc4ba53",
+              "dmxStart": 76,
+              "dmxEnd": 79,
+              "description": "W+A"
+            },
+            {
+              "publicId": "cdd8bfbf-5512-4303-ad11-6ef7f039fe1e",
+              "dmxStart": 80,
+              "dmxEnd": 83,
+              "description": "W+UV"
+            },
+            {
+              "publicId": "a54a0f84-5c94-4e61-be33-d376bf536ef3",
+              "dmxStart": 84,
+              "dmxEnd": 87,
+              "description": "A+UV"
+            },
+            {
+              "publicId": "a212092a-23da-46a7-86ad-34a35e3f8751",
+              "dmxStart": 88,
+              "dmxEnd": 91,
+              "description": "R+G+B"
+            },
+            {
+              "publicId": "dc1f2d3c-4050-444c-adef-652a4b5d2ca5",
+              "dmxStart": 92,
+              "dmxEnd": 95,
+              "description": "R+G+W"
+            },
+            {
+              "publicId": "1ff42e20-c183-4c31-a06e-d12a68b0831e",
+              "dmxStart": 96,
+              "dmxEnd": 99,
+              "description": "R+G+A"
+            },
+            {
+              "publicId": "c61f0400-e37c-442b-a488-ffcce14ed9c1",
+              "dmxStart": 100,
+              "dmxEnd": 103,
+              "description": "R+G+UV"
+            },
+            {
+              "publicId": "f8c1fd16-b453-42ed-99ad-183e13f3c559",
+              "dmxStart": 104,
+              "dmxEnd": 107,
+              "description": "R+B+W"
+            },
+            {
+              "publicId": "44bf736d-2017-430b-9811-92da6027d650",
+              "dmxStart": 108,
+              "dmxEnd": 111,
+              "description": "R+B+A"
+            },
+            {
+              "publicId": "3f9f444b-3218-40e9-972e-f0bc7bc16f42",
+              "dmxStart": 112,
+              "dmxEnd": 115,
+              "description": "R+B+UV"
+            },
+            {
+              "publicId": "79eb222a-1149-469f-90ae-afc2993d9601",
+              "dmxStart": 116,
+              "dmxEnd": 119,
+              "description": "R+W+A"
+            },
+            {
+              "publicId": "83afd479-f0c2-427d-95a5-51937752dd99",
+              "dmxStart": 120,
+              "dmxEnd": 123,
+              "description": "R+W+UV"
+            },
+            {
+              "publicId": "d565e16d-db87-4136-94a7-6f31a6c7478c",
+              "dmxStart": 124,
+              "dmxEnd": 127,
+              "description": "R+A+UV"
+            },
+            {
+              "publicId": "ec3e545e-41cc-4d82-820a-335cf8c6d955",
+              "dmxStart": 128,
+              "dmxEnd": 131,
+              "description": "G+B+W"
+            },
+            {
+              "publicId": "ac4fb98a-e377-4404-8070-49d681fbb97b",
+              "dmxStart": 132,
+              "dmxEnd": 135,
+              "description": "G+B+A"
+            },
+            {
+              "publicId": "46e5f6fb-cadd-471f-8230-a40026eed9a8",
+              "dmxStart": 136,
+              "dmxEnd": 139,
+              "description": "G+B+UV"
+            },
+            {
+              "publicId": "78ed5281-7da2-476c-9c8a-26d37a4fad0b",
+              "dmxStart": 140,
+              "dmxEnd": 143,
+              "description": "G+W+A"
+            },
+            {
+              "publicId": "4bf70332-854d-4410-b9ec-512fd1ab8d38",
+              "dmxStart": 144,
+              "dmxEnd": 147,
+              "description": "G+W+UV"
+            },
+            {
+              "publicId": "3eeabea6-417f-45fe-ad71-def203754fcc",
+              "dmxStart": 148,
+              "dmxEnd": 151,
+              "description": "G+A+UV"
+            },
+            {
+              "publicId": "c8206b2d-c213-4fd0-99d2-2f8514fcde6d",
+              "dmxStart": 152,
+              "dmxEnd": 155,
+              "description": "B+W+A"
+            },
+            {
+              "publicId": "4f83e37f-d9c3-4aee-af68-72d1de448016",
+              "dmxStart": 156,
+              "dmxEnd": 159,
+              "description": "B+W+UV"
+            },
+            {
+              "publicId": "f7af86f1-0986-4bea-ba20-dde5b550db0d",
+              "dmxStart": 160,
+              "dmxEnd": 163,
+              "description": "B+A+UV"
+            },
+            {
+              "publicId": "bc0c634f-430d-4cbd-afc2-faf8030315ef",
+              "dmxStart": 164,
+              "dmxEnd": 167,
+              "description": "W+A+UV"
+            },
+            {
+              "publicId": "8e3a1dac-4774-4bb2-89dc-0db9712495d7",
+              "dmxStart": 168,
+              "dmxEnd": 171,
+              "description": "R+G+B+W"
+            },
+            {
+              "publicId": "9312daf9-1833-466e-9ed4-093291340ca6",
+              "dmxStart": 172,
+              "dmxEnd": 175,
+              "description": "R+G+B+A"
+            },
+            {
+              "publicId": "f4dc5fc6-7465-4c54-ac4d-7edcb7151cf5",
+              "dmxStart": 176,
+              "dmxEnd": 179,
+              "description": "R+G+B+UV"
+            },
+            {
+              "publicId": "3a9349ff-58ad-4141-b3a0-00f43a6000f5",
+              "dmxStart": 180,
+              "dmxEnd": 183,
+              "description": "R+G+W+A"
+            },
+            {
+              "publicId": "be4e2803-9d5d-441d-81b0-1cfa7a2e822a",
+              "dmxStart": 184,
+              "dmxEnd": 187,
+              "description": "R+G+W+UV"
+            },
+            {
+              "publicId": "404fddf5-ba30-4074-bdb1-638f54b1df7a",
+              "dmxStart": 188,
+              "dmxEnd": 191,
+              "description": "R+G+A+UV"
+            },
+            {
+              "publicId": "527ec9d6-c335-4d81-91ce-cc9a14eaad77",
+              "dmxStart": 192,
+              "dmxEnd": 195,
+              "description": "R+B+W+A"
+            },
+            {
+              "publicId": "e1357046-3600-44af-ae78-17475a6aa195",
+              "dmxStart": 196,
+              "dmxEnd": 199,
+              "description": "R+B+W+UV"
+            },
+            {
+              "publicId": "c1d5a575-01fe-4a6c-8b31-87e4c2928d5f",
+              "dmxStart": 200,
+              "dmxEnd": 203,
+              "description": "R+B+A+UV"
+            },
+            {
+              "publicId": "5199417a-8952-48eb-a166-84cfa2da54ac",
+              "dmxStart": 204,
+              "dmxEnd": 207,
+              "description": "R+W+A+UV"
+            },
+            {
+              "publicId": "29d1e9ab-e061-4bfa-8f0f-606498424ee9",
+              "dmxStart": 208,
+              "dmxEnd": 211,
+              "description": "G+B+W+A"
+            },
+            {
+              "publicId": "e2c8317a-496b-4910-92e7-cc41a27a747e",
+              "dmxStart": 212,
+              "dmxEnd": 215,
+              "description": "G+B+W+UV"
+            },
+            {
+              "publicId": "7ad21e7f-5450-4a9f-8bb5-03a5de12e647",
+              "dmxStart": 216,
+              "dmxEnd": 219,
+              "description": "G+B+A+UV"
+            },
+            {
+              "publicId": "88a30977-ec71-484d-8ce3-bacbe9104840",
+              "dmxStart": 220,
+              "dmxEnd": 223,
+              "description": "G+W+A+UV"
+            },
+            {
+              "publicId": "cba47d90-2a6b-4b3e-b2cb-cf6ed7260937",
+              "dmxStart": 224,
+              "dmxEnd": 227,
+              "description": "B+W+A+UV"
+            },
+            {
+              "publicId": "849abb33-a927-43f5-8704-2782090cdd56",
+              "dmxStart": 228,
+              "dmxEnd": 231,
+              "description": "R+G+B+W+A"
+            },
+            {
+              "publicId": "fa2a289b-722a-4cec-bbf2-ea80c1317126",
+              "dmxStart": 232,
+              "dmxEnd": 235,
+              "description": "R+G+B+W+UV"
+            },
+            {
+              "publicId": "8559ddaf-3480-4f98-8dbc-b06db3dd301b",
+              "dmxStart": 236,
+              "dmxEnd": 239,
+              "description": "R+G+B+A+UV"
+            },
+            {
+              "publicId": "703c6226-311b-4826-9eda-23b44ea6b048",
+              "dmxStart": 240,
+              "dmxEnd": 243,
+              "description": "R+G+W+A+UV"
+            },
+            {
+              "publicId": "d5088d59-4614-4554-b8ad-02ff0e519591",
+              "dmxStart": 244,
+              "dmxEnd": 247,
+              "description": "R+B+W+A+UV"
+            },
+            {
+              "publicId": "6e09b9bb-e58a-4fbb-b9bd-b08a8bb26377",
+              "dmxStart": 248,
+              "dmxEnd": 251,
+              "description": "G+B+W+A+UV"
+            },
+            {
+              "publicId": "d7932868-de58-4d06-b810-18b75daa86aa",
+              "dmxStart": 252,
+              "dmxEnd": 255,
+              "description": "R+G+B+W+A+UV"
+            }
+          ]
+        }
+      ],
+      "channelModes": [
+        {
+          "publicId": "b01152c3-0af7-4437-82f3-cb6e90eb7720",
+          "name": "6-Channel Mode",
+          "order": 0,
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14"
+            },
+            {
+              "channelNumber": 5,
+              "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9"
+            },
+            {
+              "channelNumber": 6,
+              "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb"
+            }
+          ]
+        },
+        {
+          "publicId": "ba24ede7-47bb-4d33-85cc-55e8eb34f32a",
+          "name": "7-Channel Mode",
+          "order": 1,
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14"
+            },
+            {
+              "channelNumber": 5,
+              "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9"
+            },
+            {
+              "channelNumber": 6,
+              "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb"
+            },
+            {
+              "channelNumber": 7,
+              "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc"
+            }
+          ]
+        },
+        {
+          "publicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
+          "name": "8-Channel Mode",
+          "order": 2,
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14"
+            },
+            {
+              "channelNumber": 5,
+              "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9"
+            },
+            {
+              "channelNumber": 6,
+              "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb"
+            },
+            {
+              "channelNumber": 7,
+              "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc"
+            },
+            {
+              "channelNumber": 8,
+              "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264"
+            }
+          ]
+        },
+        {
+          "publicId": "795aa9fc-ce32-4797-8cb2-64349b500d7b",
+          "name": "9-Channel Mode",
+          "order": 3,
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14"
+            },
+            {
+              "channelNumber": 5,
+              "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9"
+            },
+            {
+              "channelNumber": 6,
+              "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb"
+            },
+            {
+              "channelNumber": 7,
+              "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc"
+            },
+            {
+              "channelNumber": 8,
+              "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264"
+            },
+            {
+              "channelNumber": 9,
+              "channelDefinitionPublicId": "8a622a8d-651d-44e3-838c-adb278a87047"
+            }
+          ]
         }
       ]
     }
