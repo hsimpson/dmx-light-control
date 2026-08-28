@@ -4,6 +4,27 @@
   "sourceRoot": "apps/backend/src",
   "projectType": "application",
   "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{workspaceRoot}/dist/apps/backend"],
+      "options": {
+        "webpackConfig": "apps/backend/webpack.config.cjs",
+        "isolatedConfig": true,
+        "outputPath": "dist/apps/backend",
+        "main": "apps/backend/src/main.ts",
+        "tsConfig": "apps/backend/tsconfig.app.json",
+        "generatePackageJson": true,
+        "target": "node"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
     "prune-lockfile": {
       "dependsOn": ["build"],
       "cache": true,
