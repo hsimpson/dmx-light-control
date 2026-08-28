@@ -1,11 +1,14 @@
 import { InjectDb } from '@/db/drizzle-db/drizzle-db.provider';
 import { optionalImportTimestamps } from '@/db/import-timestamps.input';
 import { relations } from '@/db/relations';
+import { fixture, fixtureChannelMode } from '@/fixtures/entities';
 import { ImportProjectsInput } from '@/projects/dto/import-projects.dto';
-import { project } from '@/projects/entities';
+import { project, projectFixture } from '@/projects/entities';
 import { mapProjectsToExportDocument, ProjectExportDocument } from '@/projects/project-export.mapper';
 import { assertImportDocument } from '@/projects/project-import.validator';
+import { assertChannelModeBelongsToFixture, assertValidPatchAddress } from '@/projects/project-fixture.validation';
 import { ProjectImportConflictException } from '@/projects/project.exceptions';
+import { ProjectFixtureRepository } from '@/projects/repositories/project-fixture.repository';
 import { ProjectRepository } from '@/projects/repositories/project.repository';
 import { Injectable } from '@nestjs/common';
 import { eq, InferSelectModel } from 'drizzle-orm';
@@ -41,10 +44,11 @@ export class ProjectImportExportService {
   public constructor(
     @InjectDb() private readonly db: Db,
     private readonly projectRepository: ProjectRepository,
+    private readonly projectFixtureRepository: ProjectFixtureRepository,
   ) {}
 
   public async exportProjects(): Promise<ProjectExportDocument> {
-    const projects = await this.projectRepository.findMany();
+    const projects = await this.projectRepository.findManyWithFixtures();
     return mapProjectsToExportDocument(projects);
   }
 
@@ -58,6 +62,7 @@ export class ProjectImportExportService {
       const publicIds: string[] = [];
       for (const incoming of document.projects) {
         const row = await this.upsertProject(tx, incoming);
+        await this.replaceProjectFixtures(tx, row, incoming);
         publicIds.push(row.publicId ?? incoming.publicId ?? incoming.name);
       }
       return publicIds;
@@ -117,6 +122,58 @@ export class ProjectImportExportService {
     }
   }
 
+  private async replaceProjectFixtures(
+    tx: Tx,
+    projectRow: ProjectRow,
+    incoming: ImportProjectsInput['projects'][number],
+  ): Promise<void> {
+    const projectId = projectRow.id;
+    if (projectId === null) {
+      throw new ProjectImportConflictException(`Failed to import fixtures for project "${incoming.name}"`);
+    }
+
+    await tx.delete(projectFixture).where(eq(projectFixture.projectId, projectId));
+
+    const instances = incoming.projectFixtures ?? [];
+    for (const instance of instances) {
+      const fixtureRow = await this.findFixtureByPublicId(tx, instance.fixturePublicId);
+      if (!fixtureRow?.id) {
+        throw new ProjectImportConflictException(
+          `Fixture publicId ${instance.fixturePublicId} not found for project "${incoming.name}"`,
+        );
+      }
+
+      const modeRow = await this.findChannelModeByPublicId(tx, instance.channelModePublicId);
+      if (!modeRow?.id) {
+        throw new ProjectImportConflictException(
+          `Channel mode publicId ${instance.channelModePublicId} not found for project "${incoming.name}"`,
+        );
+      }
+
+      const modeWithAssignments = await tx.query.fixtureChannelMode.findFirst({
+        where: { id: modeRow.id },
+        with: { fixtureChannelAssignments: true },
+      });
+      if (!modeWithAssignments) {
+        throw new ProjectImportConflictException(
+          `Channel mode publicId ${instance.channelModePublicId} not found for project "${incoming.name}"`,
+        );
+      }
+
+      assertChannelModeBelongsToFixture(modeWithAssignments, fixtureRow.id);
+      assertValidPatchAddress(instance.startAddress, modeWithAssignments);
+
+      await tx.insert(projectFixture).values({
+        projectId,
+        fixtureId: fixtureRow.id,
+        fixtureChannelModeId: modeRow.id,
+        startAddress: instance.startAddress,
+        ...optionalPublicId(instance.publicId),
+        ...optionalImportTimestamps(instance),
+      });
+    }
+  }
+
   private async findByPublicId(tx: Tx, publicId: string): Promise<ProjectRow | undefined> {
     const rows = await tx.select().from(project).where(eq(project.publicId, publicId)).limit(1);
     return rows[0];
@@ -124,6 +181,16 @@ export class ProjectImportExportService {
 
   private async findByName(tx: Tx, name: string): Promise<ProjectRow | undefined> {
     const rows = await tx.select().from(project).where(eq(project.name, name)).limit(1);
+    return rows[0];
+  }
+
+  private async findFixtureByPublicId(tx: Tx, publicId: string) {
+    const rows = await tx.select().from(fixture).where(eq(fixture.publicId, publicId)).limit(1);
+    return rows[0];
+  }
+
+  private async findChannelModeByPublicId(tx: Tx, publicId: string) {
+    const rows = await tx.select().from(fixtureChannelMode).where(eq(fixtureChannelMode.publicId, publicId)).limit(1);
     return rows[0];
   }
 }

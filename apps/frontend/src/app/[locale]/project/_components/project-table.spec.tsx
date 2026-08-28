@@ -11,6 +11,12 @@ import { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ProjectTable from './project-table';
 
+const push = vi.fn();
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push }),
+}));
+
 vi.mock('@mantine/notifications', () => ({
   notifications: { show: vi.fn() },
 }));

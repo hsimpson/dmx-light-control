@@ -86,7 +86,7 @@ Harness maintenance is part of **done**, not optional docs.
 ### Backend (`apps/backend/src/`)
 
 - NestJS + Apollo GraphQL on Fastify (`autoSchemaFile: true`)
-- Domain modules: `FixturesModule`, `ProjectsModule`. `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` is imported by `DmxModule`. `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
+- Domain modules: `FixturesModule`, `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` is imported by `DmxModule`. `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
 - Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). Import/export is Resolver → `FixtureImportExportService` / `ProjectImportExportService` (`InjectDb()` + repositories + transactions). IO resolvers may emit events or call services without repositories.
 - Tests: Vitest unit/integration (`src/**/*.spec.ts`); GraphQL e2e in `src/e2e-tests/`; Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
 - Repositories use `InjectDb()` for typed Drizzle connection
@@ -166,7 +166,7 @@ fixtures/
 ### Drizzle ORM
 
 - `d.snakeCase.table()`, helpers `pk` + `timestamps` from `@/db/columns.helpers`
-- Relations in `relations.ts`; repositories for entity CRUD; fixture and project import/export also use `InjectDb()` and transactions
+- Relations in `relations.ts`; repositories for entity CRUD; fixture and project import/export also use `InjectDb()` and transactions; `project_fixtures` links a project to catalog fixture + channel mode + DMX start address
 
 ### React
 

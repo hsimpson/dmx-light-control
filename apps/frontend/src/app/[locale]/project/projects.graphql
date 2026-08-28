@@ -5,9 +5,40 @@ fragment ProjectFields on ProjectDto {
   updatedAt
 }
 
+fragment ProjectFixtureFields on ProjectFixtureDto {
+  publicId
+  startAddress
+  fixture {
+    publicId
+    name
+    fixtureVendor {
+      publicId
+      name
+    }
+  }
+  channelMode {
+    publicId
+    name
+    fixtureChannelAssignments {
+      channelNumber
+    }
+  }
+  createdAt
+  updatedAt
+}
+
 query GetProjects {
   projects {
     ...ProjectFields
+  }
+}
+
+query GetProject($publicId: UUID!) {
+  project(publicId: $publicId) {
+    ...ProjectFields
+    projectFixtures {
+      ...ProjectFixtureFields
+    }
   }
 }
 
@@ -30,6 +61,25 @@ mutation DeleteProject($publicId: UUID!) {
   }
 }
 
+mutation AddProjectFixture($input: AddProjectFixtureInput!) {
+  addProjectFixture(input: $input) {
+    ...ProjectFixtureFields
+  }
+}
+
+mutation UpdateProjectFixture($input: UpdateProjectFixtureInput!) {
+  updateProjectFixture(input: $input) {
+    ...ProjectFixtureFields
+  }
+}
+
+mutation DeleteProjectFixture($publicId: UUID!) {
+  deleteProjectFixture(publicId: $publicId) {
+    publicId
+    deleted
+  }
+}
+
 query ExportProjects {
   exportProjects {
     schemaVersion
@@ -38,6 +88,14 @@ query ExportProjects {
       name
       createdAt
       updatedAt
+      projectFixtures {
+        publicId
+        startAddress
+        fixturePublicId
+        channelModePublicId
+        createdAt
+        updatedAt
+      }
     }
   }
 }

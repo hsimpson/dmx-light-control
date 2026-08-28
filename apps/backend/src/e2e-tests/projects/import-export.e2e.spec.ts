@@ -109,7 +109,7 @@ describe('Project import/export', () => {
     });
 
     const body = await graphqlQuery<ExportProjectsQuery>(app.getHttpAdapter().getInstance().server, EXPORT_PROJECTS);
-    expect(body.data?.exportProjects.schemaVersion).toBe(1);
+    expect(body.data?.exportProjects.schemaVersion).toBe(2);
     const exported = body.data?.exportProjects.projects.find(project => project.name === 'Export List Project');
     expect(exported?.createdAt).toBeTruthy();
     expect(exported?.updatedAt).toBeTruthy();
@@ -189,7 +189,7 @@ describe('Project import/export', () => {
       {
         variables: {
           document: {
-            schemaVersion: 2,
+            schemaVersion: 99,
             projects: [],
           },
         },

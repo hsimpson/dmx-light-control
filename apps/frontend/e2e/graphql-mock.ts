@@ -24,7 +24,25 @@ export const mockedFixture = {
       order: 0,
       createdAt: now,
       updatedAt: now,
-      fixtureChannelAssignments: [],
+      fixtureChannelAssignments: [
+        {
+          __typename: 'FixtureChannelAssignmentDto',
+          publicId: 'assign-1',
+          channelNumber: 1,
+          createdAt: now,
+          updatedAt: now,
+          fixtureChannelDefinition: {
+            __typename: 'FixtureChannelDefinitionDto',
+            publicId: 'def-1',
+            name: 'Dimmer',
+            order: 0,
+            preset: 'DIMMER',
+            createdAt: now,
+            updatedAt: now,
+            fixtureChannelRanges: [],
+          },
+        },
+      ],
     },
   ],
 };
@@ -37,9 +55,36 @@ export const mockedProject = {
   updatedAt: now,
 };
 
+type MockedProjectFixture = {
+  __typename: 'ProjectFixtureDto';
+  publicId: string;
+  startAddress: number;
+  createdAt: string;
+  updatedAt: string;
+  fixture: {
+    __typename: 'ProjectFixtureFixtureDto';
+    publicId: string;
+    name: string;
+    fixtureVendor: {
+      __typename: 'FixtureVendorDto';
+      publicId: string;
+      name: string;
+    };
+  };
+  channelMode: {
+    __typename: 'ProjectFixtureChannelModeDto';
+    publicId: string;
+    name: string;
+    fixtureChannelAssignments: { channelNumber: number }[];
+  };
+};
+
 export const mockGraphql = async (page: Page) => {
   const fixtures = [mockedFixture];
   const projects = [{ ...mockedProject }];
+  const projectFixtures: Record<string, MockedProjectFixture[]> = {
+    [mockedProject.publicId]: [],
+  };
 
   await page.route('**/graphql', async route => {
     if (route.request().method() === 'OPTIONS') {
@@ -53,7 +98,15 @@ export const mockGraphql = async (page: Page) => {
       variables?: {
         name?: string;
         publicId?: string;
-        input?: { publicId?: string; name?: string };
+        input?: {
+          publicId?: string;
+          name?: string;
+          projectPublicId?: string;
+          fixturePublicId?: string;
+          channelModePublicId?: string;
+          startAddress?: number;
+          channelModePublicId?: string;
+        };
         document?: { schemaVersion: number; projects: { publicId?: string; name: string }[] };
       };
     };
@@ -63,8 +116,14 @@ export const mockGraphql = async (page: Page) => {
       body = {
         data: {
           exportProjects: {
-            schemaVersion: 1,
-            projects: projects.map(project => ({ publicId: project.publicId, name: project.name })),
+            schemaVersion: 2,
+            projects: projects.map(project => ({
+              publicId: project.publicId,
+              name: project.name,
+              createdAt: project.createdAt,
+              updatedAt: project.updatedAt,
+              projectFixtures: projectFixtures[project.publicId] ?? [],
+            })),
           },
         },
       };
@@ -96,6 +155,19 @@ export const mockGraphql = async (page: Page) => {
       };
     } else if (postData.operationName === 'GetProjects' || postData.query?.includes('projects {')) {
       body = { data: { projects: [...projects] } };
+    } else if (postData.operationName === 'GetProject' || postData.query?.includes('project(publicId')) {
+      const publicId = postData.variables?.publicId ?? mockedProject.publicId;
+      const project = projects.find(entry => entry.publicId === publicId);
+      body = {
+        data: {
+          project: project
+            ? {
+                ...project,
+                projectFixtures: projectFixtures[publicId] ?? [],
+              }
+            : null,
+        },
+      };
     } else if (postData.operationName === 'CreateProject' || postData.query?.includes('createProject')) {
       const name = postData.variables?.name ?? 'New Project';
       const created = {
@@ -106,6 +178,7 @@ export const mockGraphql = async (page: Page) => {
         updatedAt: now,
       };
       projects.push(created);
+      projectFixtures[created.publicId] = [];
       body = { data: { createProject: created } };
     } else if (postData.operationName === 'UpdateProject' || postData.query?.includes('updateProject')) {
       const publicId = postData.variables?.input?.publicId;
@@ -122,6 +195,76 @@ export const mockGraphql = async (page: Page) => {
         projects.splice(index, 1);
       }
       body = { data: { deleteProject: { publicId, deleted: index >= 0 } } };
+    } else if (postData.operationName === 'AddProjectFixture' || postData.query?.includes('addProjectFixture')) {
+      const input = postData.variables?.input;
+      const projectPublicId = input?.projectPublicId ?? mockedProject.publicId;
+      const fixture = fixtures.find(entry => entry.publicId === input?.fixturePublicId) ?? mockedFixture;
+      const mode =
+        fixture.fixtureChannelModes.find(entry => entry.publicId === input?.channelModePublicId) ??
+        fixture.fixtureChannelModes[0];
+      const created: MockedProjectFixture = {
+        __typename: 'ProjectFixtureDto',
+        publicId: `pf-${(projectFixtures[projectPublicId]?.length ?? 0) + 1}`,
+        startAddress: input?.startAddress ?? 1,
+        createdAt: now,
+        updatedAt: now,
+        fixture: {
+          __typename: 'ProjectFixtureFixtureDto',
+          publicId: fixture.publicId,
+          name: fixture.name,
+          fixtureVendor: {
+            __typename: 'FixtureVendorDto',
+            publicId: fixture.fixtureVendor.publicId,
+            name: fixture.fixtureVendor.name,
+          },
+        },
+        channelMode: {
+          __typename: 'ProjectFixtureChannelModeDto',
+          publicId: mode?.publicId ?? 'mode-8',
+          name: mode?.name ?? '8ch',
+          fixtureChannelAssignments: mode?.fixtureChannelAssignments.map(assignment => ({
+            channelNumber: assignment.channelNumber,
+          })) ?? [{ channelNumber: 1 }],
+        },
+      };
+      projectFixtures[projectPublicId] = [...(projectFixtures[projectPublicId] ?? []), created];
+      body = { data: { addProjectFixture: created } };
+    } else if (postData.operationName === 'UpdateProjectFixture' || postData.query?.includes('updateProjectFixture')) {
+      const input = postData.variables?.input;
+      const instances = Object.values(projectFixtures).flat();
+      const existing = instances.find(instance => instance.publicId === input?.publicId);
+      if (existing) {
+        if (input?.startAddress !== undefined) {
+          existing.startAddress = input.startAddress;
+        }
+        if (input?.channelModePublicId) {
+          const mode = mockedFixture.fixtureChannelModes.find(entry => entry.publicId === input.channelModePublicId);
+          if (mode) {
+            existing.channelMode = {
+              __typename: 'ProjectFixtureChannelModeDto',
+              publicId: mode.publicId,
+              name: mode.name,
+              fixtureChannelAssignments: mode.fixtureChannelAssignments.map(assignment => ({
+                channelNumber: assignment.channelNumber,
+              })),
+            };
+          }
+        }
+      }
+      body = { data: { updateProjectFixture: existing ?? null } };
+    } else if (postData.operationName === 'DeleteProjectFixture' || postData.query?.includes('deleteProjectFixture')) {
+      const publicId = postData.variables?.publicId;
+      let deleted = false;
+      for (const [projectPublicId, instances] of Object.entries(projectFixtures)) {
+        const index = instances.findIndex(instance => instance.publicId === publicId);
+        if (index >= 0) {
+          instances.splice(index, 1);
+          projectFixtures[projectPublicId] = instances;
+          deleted = true;
+          break;
+        }
+      }
+      body = { data: { deleteProjectFixture: { publicId, deleted } } };
     } else if (postData.operationName === 'ExportFixtures' || postData.query?.includes('exportFixtures')) {
       body = {
         data: {

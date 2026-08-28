@@ -1,3 +1,17 @@
+input AddProjectFixtureInput {
+  """The public ID of the channel mode"""
+  channelModePublicId: UUID!
+
+  """The public ID of the catalog fixture"""
+  fixturePublicId: UUID!
+
+  """The public ID of the project"""
+  projectPublicId: UUID!
+
+  """The DMX start address (1–512)"""
+  startAddress: Int!
+}
+
 input ChannelValuesInput {
   """The list of DMX channel values"""
   dmxValues: [DmxValueInput!]! = [{ channel: 1, value: 127 }]
@@ -47,6 +61,16 @@ type DeleteFixtureVendorPayload {
   deleted: Boolean!
 
   """The public id of the vendor that was requested for deletion"""
+  publicId: UUID!
+}
+
+type DeleteProjectFixturePayload {
+  """
+  True if a project fixture was deleted, false if no instance matched the public id
+  """
+  deleted: Boolean!
+
+  """The public id of the project fixture that was requested for deletion"""
   publicId: UUID!
 }
 
@@ -464,12 +488,35 @@ type ImportFixturesPayload {
   importedCount: Int!
 }
 
+input ImportProjectFixtureInput {
+  """The public ID of the channel mode"""
+  channelModePublicId: UUID!
+
+  """The date and time when the entity was created"""
+  createdAt: DateTime
+
+  """The public ID of the catalog fixture"""
+  fixturePublicId: UUID!
+
+  """The public ID of the project fixture instance"""
+  publicId: UUID
+
+  """The DMX start address of the patched fixture instance"""
+  startAddress: Int!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime
+}
+
 input ImportProjectInput {
   """The date and time when the entity was created"""
   createdAt: DateTime
 
   """The name of the project"""
   name: String!
+
+  """The fixture instances patched into this project"""
+  projectFixtures: [ImportProjectFixtureInput!]
 
   """The public ID of the project"""
   publicId: UUID
@@ -511,6 +558,9 @@ type MidiDevicesDto {
 }
 
 type Mutation {
+  """add a catalog fixture instance to a project"""
+  addProjectFixture(input: AddProjectFixtureInput!): ProjectFixtureDto!
+
   """Close the specified MIDI ports"""
   closePorts: Boolean
 
@@ -531,6 +581,9 @@ type Mutation {
 
   """delete a project by public id"""
   deleteProject(publicId: UUID!): DeleteProjectPayload!
+
+  """delete a project fixture instance by public id"""
+  deleteProjectFixture(publicId: UUID!): DeleteProjectFixturePayload!
 
   """
   import fixtures and related entities from a versioned JSON document, upserting by publicId or name
@@ -553,6 +606,9 @@ type Mutation {
 
   """update an existing project"""
   updateProject(input: UpdateProjectInput!): ProjectDto!
+
+  """update a project fixture instance"""
+  updateProjectFixture(input: UpdateProjectFixtureInput!): ProjectFixtureDto!
 }
 
 input OpenPortsInput {
@@ -570,6 +626,9 @@ type ProjectDto {
   """The name of the project"""
   name: String!
 
+  """The fixture instances patched into this project"""
+  projectFixtures: [ProjectFixtureDto!]!
+
   """The public id, unique identifier of the entity"""
   publicId: UUID!
 
@@ -585,6 +644,26 @@ type ProjectExportDocumentDto {
   schemaVersion: Int!
 }
 
+type ProjectExportFixtureDto {
+  """The public ID of the channel mode"""
+  channelModePublicId: UUID!
+
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The public ID of the catalog fixture"""
+  fixturePublicId: UUID!
+
+  """The public ID of the project fixture instance"""
+  publicId: UUID!
+
+  """The DMX start address of the patched fixture instance"""
+  startAddress: Int!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
+}
+
 type ProjectExportProjectDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
@@ -592,7 +671,69 @@ type ProjectExportProjectDto {
   """The name of the project"""
   name: String!
 
+  """The fixture instances patched into this project"""
+  projectFixtures: [ProjectExportFixtureDto!]!
+
   """The public ID of the project"""
+  publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
+}
+
+type ProjectFixtureChannelAssignmentDto {
+  """The 1-based DMX channel number of the assignment"""
+  channelNumber: Int!
+}
+
+type ProjectFixtureChannelModeDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The channel assignments of the channel mode"""
+  fixtureChannelAssignments: [ProjectFixtureChannelAssignmentDto!]!
+
+  """The name of the channel mode"""
+  name: String!
+
+  """The public id, unique identifier of the entity"""
+  publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
+}
+
+type ProjectFixtureDto {
+  """The channel mode used for this instance"""
+  channelMode: ProjectFixtureChannelModeDto!
+
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The catalog fixture type of this instance"""
+  fixture: ProjectFixtureFixtureDto!
+
+  """The public id, unique identifier of the entity"""
+  publicId: UUID!
+
+  """The DMX start address of the patched fixture instance"""
+  startAddress: Int!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
+}
+
+type ProjectFixtureFixtureDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The vendor of the fixture"""
+  fixtureVendor: FixtureVendorDto!
+
+  """The name of the fixture"""
+  name: String!
+
+  """The public id, unique identifier of the entity"""
   publicId: UUID!
 
   """The date and time when the entity was last updated"""
@@ -712,6 +853,17 @@ input UpdateFixtureVendorInput {
 
   """The public ID of the vendor (used for updates)"""
   publicId: UUID
+}
+
+input UpdateProjectFixtureInput {
+  """The public ID of the channel mode"""
+  channelModePublicId: UUID
+
+  """The public ID of the project fixture instance"""
+  publicId: UUID!
+
+  """The DMX start address (1–512)"""
+  startAddress: Int
 }
 
 input UpdateProjectInput {

@@ -23,6 +23,13 @@ export class FixtureChannelModeRepository extends BaseRepository<typeof fixtureC
     super(db, fixtureChannelMode);
   }
 
+  public async findOneByIdWithAssignments(id: number) {
+    return this.db.query.fixtureChannelMode.findFirst({
+      where: { id },
+      with: { fixtureChannelAssignments: true },
+    });
+  }
+
   public async replaceAllForFixture(fixtureId: number, modes: ReplaceFixtureChannelModeInput[]): Promise<void> {
     await this.db.transaction(async tx => {
       const existing = await tx.select().from(fixtureChannelMode).where(eq(fixtureChannelMode.fixtureId, fixtureId));

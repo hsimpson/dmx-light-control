@@ -7,7 +7,7 @@ import { useQuery } from '@apollo/client/react';
 import { Title } from '@mantine/core';
 import FixtureForm from '../_components/fixture-form';
 
-export const AddFixturePage = () => {
+const AddFixturePage = () => {
   const { t } = useTranslation();
   const { data: vendorsData, loading: vendorsLoading } = useQuery(GetFixtureVendorsDocument);
 

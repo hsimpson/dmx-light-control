@@ -1,37 +1,61 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ProjectAlreadyExistsException, ProjectNotFoundException } from './project.exceptions';
 import { ProjectService } from './project.service';
+import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
 import { ProjectRepository } from './repositories/project.repository';
+import { FixtureChannelModeRepository } from '@/fixtures/repositories/fixture-channel-mode.repository';
+import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
 
 function build() {
   const projectRepository = {
     findMany: vi.fn<() => Promise<unknown[]>>(),
     findOneByPublicId: vi.fn<() => Promise<unknown>>(),
+    findOneByPublicIdWithFixtures: vi.fn<() => Promise<unknown>>(),
     createOne: vi.fn<() => Promise<unknown>>(),
     updateOneByPublicId: vi.fn<() => Promise<unknown>>(),
     deleteOneByPublicId: vi.fn<() => Promise<boolean>>(),
   };
-  const service = new ProjectService(projectRepository as unknown as ProjectRepository);
-  return { service, projectRepository };
+  const projectFixtureRepository = {
+    createOne: vi.fn(),
+    findOneByPublicId: vi.fn(),
+    updateOneByPublicId: vi.fn(),
+    deleteOneByPublicId: vi.fn(),
+  };
+  const fixtureRepository = { findOneByPublicId: vi.fn() };
+  const fixtureChannelModeRepository = {
+    findOneByPublicId: vi.fn(),
+    findOneByIdWithAssignments: vi.fn(),
+  };
+  const service = new ProjectService(
+    projectRepository as unknown as ProjectRepository,
+    projectFixtureRepository as unknown as ProjectFixtureRepository,
+    fixtureRepository as unknown as FixtureRepository,
+    fixtureChannelModeRepository as unknown as FixtureChannelModeRepository,
+  );
+  return { service, projectRepository, projectFixtureRepository, fixtureRepository, fixtureChannelModeRepository };
 }
 
 describe('ProjectService', () => {
-  it('getAllProjects delegates to repository', async () => {
+  it('getAllProjects delegates to repository and returns empty projectFixtures', async () => {
     const { service, projectRepository } = build();
-    projectRepository.findMany.mockResolvedValue(['p']);
-    expect(await service.getAllProjects()).toEqual(['p']);
+    projectRepository.findMany.mockResolvedValue([{ publicId: 'p', name: 'x' }]);
+    expect(await service.getAllProjects()).toEqual([{ publicId: 'p', name: 'x', projectFixtures: [] }]);
   });
 
   it('getProjectByPublicId delegates', async () => {
     const { service, projectRepository } = build();
-    projectRepository.findOneByPublicId.mockResolvedValue('p');
-    expect(await service.getProjectByPublicId('id')).toBe('p');
+    projectRepository.findOneByPublicIdWithFixtures.mockResolvedValue({
+      publicId: 'p',
+      name: 'x',
+      projectFixtures: [],
+    });
+    expect(await service.getProjectByPublicId('id')).toEqual({ publicId: 'p', name: 'x', projectFixtures: [] });
   });
 
   it('createProject delegates', async () => {
     const { service, projectRepository } = build();
-    projectRepository.createOne.mockResolvedValue('created');
-    expect(await service.createProject({ name: 'x' })).toBe('created');
+    projectRepository.createOne.mockResolvedValue({ publicId: 'p', name: 'x' });
+    expect(await service.createProject({ name: 'x' })).toEqual({ publicId: 'p', name: 'x', projectFixtures: [] });
   });
 
   it('createProject maps unique violation to PROJECT_ALREADY_EXISTS', async () => {
@@ -58,7 +82,7 @@ describe('ProjectService', () => {
     projectRepository.updateOneByPublicId.mockResolvedValue({ name: 'new' });
     const result = await service.updateProject({ publicId: 'p', name: 'new' });
     expect(projectRepository.updateOneByPublicId).toHaveBeenCalledWith('p', { name: 'new' });
-    expect(result).toEqual({ name: 'new' });
+    expect(result).toEqual({ name: 'new', projectFixtures: [] });
   });
 
   it('updateProject throws PROJECT_NOT_FOUND when missing', async () => {

@@ -1,7 +1,7 @@
 info:
   name: createProject
   type: graphql
-  seq: 4
+  seq: 5
 
 graphql:
   method: POST
@@ -13,6 +13,33 @@ graphql:
         createProject(input: $input) {
           createdAt
           name
+          projectFixtures {
+            channelMode {
+              createdAt
+              fixtureChannelAssignments {
+                channelNumber
+              }
+              name
+              publicId
+              updatedAt
+            }
+            createdAt
+            fixture {
+              createdAt
+              fixtureVendor {
+                createdAt
+                name
+                publicId
+                updatedAt
+              }
+              name
+              publicId
+              updatedAt
+            }
+            publicId
+            startAddress
+            updatedAt
+          }
           publicId
           updatedAt
         }

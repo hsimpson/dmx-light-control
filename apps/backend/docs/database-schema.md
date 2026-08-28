@@ -10,6 +10,9 @@ erDiagram
     fixtures ||--o{ fixture_channel_definitions : "fixture_id"
     fixtures ||--o{ fixture_channel_modes : "fixture_id"
     fixture_channel_definitions ||--o{ fixture_channel_ranges : "fixture_channel_definition_id"
+    projects ||--o{ project_fixtures : "project_id"
+    fixtures ||--o{ project_fixtures : "fixture_id"
+    fixture_channel_modes ||--o{ project_fixtures : "fixture_channel_mode_id"
     fixtures {
         integer id PK
         uuid public_id UK
@@ -67,6 +70,16 @@ erDiagram
         integer id PK
         uuid public_id UK
         varchar name UK
+        timestamp created_at
+        timestamp updated_at
+    }
+    project_fixtures {
+        integer id PK
+        uuid public_id UK
+        integer project_id FK
+        integer fixture_id FK
+        integer fixture_channel_mode_id FK
+        integer start_address
         timestamp created_at
         timestamp updated_at
     }
