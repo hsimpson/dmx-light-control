@@ -15,6 +15,10 @@ type FixtureChannelRangeTableProps = {
   onDelete?: (rangeToDelete: FixtureChannelRange) => void;
 };
 
+const SCROLL_THRESHOLD = 10;
+const ROW_HEIGHT = 40;
+const HEADER_HEIGHT = 40;
+
 const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onDelete }: FixtureChannelRangeTableProps) => {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
@@ -36,6 +40,8 @@ const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onDelete }: Fix
   };
 
   const canSubmit = start.trim() && end.trim() && description.trim();
+  const sortedRecords = [...fixtureChannelRanges].sort(dmxRangeSorter);
+  const tableHeight = sortedRecords.length > SCROLL_THRESHOLD ? HEADER_HEIGHT + SCROLL_THRESHOLD * ROW_HEIGHT : 'auto';
 
   const handleAdd = () => {
     if (!canSubmit) return;
@@ -85,9 +91,9 @@ const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onDelete }: Fix
         striped
         highlightOnHover
         minHeight={150}
-        height="auto"
+        height={tableHeight}
         idAccessor={idAccessor}
-        records={[...fixtureChannelRanges].sort(dmxRangeSorter)}
+        records={sortedRecords}
         columns={[
           {
             accessor: 'dmxStart',
