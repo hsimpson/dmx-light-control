@@ -13,9 +13,45 @@ import { ActionIcon, Button, Group, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { TrashIcon } from '@phosphor-icons/react';
-import { DataTable } from 'mantine-datatable';
+import { DataTable, type DataTableSortStatus } from 'mantine-datatable';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+
+const DEFAULT_SORT_STATUS: DataTableSortStatus<Fixture> = {
+  columnAccessor: 'fixtureVendor.name',
+  direction: 'asc',
+};
+
+const getFixtureSortValue = (fixture: Fixture, columnAccessor: string): string | number => {
+  switch (columnAccessor) {
+    case 'fixtureVendor.name':
+      return fixture.fixtureVendor.name;
+    case 'name':
+      return fixture.name;
+    case 'fixtureChannelModes':
+      return [...fixture.fixtureChannelModes]
+        .sort(orderSorter)
+        .map(channelMode => channelMode.name)
+        .join(', ');
+    case 'createdAt':
+      return new Date(fixture.createdAt).getTime();
+    case 'updatedAt':
+      return new Date(fixture.updatedAt).getTime();
+    default:
+      return '';
+  }
+};
+
+const compareFixtures = (a: Fixture, b: Fixture, sortStatus: DataTableSortStatus<Fixture>): number => {
+  const aValue = getFixtureSortValue(a, sortStatus.columnAccessor);
+  const bValue = getFixtureSortValue(b, sortStatus.columnAccessor);
+  const comparison =
+    typeof aValue === 'number' && typeof bValue === 'number'
+      ? aValue - bValue
+      : String(aValue).localeCompare(String(bValue), undefined, { sensitivity: 'base' });
+
+  return sortStatus.direction === 'desc' ? -comparison : comparison;
+};
 
 const FixtureTable = () => {
   const { t } = useTranslation();
@@ -24,12 +60,15 @@ const FixtureTable = () => {
   const router = useRouter();
   const [fixtureToDelete, setFixtureToDelete] = useState<Fixture | null>(null);
   const [confirmOpened, { open: openConfirm, close: closeConfirm }] = useDisclosure(false);
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus<Fixture>>(DEFAULT_SORT_STATUS);
+  const fixtures = useMemo(
+    () => [...(data?.fixtures ?? [])].sort((a, b) => compareFixtures(a, b, sortStatus)),
+    [data?.fixtures, sortStatus],
+  );
 
   if (loading) {
     return <Loading />;
   }
-
-  const fixtures = data?.fixtures ?? [];
 
   const handleDeleteClick = (fixture: Fixture) => {
     setFixtureToDelete(fixture);
@@ -80,9 +119,12 @@ const FixtureTable = () => {
         idAccessor="publicId"
         records={fixtures}
         fetching={loading}
+        sortStatus={sortStatus}
+        onSortStatusChange={setSortStatus}
         columns={[
           {
             accessor: 'fixtureVendor.name',
+            sortable: true,
             title: t({
               id: 'FixtureList.Table.vendor',
               defaultMessage: 'Vendor',
@@ -90,6 +132,7 @@ const FixtureTable = () => {
           },
           {
             accessor: 'name',
+            sortable: true,
             title: t({
               id: 'FixtureList.Table.name',
               defaultMessage: 'Name',
@@ -97,6 +140,7 @@ const FixtureTable = () => {
           },
           {
             accessor: 'fixtureChannelModes',
+            sortable: true,
             title: t({
               id: 'FixtureList.Table.channelsModes',
               defaultMessage: 'Channel modes',
@@ -110,11 +154,13 @@ const FixtureTable = () => {
           },
           {
             accessor: 'createdAt',
+            sortable: true,
             title: t(globalMessages.createdAt),
             render: fixture => <DateTime date={fixture.createdAt} />,
           },
           {
             accessor: 'updatedAt',
+            sortable: true,
             title: t(globalMessages.updatedAt),
             render: fixture => <DateTime date={fixture.updatedAt} />,
           },

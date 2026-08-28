@@ -122,6 +122,42 @@ describe('FixtureTable', () => {
     expect(screen.queryByText('Spot 250')).not.toBeInTheDocument();
   });
 
+  it('sorts fixtures by vendor ascending by default', async () => {
+    const zebraFixture = {
+      ...fixture,
+      publicId: 'fix-2',
+      name: 'Zebra Spot',
+      fixtureVendor: {
+        ...fixture.fixtureVendor,
+        name: 'Zebra Lights',
+      },
+    };
+    const alphaFixture = {
+      ...fixture,
+      publicId: 'fix-3',
+      name: 'Alpha Spot',
+      fixtureVendor: {
+        ...fixture.fixtureVendor,
+        name: 'Alpha Lights',
+      },
+    };
+
+    renderWithProviders(<FixtureTable />, {
+      apolloMocks: [
+        {
+          request: { query: GetFixturesDocument },
+          result: { data: { fixtures: [zebraFixture, alphaFixture] } },
+        },
+      ],
+    });
+
+    const rows = await screen.findAllByRole('row');
+    const rowTexts = rows.map(row => row.textContent);
+
+    expect(rowTexts[0]).toContain('Alpha Lights');
+    expect(rowTexts[1]).toContain('Zebra Lights');
+  });
+
   it('renders vendor, fixture name, and channel modes from the query', async () => {
     const { user } = renderWithProviders(<FixtureTable />, {
       apolloMocks: [fixturesQueryMock],
