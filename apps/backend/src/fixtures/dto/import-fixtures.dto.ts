@@ -53,7 +53,7 @@ export class ImportFixtureRangeInput {
 
   @Field({ description: 'The description of the channel range' })
   @IsString()
-  @Length(1, 255)
+  @Length(1, 1024)
   public description: string;
 }
 

@@ -18,6 +18,14 @@ class ResizeObserverStub {
 
 vi.stubGlobal('ResizeObserver', ResizeObserverStub);
 
+Object.defineProperty(document, 'fonts', {
+  writable: true,
+  value: {
+    addEventListener: () => undefined,
+    removeEventListener: () => undefined,
+  },
+});
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: (query: string) => ({

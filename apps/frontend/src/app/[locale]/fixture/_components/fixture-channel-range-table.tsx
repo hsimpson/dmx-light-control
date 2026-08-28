@@ -4,7 +4,7 @@ import { ICON_SIZE } from '@/lib/constants';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { dmxRangeSorter } from '@/shared/sorter';
 import { FixtureChannelRange } from '@/shared/types/fixtures';
-import { ActionIcon, Flex, Group, TextInput } from '@mantine/core';
+import { ActionIcon, Flex, Group, Textarea, TextInput } from '@mantine/core';
 import { ListPlusIcon, TrashIcon } from '@phosphor-icons/react';
 import { DataTable } from 'mantine-datatable';
 import { useState } from 'react';
@@ -18,6 +18,7 @@ type FixtureChannelRangeTableProps = {
 const SCROLL_THRESHOLD = 10;
 const ROW_HEIGHT = 40;
 const HEADER_HEIGHT = 40;
+const DESCRIPTION_MAX_LENGTH = 1024;
 
 const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onDelete }: FixtureChannelRangeTableProps) => {
   const [start, setStart] = useState('');
@@ -55,7 +56,7 @@ const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onDelete }: Fix
 
   return (
     <>
-      <Flex direction="row" gap="xs" align="center" mb="xs">
+      <Flex direction="row" gap="xs" align="flex-end" mb="xs">
         <TextInput
           w={100}
           placeholder={t({ id: 'FixtureChannelRangeTable.dmxStart', defaultMessage: 'DMX Start' })}
@@ -74,10 +75,13 @@ const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onDelete }: Fix
             setEnd(clampTo0255(event.currentTarget.value));
           }}
         />
-        <TextInput
-          style={{ flex: 1 }}
+        <Textarea
+          style={{ flex: 1, minWidth: '50ch' }}
           placeholder={t({ id: 'FixtureChannelRangeTable.description', defaultMessage: 'Description' })}
           value={description}
+          maxLength={DESCRIPTION_MAX_LENGTH}
+          autosize
+          minRows={2}
           onChange={event => {
             setDescription(event.currentTarget.value);
           }}
@@ -106,6 +110,7 @@ const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onDelete }: Fix
           {
             accessor: 'description',
             title: t({ id: 'FixtureChannelRangeTable.description', defaultMessage: 'Description' }),
+            cellsStyle: () => ({ whiteSpace: 'pre-wrap' }),
           },
           {
             accessor: 'actions',

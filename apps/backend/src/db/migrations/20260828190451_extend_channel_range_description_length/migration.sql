@@ -1,0 +1,1 @@
+ALTER TABLE "fixture_channel_ranges" ALTER COLUMN "description" SET DATA TYPE varchar(1024) USING "description"::varchar(1024);

@@ -13,7 +13,7 @@ const fixtureChannelRange = d.snakeCase.table(
       .references(() => fixtureChannelDefinition.id, { onDelete: 'cascade' }),
     dmxStart: integer().notNull(),
     dmxEnd: integer().notNull(),
-    description: varchar({ length: 255 }).notNull(),
+    description: varchar({ length: 1024 }).notNull(),
     ...timestamps,
   },
   table => [
