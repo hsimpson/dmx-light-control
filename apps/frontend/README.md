@@ -1,6 +1,6 @@
 # Frontend project
 
-This project contains the frontend code for the DMX Light Control application. It is a Next.js App Router app (port **3001**) for fixture and fixture-vendor management; it talks to the backend GraphQL API.
+This project contains the frontend code for the DMX Light Control application. It is a Next.js App Router app (port **3001**) for fixture, fixture-vendor, and project management; it talks to the backend GraphQL API.
 
 ## Development setup
 

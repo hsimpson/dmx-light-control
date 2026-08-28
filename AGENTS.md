@@ -166,7 +166,7 @@ fixtures/
 ### Drizzle ORM
 
 - `d.snakeCase.table()`, helpers `pk` + `timestamps` from `@/db/columns.helpers`
-- Relations in `relations.ts`; repositories for entity CRUD; fixture import/export also uses `InjectDb()` and transactions
+- Relations in `relations.ts`; repositories for entity CRUD; fixture and project import/export also use `InjectDb()` and transactions
 
 ### React
 

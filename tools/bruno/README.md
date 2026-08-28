@@ -13,6 +13,6 @@ nx run bruno:build
 This regenerates:
 
 - `schema.graphql` (introspection dump for debugging)
-- `collection/graphql/queries/*.yml` and `collection/graphql/mutations/*.yml` (one request per root field)
+- `collection/graphql/` (wiped and rebuilt: `folder.yml` plus one request `.yml` per root field under `queries/` and `mutations/`)
 
 It does not rewrite `collection/opencollection.yml` or `collection/environments/`.
