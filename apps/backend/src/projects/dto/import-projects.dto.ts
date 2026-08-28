@@ -1,3 +1,4 @@
+import { ImportTimestampsInput } from '@/db/import-timestamps.input';
 import { ProjectDto } from '@/projects/dto/project.dto';
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
@@ -9,7 +10,7 @@ export const IMPORT_PROJECT_PUBLIC_ID_PATTERN =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
 @InputType()
-export class ImportProjectInput {
+export class ImportProjectInput extends ImportTimestampsInput {
   @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the project' })
   @IsOptional()
   @Matches(IMPORT_PROJECT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })

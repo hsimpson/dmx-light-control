@@ -1,3 +1,4 @@
+import { ImportTimestampsInput } from '@/db/import-timestamps.input';
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
 import { FixtureDto } from '@/fixtures/dto/fixture.dto';
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
@@ -20,7 +21,7 @@ import { GraphQLUUID } from 'graphql-scalars';
 export const IMPORT_PUBLIC_ID_PATTERN = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
 @InputType()
-export class ImportFixtureVendorInput {
+export class ImportFixtureVendorInput extends ImportTimestampsInput {
   @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the vendor' })
   @IsOptional()
   @Matches(IMPORT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })
@@ -33,7 +34,7 @@ export class ImportFixtureVendorInput {
 }
 
 @InputType()
-export class ImportFixtureRangeInput {
+export class ImportFixtureRangeInput extends ImportTimestampsInput {
   @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the channel range' })
   @IsOptional()
   @Matches(IMPORT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })
@@ -58,7 +59,7 @@ export class ImportFixtureRangeInput {
 }
 
 @InputType()
-export class ImportFixtureDefinitionInput {
+export class ImportFixtureDefinitionInput extends ImportTimestampsInput {
   @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the channel definition' })
   @IsOptional()
   @Matches(IMPORT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })
@@ -86,7 +87,7 @@ export class ImportFixtureDefinitionInput {
 }
 
 @InputType()
-export class ImportFixtureAssignmentInput {
+export class ImportFixtureAssignmentInput extends ImportTimestampsInput {
   @Field(() => Int, { description: 'The 1-based DMX channel number of the assignment' })
   @IsInt()
   @Min(1)
@@ -111,7 +112,7 @@ export class ImportFixtureAssignmentInput {
 }
 
 @InputType()
-export class ImportFixtureModeInput {
+export class ImportFixtureModeInput extends ImportTimestampsInput {
   @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the channel mode' })
   @IsOptional()
   @Matches(IMPORT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })
@@ -135,7 +136,7 @@ export class ImportFixtureModeInput {
 }
 
 @InputType()
-export class ImportFixtureInput {
+export class ImportFixtureInput extends ImportTimestampsInput {
   @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the fixture' })
   @IsOptional()
   @Matches(IMPORT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })

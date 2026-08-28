@@ -13,37 +13,51 @@ graphql:
         exportFixtures {
           fixtures {
             channelDefinitions {
+              createdAt
               name
               order
               preset
               publicId
               ranges {
+                createdAt
                 description
                 dmxEnd
                 dmxStart
                 publicId
+                updatedAt
               }
+              updatedAt
             }
             channelModes {
               assignments {
                 channelDefinitionPublicId
                 channelNumber
+                createdAt
+                updatedAt
               }
+              createdAt
               name
               order
               publicId
+              updatedAt
             }
+            createdAt
             name
             publicId
+            updatedAt
             vendor {
+              createdAt
               name
               publicId
+              updatedAt
             }
           }
           schemaVersion
           vendors {
+            createdAt
             name
             publicId
+            updatedAt
           }
         }
       }

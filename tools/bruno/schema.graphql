@@ -195,9 +195,18 @@ type FixtureExportAssignmentDto {
 
   """The 1-based DMX channel number of the assignment"""
   channelNumber: Int!
+
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
 }
 
 type FixtureExportDefinitionDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
   """The name of the channel definition"""
   name: String!
 
@@ -212,6 +221,9 @@ type FixtureExportDefinitionDto {
 
   """The channel ranges of the channel definition"""
   ranges: [FixtureExportRangeDto!]!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
 }
 
 type FixtureExportDocumentDto {
@@ -232,11 +244,17 @@ type FixtureExportFixtureDto {
   """The channel modes of the fixture"""
   channelModes: [FixtureExportModeDto!]!
 
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
   """The name of the fixture"""
   name: String!
 
   """The public ID of the fixture"""
   publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
 
   """The vendor of the fixture"""
   vendor: FixtureExportVendorDto!
@@ -246,6 +264,9 @@ type FixtureExportModeDto {
   """The channel assignments of the channel mode"""
   assignments: [FixtureExportAssignmentDto!]!
 
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
   """The name of the channel mode"""
   name: String!
 
@@ -254,9 +275,15 @@ type FixtureExportModeDto {
 
   """The public ID of the channel mode"""
   publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
 }
 
 type FixtureExportRangeDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
   """The description of the channel range"""
   description: String!
 
@@ -268,14 +295,23 @@ type FixtureExportRangeDto {
 
   """The public ID of the channel range"""
   publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
 }
 
 type FixtureExportVendorDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
   """The name of the vendor"""
   name: String!
 
   """The public ID of the vendor"""
   publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
 }
 
 type FixtureVendorDto {
@@ -301,9 +337,18 @@ input ImportFixtureAssignmentInput {
 
   """The 1-based DMX channel number of the assignment"""
   channelNumber: Int!
+
+  """The date and time when the entity was created"""
+  createdAt: DateTime
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime
 }
 
 input ImportFixtureDefinitionInput {
+  """The date and time when the entity was created"""
+  createdAt: DateTime
+
   """The name of the channel definition"""
   name: String!
 
@@ -318,6 +363,9 @@ input ImportFixtureDefinitionInput {
 
   """The channel ranges of the channel definition"""
   ranges: [ImportFixtureRangeInput!]!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime
 }
 
 input ImportFixtureInput {
@@ -327,11 +375,17 @@ input ImportFixtureInput {
   """The channel modes of the fixture"""
   channelModes: [ImportFixtureModeInput!]!
 
+  """The date and time when the entity was created"""
+  createdAt: DateTime
+
   """The name of the fixture"""
   name: String!
 
   """The public ID of the fixture"""
   publicId: UUID
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime
 
   """The vendor of the fixture"""
   vendor: ImportFixtureVendorInput!
@@ -341,6 +395,9 @@ input ImportFixtureModeInput {
   """The channel assignments of the channel mode"""
   assignments: [ImportFixtureAssignmentInput!]!
 
+  """The date and time when the entity was created"""
+  createdAt: DateTime
+
   """The name of the channel mode"""
   name: String!
 
@@ -349,9 +406,15 @@ input ImportFixtureModeInput {
 
   """The public ID of the channel mode"""
   publicId: UUID
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime
 }
 
 input ImportFixtureRangeInput {
+  """The date and time when the entity was created"""
+  createdAt: DateTime
+
   """The description of the channel range"""
   description: String!
 
@@ -363,14 +426,23 @@ input ImportFixtureRangeInput {
 
   """The public ID of the channel range"""
   publicId: UUID
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime
 }
 
 input ImportFixtureVendorInput {
+  """The date and time when the entity was created"""
+  createdAt: DateTime
+
   """The name of the vendor"""
   name: String!
 
   """The public ID of the vendor"""
   publicId: UUID
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime
 }
 
 input ImportFixturesInput {
@@ -393,11 +465,17 @@ type ImportFixturesPayload {
 }
 
 input ImportProjectInput {
+  """The date and time when the entity was created"""
+  createdAt: DateTime
+
   """The name of the project"""
   name: String!
 
   """The public ID of the project"""
   publicId: UUID
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime
 }
 
 input ImportProjectsInput {
@@ -508,11 +586,17 @@ type ProjectExportDocumentDto {
 }
 
 type ProjectExportProjectDto {
+  """The date and time when the entity was created"""
+  createdAt: DateTime!
+
   """The name of the project"""
   name: String!
 
   """The public ID of the project"""
   publicId: UUID!
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime!
 }
 
 type Query {

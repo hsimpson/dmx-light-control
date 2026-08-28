@@ -1,3 +1,4 @@
+import { ExportTimestamps, ExportTimestampSource, mapExportTimestamps } from '@/db/export-timestamps';
 import { FixtureChannelPreset } from './channel-presets';
 
 export const FIXTURE_EXPORT_SCHEMA_VERSION = 1;
@@ -7,7 +8,7 @@ export type FixtureExportRange = {
   dmxStart: number;
   dmxEnd: number;
   description: string;
-};
+} & ExportTimestamps;
 
 export type FixtureExportDefinition = {
   publicId: string;
@@ -15,24 +16,24 @@ export type FixtureExportDefinition = {
   order: number;
   preset: FixtureChannelPreset;
   ranges: FixtureExportRange[];
-};
+} & ExportTimestamps;
 
 export type FixtureExportAssignment = {
   channelNumber: number;
   channelDefinitionPublicId: string;
-};
+} & ExportTimestamps;
 
 export type FixtureExportMode = {
   publicId: string;
   name: string;
   order: number;
   assignments: FixtureExportAssignment[];
-};
+} & ExportTimestamps;
 
 export type FixtureExportVendor = {
   publicId: string;
   name: string;
-};
+} & ExportTimestamps;
 
 export type FixtureExportFixture = {
   publicId: string;
@@ -40,7 +41,7 @@ export type FixtureExportFixture = {
   vendor: FixtureExportVendor;
   channelDefinitions: FixtureExportDefinition[];
   channelModes: FixtureExportMode[];
-};
+} & ExportTimestamps;
 
 export type FixtureExportDocument = {
   schemaVersion: number;
@@ -53,7 +54,7 @@ type RangeRow = {
   dmxStart: number;
   dmxEnd: number;
   description: string;
-};
+} & ExportTimestampSource;
 
 type DefinitionRow = {
   publicId: string | null;
@@ -61,36 +62,39 @@ type DefinitionRow = {
   order: number;
   preset: FixtureChannelPreset;
   fixtureChannelRanges?: RangeRow[];
-};
+} & ExportTimestampSource;
 
 type AssignmentRow = {
   channelNumber: number;
   fixtureChannelDefinition?: { publicId: string | null } | null;
-};
+} & ExportTimestampSource;
 
 type ModeRow = {
   publicId: string | null;
   name: string;
   order: number;
   fixtureChannelAssignments?: AssignmentRow[];
-};
+} & ExportTimestampSource;
 
 export type FixtureExportSource = {
   publicId: string | null;
   name: string;
-  fixtureVendor?: { publicId: string | null; name: string } | null;
+  fixtureVendor?: ({ publicId: string | null; name: string } & ExportTimestampSource) | null;
   fixtureChannelDefinitions?: DefinitionRow[];
   fixtureChannelModes?: ModeRow[];
-};
+} & ExportTimestampSource;
 
 function byOrder<T extends { order: number }>(left: T, right: T): number {
   return left.order - right.order;
 }
 
-function mapVendor(vendor: { publicId: string | null; name: string } | null | undefined): FixtureExportVendor {
+function mapVendor(
+  vendor: ({ publicId: string | null; name: string } & ExportTimestampSource) | null | undefined,
+): FixtureExportVendor {
   return {
     publicId: vendor?.publicId ?? '',
     name: vendor?.name ?? '',
+    ...mapExportTimestamps(vendor ?? { createdAt: new Date(0), updatedAt: new Date(0) }),
   };
 }
 
@@ -122,12 +126,14 @@ export function mapFixturesToExportDocument(
     fixtures: fixtures.map(fixture => ({
       publicId: fixture.publicId ?? '',
       name: fixture.name,
+      ...mapExportTimestamps(fixture),
       vendor: mapVendor(fixture.fixtureVendor),
       channelDefinitions: [...(fixture.fixtureChannelDefinitions ?? [])].sort(byOrder).map(definition => ({
         publicId: definition.publicId ?? '',
         name: definition.name,
         order: definition.order,
         preset: definition.preset,
+        ...mapExportTimestamps(definition),
         ranges: [...(definition.fixtureChannelRanges ?? [])]
           .sort((left, right) => left.dmxStart - right.dmxStart)
           .map(range => ({
@@ -135,17 +141,20 @@ export function mapFixturesToExportDocument(
             dmxStart: range.dmxStart,
             dmxEnd: range.dmxEnd,
             description: range.description,
+            ...mapExportTimestamps(range),
           })),
       })),
       channelModes: [...(fixture.fixtureChannelModes ?? [])].sort(byOrder).map(mode => ({
         publicId: mode.publicId ?? '',
         name: mode.name,
         order: mode.order,
+        ...mapExportTimestamps(mode),
         assignments: [...(mode.fixtureChannelAssignments ?? [])]
           .sort((left, right) => left.channelNumber - right.channelNumber)
           .map(assignment => ({
             channelNumber: assignment.channelNumber,
             channelDefinitionPublicId: assignment.fixtureChannelDefinition?.publicId ?? '',
+            ...mapExportTimestamps(assignment),
           })),
       })),
     })),

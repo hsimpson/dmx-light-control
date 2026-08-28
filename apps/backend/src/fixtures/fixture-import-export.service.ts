@@ -1,4 +1,6 @@
 import { InjectDb } from '@/db/drizzle-db/drizzle-db.provider';
+import { mapExportTimestamps } from '@/db/export-timestamps';
+import { optionalImportTimestamps } from '@/db/import-timestamps.input';
 import { relations } from '@/db/relations';
 import { ImportFixturesInput } from '@/fixtures/dto/import-fixtures.dto';
 import {
@@ -76,6 +78,7 @@ export class FixtureImportExportService {
       vendors.map(vendor => ({
         publicId: vendor.publicId ?? '',
         name: vendor.name,
+        ...mapExportTimestamps(vendor),
       })),
     );
   }
@@ -125,7 +128,7 @@ export class FixtureImportExportService {
 
     const inserted = await tx
       .insert(fixtureVendor)
-      .values({ name: incoming.name, ...optionalPublicId(incoming.publicId) })
+      .values({ name: incoming.name, ...optionalPublicId(incoming.publicId), ...optionalImportTimestamps(incoming) })
       .returning();
     const vendor = inserted[0];
     if (!vendor) {
@@ -156,7 +159,7 @@ export class FixtureImportExportService {
     if (existing) {
       const updated = await tx
         .update(fixture)
-        .set({ name: incoming.name, vendorId: vendor.id })
+        .set({ name: incoming.name, vendorId: vendor.id, ...optionalImportTimestamps(incoming) })
         .where(eq(fixture.id, requireNumericId(existing.id, incoming.name)))
         .returning();
       const row = updated[0];
@@ -169,7 +172,12 @@ export class FixtureImportExportService {
     try {
       const inserted = await tx
         .insert(fixture)
-        .values({ name: incoming.name, vendorId: vendor.id, ...optionalPublicId(incoming.publicId) })
+        .values({
+          name: incoming.name,
+          vendorId: vendor.id,
+          ...optionalPublicId(incoming.publicId),
+          ...optionalImportTimestamps(incoming),
+        })
         .returning();
       const row = inserted[0];
       if (!row) {
@@ -231,7 +239,12 @@ export class FixtureImportExportService {
     if (existing) {
       await tx
         .update(fixtureChannelDefinition)
-        .set({ name: incoming.name, order: incoming.order, preset: incoming.preset })
+        .set({
+          name: incoming.name,
+          order: incoming.order,
+          preset: incoming.preset,
+          ...optionalImportTimestamps(incoming),
+        })
         .where(eq(fixtureChannelDefinition.id, requireNumericId(existing.id, incoming.name)));
       return requireNumericId(existing.id, incoming.name);
     }
@@ -245,6 +258,7 @@ export class FixtureImportExportService {
           order: incoming.order,
           preset: incoming.preset,
           ...optionalPublicId(incoming.publicId),
+          ...optionalImportTimestamps(incoming),
         })
         .returning();
       const row = inserted[0];
@@ -279,6 +293,7 @@ export class FixtureImportExportService {
         dmxEnd: range.dmxEnd,
         description: range.description,
         ...optionalPublicId(range.publicId),
+        ...optionalImportTimestamps(range),
       })),
     );
   }
@@ -330,6 +345,7 @@ export class FixtureImportExportService {
             fixtureChannelModeId: modeId,
             fixtureChannelDefinitionId: definitionId,
             channelNumber: assignment.channelNumber,
+            ...optionalImportTimestamps(assignment),
           };
         }),
       );
@@ -350,7 +366,7 @@ export class FixtureImportExportService {
     if (existing) {
       await tx
         .update(fixtureChannelMode)
-        .set({ name: incoming.name, order: incoming.order })
+        .set({ name: incoming.name, order: incoming.order, ...optionalImportTimestamps(incoming) })
         .where(eq(fixtureChannelMode.id, requireNumericId(existing.id, incoming.name)));
       return requireNumericId(existing.id, incoming.name);
     }
@@ -362,6 +378,7 @@ export class FixtureImportExportService {
         name: incoming.name,
         order: incoming.order,
         ...optionalPublicId(incoming.publicId),
+        ...optionalImportTimestamps(incoming),
       })
       .returning();
     const row = inserted[0];

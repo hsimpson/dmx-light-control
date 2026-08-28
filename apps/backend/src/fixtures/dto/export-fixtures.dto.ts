@@ -1,10 +1,11 @@
+import { ExportTimestampsDto } from '@/db/export-timestamps.dto';
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
 
 @ObjectType()
-export class FixtureExportRangeDto {
+export class FixtureExportRangeDto extends ExportTimestampsDto {
   @Field(() => GraphQLUUID, { description: 'The public ID of the channel range' })
   public publicId: string;
 
@@ -19,7 +20,7 @@ export class FixtureExportRangeDto {
 }
 
 @ObjectType()
-export class FixtureExportDefinitionDto {
+export class FixtureExportDefinitionDto extends ExportTimestampsDto {
   @Field(() => GraphQLUUID, { description: 'The public ID of the channel definition' })
   public publicId: string;
 
@@ -38,7 +39,7 @@ export class FixtureExportDefinitionDto {
 }
 
 @ObjectType()
-export class FixtureExportAssignmentDto {
+export class FixtureExportAssignmentDto extends ExportTimestampsDto {
   @Field(() => Int, { description: 'The 1-based DMX channel number of the assignment' })
   public channelNumber: number;
 
@@ -47,7 +48,7 @@ export class FixtureExportAssignmentDto {
 }
 
 @ObjectType()
-export class FixtureExportModeDto {
+export class FixtureExportModeDto extends ExportTimestampsDto {
   @Field(() => GraphQLUUID, { description: 'The public ID of the channel mode' })
   public publicId: string;
 
@@ -63,7 +64,7 @@ export class FixtureExportModeDto {
 }
 
 @ObjectType()
-export class FixtureExportVendorDto {
+export class FixtureExportVendorDto extends ExportTimestampsDto {
   @Field(() => GraphQLUUID, { description: 'The public ID of the vendor' })
   public publicId: string;
 
@@ -72,7 +73,7 @@ export class FixtureExportVendorDto {
 }
 
 @ObjectType()
-export class FixtureExportFixtureDto {
+export class FixtureExportFixtureDto extends ExportTimestampsDto {
   @Field(() => GraphQLUUID, { description: 'The public ID of the fixture' })
   public publicId: string;
 

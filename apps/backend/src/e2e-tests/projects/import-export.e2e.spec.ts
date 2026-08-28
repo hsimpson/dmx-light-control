@@ -13,7 +13,7 @@ const CONFLICT_TARGET_PUBLIC_ID = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
 type ExportProjectsQuery = {
   exportProjects: {
     schemaVersion: number;
-    projects: { publicId: string; name: string }[];
+    projects: { publicId: string; name: string; createdAt: string; updatedAt: string }[];
   };
 };
 
@@ -40,6 +40,8 @@ const EXPORT_PROJECTS = gql`
       projects {
         publicId
         name
+        createdAt
+        updatedAt
       }
     }
   }
@@ -108,9 +110,9 @@ describe('Project import/export', () => {
 
     const body = await graphqlQuery<ExportProjectsQuery>(app.getHttpAdapter().getInstance().server, EXPORT_PROJECTS);
     expect(body.data?.exportProjects.schemaVersion).toBe(1);
-    expect(body.data?.exportProjects.projects).toEqual(
-      expect.arrayContaining([expect.objectContaining({ name: 'Export List Project' })]),
-    );
+    const exported = body.data?.exportProjects.projects.find(project => project.name === 'Export List Project');
+    expect(exported?.createdAt).toBeTruthy();
+    expect(exported?.updatedAt).toBeTruthy();
   });
 
   it('imports a new project and upserts by publicId', async () => {

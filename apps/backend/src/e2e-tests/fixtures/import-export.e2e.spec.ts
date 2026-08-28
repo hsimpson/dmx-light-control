@@ -20,23 +20,41 @@ const SEED_DEFINITION_PUBLIC_ID = fixtureChannelDefinitions[0]?.publicId;
 type ExportFixturesQuery = {
   exportFixtures: {
     schemaVersion: number;
-    vendors: { publicId: string; name: string }[];
+    vendors: { publicId: string; name: string; createdAt: string; updatedAt: string }[];
     fixtures: {
       publicId: string;
       name: string;
-      vendor: { publicId: string; name: string };
+      createdAt: string;
+      updatedAt: string;
+      vendor: { publicId: string; name: string; createdAt: string; updatedAt: string };
       channelDefinitions: {
         publicId: string;
         name: string;
         order: number;
         preset: string;
-        ranges: { publicId: string; dmxStart: number; dmxEnd: number; description: string }[];
+        createdAt: string;
+        updatedAt: string;
+        ranges: {
+          publicId: string;
+          dmxStart: number;
+          dmxEnd: number;
+          description: string;
+          createdAt: string;
+          updatedAt: string;
+        }[];
       }[];
       channelModes: {
         publicId: string;
         name: string;
         order: number;
-        assignments: { channelNumber: number; channelDefinitionPublicId: string }[];
+        createdAt: string;
+        updatedAt: string;
+        assignments: {
+          channelNumber: number;
+          channelDefinitionPublicId: string;
+          createdAt: string;
+          updatedAt: string;
+        }[];
       }[];
     }[];
   };
@@ -69,33 +87,47 @@ const EXPORT_FIXTURES = gql`
       vendors {
         publicId
         name
+        createdAt
+        updatedAt
       }
       fixtures {
         publicId
         name
+        createdAt
+        updatedAt
         vendor {
           publicId
           name
+          createdAt
+          updatedAt
         }
         channelDefinitions {
           publicId
           name
           order
           preset
+          createdAt
+          updatedAt
           ranges {
             publicId
             dmxStart
             dmxEnd
             description
+            createdAt
+            updatedAt
           }
         }
         channelModes {
           publicId
           name
           order
+          createdAt
+          updatedAt
           assignments {
             channelNumber
             channelDefinitionPublicId
+            createdAt
+            updatedAt
           }
         }
       }
@@ -228,6 +260,11 @@ describe('Fixture import/export', () => {
     expect(seed?.channelDefinitions.some(definition => definition.ranges.length > 0)).toBe(true);
     expect(seed?.channelModes.length).toBeGreaterThan(0);
     expect(seed?.channelModes.some(mode => mode.assignments.length > 0)).toBe(true);
+    expect(seed?.createdAt).toBeTruthy();
+    expect(seed?.updatedAt).toBeTruthy();
+    expect(seed?.vendor.createdAt).toBeTruthy();
+    expect(seed?.channelDefinitions[0]?.createdAt).toBeTruthy();
+    expect(seed?.channelModes[0]?.assignments[0]?.createdAt).toBeTruthy();
   });
 
   it('imports a new fixture, reuses an existing vendor by name, and upserts by publicId', async () => {

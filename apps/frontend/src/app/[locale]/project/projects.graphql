@@ -36,6 +36,8 @@ query ExportProjects {
     projects {
       publicId
       name
+      createdAt
+      updatedAt
     }
   }
 }

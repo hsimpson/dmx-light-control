@@ -1,9 +1,10 @@
+import { ExportTimestampsDto } from '@/db/export-timestamps.dto';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
 
 @ObjectType()
-export class ProjectExportProjectDto {
+export class ProjectExportProjectDto extends ExportTimestampsDto {
   @Field(() => GraphQLUUID, { description: 'The public ID of the project' })
   public publicId: string;
 

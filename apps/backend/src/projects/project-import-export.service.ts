@@ -1,4 +1,5 @@
 import { InjectDb } from '@/db/drizzle-db/drizzle-db.provider';
+import { optionalImportTimestamps } from '@/db/import-timestamps.input';
 import { relations } from '@/db/relations';
 import { ImportProjectsInput } from '@/projects/dto/import-projects.dto';
 import { project } from '@/projects/entities';
@@ -88,7 +89,7 @@ export class ProjectImportExportService {
       }
       const updated = await tx
         .update(project)
-        .set({ name: incoming.name })
+        .set({ name: incoming.name, ...optionalImportTimestamps(incoming) })
         .where(eq(project.id, existingId))
         .returning();
       const row = updated[0];
@@ -101,7 +102,7 @@ export class ProjectImportExportService {
     try {
       const inserted = await tx
         .insert(project)
-        .values({ name: incoming.name, ...optionalPublicId(incoming.publicId) })
+        .values({ name: incoming.name, ...optionalPublicId(incoming.publicId), ...optionalImportTimestamps(incoming) })
         .returning();
       const row = inserted[0];
       if (!row) {

@@ -12,8 +12,10 @@ graphql:
       query {
         exportProjects {
           projects {
+            createdAt
             name
             publicId
+            updatedAt
           }
           schemaVersion
         }

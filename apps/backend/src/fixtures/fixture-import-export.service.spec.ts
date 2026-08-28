@@ -5,6 +5,11 @@ import { FixtureImportInvalidException } from './fixture.exceptions';
 import { FixtureVendorRepository } from './repositories/fixture-vendor.repository';
 import { FixtureRepository } from './repositories/fixture.repository';
 
+const timestamps = {
+  createdAt: new Date('2024-01-01T00:00:00.000Z'),
+  updatedAt: new Date('2024-01-02T00:00:00.000Z'),
+};
+
 describe('FixtureImportExportService', () => {
   it('exportFixtures maps repository rows into a versioned document', async () => {
     const fixtureRepository = {
@@ -12,13 +17,15 @@ describe('FixtureImportExportService', () => {
         {
           publicId: 'fix-1',
           name: 'Spot',
-          fixtureVendor: { publicId: 'vendor-1', name: 'Acme' },
+          ...timestamps,
+          fixtureVendor: { publicId: 'vendor-1', name: 'Acme', ...timestamps },
           fixtureChannelDefinitions: [
             {
               publicId: 'def-1',
               name: 'Dimmer',
               order: 0,
               preset: FixtureChannelPreset.IntensityDimmer,
+              ...timestamps,
               fixtureChannelRanges: [],
             },
           ],
@@ -28,8 +35,8 @@ describe('FixtureImportExportService', () => {
     };
     const fixtureVendorRepository = {
       findMany: vi.fn().mockResolvedValue([
-        { publicId: 'vendor-1', name: 'Acme' },
-        { publicId: 'vendor-2', name: 'eurolite' },
+        { publicId: 'vendor-1', name: 'Acme', ...timestamps },
+        { publicId: 'vendor-2', name: 'eurolite', ...timestamps },
       ]),
     };
     const service = new FixtureImportExportService(
@@ -41,20 +48,22 @@ describe('FixtureImportExportService', () => {
     await expect(service.exportFixtures()).resolves.toEqual({
       schemaVersion: 1,
       vendors: [
-        { publicId: 'vendor-1', name: 'Acme' },
-        { publicId: 'vendor-2', name: 'eurolite' },
+        { publicId: 'vendor-1', name: 'Acme', ...timestamps },
+        { publicId: 'vendor-2', name: 'eurolite', ...timestamps },
       ],
       fixtures: [
         {
           publicId: 'fix-1',
           name: 'Spot',
-          vendor: { publicId: 'vendor-1', name: 'Acme' },
+          ...timestamps,
+          vendor: { publicId: 'vendor-1', name: 'Acme', ...timestamps },
           channelDefinitions: [
             {
               publicId: 'def-1',
               name: 'Dimmer',
               order: 0,
               preset: FixtureChannelPreset.IntensityDimmer,
+              ...timestamps,
               ranges: [],
             },
           ],

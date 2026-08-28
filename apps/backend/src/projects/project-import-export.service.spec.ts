@@ -3,16 +3,21 @@ import { ProjectImportExportService } from './project-import-export.service';
 import { ProjectImportInvalidException } from './project.exceptions';
 import { ProjectRepository } from './repositories/project.repository';
 
+const timestamps = {
+  createdAt: new Date('2024-01-01T00:00:00.000Z'),
+  updatedAt: new Date('2024-01-02T00:00:00.000Z'),
+};
+
 describe('ProjectImportExportService', () => {
   it('exportProjects maps repository rows into a versioned document', async () => {
     const projectRepository = {
-      findMany: vi.fn().mockResolvedValue([{ publicId: 'proj-1', name: 'Main Show' }]),
+      findMany: vi.fn().mockResolvedValue([{ publicId: 'proj-1', name: 'Main Show', ...timestamps }]),
     };
     const service = new ProjectImportExportService({} as never, projectRepository as unknown as ProjectRepository);
 
     await expect(service.exportProjects()).resolves.toEqual({
       schemaVersion: 1,
-      projects: [{ publicId: 'proj-1', name: 'Main Show' }],
+      projects: [{ publicId: 'proj-1', name: 'Main Show', ...timestamps }],
     });
   });
 

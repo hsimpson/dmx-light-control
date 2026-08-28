@@ -105,33 +105,47 @@ query ExportFixtures {
     vendors {
       publicId
       name
+      createdAt
+      updatedAt
     }
     fixtures {
       publicId
       name
+      createdAt
+      updatedAt
       vendor {
         publicId
         name
+        createdAt
+        updatedAt
       }
       channelDefinitions {
         publicId
         name
         order
         preset
+        createdAt
+        updatedAt
         ranges {
           publicId
           dmxStart
           dmxEnd
           description
+          createdAt
+          updatedAt
         }
       }
       channelModes {
         publicId
         name
         order
+        createdAt
+        updatedAt
         assignments {
           channelNumber
           channelDefinitionPublicId
+          createdAt
+          updatedAt
         }
       }
     }
