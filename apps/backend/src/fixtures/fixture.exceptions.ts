@@ -108,6 +108,16 @@ export class ChannelDefinitionAlreadyExistsException extends BaseDomainError {
   }
 }
 
+export class ChannelRangeNotFoundException extends BaseDomainError {
+  public readonly code = 'CHANNEL_RANGE_NOT_FOUND';
+  public override readonly statusCode = HttpStatus.NOT_FOUND;
+
+  public constructor(channelRangeId: string) {
+    super(`Channel range with ID ${channelRangeId} could not be found.`);
+    this.name = 'ChannelRangeNotFoundError';
+  }
+}
+
 export class FixtureImportInvalidException extends BaseDomainError {
   public readonly code = 'FIXTURE_IMPORT_INVALID';
   public override readonly statusCode = HttpStatus.BAD_REQUEST;

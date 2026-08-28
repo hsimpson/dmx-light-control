@@ -32,6 +32,7 @@ export const toChannelDefinitionSaveInputs = (channelDefinitions: EditorChannelD
     preset: definition.preset,
     order: index,
     ranges: definition.fixtureChannelRanges.map(range => ({
+      ...(range.publicId ? { publicId: range.publicId } : {}),
       dmxStart: range.dmxStart,
       dmxEnd: range.dmxEnd,
       description: range.description,
@@ -114,6 +115,40 @@ const FixtureChannelDefinitions = ({
       description,
     };
     const newChannelRanges = [...selectedChannelDefinition.fixtureChannelRanges, newRange as FixtureChannelRange];
+    const newChannelDefinition = { ...selectedChannelDefinition, fixtureChannelRanges: newChannelRanges };
+    onChannelDefinitionsChange(
+      channelDefinitions.map(definition =>
+        definition.clientKey === selectedChannelDefinition.clientKey ? newChannelDefinition : definition,
+      ),
+    );
+  };
+
+  const handleChannelRangeEdit = (
+    rangeToEdit: FixtureChannelRange,
+    start: number,
+    end: number,
+    description: string,
+  ) => {
+    if (!selectedChannelDefinition) {
+      return;
+    }
+
+    if (
+      selectedChannelDefinition.fixtureChannelRanges.some(
+        range => range !== rangeToEdit && range.description === description,
+      )
+    ) {
+      notifications.show({
+        color: 'red',
+        title: t(globalMessages.error),
+        message: t({ id: 'SelectableList.itemAlreadyExists', defaultMessage: 'Item already exists' }),
+      });
+      return;
+    }
+
+    const newChannelRanges = selectedChannelDefinition.fixtureChannelRanges.map(range =>
+      range === rangeToEdit ? { ...range, dmxStart: start, dmxEnd: end, description } : range,
+    );
     const newChannelDefinition = { ...selectedChannelDefinition, fixtureChannelRanges: newChannelRanges };
     onChannelDefinitionsChange(
       channelDefinitions.map(definition =>
@@ -205,6 +240,7 @@ const FixtureChannelDefinitions = ({
         <FixtureChannelRangeTable
           fixtureChannelRanges={selectedChannelDefinition?.fixtureChannelRanges ?? []}
           onAdd={handleChannelRangeAdd}
+          onEdit={handleChannelRangeEdit}
           onDelete={handleChannelRangeDelete}
         />
       </Flex>

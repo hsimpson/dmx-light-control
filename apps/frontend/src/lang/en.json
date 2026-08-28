@@ -11,6 +11,7 @@
   "FixtureChannelRangeTable.description": "Description",
   "FixtureChannelRangeTable.dmxEnd": "DMX End",
   "FixtureChannelRangeTable.dmxStart": "DMX Start",
+  "FixtureChannelRangeTable.edit": "Edit",
   "FixtureForm.fixtureName": "Fixture name:",
   "FixtureForm.fixtureNamePlaceholder": "Enter fixture name",
   "FixtureForm.notification.createError": "Failed to create fixture",

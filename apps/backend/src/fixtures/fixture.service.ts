@@ -3,6 +3,7 @@ import {
   ChannelDefinitionNotFoundException,
   ChannelModeAlreadyExistsException,
   ChannelModeNotFoundException,
+  ChannelRangeNotFoundException,
   FixtureCreationFailedException,
   FixtureNotFoundException,
   FixtureVendorAlreadyExistsException,
@@ -15,6 +16,7 @@ import { CreateFixtureVendorInput } from './dto/create-fixture-vendor.dto';
 import { CreateFixtureInput } from './dto/create-fixture.dto';
 import { UpdateFixtureVendorInput } from './dto/fixture.input';
 import { UpdateFixtureChannelDefinitionInput } from './dto/update-fixture-channel-definition.dto';
+import { UpdateFixtureChannelRangeInput } from './dto/update-fixture-channel-range.dto';
 import { UpdateFixtureChannelModeInput } from './dto/update-fixture-channel-mode.dto';
 import { UpdateFixtureInput } from './dto/update-fixture.dto';
 import { fixture } from './entities';
@@ -27,7 +29,11 @@ import { FixtureVendorRepository } from './repositories/fixture-vendor.repositor
 import { FixtureRepository } from './repositories/fixture.repository';
 
 type FixtureChannelGraph = InferSelectModel<typeof fixture> & {
-  fixtureChannelDefinitions?: { id: number; publicId: string }[];
+  fixtureChannelDefinitions?: {
+    id: number;
+    publicId: string;
+    fixtureChannelRanges?: { publicId: string }[];
+  }[];
   fixtureChannelModes?: { publicId: string }[];
 };
 
@@ -271,17 +277,35 @@ export class FixtureService {
         if (!updated) {
           throw new ChannelDefinitionNotFoundException(definition.publicId);
         }
+        if (definition.ranges !== undefined) {
+          this.assertChannelRangesExist(graph, definition.publicId, definition.ranges);
+        }
         if (typeof updated.id === 'number' && definition.ranges !== undefined) {
           await this.channelDefinitionRepository.replaceRangesForDefinition(updated.id, definition.ranges);
         }
       } catch (error) {
-        if (error instanceof ChannelDefinitionNotFoundException) {
+        if (error instanceof ChannelDefinitionNotFoundException || error instanceof ChannelRangeNotFoundException) {
           throw error;
         }
         if (isPostgresUniqueViolation(error)) {
           throw new ChannelDefinitionAlreadyExistsException(definition.name.trim());
         }
         throw error;
+      }
+    }
+  }
+
+  private assertChannelRangesExist(
+    graph: FixtureChannelGraph,
+    definitionPublicId: string,
+    ranges: UpdateFixtureChannelRangeInput[],
+  ): void {
+    const definition = graph.fixtureChannelDefinitions?.find(item => item.publicId === definitionPublicId);
+    const existingRangePublicIds = new Set((definition?.fixtureChannelRanges ?? []).map(range => range.publicId));
+
+    for (const range of ranges) {
+      if (range.publicId && !existingRangePublicIds.has(range.publicId)) {
+        throw new ChannelRangeNotFoundException(range.publicId);
       }
     }
   }

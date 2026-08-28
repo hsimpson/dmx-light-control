@@ -63,7 +63,7 @@ describe('toChannelDefinitionSaveInputs', () => {
         name: 'Red',
         preset: FixtureChannelPreset.Custom,
         order: 0,
-        ranges: [{ dmxStart: 0, dmxEnd: 255, description: 'off-full' }],
+        ranges: [{ publicId: 'range-1', dmxStart: 0, dmxEnd: 255, description: 'off-full' }],
       },
       { name: 'Amber', preset: FixtureChannelPreset.Custom, order: 1, ranges: [] },
     ]);

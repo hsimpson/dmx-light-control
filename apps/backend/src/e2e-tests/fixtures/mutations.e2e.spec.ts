@@ -557,6 +557,126 @@ describe('Fixture mutations', () => {
     expect(body.errors?.[0]?.message).toContain(unknownId);
   });
 
+  it('should update a channel range in place and preserve its publicId via updateFixture', async () => {
+    const server = app.getHttpAdapter().getInstance().server;
+    const redRangePublicId = '025ef59f-1e6b-4680-921c-09757ba3db46';
+    const updatedDescription = 'Red, 0% to 100% (E2E)';
+    const originalDescription = 'Red, 0% to 100%';
+
+    const loaded = await graphqlQuery<{
+      fixture: {
+        fixtureChannelDefinitions: {
+          publicId: string;
+          name: string;
+          fixtureChannelRanges: { publicId: string; dmxStart: number; dmxEnd: number; description: string }[];
+        }[];
+      } | null;
+    }>(
+      server,
+      gql`
+        query ($publicId: UUID!) {
+          fixture(publicId: $publicId) {
+            fixtureChannelDefinitions {
+              publicId
+              name
+              fixtureChannelRanges {
+                publicId
+                dmxStart
+                dmxEnd
+                description
+              }
+            }
+          }
+        }
+      `,
+      { variables: { publicId: SEED_FIXTURE_PUBLIC_ID } },
+    );
+
+    const redDefinition = loaded.data?.fixture?.fixtureChannelDefinitions.find(
+      definition => definition.publicId === SEED_CHANNEL_DEFINITION_RED_PUBLIC_ID,
+    );
+    const redRange = redDefinition?.fixtureChannelRanges.find(range => range.publicId === redRangePublicId);
+    if (!redDefinition || !redRange) {
+      throw new Error('Seed fixture is missing Red channel range');
+    }
+
+    try {
+      const body = await graphqlQuery<{
+        updateFixture: {
+          fixtureChannelDefinitions: {
+            publicId: string;
+            fixtureChannelRanges: { publicId: string; description: string }[];
+          }[];
+        };
+      }>(
+        server,
+        gql`
+          mutation ($input: UpdateFixtureInput!) {
+            updateFixture(input: $input) {
+              fixtureChannelDefinitions {
+                publicId
+                fixtureChannelRanges {
+                  publicId
+                  description
+                }
+              }
+            }
+          }
+        `,
+        {
+          variables: {
+            input: {
+              publicId: SEED_FIXTURE_PUBLIC_ID,
+              channelDefinitions: [
+                {
+                  publicId: redDefinition.publicId,
+                  name: redDefinition.name,
+                  ranges: [
+                    {
+                      publicId: redRange.publicId,
+                      dmxStart: redRange.dmxStart,
+                      dmxEnd: redRange.dmxEnd,
+                      description: updatedDescription,
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      );
+
+      expect(body.errors).toBeUndefined();
+      const updatedDefinition = body.data?.updateFixture.fixtureChannelDefinitions.find(
+        definition => definition.publicId === redDefinition.publicId,
+      );
+      const updatedRange = updatedDefinition?.fixtureChannelRanges.find(range => range.publicId === redRangePublicId);
+      expect(updatedRange?.description).toBe(updatedDescription);
+    } finally {
+      await graphqlQuery(server, UPDATE_FIXTURE_DEFINITIONS, {
+        variables: {
+          input: {
+            publicId: SEED_FIXTURE_PUBLIC_ID,
+            channelDefinitions: [
+              {
+                publicId: redDefinition.publicId,
+                name: redDefinition.name,
+                ranges: [
+                  {
+                    publicId: redRange.publicId,
+                    dmxStart: redRange.dmxStart,
+                    dmxEnd: redRange.dmxEnd,
+                    description: originalDescription,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      });
+    }
+  });
+
   it('should return deleted false when deleteFixture publicId does not exist', async () => {
     const unknownId = '00000000-0000-4000-8000-000000000001';
     const mutation = gql`

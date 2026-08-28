@@ -557,6 +557,11 @@ input UpdateFixtureChannelDefinitionInput {
   """The new name of the channel definition"""
   name: String!
 
+  """
+  The new order of the channel definition; omit to leave the order unchanged
+  """
+  order: Int
+
   """The new preset of the channel definition"""
   preset: FixtureChannelPreset
 
@@ -591,6 +596,9 @@ input UpdateFixtureChannelRangeInput {
 
   """The DMX start channel of the range"""
   dmxStart: Int!
+
+  """The public ID of the channel range. Omit to create a new range."""
+  publicId: UUID
 }
 
 input UpdateFixtureInput {
