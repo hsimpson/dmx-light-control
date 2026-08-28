@@ -5,14 +5,23 @@ import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { dmxRangeSorter } from '@/shared/sorter';
 import { FixtureChannelRange } from '@/shared/types/fixtures';
-import { ActionIcon, Flex, Group, Textarea, TextInput } from '@mantine/core';
-import { CheckIcon, ListPlusIcon, PencilSimpleIcon, TrashIcon, XIcon } from '@phosphor-icons/react';
+import { ActionIcon, Button, Flex, Group, Modal, Stack, Text, Textarea, TextInput } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { CheckIcon, ListPlusIcon, PencilSimpleIcon, TrashIcon, UploadSimpleIcon, XIcon } from '@phosphor-icons/react';
 import { DataTable } from 'mantine-datatable';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { parseChannelRangeImport } from './parse-channel-range-import';
+
+type ChannelRangeInput = {
+  dmxStart: number;
+  dmxEnd: number;
+  description: string;
+};
 
 type FixtureChannelRangeTableProps = {
   fixtureChannelRanges: FixtureChannelRange[];
   onAdd?: (start: number, end: number, description: string) => void;
+  onBulkAdd?: (ranges: ChannelRangeInput[]) => boolean;
   onEdit?: (rangeToEdit: FixtureChannelRange, start: number, end: number, description: string) => void;
   onDelete?: (rangeToDelete: FixtureChannelRange) => void;
 };
@@ -37,13 +46,21 @@ const clampTo0255 = (value: string) => {
   return String(num);
 };
 
-const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onEdit, onDelete }: FixtureChannelRangeTableProps) => {
+const FixtureChannelRangeTable = ({
+  fixtureChannelRanges,
+  onAdd,
+  onBulkAdd,
+  onEdit,
+  onDelete,
+}: FixtureChannelRangeTableProps) => {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [description, setDescription] = useState('');
+  const [importText, setImportText] = useState('');
   const [editingRangeKey, setEditingRangeKey] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<RangeEditDraft>({ dmxStart: '', dmxEnd: '', description: '' });
   const editingRangeKeyRef = useRef<string | null>(null);
+  const [importOpened, { open: openImport, close: closeImport }] = useDisclosure(false);
   const { t } = useTranslation();
 
   const idAccessor = (range: FixtureChannelRange) => {
@@ -56,6 +73,10 @@ const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onEdit, onDelet
   const sortedRecords = [...fixtureChannelRanges].sort(dmxRangeSorter);
   const tableHeight = sortedRecords.length > SCROLL_THRESHOLD ? HEADER_HEIGHT + SCROLL_THRESHOLD * ROW_HEIGHT : 'auto';
   const editLabel = t({ id: 'FixtureChannelRangeTable.edit', defaultMessage: 'Edit' });
+  const importLabel = t({ id: 'FixtureChannelRangeTable.import', defaultMessage: 'Import' });
+  const importParseResult = useMemo(() => parseChannelRangeImport(importText), [importText]);
+  const canImport =
+    importText.trim().length > 0 && importParseResult.errors.length === 0 && importParseResult.ranges.length > 0;
 
   const cancelEdit = () => {
     editingRangeKeyRef.current = null;
@@ -93,6 +114,30 @@ const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onEdit, onDelet
     setDescription('');
   };
 
+  const handleOpenImport = () => {
+    setImportText('');
+    openImport();
+  };
+
+  const handleCloseImport = () => {
+    setImportText('');
+    closeImport();
+  };
+
+  const handleImport = () => {
+    if (!canImport || !onBulkAdd) {
+      return;
+    }
+
+    const imported = onBulkAdd(importParseResult.ranges);
+    if (!imported) {
+      return;
+    }
+
+    setImportText('');
+    closeImport();
+  };
+
   return (
     <>
       <Flex direction="row" gap="xs" align="flex-end" mb="xs">
@@ -128,7 +173,77 @@ const FixtureChannelRangeTable = ({ fixtureChannelRanges, onAdd, onEdit, onDelet
         <ActionIcon variant="filled" size="lg" radius="lg" disabled={!canSubmit} onClick={handleAdd}>
           <ListPlusIcon size={ICON_SIZE} weight="fill" />
         </ActionIcon>
+        {onBulkAdd && (
+          <ActionIcon
+            variant="light"
+            size="lg"
+            radius="lg"
+            aria-label={importLabel}
+            title={importLabel}
+            onClick={handleOpenImport}
+          >
+            <UploadSimpleIcon size={ICON_SIZE} weight="duotone" />
+          </ActionIcon>
+        )}
       </Flex>
+      <Modal
+        opened={importOpened}
+        onClose={handleCloseImport}
+        title={t({ id: 'FixtureChannelRangeTable.importTitle', defaultMessage: 'Import channel ranges' })}
+        centered
+        size="auto"
+      >
+        <Text size="sm" mb="sm">
+          {t({
+            id: 'FixtureChannelRangeTable.importHelp',
+            defaultMessage: 'Enter one range per line: DMX_START - DMX_END DESCRIPTION (e.g. 0 - 255 off-full)',
+          })}
+        </Text>
+        <Textarea
+          autosize
+          value={importText}
+          minRows={20}
+          style={{ minWidth: '100ch' }}
+          placeholder={t({
+            id: 'FixtureChannelRangeTable.importPlaceholder',
+            defaultMessage: '0 - 255 off-full\n10 - 19 slow strobe',
+          })}
+          onChange={event => {
+            setImportText(event.currentTarget.value);
+          }}
+        />
+        {importParseResult.errors.length > 0 && (
+          <Stack gap="xs" mt="sm">
+            {importParseResult.errors.map(error => (
+              <Text key={`${error.line}-${error.message}`} size="sm" c="red">
+                {error.message === 'duplicateDescription'
+                  ? t(
+                      {
+                        id: 'FixtureChannelRangeTable.importDuplicateLine',
+                        defaultMessage: 'Line {line}: duplicate description',
+                      },
+                      { line: error.line },
+                    )
+                  : t(
+                      {
+                        id: 'FixtureChannelRangeTable.importInvalidLine',
+                        defaultMessage: 'Line {line}: invalid format',
+                      },
+                      { line: error.line },
+                    )}
+              </Text>
+            ))}
+          </Stack>
+        )}
+        <Group justify="space-between" mt="md">
+          <Button type="button" variant="default" onClick={handleCloseImport}>
+            {t(globalMessages.cancel)}
+          </Button>
+          <Button type="button" disabled={!canImport} onClick={handleImport}>
+            {importLabel}
+          </Button>
+        </Group>
+      </Modal>
       <DataTable
         withColumnBorders
         striped

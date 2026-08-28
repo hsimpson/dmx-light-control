@@ -123,6 +123,88 @@ const FixtureChannelDefinitions = ({
     );
   };
 
+  const handleChannelRangeBulkAdd = (ranges: { dmxStart: number; dmxEnd: number; description: string }[]) => {
+    if (!selectedChannelDefinition) {
+      notifications.show({
+        color: 'red',
+        title: t(globalMessages.error),
+        message: t({
+          id: 'FixtureChannelRangeTable.importNoDefinition',
+          defaultMessage: 'Select a channel definition before importing ranges',
+        }),
+      });
+      return false;
+    }
+
+    const existingDescriptions = new Set(
+      selectedChannelDefinition.fixtureChannelRanges.map(range => range.description),
+    );
+    const rangesToAdd: { dmxStart: number; dmxEnd: number; description: string }[] = [];
+    const skippedDescriptions: string[] = [];
+
+    for (const range of ranges) {
+      if (
+        existingDescriptions.has(range.description) ||
+        rangesToAdd.some(item => item.description === range.description)
+      ) {
+        if (!skippedDescriptions.includes(range.description)) {
+          skippedDescriptions.push(range.description);
+        }
+        continue;
+      }
+
+      rangesToAdd.push(range);
+    }
+
+    if (rangesToAdd.length === 0) {
+      notifications.show({
+        color: 'red',
+        title: t(globalMessages.error),
+        message: t(
+          {
+            id: 'FixtureChannelRangeTable.importDuplicateDescription',
+            defaultMessage: 'Duplicate description(s): {descriptions}',
+          },
+          { descriptions: skippedDescriptions.join(', ') },
+        ),
+      });
+      return false;
+    }
+
+    if (skippedDescriptions.length > 0) {
+      notifications.show({
+        color: 'yellow',
+        title: t(globalMessages.warning),
+        message: t(
+          {
+            id: 'FixtureChannelRangeTable.importSkippedDuplicates',
+            defaultMessage: 'Skipped duplicate description(s): {descriptions}',
+          },
+          { descriptions: skippedDescriptions.join(', ') },
+        ),
+      });
+    }
+
+    const newRanges = rangesToAdd.map(
+      range =>
+        ({
+          dmxStart: range.dmxStart,
+          dmxEnd: range.dmxEnd,
+          description: range.description,
+        }) as FixtureChannelRange,
+    );
+    const newChannelDefinition = {
+      ...selectedChannelDefinition,
+      fixtureChannelRanges: [...selectedChannelDefinition.fixtureChannelRanges, ...newRanges],
+    };
+    onChannelDefinitionsChange(
+      channelDefinitions.map(definition =>
+        definition.clientKey === selectedChannelDefinition.clientKey ? newChannelDefinition : definition,
+      ),
+    );
+    return true;
+  };
+
   const handleChannelRangeEdit = (
     rangeToEdit: FixtureChannelRange,
     start: number,
@@ -240,6 +322,7 @@ const FixtureChannelDefinitions = ({
         <FixtureChannelRangeTable
           fixtureChannelRanges={selectedChannelDefinition?.fixtureChannelRanges ?? []}
           onAdd={handleChannelRangeAdd}
+          onBulkAdd={handleChannelRangeBulkAdd}
           onEdit={handleChannelRangeEdit}
           onDelete={handleChannelRangeDelete}
         />
