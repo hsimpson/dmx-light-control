@@ -11,7 +11,7 @@ test.describe('project detail', () => {
     await page.getByRole('cell', { name: mockedProject.name }).click();
 
     await expect(page.getByRole('heading', { name: mockedProject.name })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Projektgeräte' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Geräte' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Gerät hinzufügen' }).click();
     await page.getByLabel('Gerät').click();

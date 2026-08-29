@@ -6,7 +6,7 @@ import { GetProjectDocument } from '@/shared/types/graphql/graphql';
 import { useQuery } from '@apollo/client/react';
 import { Text, Title } from '@mantine/core';
 import { useParams } from 'next/navigation';
-import ProjectFixtureTable from '../_components/project-fixture-table';
+import ProjectDetailTabs from '../_components/project-detail-tabs';
 
 const ProjectDetailPage = () => {
   const { t } = useTranslation();
@@ -30,10 +30,7 @@ const ProjectDetailPage = () => {
       <Title order={1} mb="md">
         {project.name}
       </Title>
-      <Title order={2} size="h3" mb="md">
-        {t({ id: 'ProjectFixtures.title', defaultMessage: 'Project fixtures' })}
-      </Title>
-      <ProjectFixtureTable projectPublicId={project.publicId} />
+      <ProjectDetailTabs projectPublicId={project.publicId} />
     </>
   );
 };
