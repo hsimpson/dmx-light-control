@@ -2,7 +2,7 @@ import { ICON_SIZE } from '@/lib/constants';
 import { FixtureChannelDefinition } from '@/shared/types/fixtures';
 import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
 import { Flex } from '@mantine/core';
-import { ApertureIcon, LightbulbIcon, PencilIcon, RectangleIcon } from '@phosphor-icons/react';
+import { ApertureIcon, LightbulbIcon, PaletteIcon, PencilIcon, RectangleIcon } from '@phosphor-icons/react';
 
 type FixtureChannelDefinitionItemProps = {
   channelDefinition: Pick<FixtureChannelDefinition, 'name' | 'preset'>;
@@ -24,6 +24,8 @@ const getPresetIcon = (preset: FixtureChannelPreset) => {
       return <RectangleIcon size={size} weight="duotone" color="orange" />;
     case FixtureChannelPreset.IntensityUv:
       return <RectangleIcon size={size} weight="duotone" color="purple" />;
+    case FixtureChannelPreset.ColorMacro:
+      return <PaletteIcon size={size} weight="duotone" color="red" />;
     case FixtureChannelPreset.IntensityDimmer:
     case FixtureChannelPreset.IntensityMasterDimmer:
       return <LightbulbIcon size={size} weight="duotone" color="orange" />;

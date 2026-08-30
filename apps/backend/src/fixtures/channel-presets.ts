@@ -8,6 +8,7 @@ export enum FixtureChannelPreset {
   IntensityWhite = 'IntensityWhite',
   IntensityAmber = 'IntensityAmber',
   IntensityUV = 'IntensityUV',
+  ColorMacro = 'ColorMacro',
 
   // shutter strobe presets
   ShutterStrobeSlowFast = 'ShutterStrobeSlowFast',
@@ -32,6 +33,7 @@ const fixtureChannelNames: Record<FixtureChannelPreset, string> = {
   [FixtureChannelPreset.IntensityWhite]: 'White',
   [FixtureChannelPreset.IntensityAmber]: 'Amber',
   [FixtureChannelPreset.IntensityUV]: 'UV',
+  [FixtureChannelPreset.ColorMacro]: 'Color Macro',
   [FixtureChannelPreset.ShutterStrobeSlowFast]: 'Shutter Strobe Slow-Fast',
   [FixtureChannelPreset.ShutterStrobeFastSlow]: 'Shutter Strobe Fast-Slow',
   [FixtureChannelPreset.IntensityMasterDimmer]: 'Master Dimmer',

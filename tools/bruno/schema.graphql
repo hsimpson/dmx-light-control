@@ -157,6 +157,7 @@ type FixtureChannelModeDto {
 
 """The preset of a fixture channel assignment"""
 enum FixtureChannelPreset {
+  ColorMacro
   Custom
   IntensityAmber
   IntensityBlue

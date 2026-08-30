@@ -303,6 +303,7 @@ const FixtureChannelDefinitions = ({
               FixtureChannelPreset.IntensityWhite,
               FixtureChannelPreset.IntensityAmber,
               FixtureChannelPreset.IntensityUv,
+              FixtureChannelPreset.ColorMacro,
               FixtureChannelPreset.IntensityMasterDimmer,
               FixtureChannelPreset.IntensityDimmer,
               FixtureChannelPreset.ShutterStrobeSlowFast,
