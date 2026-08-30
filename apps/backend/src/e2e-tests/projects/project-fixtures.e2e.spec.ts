@@ -1,14 +1,13 @@
+import { setupCatalogFixture, type CatalogFixture } from '../fixtures/catalog-fixture';
 import { AppModule } from '@/app.module';
 import { SerialSendService } from '@/io/serial/serial-send.service';
-import { SEED_FIXTURE_PUBLIC_ID } from '@/testhelpers/seed-fixture-data';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-const SEED_CHANNEL_MODE_PUBLIC_ID = '2c93eb61-16c1-4b1a-98aa-8e74fcbb64c9';
-const WRONG_FIXTURE_CHANNEL_MODE_PUBLIC_ID = 'e2c01c77-7e9f-46ce-bc11-26038d5b1774';
+const ORIGINAL_ENV = process.env;
 
 type CreateProjectMutation = {
   createProject: {
@@ -38,8 +37,6 @@ type ProjectQuery = {
     }[];
   } | null;
 };
-
-const ORIGINAL_ENV = process.env;
 
 const CREATE_PROJECT = gql`
   mutation ($input: CreateProjectInput!) {
@@ -115,6 +112,7 @@ const GET_PROJECT = gql`
 
 describe('Project fixture mutations', () => {
   let app: NestFastifyApplication;
+  let catalog: CatalogFixture;
 
   beforeAll(async () => {
     process.env = {
@@ -141,6 +139,10 @@ describe('Project fixture mutations', () => {
 
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
+
+    catalog = await setupCatalogFixture(app.getHttpAdapter().getInstance().server, {
+      fixtureName: 'E2E ProjectFixtures Catalog Par',
+    });
   });
 
   afterAll(async () => {
@@ -166,8 +168,8 @@ describe('Project fixture mutations', () => {
         variables: {
           input: {
             projectPublicId,
-            fixturePublicId: SEED_FIXTURE_PUBLIC_ID,
-            channelModePublicId: SEED_CHANNEL_MODE_PUBLIC_ID,
+            fixturePublicId: catalog.fixturePublicId,
+            channelModePublicId: catalog.fourChannelModePublicId,
             startAddress: 1,
           },
         },
@@ -176,7 +178,7 @@ describe('Project fixture mutations', () => {
 
     expect(added.errors).toBeUndefined();
     expect(added.data?.addProjectFixture.startAddress).toBe(1);
-    expect(added.data?.addProjectFixture.fixture.publicId).toBe(SEED_FIXTURE_PUBLIC_ID);
+    expect(added.data?.addProjectFixture.fixture.publicId).toBe(catalog.fixturePublicId);
     expect(added.data?.addProjectFixture.channelMode.fixtureChannelAssignments).toHaveLength(4);
 
     const instancePublicId = added.data?.addProjectFixture.publicId;
@@ -227,7 +229,7 @@ describe('Project fixture mutations', () => {
       variables: {
         input: {
           projectPublicId,
-          fixturePublicId: SEED_FIXTURE_PUBLIC_ID,
+          fixturePublicId: catalog.fixturePublicId,
           channelModePublicId: '00000000-0000-4000-8000-000000000099',
           startAddress: 1,
         },
@@ -251,8 +253,8 @@ describe('Project fixture mutations', () => {
       variables: {
         input: {
           projectPublicId,
-          fixturePublicId: SEED_FIXTURE_PUBLIC_ID,
-          channelModePublicId: WRONG_FIXTURE_CHANNEL_MODE_PUBLIC_ID,
+          fixturePublicId: catalog.fixturePublicId,
+          channelModePublicId: catalog.fiveChannelModePublicId,
           startAddress: 510,
         },
       },

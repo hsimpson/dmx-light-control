@@ -20,12 +20,6 @@ To apply migrations, use the following command:
 nx run backend:drizzle-migrate
 ```
 
-To seed the database with initial data, use the following command:
-
-```bash
-nx run backend:drizzle-seed
-```
-
 To open Drizzle Studio:
 
 ```bash

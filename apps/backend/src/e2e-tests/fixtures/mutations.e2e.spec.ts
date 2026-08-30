@@ -1,13 +1,12 @@
+import { setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
 import { AppModule } from '@/app.module';
 import { DRIZZLE_DB_PROVIDER } from '@/db/drizzle-db/drizzle-db.provider';
 import { relations } from '@/db/relations';
 import * as schema from '@/db/schema';
-import { fixtureChannelDefinitions } from '@/db/seeding/data/fixtures/fixture-channel-definitions';
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
 import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
 import { SerialSendService } from '@/io/serial/serial-send.service';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
-import { SEED_FIXTURE_PUBLIC_ID } from '@/testhelpers/seed-fixture-data';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import { eq } from 'drizzle-orm';
@@ -87,9 +86,6 @@ type FixtureChannelDefinitionsQuery = {
     fixtureChannelDefinitions: { publicId: string; name: string }[];
   } | null;
 };
-
-const SEED_CHANNEL_DEFINITION_RED_PUBLIC_ID = fixtureChannelDefinitions[0]?.publicId;
-const SEED_CHANNEL_DEFINITION_GREEN_PUBLIC_ID = fixtureChannelDefinitions[1]?.publicId;
 
 type ChannelModeInput = {
   publicId?: string;
@@ -179,6 +175,7 @@ const ORIGINAL_ENV = process.env;
 
 describe('Fixture mutations', () => {
   let app: NestFastifyApplication;
+  let catalog: CatalogFixture;
 
   beforeAll(async () => {
     process.env = {
@@ -205,6 +202,10 @@ describe('Fixture mutations', () => {
 
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
+
+    catalog = await setupCatalogFixture(app.getHttpAdapter().getInstance().server, {
+      fixtureName: 'E2E Mutations Catalog Par',
+    });
   });
 
   afterAll(async () => {
@@ -326,13 +327,13 @@ describe('Fixture mutations', () => {
     const body = await graphqlQuery<UpdateFixtureMutation>(app.getHttpAdapter().getInstance().server, mutation, {
       variables: {
         input: {
-          publicId: SEED_FIXTURE_PUBLIC_ID,
+          publicId: catalog.fixturePublicId,
           name: 'Mega TriPar Profile Plus (E2E)',
         },
       },
     });
 
-    expect(body.data?.updateFixture.publicId).toBe(SEED_FIXTURE_PUBLIC_ID);
+    expect(body.data?.updateFixture.publicId).toBe(catalog.fixturePublicId);
     expect(body.data?.updateFixture.name).toBe('Mega TriPar Profile Plus (E2E)');
   });
 
@@ -382,7 +383,7 @@ describe('Fixture mutations', () => {
   it('should add, reorder, replace assignments, and remove channel modes via updateFixture', async () => {
     const server = app.getHttpAdapter().getInstance().server;
     const loaded = await graphqlQuery<FixtureChannelModesQuery>(server, GET_FIXTURE_CHANNEL_MODES, {
-      variables: { publicId: SEED_FIXTURE_PUBLIC_ID },
+      variables: { publicId: catalog.fixturePublicId },
     });
     const fixture = loaded.data?.fixture;
     expect(fixture).toBeDefined();
@@ -396,7 +397,7 @@ describe('Fixture mutations', () => {
       const body = await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_WITH_MODES, {
         variables: {
           input: {
-            publicId: SEED_FIXTURE_PUBLIC_ID,
+            publicId: catalog.fixturePublicId,
             channelModes,
           },
         },
@@ -444,7 +445,7 @@ describe('Fixture mutations', () => {
       await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_WITH_MODES, {
         variables: {
           input: {
-            publicId: SEED_FIXTURE_PUBLIC_ID,
+            publicId: catalog.fixturePublicId,
             channelModes: original,
           },
         },
@@ -457,7 +458,7 @@ describe('Fixture mutations', () => {
     const body = await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_WITH_MODES, {
       variables: {
         input: {
-          publicId: SEED_FIXTURE_PUBLIC_ID,
+          publicId: catalog.fixturePublicId,
           channelModes: [
             {
               name: 'invalid mode',
@@ -475,11 +476,11 @@ describe('Fixture mutations', () => {
   it('should rename a fixture channel definition via updateFixture', async () => {
     const server = app.getHttpAdapter().getInstance().server;
     const loaded = await graphqlQuery<FixtureChannelDefinitionsQuery>(server, GET_FIXTURE_CHANNEL_DEFINITIONS, {
-      variables: { publicId: SEED_FIXTURE_PUBLIC_ID },
+      variables: { publicId: catalog.fixturePublicId },
     });
     const definitions = loaded.data?.fixture?.fixtureChannelDefinitions ?? [];
-    const target = definitions.find(definition => definition.publicId === SEED_CHANNEL_DEFINITION_RED_PUBLIC_ID);
-    const sibling = definitions.find(definition => definition.publicId === SEED_CHANNEL_DEFINITION_GREEN_PUBLIC_ID);
+    const target = definitions.find(definition => definition.publicId === catalog.redDefinitionPublicId);
+    const sibling = definitions.find(definition => definition.publicId === catalog.greenDefinitionPublicId);
     if (!target || !sibling) {
       throw new Error('Seed fixture is missing Red/Green channel definitions');
     }
@@ -490,7 +491,7 @@ describe('Fixture mutations', () => {
       const body = await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_DEFINITIONS, {
         variables: {
           input: {
-            publicId: SEED_FIXTURE_PUBLIC_ID,
+            publicId: catalog.fixturePublicId,
             channelDefinitions: [{ publicId: target.publicId, name: renamed }],
           },
         },
@@ -505,7 +506,7 @@ describe('Fixture mutations', () => {
       await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_DEFINITIONS, {
         variables: {
           input: {
-            publicId: SEED_FIXTURE_PUBLIC_ID,
+            publicId: catalog.fixturePublicId,
             channelDefinitions: [{ publicId: target.publicId, name: originalName }],
           },
         },
@@ -516,11 +517,11 @@ describe('Fixture mutations', () => {
   it('should reject renaming a channel definition to a sibling name', async () => {
     const server = app.getHttpAdapter().getInstance().server;
     const loaded = await graphqlQuery<FixtureChannelDefinitionsQuery>(server, GET_FIXTURE_CHANNEL_DEFINITIONS, {
-      variables: { publicId: SEED_FIXTURE_PUBLIC_ID },
+      variables: { publicId: catalog.fixturePublicId },
     });
     const definitions = loaded.data?.fixture?.fixtureChannelDefinitions ?? [];
-    const target = definitions.find(definition => definition.publicId === SEED_CHANNEL_DEFINITION_RED_PUBLIC_ID);
-    const sibling = definitions.find(definition => definition.publicId === SEED_CHANNEL_DEFINITION_GREEN_PUBLIC_ID);
+    const target = definitions.find(definition => definition.publicId === catalog.redDefinitionPublicId);
+    const sibling = definitions.find(definition => definition.publicId === catalog.greenDefinitionPublicId);
     if (!target || !sibling) {
       throw new Error('Seed fixture is missing Red/Green channel definitions');
     }
@@ -528,7 +529,7 @@ describe('Fixture mutations', () => {
     const body = await graphqlQuery<UpdateFixtureMutation>(server, UPDATE_FIXTURE_DEFINITIONS, {
       variables: {
         input: {
-          publicId: SEED_FIXTURE_PUBLIC_ID,
+          publicId: catalog.fixturePublicId,
           channelDefinitions: [{ publicId: target.publicId, name: sibling.name }],
         },
       },
@@ -546,7 +547,7 @@ describe('Fixture mutations', () => {
       {
         variables: {
           input: {
-            publicId: SEED_FIXTURE_PUBLIC_ID,
+            publicId: catalog.fixturePublicId,
             channelDefinitions: [{ publicId: unknownId, name: 'Does not exist' }],
           },
         },
@@ -559,7 +560,7 @@ describe('Fixture mutations', () => {
 
   it('should update a channel range in place and preserve its publicId via updateFixture', async () => {
     const server = app.getHttpAdapter().getInstance().server;
-    const redRangePublicId = '025ef59f-1e6b-4680-921c-09757ba3db46';
+    const redRangePublicId = catalog.redRangePublicId;
     const updatedDescription = 'Red, 0% to 100% (E2E)';
     const originalDescription = 'Red, 0% to 100%';
 
@@ -589,11 +590,11 @@ describe('Fixture mutations', () => {
           }
         }
       `,
-      { variables: { publicId: SEED_FIXTURE_PUBLIC_ID } },
+      { variables: { publicId: catalog.fixturePublicId } },
     );
 
     const redDefinition = loaded.data?.fixture?.fixtureChannelDefinitions.find(
-      definition => definition.publicId === SEED_CHANNEL_DEFINITION_RED_PUBLIC_ID,
+      definition => definition.publicId === catalog.redDefinitionPublicId,
     );
     const redRange = redDefinition?.fixtureChannelRanges.find(range => range.publicId === redRangePublicId);
     if (!redDefinition || !redRange) {
@@ -626,7 +627,7 @@ describe('Fixture mutations', () => {
         {
           variables: {
             input: {
-              publicId: SEED_FIXTURE_PUBLIC_ID,
+              publicId: catalog.fixturePublicId,
               channelDefinitions: [
                 {
                   publicId: redDefinition.publicId,
@@ -656,7 +657,7 @@ describe('Fixture mutations', () => {
       await graphqlQuery(server, UPDATE_FIXTURE_DEFINITIONS, {
         variables: {
           input: {
-            publicId: SEED_FIXTURE_PUBLIC_ID,
+            publicId: catalog.fixturePublicId,
             channelDefinitions: [
               {
                 publicId: redDefinition.publicId,
@@ -700,9 +701,18 @@ describe('Fixture mutations', () => {
   });
 
   it('should delete a fixture via deleteFixture', async () => {
+    const db = app.get<NodePgDatabase<typeof relations>>(DRIZZLE_DB_PROVIDER);
+    const [americanDjVendor] = await db
+      .select()
+      .from(schema.fixtureVendor)
+      .where(eq(schema.fixtureVendor.publicId, catalog.vendorPublicId));
+    if (!americanDjVendor?.id) {
+      throw new Error('Expected American DJ vendor in imported fixture catalog');
+    }
+
     const created = await app.get(FixtureRepository).createOne({
       name: 'Fixture To Delete',
-      vendorId: 1,
+      vendorId: americanDjVendor.id,
     });
     const publicId = created?.publicId;
     const fixtureId = created?.id;
@@ -710,7 +720,6 @@ describe('Fixture mutations', () => {
       throw new Error('Failed to create fixture for delete e2e');
     }
 
-    const db = app.get<NodePgDatabase<typeof relations>>(DRIZZLE_DB_PROVIDER);
     const [definition] = await db
       .insert(schema.fixtureChannelDefinition)
       .values({
@@ -807,7 +816,10 @@ describe('Fixture mutations', () => {
         .where(eq(schema.fixtureChannelAssignment.publicId, assignment?.publicId ?? '')),
     ).toEqual([]);
 
-    const [vendor] = await db.select().from(schema.fixtureVendor).where(eq(schema.fixtureVendor.id, 1));
+    const [vendor] = await db
+      .select()
+      .from(schema.fixtureVendor)
+      .where(eq(schema.fixtureVendor.publicId, catalog.vendorPublicId));
     expect(vendor).toBeDefined();
   });
 });

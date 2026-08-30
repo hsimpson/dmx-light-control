@@ -1,7 +1,7 @@
+import { createEuroliteVendor, setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
 import { AppModule } from '@/app.module';
 import { SerialSendService } from '@/io/serial/serial-send.service';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
-import { SEED_FIXTURE_PUBLIC_ID } from '@/testhelpers/seed-fixture-data';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import gql from 'graphql-tag';
@@ -61,6 +61,7 @@ const UNKNOWN_FIXTURE_PUBLIC_ID = '00000000-0000-4000-8000-000000000000';
 
 describe('Fixture queries', () => {
   let app: NestFastifyApplication;
+  let catalog: CatalogFixture;
 
   beforeAll(async () => {
     process.env = {
@@ -87,6 +88,10 @@ describe('Fixture queries', () => {
 
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
+
+    const server = app.getHttpAdapter().getInstance().server;
+    await createEuroliteVendor(server);
+    catalog = await setupCatalogFixture(server, { fixtureName: 'E2E Queries Catalog Par' });
   });
 
   afterAll(async () => {
@@ -132,9 +137,9 @@ describe('Fixture queries', () => {
 
     const body = await graphqlQuery<FixturesQuery>(app.getHttpAdapter().getInstance().server, query);
 
-    const fixture = body.data?.fixtures.find(entry => entry.publicId === SEED_FIXTURE_PUBLIC_ID);
+    const fixture = body.data?.fixtures.find(entry => entry.publicId === catalog.fixturePublicId);
     if (!fixture) {
-      throw new Error(`Expected fixture with publicId ${SEED_FIXTURE_PUBLIC_ID}`);
+      throw new Error(`Expected fixture with publicId ${catalog.fixturePublicId}`);
     }
     expect(fixture.fixtureVendor.name).toBe('American DJ');
   });
@@ -155,11 +160,11 @@ describe('Fixture queries', () => {
 
     const body = await graphqlQuery<FixtureQuery>(app.getHttpAdapter().getInstance().server, query, {
       variables: {
-        publicId: SEED_FIXTURE_PUBLIC_ID,
+        publicId: catalog.fixturePublicId,
       },
     });
 
-    expect(body.data?.fixture?.publicId).toBe(SEED_FIXTURE_PUBLIC_ID);
+    expect(body.data?.fixture?.publicId).toBe(catalog.fixturePublicId);
     expect(body.data?.fixture?.fixtureVendor.name).toBe('American DJ');
   });
 
@@ -204,7 +209,7 @@ describe('Fixture queries', () => {
 
     const body = await graphqlQuery<FixtureWithModeAssignmentsQuery>(app.getHttpAdapter().getInstance().server, query, {
       variables: {
-        publicId: SEED_FIXTURE_PUBLIC_ID,
+        publicId: catalog.fixturePublicId,
       },
     });
 

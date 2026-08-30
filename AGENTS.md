@@ -35,7 +35,6 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run backend:dmx-sniffer`                       | DMX USB sniffer CLI (Linux-only)                                   |
 | `nx run bruno:build`                               | Rebuild Bruno API collection                                       |
 | `nx run backend:drizzle-migrate`                   | Run migrations                                                     |
-| `nx run backend:drizzle-seed`                      | Seed database                                                      |
 | `nx run backend:drizzle-studio`                    | Open Drizzle Studio                                                |
 | `nx run frontend:graphql-codegen`                  | Generate GraphQL types                                             |
 | `nx run frontend:i18n-extract`                     | Extract translations                                               |
@@ -132,7 +131,7 @@ fixtures/
 - Schema: `schema.ts` → `relations.ts` (`defineRelations()`) → `columns.helpers.ts` (`pk`, `timestamps`)
 - Entities: `d.snakeCase.table('name', { ...pk, ...timestamps, fields })`
 - Repositories: one per entity/group, use `InferSelectModel`/`InferInsertModel`
-- Migrations: `src/db/migrations/` (timestamp + snake_case name from `--name`; never drizzle-kit random names); seeding: `src/db/seeding/seed.ts`
+- Migrations: `src/db/migrations/` (timestamp + snake_case name from `--name`; never drizzle-kit random names)
 - ER diagram: `nx run backend:erd` → `apps/backend/docs/database-schema.md`
 - Query logging: `DrizzleLogWriter` wrapping NestJS `Logger` (exists but currently disabled in `apps/backend/src/db/drizzle-db/drizzle-db.module.ts`)
 
