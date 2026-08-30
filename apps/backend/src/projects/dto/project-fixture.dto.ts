@@ -1,12 +1,25 @@
 import { BaseDto } from '@/db/base.dto';
+import { FixtureChannelPreset } from '@/fixtures/channel-presets';
 import { FixtureVendorDto } from '@/fixtures/dto/fixture-vendor.dto';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 
 @ObjectType()
+export class ProjectFixtureChannelDefinitionDto {
+  @Field(() => FixtureChannelPreset, { description: 'The preset of the channel definition' })
+  public preset: FixtureChannelPreset;
+}
+
+@ObjectType()
 export class ProjectFixtureChannelAssignmentDto {
   @Field(() => Int, { description: 'The 1-based DMX channel number of the assignment' })
   public channelNumber: number;
+
+  @Type(() => ProjectFixtureChannelDefinitionDto)
+  @Field(() => ProjectFixtureChannelDefinitionDto, {
+    description: 'The channel definition assigned to this channel number',
+  })
+  public fixtureChannelDefinition: ProjectFixtureChannelDefinitionDto;
 }
 
 @ObjectType()

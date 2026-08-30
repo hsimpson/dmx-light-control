@@ -8,7 +8,11 @@ import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 export const projectFixtureRelations = {
   fixture: { with: { fixtureVendor: true } },
-  fixtureChannelMode: { with: { fixtureChannelAssignments: true } },
+  fixtureChannelMode: {
+    with: {
+      fixtureChannelAssignments: { with: { fixtureChannelDefinition: true } },
+    },
+  },
 } as const;
 
 @Injectable()

@@ -78,6 +78,7 @@
   "ProjectDetail.tabs.fixtures": "Fixtures",
   "ProjectDetail.tabs.threeDView": "3D View",
   "ProjectDetail.tabs.universeView": "Universe View",
+  "ProjectUniverse.channelTooltip": "Channel {channelNumber}",
   "ProjectFixtures.add": "Add fixture",
   "ProjectFixtures.channelCount": "Channels",
   "ProjectFixtures.channelMode": "Channel mode",

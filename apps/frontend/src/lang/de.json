@@ -78,6 +78,7 @@
   "ProjectDetail.tabs.fixtures": "Geräte",
   "ProjectDetail.tabs.threeDView": "3D-Ansicht",
   "ProjectDetail.tabs.universeView": "Universumsansicht",
+  "ProjectUniverse.channelTooltip": "Kanal {channelNumber}",
   "ProjectFixtures.add": "Gerät hinzufügen",
   "ProjectFixtures.channelCount": "Kanäle",
   "ProjectFixtures.channelMode": "Kanalmodus",

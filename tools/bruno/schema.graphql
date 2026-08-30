@@ -685,6 +685,14 @@ type ProjectExportProjectDto {
 type ProjectFixtureChannelAssignmentDto {
   """The 1-based DMX channel number of the assignment"""
   channelNumber: Int!
+
+  """The channel definition assigned to this channel number"""
+  fixtureChannelDefinition: ProjectFixtureChannelDefinitionDto!
+}
+
+type ProjectFixtureChannelDefinitionDto {
+  """The preset of the channel definition"""
+  preset: FixtureChannelPreset!
 }
 
 type ProjectFixtureChannelModeDto {

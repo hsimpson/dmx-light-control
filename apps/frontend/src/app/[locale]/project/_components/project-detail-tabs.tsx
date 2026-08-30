@@ -4,6 +4,7 @@ import { useTranslation } from '@/lib/i18n/use-translation';
 import { Tabs } from '@mantine/core';
 import ProjectFixtureTable from './project-fixture-table';
 import ProjectTabEmptyState from './project-tab-empty-state';
+import UniverseView from './universe-view';
 
 type ProjectDetailTabsProperties = {
   projectPublicId: string;
@@ -28,9 +29,7 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
       </Tabs.Panel>
 
       <Tabs.Panel value="universe" pt="md">
-        <ProjectTabEmptyState
-          message={t({ id: 'ProjectDetail.emptyView', defaultMessage: 'This view is not available yet.' })}
-        />
+        <UniverseView projectPublicId={projectPublicId} />
       </Tabs.Panel>
 
       <Tabs.Panel value="dmx" pt="md">

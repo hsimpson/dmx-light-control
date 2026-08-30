@@ -57,9 +57,20 @@ function mapProjectFixtureToDto(fixture: LoadedProjectFixture) {
       createdAt: mode.createdAt,
       updatedAt: mode.updatedAt,
       name: mode.name,
-      fixtureChannelAssignments: mode.fixtureChannelAssignments.map((assignment: { channelNumber: number }) => ({
-        channelNumber: assignment.channelNumber,
-      })),
+      fixtureChannelAssignments: mode.fixtureChannelAssignments.flatMap(assignment => {
+        if (assignment.fixtureChannelDefinition === null) {
+          return [];
+        }
+
+        return [
+          {
+            channelNumber: assignment.channelNumber,
+            fixtureChannelDefinition: {
+              preset: assignment.fixtureChannelDefinition.preset,
+            },
+          },
+        ];
+      }),
     },
   };
 }

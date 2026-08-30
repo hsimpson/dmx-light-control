@@ -21,6 +21,9 @@ fragment ProjectFixtureFields on ProjectFixtureDto {
     name
     fixtureChannelAssignments {
       channelNumber
+      fixtureChannelDefinition {
+        preset
+      }
     }
   }
   createdAt
