@@ -1,4 +1,4 @@
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, type ListenerFn } from 'eventemitter2';
 
 export class TypedEventEmitter<TEvents extends Record<string, unknown>> {
   public constructor(protected readonly emitter: EventEmitter2) {}
@@ -14,6 +14,6 @@ export class TypedEventEmitter<TEvents extends Record<string, unknown>> {
     event: TEvent,
     listener: (payload: TEvents[TEvent]) => void | Promise<void>,
   ): void {
-    this.emitter.on(event, listener as (...args: unknown[]) => void);
+    this.emitter.on(event, listener as ListenerFn);
   }
 }

@@ -32,7 +32,7 @@ import { formatErrorHandler } from './graphql/graphql-format-error';
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      playground: false,
+      graphiql: false,
       autoSchemaFile: true,
       sortSchema: true,
       resolvers: { UUID: GraphQLUUID },

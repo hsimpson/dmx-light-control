@@ -1,16 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2 } from 'eventemitter2';
 import { TypedEventEmitter } from './typed-event-emitter';
 
 type Events = { 'a.event': { x: number }; 'b.event': undefined };
 
 describe('TypedEventEmitter', () => {
-  let emitter: { emit: ReturnType<typeof vi.fn>; on: ReturnType<typeof vi.fn> };
+  let emitter: EventEmitter2;
   let typed: TypedEventEmitter<Events>;
 
   beforeEach(() => {
-    emitter = { emit: vi.fn().mockReturnValue(true), on: vi.fn() };
-    typed = new TypedEventEmitter<Events>(emitter as unknown as EventEmitter2);
+    emitter = new EventEmitter2();
+    vi.spyOn(emitter, 'emit').mockReturnValue(true);
+    vi.spyOn(emitter, 'on');
+    typed = new TypedEventEmitter<Events>(emitter);
   });
 
   it('forwards emit with payload', () => {
