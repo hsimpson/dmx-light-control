@@ -4,7 +4,7 @@ import { validate } from 'class-validator';
 import { describe, expect, it } from 'vitest';
 import { ImportFixtureRangeInput, ImportFixturesInput } from './import-fixtures.dto';
 
-/** Stored in seed/export; RFC 4122 UUID with variant nibble `c`, so not UUID v4. */
+/** Stored in fixture export; RFC 4122 UUID with variant nibble `c`, so not UUID v4. */
 const EXPORTED_RANGE_PUBLIC_ID = 'a4b9e7c8-5f1d-4a2b-c9e4-7f3a8d1b5c2f';
 
 describe('ImportFixturesInput validation', () => {

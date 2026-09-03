@@ -35,13 +35,12 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run backend:dmx-sniffer`                       | DMX USB sniffer CLI (Linux-only)                                   |
 | `nx run bruno:build`                               | Rebuild Bruno API collection                                       |
 | `nx run backend:drizzle-migrate`                   | Run migrations                                                     |
-| `nx run backend:drizzle-seed`                      | Seed database                                                      |
 | `nx run backend:drizzle-studio`                    | Open Drizzle Studio                                                |
 | `nx run frontend:graphql-codegen`                  | Generate GraphQL types                                             |
 | `nx run frontend:i18n-extract`                     | Extract translations                                               |
 | `nx run frontend:i18n-verify`                      | Verify translation files are in sync                               |
 
-**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.19.0. **pnpm:** ^11.24.0.
+**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.20.0. **pnpm:** ^11.25.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
 **Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; used for GraphQL stack-trace stripping), `BACKEND_PORT` (HTTP; GraphQL at `/graphql`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (`postgres:18.4`, same image as `infra/docker-compose.yml`).
 
@@ -86,7 +85,7 @@ Harness maintenance is part of **done**, not optional docs.
 ### Backend (`apps/backend/src/`)
 
 - NestJS + Apollo GraphQL on Fastify (`autoSchemaFile: true`)
-- Domain modules: `FixturesModule`, `ProjectsModule`. `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` is imported by `DmxModule`. `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
+- Domain modules: `FixturesModule`, `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` is imported by `DmxModule`. `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
 - Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). Import/export is Resolver → `FixtureImportExportService` / `ProjectImportExportService` (`InjectDb()` + repositories + transactions). IO resolvers may emit events or call services without repositories.
 - Tests: Vitest unit/integration (`src/**/*.spec.ts`); GraphQL e2e in `src/e2e-tests/`; Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
 - Repositories use `InjectDb()` for typed Drizzle connection
@@ -132,7 +131,7 @@ fixtures/
 - Schema: `schema.ts` → `relations.ts` (`defineRelations()`) → `columns.helpers.ts` (`pk`, `timestamps`)
 - Entities: `d.snakeCase.table('name', { ...pk, ...timestamps, fields })`
 - Repositories: one per entity/group, use `InferSelectModel`/`InferInsertModel`
-- Migrations: `src/db/migrations/` (timestamp + snake_case name from `--name`; never drizzle-kit random names); seeding: `src/db/seeding/seed.ts`
+- Migrations: `src/db/migrations/` (timestamp + snake_case name from `--name`; never drizzle-kit random names)
 - ER diagram: `nx run backend:erd` → `apps/backend/docs/database-schema.md`
 - Query logging: `DrizzleLogWriter` wrapping NestJS `Logger` (exists but currently disabled in `apps/backend/src/db/drizzle-db/drizzle-db.module.ts`)
 
@@ -166,7 +165,7 @@ fixtures/
 ### Drizzle ORM
 
 - `d.snakeCase.table()`, helpers `pk` + `timestamps` from `@/db/columns.helpers`
-- Relations in `relations.ts`; repositories for entity CRUD; fixture and project import/export also use `InjectDb()` and transactions
+- Relations in `relations.ts`; repositories for entity CRUD; fixture and project import/export also use `InjectDb()` and transactions; `project_fixtures` links a project to catalog fixture + channel mode + DMX start address
 
 ### React
 

@@ -1,11 +1,8 @@
-import { AppModule } from '@/app.module';
-import { fixtureChannelDefinitions } from '@/db/seeding/data/fixtures/fixture-channel-definitions';
+import { createEuroliteVendor, setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
-import { SerialSendService } from '@/io/serial/serial-send.service';
+import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
-import { SEED_FIXTURE_PUBLIC_ID } from '@/testhelpers/seed-fixture-data';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { Test, TestingModule } from '@nestjs/testing';
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -15,7 +12,6 @@ const NEW_RANGE_PUBLIC_ID = '33333333-3333-4333-8333-333333333333';
 const NEW_MODE_PUBLIC_ID = '44444444-4444-4444-8444-444444444444';
 const UNUSED_VENDOR_PUBLIC_ID = '55555555-5555-4555-8555-555555555555';
 const ROLLBACK_FIXTURE_PUBLIC_ID = '66666666-6666-4666-8666-666666666666';
-const SEED_DEFINITION_PUBLIC_ID = fixtureChannelDefinitions[0]?.publicId;
 
 type ExportFixturesQuery = {
   exportFixtures: {
@@ -168,8 +164,6 @@ const GET_FIXTURE = gql`
   }
 `;
 
-const ORIGINAL_ENV = process.env;
-
 function newFixtureDocument(name = 'Import Test Par') {
   return {
     schemaVersion: 1,
@@ -209,37 +203,18 @@ function newFixtureDocument(name = 'Import Test Par') {
 
 describe('Fixture import/export', () => {
   let app: NestFastifyApplication;
+  let catalog: CatalogFixture;
 
   beforeAll(async () => {
-    process.env = {
-      ...ORIGINAL_ENV,
-      BACKEND_PORT: '3000',
-      POSTGRES_USER: 'u',
-      POSTGRES_PASSWORD: 'p',
-      POSTGRES_HOST: 'h',
-      POSTGRES_PORT: '5432',
-      POSTGRES_DB: 'db',
-    };
+    app = await createE2eApp();
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(SerialSendService)
-      .useValue({
-        onModuleInit: () => undefined,
-        onModuleDestroy: () => undefined,
-      })
-      .compile();
-
-    app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
-
-    await app.init();
-    await app.getHttpAdapter().getInstance().ready();
+    const server = app.getHttpAdapter().getInstance().server;
+    await createEuroliteVendor(server);
+    catalog = await setupCatalogFixture(server, { fixtureName: 'E2E ImportExport Catalog Par' });
   });
 
   afterAll(async () => {
     await app.close();
-    process.env = ORIGINAL_ENV;
   });
 
   it('exports every fixture with related vendor, definitions, ranges, modes, and assignments', async () => {
@@ -253,7 +228,7 @@ describe('Fixture import/export', () => {
       ]),
     );
 
-    const seed = document?.fixtures.find(entry => entry.publicId === SEED_FIXTURE_PUBLIC_ID);
+    const seed = document?.fixtures.find(entry => entry.publicId === catalog.fixturePublicId);
     expect(seed?.name).toBeTruthy();
     expect(seed?.vendor.name).toBe('American DJ');
     expect(seed?.channelDefinitions.length).toBeGreaterThan(0);
@@ -309,7 +284,7 @@ describe('Fixture import/export', () => {
             schemaVersion: 1,
             fixtures: [
               {
-                publicId: SEED_FIXTURE_PUBLIC_ID,
+                publicId: catalog.fixturePublicId,
                 name: 'Import Test Par',
                 vendor: { name: 'American DJ' },
                 channelDefinitions: [],
@@ -385,7 +360,7 @@ describe('Fixture import/export', () => {
                 vendor: { name: 'American DJ' },
                 channelDefinitions: [
                   {
-                    publicId: SEED_DEFINITION_PUBLIC_ID,
+                    publicId: catalog.redDefinitionPublicId,
                     name: 'Dimmer',
                     order: 0,
                     preset: FixtureChannelPreset.IntensityDimmer,

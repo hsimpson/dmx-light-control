@@ -9,6 +9,7 @@ export const relations = defineRelations(schema, r => ({
     }),
     fixtureChannelDefinitions: r.many.fixtureChannelDefinition(),
     fixtureChannelModes: r.many.fixtureChannelMode(),
+    projectFixtures: r.many.projectFixture(),
   },
 
   fixtureVendor: {
@@ -37,6 +38,7 @@ export const relations = defineRelations(schema, r => ({
       to: r.fixture.id,
     }),
     fixtureChannelAssignments: r.many.fixtureChannelAssignment(),
+    projectFixtures: r.many.projectFixture(),
   },
 
   fixtureChannelAssignment: {
@@ -46,6 +48,25 @@ export const relations = defineRelations(schema, r => ({
     }),
     fixtureChannelMode: r.one.fixtureChannelMode({
       from: r.fixtureChannelAssignment.fixtureChannelModeId,
+      to: r.fixtureChannelMode.id,
+    }),
+  },
+
+  project: {
+    projectFixtures: r.many.projectFixture(),
+  },
+
+  projectFixture: {
+    project: r.one.project({
+      from: r.projectFixture.projectId,
+      to: r.project.id,
+    }),
+    fixture: r.one.fixture({
+      from: r.projectFixture.fixtureId,
+      to: r.fixture.id,
+    }),
+    fixtureChannelMode: r.one.fixtureChannelMode({
+      from: r.projectFixture.fixtureChannelModeId,
       to: r.fixtureChannelMode.id,
     }),
   },

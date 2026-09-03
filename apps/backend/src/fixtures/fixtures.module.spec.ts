@@ -6,6 +6,7 @@ import { FixtureService } from './fixture.service';
 import { FixturesModule } from './fixtures.module';
 import { FixtureChannelDefinitionRepository } from './repositories/fixture-channel-definition.repository';
 import { FixtureVendorRepository } from './repositories/fixture-vendor.repository';
+import { FixtureChannelModeRepository } from './repositories/fixture-channel-mode.repository';
 import { FixtureRepository } from './repositories/fixture.repository';
 
 describe('FixturesModule', () => {
@@ -20,7 +21,6 @@ describe('FixturesModule', () => {
     expect(providers).toContain(FixtureService);
     expect(providers).toContain(FixtureImportExportService);
     expect(providers).toContain(FixtureResolver);
-    // FixturesModule does not export anything (no exports key set on @Module)
-    expect(exports).toBeUndefined();
+    expect(exports).toEqual([FixtureRepository, FixtureChannelModeRepository]);
   });
 });

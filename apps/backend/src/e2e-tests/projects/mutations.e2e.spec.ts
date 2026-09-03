@@ -1,8 +1,6 @@
-import { AppModule } from '@/app.module';
-import { SerialSendService } from '@/io/serial/serial-send.service';
+import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { Test, TestingModule } from '@nestjs/testing';
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -33,7 +31,6 @@ type ProjectQuery = {
   } | null;
 };
 
-const ORIGINAL_ENV = process.env;
 const UNKNOWN_PROJECT_PUBLIC_ID = '00000000-0000-4000-8000-000000000000';
 
 const CREATE_PROJECT = gql`
@@ -49,35 +46,11 @@ describe('Project mutations', () => {
   let app: NestFastifyApplication;
 
   beforeAll(async () => {
-    process.env = {
-      ...ORIGINAL_ENV,
-      BACKEND_PORT: '3000',
-      POSTGRES_USER: 'u',
-      POSTGRES_PASSWORD: 'p',
-      POSTGRES_HOST: 'h',
-      POSTGRES_PORT: '5432',
-      POSTGRES_DB: 'db',
-    };
-
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(SerialSendService)
-      .useValue({
-        onModuleInit: () => undefined,
-        onModuleDestroy: () => undefined,
-      })
-      .compile();
-
-    app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
-
-    await app.init();
-    await app.getHttpAdapter().getInstance().ready();
+    app = await createE2eApp();
   });
 
   afterAll(async () => {
     await app.close();
-    process.env = ORIGINAL_ENV;
   });
 
   it('should create a project via createProject', async () => {

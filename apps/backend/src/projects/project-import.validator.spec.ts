@@ -9,9 +9,15 @@ describe('assertImportDocument', () => {
     }).not.toThrow();
   });
 
-  it('rejects an unsupported schemaVersion', () => {
+  it('accepts schemaVersion 2', () => {
     expect(() => {
       assertImportDocument({ schemaVersion: 2 });
+    }).not.toThrow();
+  });
+
+  it('rejects unsupported schemaVersion', () => {
+    expect(() => {
+      assertImportDocument({ schemaVersion: 99 });
     }).toThrow(ProjectImportInvalidException);
   });
 });

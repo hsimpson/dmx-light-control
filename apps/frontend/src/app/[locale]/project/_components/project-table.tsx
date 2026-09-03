@@ -17,12 +17,14 @@ import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { PencilSimpleIcon, PlusCircleIcon, TrashIcon } from '@phosphor-icons/react';
 import { DataTable } from 'mantine-datatable';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 type Project = GetProjectsQuery['projects'][number];
 
 const ProjectTable = () => {
   const { t } = useTranslation();
+  const router = useRouter();
   const { data, loading } = useQuery(GetProjectsDocument);
   const [deleteProject, { loading: deleting }] = useMutation(DeleteProjectDocument);
   const [createProject, { loading: creating }] = useMutation(CreateProjectDocument);
@@ -219,6 +221,9 @@ const ProjectTable = () => {
             },
           },
         ]}
+        onRowClick={record => {
+          router.push(`/project/${record.record.publicId}`);
+        }}
       />
       <Modal
         opened={confirmOpened}

@@ -17,5 +17,6 @@ import { FixtureRepository } from './repositories/fixture.repository';
     FixtureImportExportService,
     FixtureResolver,
   ],
+  exports: [FixtureRepository, FixtureChannelModeRepository],
 })
 export class FixturesModule {}

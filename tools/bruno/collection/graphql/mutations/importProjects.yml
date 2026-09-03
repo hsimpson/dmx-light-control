@@ -1,7 +1,7 @@
 info:
   name: importProjects
   type: graphql
-  seq: 9
+  seq: 11
 
 graphql:
   method: POST
@@ -15,6 +15,26 @@ graphql:
           projects {
             createdAt
             name
+            projectFixtures {
+              channelMode {
+                createdAt
+                fixtureChannelAssignments
+                name
+                publicId
+                updatedAt
+              }
+              createdAt
+              fixture {
+                createdAt
+                fixtureVendor
+                name
+                publicId
+                updatedAt
+              }
+              publicId
+              startAddress
+              updatedAt
+            }
             publicId
             updatedAt
           }

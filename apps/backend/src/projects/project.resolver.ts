@@ -1,11 +1,15 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { plainToInstance } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
+import { AddProjectFixtureInput } from './dto/add-project-fixture.dto';
 import { CreateProjectInput } from './dto/create-project.dto';
+import { DeleteProjectFixturePayload } from './dto/delete-project-fixture-payload.dto';
 import { DeleteProjectPayload } from './dto/delete-project-payload.dto';
 import { ProjectExportDocumentDto } from './dto/export-projects.dto';
 import { ImportProjectsInput, ImportProjectsPayload } from './dto/import-projects.dto';
+import { ProjectFixtureDto } from './dto/project-fixture.dto';
 import { ProjectDto } from './dto/project.dto';
+import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
 import { ProjectImportExportService } from './project-import-export.service';
 import { ProjectService } from './project.service';
@@ -89,5 +93,34 @@ export class ProjectResolver {
       importedCount: result.importedCount,
       projects: plainToInstance(ProjectDto, result.projects),
     });
+  }
+
+  @Mutation(() => ProjectFixtureDto, {
+    name: 'addProjectFixture',
+    description: 'add a catalog fixture instance to a project',
+  })
+  public async addProjectFixture(@Args('input') input: AddProjectFixtureInput): Promise<ProjectFixtureDto> {
+    const projectFixture = await this.projectService.addProjectFixture(input);
+    return plainToInstance(ProjectFixtureDto, projectFixture);
+  }
+
+  @Mutation(() => ProjectFixtureDto, {
+    name: 'updateProjectFixture',
+    description: 'update a project fixture instance',
+  })
+  public async updateProjectFixture(@Args('input') input: UpdateProjectFixtureInput): Promise<ProjectFixtureDto> {
+    const projectFixture = await this.projectService.updateProjectFixture(input);
+    return plainToInstance(ProjectFixtureDto, projectFixture);
+  }
+
+  @Mutation(() => DeleteProjectFixturePayload, {
+    name: 'deleteProjectFixture',
+    description: 'delete a project fixture instance by public id',
+  })
+  public async deleteProjectFixture(
+    @Args('publicId', { type: () => GraphQLUUID }) publicId: string,
+  ): Promise<DeleteProjectFixturePayload> {
+    const result = await this.projectService.deleteProjectFixtureByPublicId(publicId);
+    return plainToInstance(DeleteProjectFixturePayload, result);
   }
 }

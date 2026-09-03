@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { BaseDomainError } from '@/fixtures/fixture.exceptions';
 import {
   ProjectAlreadyExistsException,
+  ProjectFixtureAddressOverlapException,
   ProjectImportConflictException,
   ProjectImportInvalidException,
   ProjectNotFoundException,
@@ -41,5 +42,14 @@ describe('project exceptions', () => {
     expect(err.code).toBe('PROJECT_IMPORT_CONFLICT');
     expect(err.statusCode).toBe(HttpStatus.CONFLICT);
     expect(err.message).toBe('name clash');
+  });
+
+  it('ProjectFixtureAddressOverlapException maps to CONFLICT', () => {
+    const err = new ProjectFixtureAddressOverlapException(3, 4, 1, 4);
+    expect(err).toBeInstanceOf(BaseDomainError);
+    expect(err.code).toBe('PROJECT_FIXTURE_ADDRESS_OVERLAP');
+    expect(err.statusCode).toBe(HttpStatus.CONFLICT);
+    expect(err.message).toBe('DMX address range 3–6 overlaps an existing fixture at 1–4.');
+    expect(err.name).toBe('ProjectFixtureAddressOverlapError');
   });
 });

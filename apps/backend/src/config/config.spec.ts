@@ -1,23 +1,23 @@
+import { overrideProcessEnv } from '@/testhelpers/process-env';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadConfig } from './config';
 
 describe('config', () => {
-  const ORIGINAL_ENV = process.env;
+  let restoreEnv: () => void;
 
   beforeEach(() => {
-    process.env = {
-      ...ORIGINAL_ENV,
+    restoreEnv = overrideProcessEnv({
       BACKEND_PORT: '3000',
       POSTGRES_USER: 'u',
       POSTGRES_PASSWORD: 'p',
       POSTGRES_HOST: 'h',
       POSTGRES_PORT: '5432',
       POSTGRES_DB: 'db',
-    };
+    });
   });
 
   afterEach(() => {
-    process.env = ORIGINAL_ENV;
+    restoreEnv();
   });
 
   it('loads the full config from env variables', () => {

@@ -1,9 +1,7 @@
-import { AppModule } from '@/app.module';
-import { SerialSendService } from '@/io/serial/serial-send.service';
+import { createEuroliteVendor, setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
+import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
-import { SEED_FIXTURE_PUBLIC_ID } from '@/testhelpers/seed-fixture-data';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { Test, TestingModule } from '@nestjs/testing';
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -56,42 +54,22 @@ type FixtureWithModeAssignmentsQuery = {
   } | null;
 };
 
-const ORIGINAL_ENV = process.env;
 const UNKNOWN_FIXTURE_PUBLIC_ID = '00000000-0000-4000-8000-000000000000';
 
 describe('Fixture queries', () => {
   let app: NestFastifyApplication;
+  let catalog: CatalogFixture;
 
   beforeAll(async () => {
-    process.env = {
-      ...ORIGINAL_ENV,
-      BACKEND_PORT: '3000',
-      POSTGRES_USER: 'u',
-      POSTGRES_PASSWORD: 'p',
-      POSTGRES_HOST: 'h',
-      POSTGRES_PORT: '5432',
-      POSTGRES_DB: 'db',
-    };
+    app = await createE2eApp();
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(SerialSendService)
-      .useValue({
-        onModuleInit: () => undefined,
-        onModuleDestroy: () => undefined,
-      })
-      .compile();
-
-    app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
-
-    await app.init();
-    await app.getHttpAdapter().getInstance().ready();
+    const server = app.getHttpAdapter().getInstance().server;
+    await createEuroliteVendor(server);
+    catalog = await setupCatalogFixture(server, { fixtureName: 'E2E Queries Catalog Par' });
   });
 
   afterAll(async () => {
     await app.close();
-    process.env = ORIGINAL_ENV;
   });
 
   it('should return a list of fixtureVendors', async () => {
@@ -132,9 +110,9 @@ describe('Fixture queries', () => {
 
     const body = await graphqlQuery<FixturesQuery>(app.getHttpAdapter().getInstance().server, query);
 
-    const fixture = body.data?.fixtures.find(entry => entry.publicId === SEED_FIXTURE_PUBLIC_ID);
+    const fixture = body.data?.fixtures.find(entry => entry.publicId === catalog.fixturePublicId);
     if (!fixture) {
-      throw new Error(`Expected fixture with publicId ${SEED_FIXTURE_PUBLIC_ID}`);
+      throw new Error(`Expected fixture with publicId ${catalog.fixturePublicId}`);
     }
     expect(fixture.fixtureVendor.name).toBe('American DJ');
   });
@@ -155,11 +133,11 @@ describe('Fixture queries', () => {
 
     const body = await graphqlQuery<FixtureQuery>(app.getHttpAdapter().getInstance().server, query, {
       variables: {
-        publicId: SEED_FIXTURE_PUBLIC_ID,
+        publicId: catalog.fixturePublicId,
       },
     });
 
-    expect(body.data?.fixture?.publicId).toBe(SEED_FIXTURE_PUBLIC_ID);
+    expect(body.data?.fixture?.publicId).toBe(catalog.fixturePublicId);
     expect(body.data?.fixture?.fixtureVendor.name).toBe('American DJ');
   });
 
@@ -204,7 +182,7 @@ describe('Fixture queries', () => {
 
     const body = await graphqlQuery<FixtureWithModeAssignmentsQuery>(app.getHttpAdapter().getInstance().server, query, {
       variables: {
-        publicId: SEED_FIXTURE_PUBLIC_ID,
+        publicId: catalog.fixturePublicId,
       },
     });
 

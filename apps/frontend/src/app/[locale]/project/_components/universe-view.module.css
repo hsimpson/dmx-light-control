@@ -1,0 +1,9 @@
+.grid {
+  --grid-gap: clamp(1px, 0.25vw, 3px);
+  display: grid;
+  grid-template-columns: repeat(var(--channels-per-row, 24), minmax(0, 1fr));
+  gap: var(--grid-gap);
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+}

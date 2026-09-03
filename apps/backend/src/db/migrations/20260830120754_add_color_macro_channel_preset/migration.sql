@@ -1,0 +1,1 @@
+ALTER TYPE "preset" ADD VALUE 'ColorMacro' BEFORE 'ShutterStrobeSlowFast';

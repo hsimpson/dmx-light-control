@@ -40,3 +40,55 @@ export class ProjectImportConflictException extends BaseDomainError {
     this.name = 'ProjectImportConflictError';
   }
 }
+
+export class ProjectFixtureNotFoundException extends BaseDomainError {
+  public readonly code = 'PROJECT_FIXTURE_NOT_FOUND';
+  public override readonly statusCode = HttpStatus.NOT_FOUND;
+
+  public constructor(projectFixtureId: string) {
+    super(`Project fixture with ID ${projectFixtureId} could not be found.`);
+    this.name = 'ProjectFixtureNotFoundError';
+  }
+}
+
+export class ChannelModeFixtureMismatchException extends BaseDomainError {
+  public readonly code = 'CHANNEL_MODE_FIXTURE_MISMATCH';
+  public override readonly statusCode = HttpStatus.BAD_REQUEST;
+
+  public constructor() {
+    super('The channel mode does not belong to the selected fixture.');
+    this.name = 'ChannelModeFixtureMismatchError';
+  }
+}
+
+export class EmptyChannelModeException extends BaseDomainError {
+  public readonly code = 'EMPTY_CHANNEL_MODE';
+  public override readonly statusCode = HttpStatus.BAD_REQUEST;
+
+  public constructor() {
+    super('The channel mode must have at least one channel assignment.');
+    this.name = 'EmptyChannelModeError';
+  }
+}
+
+export class DmxAddressOutOfRangeException extends BaseDomainError {
+  public readonly code = 'DMX_ADDRESS_OUT_OF_RANGE';
+  public override readonly statusCode = HttpStatus.BAD_REQUEST;
+
+  public constructor(startAddress: number, channelCount: number) {
+    super(`DMX address range ${startAddress}–${startAddress + channelCount - 1} exceeds the 512-channel universe.`);
+    this.name = 'DmxAddressOutOfRangeError';
+  }
+}
+
+export class ProjectFixtureAddressOverlapException extends BaseDomainError {
+  public readonly code = 'PROJECT_FIXTURE_ADDRESS_OVERLAP';
+  public override readonly statusCode = HttpStatus.CONFLICT;
+
+  public constructor(startAddress: number, channelCount: number, otherStartAddress: number, otherChannelCount: number) {
+    super(
+      `DMX address range ${startAddress}–${startAddress + channelCount - 1} overlaps an existing fixture at ${otherStartAddress}–${otherStartAddress + otherChannelCount - 1}.`,
+    );
+    this.name = 'ProjectFixtureAddressOverlapError';
+  }
+}

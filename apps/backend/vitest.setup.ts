@@ -2,7 +2,6 @@ import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers
 import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { Client } from 'pg';
-import { seedFixtureData } from './src/testhelpers/seed-fixture-data';
 
 let dbTestContainer: StartedPostgreSqlContainer;
 
@@ -17,7 +16,6 @@ export async function setup() {
   process.env.POSTGRES_PORT = url.port;
   process.env.POSTGRES_DB = url.pathname.substring(1);
 
-  // apply migrations so tests can run against a database with the correct schema
   const client = new Client({ connectionString });
   await client.connect();
 
@@ -33,8 +31,6 @@ export async function setup() {
   }
 
   await client.end();
-
-  await seedFixtureData();
 }
 
 export async function teardown() {

@@ -5,10 +5,12 @@ export type ImportProjectsDocumentLike = {
   schemaVersion: number;
 };
 
+const SUPPORTED_SCHEMA_VERSIONS = [1, PROJECT_EXPORT_SCHEMA_VERSION] as const;
+
 export function assertImportDocument(document: ImportProjectsDocumentLike): void {
-  if (document.schemaVersion !== PROJECT_EXPORT_SCHEMA_VERSION) {
+  if (!SUPPORTED_SCHEMA_VERSIONS.includes(document.schemaVersion as (typeof SUPPORTED_SCHEMA_VERSIONS)[number])) {
     throw new ProjectImportInvalidException(
-      `Unsupported project export schemaVersion ${document.schemaVersion}; expected ${PROJECT_EXPORT_SCHEMA_VERSION}`,
+      `Unsupported project export schemaVersion ${document.schemaVersion}; expected ${SUPPORTED_SCHEMA_VERSIONS.join(' or ')}`,
     );
   }
 }

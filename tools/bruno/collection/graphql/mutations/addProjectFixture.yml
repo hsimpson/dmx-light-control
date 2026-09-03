@@ -1,0 +1,58 @@
+info:
+  name: addProjectFixture
+  type: graphql
+  seq: 1
+
+graphql:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body:
+    query: |
+      mutation($input: AddProjectFixtureInput!) {
+        addProjectFixture(input: $input) {
+          channelMode {
+            createdAt
+            fixtureChannelAssignments {
+              channelNumber
+              fixtureChannelDefinition {
+                preset
+              }
+            }
+            name
+            publicId
+            updatedAt
+          }
+          createdAt
+          fixture {
+            createdAt
+            fixtureVendor {
+              createdAt
+              name
+              publicId
+              updatedAt
+            }
+            name
+            publicId
+            updatedAt
+          }
+          publicId
+          startAddress
+          updatedAt
+        }
+      }
+    variables: |
+      {
+        "input": {
+          "channelModePublicId": null,
+          "fixturePublicId": null,
+          "projectPublicId": null,
+          "startAddress": null
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

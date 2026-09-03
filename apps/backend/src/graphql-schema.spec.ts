@@ -43,6 +43,9 @@ describe('GraphQL schema generation', () => {
     expect(schema.getMutationType()?.getFields().importProjects).toBeDefined();
     expect(schema.getMutationType()?.getFields().updateProject).toBeDefined();
     expect(schema.getMutationType()?.getFields().deleteProject).toBeDefined();
+    expect(schema.getMutationType()?.getFields().addProjectFixture).toBeDefined();
+    expect(schema.getMutationType()?.getFields().updateProjectFixture).toBeDefined();
+    expect(schema.getMutationType()?.getFields().deleteProjectFixture).toBeDefined();
 
     await moduleRef.close();
   });

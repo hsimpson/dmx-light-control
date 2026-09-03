@@ -1,7 +1,7 @@
 info:
   name: deleteFixtureVendor
   type: graphql
-  seq: 6
+  seq: 7
 
 graphql:
   method: POST
