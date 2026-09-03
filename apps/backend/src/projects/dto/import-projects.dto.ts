@@ -1,8 +1,20 @@
 import { ImportTimestampsInput } from '@/db/import-timestamps.input';
 import { ProjectDto } from '@/projects/dto/project.dto';
-import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
+import { ROOM_DIMENSION_MAX, ROOM_DIMENSION_MIN } from '@/projects/project-room-dimensions';
+import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsOptional, IsString, Length, Matches, Max, Min, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { GraphQLUUID } from 'graphql-scalars';
 
 /** Postgres `uuid` shape (8-4-4-4-12 hex). RFC 4122 variant bits are not required. */
@@ -42,6 +54,27 @@ export class ImportProjectInput extends ImportTimestampsInput {
   @IsString()
   @Length(1, 255)
   public name: string;
+
+  @Field(() => Float, { nullable: true, description: 'Room width in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public roomWidth?: number;
+
+  @Field(() => Float, { nullable: true, description: 'Room length in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public roomLength?: number;
+
+  @Field(() => Float, { nullable: true, description: 'Room height in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public roomHeight?: number;
 
   @Field(() => [ImportProjectFixtureInput], {
     nullable: true,

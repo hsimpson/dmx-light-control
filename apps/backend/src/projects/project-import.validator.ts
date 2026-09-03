@@ -5,7 +5,7 @@ export type ImportProjectsDocumentLike = {
   schemaVersion: number;
 };
 
-const SUPPORTED_SCHEMA_VERSIONS = [1, PROJECT_EXPORT_SCHEMA_VERSION] as const;
+const SUPPORTED_SCHEMA_VERSIONS = [1, 2, PROJECT_EXPORT_SCHEMA_VERSION] as const;
 
 export function assertImportDocument(document: ImportProjectsDocumentLike): void {
   if (!SUPPORTED_SCHEMA_VERSIONS.includes(document.schemaVersion as (typeof SUPPORTED_SCHEMA_VERSIONS)[number])) {

@@ -10,14 +10,46 @@ describe('mapProjectsToExportDocument', () => {
   it('maps rows into a versioned document sorted by name', () => {
     expect(
       mapProjectsToExportDocument([
-        { publicId: 'b', name: 'Zebra', projectFixtures: [], ...timestamps },
-        { publicId: 'a', name: 'Alpha', projectFixtures: [], ...timestamps },
+        {
+          publicId: 'b',
+          name: 'Zebra',
+          roomWidth: 10,
+          roomLength: 8,
+          roomHeight: 5,
+          projectFixtures: [],
+          ...timestamps,
+        },
+        {
+          publicId: 'a',
+          name: 'Alpha',
+          roomWidth: 10,
+          roomLength: 8,
+          roomHeight: 5,
+          projectFixtures: [],
+          ...timestamps,
+        },
       ]),
     ).toEqual({
-      schemaVersion: 2,
+      schemaVersion: 3,
       projects: [
-        { publicId: 'a', name: 'Alpha', projectFixtures: [], ...timestamps },
-        { publicId: 'b', name: 'Zebra', projectFixtures: [], ...timestamps },
+        {
+          publicId: 'a',
+          name: 'Alpha',
+          roomWidth: 10,
+          roomLength: 8,
+          roomHeight: 5,
+          projectFixtures: [],
+          ...timestamps,
+        },
+        {
+          publicId: 'b',
+          name: 'Zebra',
+          roomWidth: 10,
+          roomLength: 8,
+          roomHeight: 5,
+          projectFixtures: [],
+          ...timestamps,
+        },
       ],
     });
   });
@@ -28,6 +60,9 @@ describe('mapProjectsToExportDocument', () => {
         {
           publicId: 'p',
           name: 'Show',
+          roomWidth: 12,
+          roomLength: 9,
+          roomHeight: 4,
           projectFixtures: [
             {
               publicId: 'pf-2',
@@ -48,11 +83,14 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 2,
+      schemaVersion: 3,
       projects: [
         {
           publicId: 'p',
           name: 'Show',
+          roomWidth: 12,
+          roomLength: 9,
+          roomHeight: 4,
           projectFixtures: [
             {
               publicId: 'pf-1',

@@ -1,6 +1,9 @@
 fragment ProjectFields on ProjectDto {
   publicId
   name
+  roomWidth
+  roomLength
+  roomHeight
   createdAt
   updatedAt
 }

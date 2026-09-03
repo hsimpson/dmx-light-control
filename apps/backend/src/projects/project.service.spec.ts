@@ -85,6 +85,18 @@ describe('ProjectService', () => {
     expect(result).toEqual({ name: 'new', projectFixtures: [] });
   });
 
+  it('updateProject patches room dimensions when provided', async () => {
+    const { service, projectRepository } = build();
+    projectRepository.updateOneByPublicId.mockResolvedValue({ name: 'new', roomWidth: 12 });
+    await service.updateProject({ publicId: 'p', name: 'new', roomWidth: 12, roomLength: 9, roomHeight: 4 });
+    expect(projectRepository.updateOneByPublicId).toHaveBeenCalledWith('p', {
+      name: 'new',
+      roomWidth: 12,
+      roomLength: 9,
+      roomHeight: 4,
+    });
+  });
+
   it('updateProject throws PROJECT_NOT_FOUND when missing', async () => {
     const { service, projectRepository } = build();
     projectRepository.updateOneByPublicId.mockResolvedValue(undefined);

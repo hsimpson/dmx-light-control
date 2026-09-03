@@ -13,6 +13,7 @@ import {
   channelCountFromMode,
   OccupiedPatch,
 } from '@/projects/project-fixture.validation';
+import { optionalRoomDimensions } from '@/projects/project-room-dimensions';
 import { ProjectImportConflictException } from '@/projects/project.exceptions';
 import { ProjectFixtureRepository } from '@/projects/repositories/project-fixture.repository';
 import { ProjectRepository } from '@/projects/repositories/project.repository';
@@ -100,7 +101,7 @@ export class ProjectImportExportService {
       }
       const updated = await tx
         .update(project)
-        .set({ name: incoming.name, ...optionalImportTimestamps(incoming) })
+        .set({ name: incoming.name, ...optionalRoomDimensions(incoming), ...optionalImportTimestamps(incoming) })
         .where(eq(project.id, existingId))
         .returning();
       const row = updated[0];
@@ -113,7 +114,12 @@ export class ProjectImportExportService {
     try {
       const inserted = await tx
         .insert(project)
-        .values({ name: incoming.name, ...optionalPublicId(incoming.publicId), ...optionalImportTimestamps(incoming) })
+        .values({
+          name: incoming.name,
+          ...optionalPublicId(incoming.publicId),
+          ...optionalRoomDimensions(incoming),
+          ...optionalImportTimestamps(incoming),
+        })
         .returning();
       const row = inserted[0];
       if (!row) {

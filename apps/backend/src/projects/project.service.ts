@@ -13,6 +13,7 @@ import {
   channelCountFromMode,
   OccupiedPatch,
 } from './project-fixture.validation';
+import { optionalRoomDimensions } from './project-room-dimensions';
 import {
   ProjectAlreadyExistsException,
   ProjectFixtureNotFoundException,
@@ -146,7 +147,10 @@ export class ProjectService {
 
   public async updateProject(input: UpdateProjectInput) {
     try {
-      const updated = await this.projectRepository.updateOneByPublicId(input.publicId, { name: input.name });
+      const updated = await this.projectRepository.updateOneByPublicId(input.publicId, {
+        name: input.name,
+        ...optionalRoomDimensions(input),
+      });
       if (!updated) {
         throw new ProjectNotFoundException(input.publicId);
       }

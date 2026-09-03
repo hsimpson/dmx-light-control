@@ -4,6 +4,7 @@ const {
   mockUseGlobalPipes,
   mockUseGlobalInterceptors,
   mockEnableCors,
+  mockRegister,
   mockListen,
   mockGetOrThrow,
   mockCreate,
@@ -13,6 +14,7 @@ const {
   const useGlobalPipes = vi.fn();
   const useGlobalInterceptors = vi.fn();
   const enableCors = vi.fn();
+  const register = vi.fn().mockResolvedValue(undefined);
   const listen = vi.fn().mockResolvedValue(undefined);
   const getOrThrow = vi.fn().mockReturnValue(3000);
   const get = vi.fn().mockImplementation((token: { name?: string }) => {
@@ -26,6 +28,7 @@ const {
     useGlobalPipes,
     useGlobalInterceptors,
     enableCors,
+    register,
     listen,
     get,
   });
@@ -36,6 +39,7 @@ const {
     mockUseGlobalPipes: useGlobalPipes,
     mockUseGlobalInterceptors: useGlobalInterceptors,
     mockEnableCors: enableCors,
+    mockRegister: register,
     mockListen: listen,
     mockGetOrThrow: getOrThrow,
     mockCreate: create,
@@ -99,6 +103,7 @@ describe('main bootstrap', () => {
     expect(mockUseGlobalPipes).toHaveBeenCalled();
     expect(mockUseGlobalInterceptors).toHaveBeenCalled();
     expect(mockEnableCors).toHaveBeenCalled();
+    expect(mockRegister).toHaveBeenCalled();
     expect(mockListen).toHaveBeenCalledWith(3000);
     expect(mockGetOrThrow).toHaveBeenCalledWith('port');
     expect(mockLoggerLog).toHaveBeenCalledWith(expect.stringContaining('http://localhost:3000'));

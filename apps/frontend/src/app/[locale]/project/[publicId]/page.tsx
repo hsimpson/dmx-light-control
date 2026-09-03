@@ -4,7 +4,7 @@ import { Loading } from '@/components/loading';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { GetProjectDocument } from '@/shared/types/graphql/graphql';
 import { useQuery } from '@apollo/client/react';
-import { Text, Title } from '@mantine/core';
+import { Box, Text, Title } from '@mantine/core';
 import { useParams } from 'next/navigation';
 import ProjectDetailTabs from '../_components/project-detail-tabs';
 
@@ -26,12 +26,12 @@ const ProjectDetailPage = () => {
   }
 
   return (
-    <>
+    <Box flex={1} mih={0} display="flex" style={{ flexDirection: 'column' }}>
       <Title order={1} mb="md">
         {project.name}
       </Title>
       <ProjectDetailTabs projectPublicId={project.publicId} />
-    </>
+    </Box>
   );
 };
 

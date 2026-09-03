@@ -23,6 +23,9 @@ graphql:
               updatedAt
             }
             publicId
+            roomHeight
+            roomLength
+            roomWidth
             updatedAt
           }
           schemaVersion

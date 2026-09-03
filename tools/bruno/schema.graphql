@@ -522,6 +522,15 @@ input ImportProjectInput {
   """The public ID of the project"""
   publicId: UUID
 
+  """Room height in meters"""
+  roomHeight: Float
+
+  """Room length in meters"""
+  roomLength: Float
+
+  """Room width in meters"""
+  roomWidth: Float
+
   """The date and time when the entity was last updated"""
   updatedAt: DateTime
 }
@@ -633,6 +642,15 @@ type ProjectDto {
   """The public id, unique identifier of the entity"""
   publicId: UUID!
 
+  """Room height in meters"""
+  roomHeight: Float!
+
+  """Room length in meters"""
+  roomLength: Float!
+
+  """Room width in meters"""
+  roomWidth: Float!
+
   """The date and time when the entity was last updated"""
   updatedAt: DateTime!
 }
@@ -677,6 +695,15 @@ type ProjectExportProjectDto {
 
   """The public ID of the project"""
   publicId: UUID!
+
+  """Room height in meters"""
+  roomHeight: Float!
+
+  """Room length in meters"""
+  roomLength: Float!
+
+  """Room width in meters"""
+  roomWidth: Float!
 
   """The date and time when the entity was last updated"""
   updatedAt: DateTime!
@@ -881,4 +908,13 @@ input UpdateProjectInput {
 
   """The public ID of the project"""
   publicId: UUID!
+
+  """Room height in meters"""
+  roomHeight: Float
+
+  """Room length in meters"""
+  roomLength: Float
+
+  """Room width in meters"""
+  roomWidth: Float
 }

@@ -93,6 +93,7 @@ Harness maintenance is part of **done**, not optional docs.
 - Events: `AppEventEmitter` extends `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`; IO modules import `EventsModule`. `AppModule` also provides `AppEventEmitter` and imports `EventEmitterModule.forRoot()`.
 - CLI command via `nest-commander`: `dmx-sniffer` (Linux-only)
 - Global `DrizzleDbModule` exports DB; `@/` path alias → `apps/backend/src/`
+- Static files: Fastify serves webpack-copied `src/assets` at `/assets/` (`@fastify/static`). 3D models live under `apps/backend/src/assets/3d/` (e.g. `room.gltf`).
 - IO layer: `io/dmx/`, `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
 
 ### Domain module structure (e.g. `fixtures/`, `projects/`)

@@ -70,6 +70,9 @@ erDiagram
         integer id PK
         uuid public_id UK
         varchar name UK
+        doubleprecision room_width
+        doubleprecision room_length
+        doubleprecision room_height
         timestamp created_at
         timestamp updated_at
     }

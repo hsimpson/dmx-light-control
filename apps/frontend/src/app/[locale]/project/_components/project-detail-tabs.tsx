@@ -2,8 +2,10 @@
 
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { Tabs } from '@mantine/core';
+import classes from './project-detail-tabs.module.css';
 import ProjectFixtureTable from './project-fixture-table';
 import ProjectTabEmptyState from './project-tab-empty-state';
+import ThreeDView from './three-d-view';
 import UniverseView from './universe-view';
 
 type ProjectDetailTabsProperties = {
@@ -14,7 +16,7 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
   const { t } = useTranslation();
 
   return (
-    <Tabs defaultValue="fixtures">
+    <Tabs defaultValue="fixtures" className={classes.root}>
       <Tabs.List>
         <Tabs.Tab value="fixtures">{t({ id: 'ProjectDetail.tabs.fixtures', defaultMessage: 'Fixtures' })}</Tabs.Tab>
         <Tabs.Tab value="universe">
@@ -45,10 +47,8 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
         />
       </Tabs.Panel>
 
-      <Tabs.Panel value="3d" pt="md">
-        <ProjectTabEmptyState
-          message={t({ id: 'ProjectDetail.emptyView', defaultMessage: 'This view is not available yet.' })}
-        />
+      <Tabs.Panel value="3d" pt="md" keepMounted={false} className={classes.threeDPanel}>
+        <ThreeDView projectPublicId={projectPublicId} />
       </Tabs.Panel>
     </Tabs>
   );

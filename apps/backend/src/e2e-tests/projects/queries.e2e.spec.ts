@@ -113,11 +113,18 @@ describe('Project queries', () => {
         project(publicId: $publicId) {
           name
           publicId
+          roomWidth
+          roomLength
+          roomHeight
         }
       }
     `;
 
-    const body = await graphqlQuery<ProjectQuery>(app.getHttpAdapter().getInstance().server, query, {
+    const body = await graphqlQuery<
+      ProjectQuery & {
+        project: { roomWidth: number; roomLength: number; roomHeight: number } | null;
+      }
+    >(app.getHttpAdapter().getInstance().server, query, {
       variables: {
         publicId,
       },
@@ -125,6 +132,9 @@ describe('Project queries', () => {
 
     expect(body.data?.project?.publicId).toBe(publicId);
     expect(body.data?.project?.name).toBe('Query Project');
+    expect(body.data?.project?.roomWidth).toBe(10);
+    expect(body.data?.project?.roomLength).toBe(8);
+    expect(body.data?.project?.roomHeight).toBe(5);
   });
 
   it('should return null for an unknown project publicId', async () => {

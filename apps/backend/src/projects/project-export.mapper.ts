@@ -1,6 +1,6 @@
 import { ExportTimestamps, ExportTimestampSource, mapExportTimestamps } from '@/db/export-timestamps';
 
-export const PROJECT_EXPORT_SCHEMA_VERSION = 2;
+export const PROJECT_EXPORT_SCHEMA_VERSION = 3;
 
 export type ProjectExportFixture = {
   publicId: string;
@@ -12,6 +12,9 @@ export type ProjectExportFixture = {
 export type ProjectExportProject = {
   publicId: string;
   name: string;
+  roomWidth: number;
+  roomLength: number;
+  roomHeight: number;
   projectFixtures: ProjectExportFixture[];
 } & ExportTimestamps;
 
@@ -30,6 +33,9 @@ export type ProjectExportFixtureSource = {
 export type ProjectExportSource = {
   publicId: string | null;
   name: string;
+  roomWidth: number;
+  roomLength: number;
+  roomHeight: number;
   projectFixtures?: ProjectExportFixtureSource[];
 } & ExportTimestampSource;
 
@@ -50,6 +56,9 @@ export function mapProjectsToExportDocument(projects: ProjectExportSource[]): Pr
       .map(project => ({
         publicId: project.publicId ?? '',
         name: project.name,
+        roomWidth: project.roomWidth,
+        roomLength: project.roomLength,
+        roomHeight: project.roomHeight,
         projectFixtures: [...(project.projectFixtures ?? [])]
           .map(mapProjectFixtureToExport)
           .sort((left, right) => left.startAddress - right.startAddress || left.publicId.localeCompare(right.publicId)),

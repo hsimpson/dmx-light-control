@@ -51,6 +51,9 @@ export const mockedProject = {
   __typename: 'ProjectDto',
   publicId: 'proj-1',
   name: 'Main Show',
+  roomWidth: 10,
+  roomLength: 8,
+  roomHeight: 5,
   createdAt: now,
   updatedAt: now,
 };
@@ -104,6 +107,9 @@ export const mockGraphql = async (page: Page) => {
         input?: {
           publicId?: string;
           name?: string;
+          roomWidth?: number;
+          roomLength?: number;
+          roomHeight?: number;
           projectPublicId?: string;
           fixturePublicId?: string;
           channelModePublicId?: string;
@@ -119,7 +125,7 @@ export const mockGraphql = async (page: Page) => {
       body = {
         data: {
           exportProjects: {
-            schemaVersion: 2,
+            schemaVersion: 3,
             projects: projects.map(project => ({
               publicId: project.publicId,
               name: project.name,
@@ -143,6 +149,9 @@ export const mockGraphql = async (page: Page) => {
             __typename: 'ProjectDto',
             publicId: item.publicId ?? `proj-${projects.length + 1}`,
             name: item.name,
+            roomWidth: 10,
+            roomLength: 8,
+            roomHeight: 5,
             createdAt: now,
             updatedAt: now,
           });
@@ -177,6 +186,9 @@ export const mockGraphql = async (page: Page) => {
         __typename: 'ProjectDto',
         publicId: `proj-${projects.length + 1}`,
         name,
+        roomWidth: 10,
+        roomLength: 8,
+        roomHeight: 5,
         createdAt: now,
         updatedAt: now,
       };
@@ -189,6 +201,17 @@ export const mockGraphql = async (page: Page) => {
       const existing = projects.find(project => project.publicId === publicId);
       if (existing && name) {
         existing.name = name;
+      }
+      if (existing) {
+        if (postData.variables?.input?.roomWidth !== undefined) {
+          existing.roomWidth = postData.variables.input.roomWidth;
+        }
+        if (postData.variables?.input?.roomLength !== undefined) {
+          existing.roomLength = postData.variables.input.roomLength;
+        }
+        if (postData.variables?.input?.roomHeight !== undefined) {
+          existing.roomHeight = postData.variables.input.roomHeight;
+        }
       }
       body = { data: { updateProject: existing ?? null } };
     } else if (postData.operationName === 'DeleteProject' || postData.query?.includes('deleteProject')) {

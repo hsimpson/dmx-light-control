@@ -1,5 +1,5 @@
 import { ExportTimestampsDto } from '@/db/export-timestamps.dto';
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
 
@@ -25,6 +25,15 @@ export class ProjectExportProjectDto extends ExportTimestampsDto {
 
   @Field({ description: 'The name of the project' })
   public name: string;
+
+  @Field(() => Float, { description: 'Room width in meters' })
+  public roomWidth: number;
+
+  @Field(() => Float, { description: 'Room length in meters' })
+  public roomLength: number;
+
+  @Field(() => Float, { description: 'Room height in meters' })
+  public roomHeight: number;
 
   @Field(() => [ProjectExportFixtureDto], {
     description: 'The fixture instances patched into this project',

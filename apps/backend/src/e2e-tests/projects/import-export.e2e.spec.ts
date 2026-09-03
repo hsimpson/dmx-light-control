@@ -81,7 +81,7 @@ describe('Project import/export', () => {
     });
 
     const body = await graphqlQuery<ExportProjectsQuery>(app.getHttpAdapter().getInstance().server, EXPORT_PROJECTS);
-    expect(body.data?.exportProjects.schemaVersion).toBe(2);
+    expect(body.data?.exportProjects.schemaVersion).toBe(3);
     const exported = body.data?.exportProjects.projects.find(project => project.name === 'Export List Project');
     expect(exported?.createdAt).toBeTruthy();
     expect(exported?.updatedAt).toBeTruthy();

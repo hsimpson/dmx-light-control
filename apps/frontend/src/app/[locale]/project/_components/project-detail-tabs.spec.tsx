@@ -11,15 +11,19 @@ vi.mock('./universe-view', () => ({
   default: () => <div data-testid="universe-view" />,
 }));
 
+vi.mock('./three-d-view', () => ({
+  default: () => <div data-testid="three-d-view" />,
+}));
+
 describe('ProjectDetailTabs', () => {
-  it('renders tabs in order and shows the empty state for 2D View', async () => {
+  it('renders tabs in order and shows the 3D view when selected', async () => {
     const { user } = renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
 
     const tabs = screen.getAllByRole('tab');
     expect(tabs.map(tab => tab.textContent)).toEqual(['Fixtures', 'Universe View', 'DMX View', '2D View', '3D View']);
 
-    await user.click(screen.getByRole('tab', { name: '2D View' }));
+    await user.click(screen.getByRole('tab', { name: '3D View' }));
 
-    expect(screen.getByRole('tabpanel')).toHaveTextContent('This view is not available yet.');
+    expect(screen.getByTestId('three-d-view')).toBeInTheDocument();
   });
 });
