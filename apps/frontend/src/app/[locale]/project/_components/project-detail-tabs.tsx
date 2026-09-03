@@ -21,6 +21,7 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
           {t({ id: 'ProjectDetail.tabs.universeView', defaultMessage: 'Universe View' })}
         </Tabs.Tab>
         <Tabs.Tab value="dmx">{t({ id: 'ProjectDetail.tabs.dmxView', defaultMessage: 'DMX View' })}</Tabs.Tab>
+        <Tabs.Tab value="2d">{t({ id: 'ProjectDetail.tabs.twoDView', defaultMessage: '2D View' })}</Tabs.Tab>
         <Tabs.Tab value="3d">{t({ id: 'ProjectDetail.tabs.threeDView', defaultMessage: '3D View' })}</Tabs.Tab>
       </Tabs.List>
 
@@ -33,6 +34,12 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
       </Tabs.Panel>
 
       <Tabs.Panel value="dmx" pt="md">
+        <ProjectTabEmptyState
+          message={t({ id: 'ProjectDetail.emptyView', defaultMessage: 'This view is not available yet.' })}
+        />
+      </Tabs.Panel>
+
+      <Tabs.Panel value="2d" pt="md">
         <ProjectTabEmptyState
           message={t({ id: 'ProjectDetail.emptyView', defaultMessage: 'This view is not available yet.' })}
         />

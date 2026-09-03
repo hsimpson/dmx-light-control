@@ -77,6 +77,7 @@
   "ProjectDetail.tabs.dmxView": "DMX View",
   "ProjectDetail.tabs.fixtures": "Fixtures",
   "ProjectDetail.tabs.threeDView": "3D View",
+  "ProjectDetail.tabs.twoDView": "2D View",
   "ProjectDetail.tabs.universeView": "Universe View",
   "ProjectUniverse.channelTooltip": "Channel {channelNumber}",
   "ProjectFixtures.add": "Add fixture",
