@@ -4,7 +4,7 @@
 
 - Install Docker and Docker Compose for running the local database. It doesn't matter which docker engine you use, as long as it supports `docker` and `docker compose`.
 - Install Node.js **24.20.0** (see `package.json` `engines`).
-- Install pnpm **^11.24.0** (see `package.json` `devEngines`).
+- Install pnpm **^11.25.0** (see `package.json` `devEngines`).
 - Install project dependencies:
 
 ```bash
