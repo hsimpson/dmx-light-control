@@ -12,6 +12,29 @@ export type FixtureLabelPlacement = FixtureRowSegment & {
   fixtureVariant: 0 | 1;
 };
 
+export function channelCountFromAssignments(assignments: { channelNumber: number }[]): number {
+  if (assignments.length === 0) {
+    return 0;
+  }
+
+  return Math.max(...assignments.map(assignment => assignment.channelNumber));
+}
+
+export function dmxRangesOverlap(
+  startAddress: number,
+  channelCount: number,
+  otherStartAddress: number,
+  otherChannelCount: number,
+): boolean {
+  if (channelCount <= 0 || otherChannelCount <= 0) {
+    return false;
+  }
+
+  const endAddress = startAddress + channelCount - 1;
+  const otherEndAddress = otherStartAddress + otherChannelCount - 1;
+  return startAddress <= otherEndAddress && otherStartAddress <= endAddress;
+}
+
 export function getFixtureRowSegments(startAddress: number, channelCount: number): FixtureRowSegment[] {
   const segments: FixtureRowSegment[] = [];
   let remaining = channelCount;

@@ -24,4 +24,11 @@ export class ProjectFixtureRepository extends BaseRepository<typeof projectFixtu
   public async deleteAllForProject(projectId: number): Promise<void> {
     await this.db.delete(projectFixture).where(eq(projectFixture.projectId, projectId));
   }
+
+  public async findManyByProjectId(projectId: number) {
+    return this.db.query.projectFixture.findMany({
+      where: { projectId },
+      with: projectFixtureRelations,
+    });
+  }
 }

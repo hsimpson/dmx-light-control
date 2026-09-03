@@ -2,7 +2,13 @@ import {
   ChannelModeFixtureMismatchException,
   DmxAddressOutOfRangeException,
   EmptyChannelModeException,
+  ProjectFixtureAddressOverlapException,
 } from '@/projects/project.exceptions';
+
+export type OccupiedPatch = {
+  startAddress: number;
+  channelCount: number;
+};
 
 export type ChannelModeWithAssignments = {
   fixtureId: number;
@@ -32,5 +38,34 @@ export function assertValidPatchAddress(
   }
   if (startAddress + channelCount - 1 > 512) {
     throw new DmxAddressOutOfRangeException(startAddress, channelCount);
+  }
+}
+
+export function dmxRangesOverlap(
+  startAddress: number,
+  channelCount: number,
+  otherStartAddress: number,
+  otherChannelCount: number,
+): boolean {
+  if (channelCount <= 0 || otherChannelCount <= 0) {
+    return false;
+  }
+
+  const endAddress = startAddress + channelCount - 1;
+  const otherEndAddress = otherStartAddress + otherChannelCount - 1;
+  return startAddress <= otherEndAddress && otherStartAddress <= endAddress;
+}
+
+export function assertNoPatchOverlap(startAddress: number, channelCount: number, occupied: OccupiedPatch[]): void {
+  const conflict = occupied.find(other =>
+    dmxRangesOverlap(startAddress, channelCount, other.startAddress, other.channelCount),
+  );
+  if (conflict) {
+    throw new ProjectFixtureAddressOverlapException(
+      startAddress,
+      channelCount,
+      conflict.startAddress,
+      conflict.channelCount,
+    );
   }
 }

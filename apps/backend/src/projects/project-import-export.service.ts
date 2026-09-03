@@ -6,7 +6,13 @@ import { ImportProjectsInput } from '@/projects/dto/import-projects.dto';
 import { project, projectFixture } from '@/projects/entities';
 import { mapProjectsToExportDocument, ProjectExportDocument } from '@/projects/project-export.mapper';
 import { assertImportDocument } from '@/projects/project-import.validator';
-import { assertChannelModeBelongsToFixture, assertValidPatchAddress } from '@/projects/project-fixture.validation';
+import {
+  assertChannelModeBelongsToFixture,
+  assertNoPatchOverlap,
+  assertValidPatchAddress,
+  channelCountFromMode,
+  OccupiedPatch,
+} from '@/projects/project-fixture.validation';
 import { ProjectImportConflictException } from '@/projects/project.exceptions';
 import { ProjectFixtureRepository } from '@/projects/repositories/project-fixture.repository';
 import { ProjectRepository } from '@/projects/repositories/project.repository';
@@ -135,6 +141,7 @@ export class ProjectImportExportService {
     await tx.delete(projectFixture).where(eq(projectFixture.projectId, projectId));
 
     const instances = incoming.projectFixtures ?? [];
+    const occupied: OccupiedPatch[] = [];
     for (const instance of instances) {
       const fixtureRow = await this.findFixtureByPublicId(tx, instance.fixturePublicId);
       if (!fixtureRow?.id) {
@@ -162,6 +169,9 @@ export class ProjectImportExportService {
 
       assertChannelModeBelongsToFixture(modeWithAssignments, fixtureRow.id);
       assertValidPatchAddress(instance.startAddress, modeWithAssignments);
+      const channelCount = channelCountFromMode(modeWithAssignments);
+      assertNoPatchOverlap(instance.startAddress, channelCount, occupied);
+      occupied.push({ startAddress: instance.startAddress, channelCount });
 
       await tx.insert(projectFixture).values({
         projectId,

@@ -19,6 +19,7 @@ import { notifications } from '@mantine/notifications';
 import { PencilSimpleIcon, PlusCircleIcon, TrashIcon } from '@phosphor-icons/react';
 import { DataTable } from 'mantine-datatable';
 import { useMemo, useState } from 'react';
+import { channelCountFromAssignments, dmxRangesOverlap } from './universe-view.utils';
 
 type ProjectFixture = NonNullable<GetProjectQuery['project']>['projectFixtures'][number];
 
@@ -27,7 +28,7 @@ type ProjectFixtureTableProperties = {
 };
 
 function channelCount(fixture: ProjectFixture): number {
-  return fixture.channelMode.fixtureChannelAssignments.length;
+  return channelCountFromAssignments(fixture.channelMode.fixtureChannelAssignments);
 }
 
 function endAddress(fixture: ProjectFixture): number {
@@ -53,7 +54,7 @@ const ProjectFixtureTable = ({ projectPublicId }: ProjectFixtureTableProperties)
   const [startAddress, setStartAddress] = useState<number | string>(1);
 
   const fixtures = useMemo(() => fixturesData?.fixtures ?? [], [fixturesData?.fixtures]);
-  const projectFixtures = data?.project?.projectFixtures ?? [];
+  const projectFixtures = useMemo(() => data?.project?.projectFixtures ?? [], [data?.project?.projectFixtures]);
 
   const fixtureOptions = useMemo(
     () =>
@@ -78,12 +79,25 @@ const ProjectFixtureTable = ({ projectPublicId }: ProjectFixtureTableProperties)
   );
 
   const selectedMode = selectedFixture?.fixtureChannelModes.find(mode => mode.publicId === selectedModePublicId);
-  const previewChannelCount = selectedMode?.fixtureChannelAssignments.length ?? 0;
+  const previewChannelCount = selectedMode ? channelCountFromAssignments(selectedMode.fixtureChannelAssignments) : 0;
   const previewStartAddress = typeof startAddress === 'number' ? startAddress : Number(startAddress);
   const previewEndAddress =
     previewChannelCount > 0 && Number.isFinite(previewStartAddress)
       ? previewStartAddress + previewChannelCount - 1
       : null;
+  const addressOverlaps = useMemo(() => {
+    if (previewChannelCount <= 0 || !Number.isFinite(previewStartAddress)) {
+      return false;
+    }
+
+    return projectFixtures.some(fixture => {
+      if (fixtureToEdit?.publicId === fixture.publicId) {
+        return false;
+      }
+
+      return dmxRangesOverlap(previewStartAddress, previewChannelCount, fixture.startAddress, channelCount(fixture));
+    });
+  }, [fixtureToEdit, previewChannelCount, previewStartAddress, projectFixtures]);
 
   const resetForm = () => {
     setFixtureToEdit(null);
@@ -144,6 +158,9 @@ const ProjectFixtureTable = ({ projectPublicId }: ProjectFixtureTableProperties)
     if (!Number.isFinite(parsedStartAddress) || parsedStartAddress < 1 || parsedStartAddress > 512) {
       return;
     }
+    if (addressOverlaps) {
+      return;
+    }
 
     try {
       if (fixtureToEdit) {
@@ -201,6 +218,7 @@ const ProjectFixtureTable = ({ projectPublicId }: ProjectFixtureTableProperties)
     !selectedFixturePublicId ||
     !selectedModePublicId ||
     !Number.isFinite(typeof startAddress === 'number' ? startAddress : Number(startAddress)) ||
+    addressOverlaps ||
     adding ||
     updating;
 
@@ -225,6 +243,13 @@ const ProjectFixtureTable = ({ projectPublicId }: ProjectFixtureTableProperties)
           defaultMessage: 'No fixtures patched yet',
         })}
         columns={[
+          {
+            accessor: 'rowNumber',
+            title: t({ id: 'ProjectFixtures.rowNumber', defaultMessage: '#' }),
+            width: 48,
+            textAlign: 'right',
+            render: (_fixture, index) => index + 1,
+          },
           {
             accessor: 'fixture.fixtureVendor.name',
             title: t({ id: 'ProjectFixtures.vendor', defaultMessage: 'Vendor' }),
@@ -338,6 +363,14 @@ const ProjectFixtureTable = ({ projectPublicId }: ProjectFixtureTableProperties)
             max={512}
             value={startAddress}
             onChange={setStartAddress}
+            error={
+              addressOverlaps
+                ? t({
+                    id: 'ProjectFixtures.addressOverlap',
+                    defaultMessage: 'This address range overlaps another fixture in the project',
+                  })
+                : undefined
+            }
           />
           {previewEndAddress !== null ? (
             <Text size="sm">

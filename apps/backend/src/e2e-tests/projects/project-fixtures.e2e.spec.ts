@@ -84,6 +84,18 @@ const DELETE_PROJECT_FIXTURE = gql`
   }
 `;
 
+const IMPORT_PROJECTS = gql`
+  mutation ($document: ImportProjectsInput!) {
+    importProjects(document: $document) {
+      importedCount
+      projects {
+        publicId
+        name
+      }
+    }
+  }
+`;
+
 const GET_PROJECT = gql`
   query ($publicId: UUID!) {
     project(publicId: $publicId) {
@@ -233,5 +245,100 @@ describe('Project fixture mutations', () => {
     });
 
     expect(body.errors?.[0]?.message).toContain('512');
+  });
+
+  it('should reject a start address that overlaps another fixture in the project', async () => {
+    const created = await graphqlQuery<CreateProjectMutation>(
+      app.getHttpAdapter().getInstance().server,
+      CREATE_PROJECT,
+      {
+        variables: { input: { name: 'Overlap Project' } },
+      },
+    );
+    const projectPublicId = created.data?.createProject.publicId;
+
+    const first = await graphqlQuery<AddProjectFixtureMutation>(
+      app.getHttpAdapter().getInstance().server,
+      ADD_PROJECT_FIXTURE,
+      {
+        variables: {
+          input: {
+            projectPublicId,
+            fixturePublicId: catalog.fixturePublicId,
+            channelModePublicId: catalog.fourChannelModePublicId,
+            startAddress: 1,
+          },
+        },
+      },
+    );
+    expect(first.errors).toBeUndefined();
+
+    const overlappingAdd = await graphqlQuery(app.getHttpAdapter().getInstance().server, ADD_PROJECT_FIXTURE, {
+      variables: {
+        input: {
+          projectPublicId,
+          fixturePublicId: catalog.fixturePublicId,
+          channelModePublicId: catalog.fourChannelModePublicId,
+          startAddress: 4,
+        },
+      },
+    });
+    expect(overlappingAdd.errors?.[0]?.message).toContain('overlaps');
+
+    const adjacent = await graphqlQuery<AddProjectFixtureMutation>(
+      app.getHttpAdapter().getInstance().server,
+      ADD_PROJECT_FIXTURE,
+      {
+        variables: {
+          input: {
+            projectPublicId,
+            fixturePublicId: catalog.fixturePublicId,
+            channelModePublicId: catalog.fourChannelModePublicId,
+            startAddress: 5,
+          },
+        },
+      },
+    );
+    expect(adjacent.errors).toBeUndefined();
+
+    const overlappingUpdate = await graphqlQuery(app.getHttpAdapter().getInstance().server, UPDATE_PROJECT_FIXTURE, {
+      variables: {
+        input: {
+          publicId: adjacent.data?.addProjectFixture.publicId,
+          startAddress: 3,
+        },
+      },
+    });
+    expect(overlappingUpdate.errors?.[0]?.message).toContain('overlaps');
+  });
+
+  it('should reject an import whose patched fixtures overlap', async () => {
+    const body = await graphqlQuery(app.getHttpAdapter().getInstance().server, IMPORT_PROJECTS, {
+      variables: {
+        document: {
+          schemaVersion: 2,
+          projects: [
+            {
+              publicId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+              name: 'Imported Overlap Show',
+              projectFixtures: [
+                {
+                  fixturePublicId: catalog.fixturePublicId,
+                  channelModePublicId: catalog.fourChannelModePublicId,
+                  startAddress: 1,
+                },
+                {
+                  fixturePublicId: catalog.fixturePublicId,
+                  channelModePublicId: catalog.fourChannelModePublicId,
+                  startAddress: 4,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    });
+
+    expect(body.errors?.[0]?.message).toContain('overlaps');
   });
 });

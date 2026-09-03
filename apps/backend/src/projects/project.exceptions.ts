@@ -80,3 +80,15 @@ export class DmxAddressOutOfRangeException extends BaseDomainError {
     this.name = 'DmxAddressOutOfRangeError';
   }
 }
+
+export class ProjectFixtureAddressOverlapException extends BaseDomainError {
+  public readonly code = 'PROJECT_FIXTURE_ADDRESS_OVERLAP';
+  public override readonly statusCode = HttpStatus.CONFLICT;
+
+  public constructor(startAddress: number, channelCount: number, otherStartAddress: number, otherChannelCount: number) {
+    super(
+      `DMX address range ${startAddress}–${startAddress + channelCount - 1} overlaps an existing fixture at ${otherStartAddress}–${otherStartAddress + otherChannelCount - 1}.`,
+    );
+    this.name = 'ProjectFixtureAddressOverlapError';
+  }
+}

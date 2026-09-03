@@ -6,7 +6,13 @@ import { AddProjectFixtureInput } from './dto/add-project-fixture.dto';
 import { CreateProjectInput } from './dto/create-project.dto';
 import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
-import { assertChannelModeBelongsToFixture, assertValidPatchAddress } from './project-fixture.validation';
+import {
+  assertChannelModeBelongsToFixture,
+  assertNoPatchOverlap,
+  assertValidPatchAddress,
+  channelCountFromMode,
+  OccupiedPatch,
+} from './project-fixture.validation';
 import {
   ProjectAlreadyExistsException,
   ProjectFixtureNotFoundException,
@@ -33,6 +39,28 @@ function isPostgresUniqueViolation(error: unknown): boolean {
 }
 
 type LoadedProjectFixture = NonNullable<LoadedProject['projectFixtures']>[number];
+
+function occupiedPatchesFromFixtures(
+  fixtures: {
+    publicId?: string | null;
+    startAddress: number;
+    fixtureChannelMode?: { fixtureChannelAssignments: { channelNumber: number }[] } | null;
+  }[],
+  ignorePublicId?: string,
+): OccupiedPatch[] {
+  return fixtures.flatMap(fixture => {
+    if (ignorePublicId !== undefined && fixture.publicId === ignorePublicId) {
+      return [];
+    }
+
+    const mode = fixture.fixtureChannelMode;
+    if (!mode) {
+      return [];
+    }
+
+    return [{ startAddress: fixture.startAddress, channelCount: channelCountFromMode(mode) }];
+  });
+}
 
 function sortProjectFixtures(fixtures: LoadedProjectFixture[]): LoadedProjectFixture[] {
   return [...fixtures].sort(
@@ -156,6 +184,8 @@ export class ProjectService {
     }
     assertChannelModeBelongsToFixture(mode, fixture.id);
     assertValidPatchAddress(input.startAddress, mode);
+    const occupied = occupiedPatchesFromFixtures(await this.projectFixtureRepository.findManyByProjectId(project.id));
+    assertNoPatchOverlap(input.startAddress, channelCountFromMode(mode), occupied);
 
     const created = await this.projectFixtureRepository.createOne({
       projectId: project.id,
@@ -194,6 +224,14 @@ export class ProjectService {
 
     const modeForValidation = await this.loadChannelModeById(fixtureChannelModeId);
     assertValidPatchAddress(startAddress, modeForValidation);
+    if (!existing.projectId) {
+      throw new ProjectFixtureNotFoundException(input.publicId);
+    }
+    const occupied = occupiedPatchesFromFixtures(
+      await this.projectFixtureRepository.findManyByProjectId(existing.projectId),
+      existing.publicId ?? undefined,
+    );
+    assertNoPatchOverlap(startAddress, channelCountFromMode(modeForValidation), occupied);
 
     const updated = await this.projectFixtureRepository.updateOneByPublicId(input.publicId, {
       startAddress,

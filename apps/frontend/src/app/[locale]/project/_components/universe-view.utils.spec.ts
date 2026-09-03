@@ -1,5 +1,26 @@
 import { describe, expect, it } from 'vitest';
-import { buildFixtureLabelPlacements, getFixtureRowSegments } from './universe-view.utils';
+import {
+  buildFixtureLabelPlacements,
+  channelCountFromAssignments,
+  dmxRangesOverlap,
+  getFixtureRowSegments,
+} from './universe-view.utils';
+
+describe('channelCountFromAssignments', () => {
+  it('uses the highest channel number as footprint', () => {
+    expect(channelCountFromAssignments([{ channelNumber: 1 }, { channelNumber: 6 }])).toBe(6);
+  });
+});
+
+describe('dmxRangesOverlap', () => {
+  it('allows adjacent footprints', () => {
+    expect(dmxRangesOverlap(1, 3, 4, 3)).toBe(false);
+  });
+
+  it('detects overlapping footprints', () => {
+    expect(dmxRangesOverlap(1, 3, 3, 3)).toBe(true);
+  });
+});
 
 describe('getFixtureRowSegments', () => {
   it('returns a single segment for a fixture within one row', () => {
