@@ -1,20 +1,21 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { overrideProcessEnv } from '@/testhelpers/process-env';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
 describe('connection', () => {
-  const ORIGINAL_ENV = process.env;
+  let restoreEnv: () => void;
 
   beforeEach(() => {
-    process.env = {
-      ...ORIGINAL_ENV,
+    restoreEnv = overrideProcessEnv({
       POSTGRES_USER: 'u',
       POSTGRES_PASSWORD: 'p',
       POSTGRES_HOST: 'h',
       POSTGRES_PORT: '5432',
       POSTGRES_DB: 'db',
-    };
+    });
   });
 
   afterEach(() => {
-    process.env = ORIGINAL_ENV;
+    restoreEnv();
   });
 
   it('builds a postgres url from env vars', async () => {

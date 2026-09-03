@@ -1,14 +1,12 @@
 import { setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
-import { AppModule } from '@/app.module';
 import { DRIZZLE_DB_PROVIDER } from '@/db/drizzle-db/drizzle-db.provider';
 import { relations } from '@/db/relations';
 import * as schema from '@/db/schema';
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
 import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
-import { SerialSendService } from '@/io/serial/serial-send.service';
+import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { Test, TestingModule } from '@nestjs/testing';
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import gql from 'graphql-tag';
@@ -171,37 +169,12 @@ function toChannelModeInputs(modes: UpdateFixtureMutation['updateFixture']['fixt
     }));
 }
 
-const ORIGINAL_ENV = process.env;
-
 describe('Fixture mutations', () => {
   let app: NestFastifyApplication;
   let catalog: CatalogFixture;
 
   beforeAll(async () => {
-    process.env = {
-      ...ORIGINAL_ENV,
-      BACKEND_PORT: '3000',
-      POSTGRES_USER: 'u',
-      POSTGRES_PASSWORD: 'p',
-      POSTGRES_HOST: 'h',
-      POSTGRES_PORT: '5432',
-      POSTGRES_DB: 'db',
-    };
-
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(SerialSendService)
-      .useValue({
-        onModuleInit: () => undefined,
-        onModuleDestroy: () => undefined,
-      })
-      .compile();
-
-    app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
-
-    await app.init();
-    await app.getHttpAdapter().getInstance().ready();
+    app = await createE2eApp();
 
     catalog = await setupCatalogFixture(app.getHttpAdapter().getInstance().server, {
       fixtureName: 'E2E Mutations Catalog Par',
@@ -210,7 +183,6 @@ describe('Fixture mutations', () => {
 
   afterAll(async () => {
     await app.close();
-    process.env = ORIGINAL_ENV;
   });
 
   it('should create a fixture vendor via createFixtureVendor', async () => {

@@ -1,10 +1,8 @@
 import { createEuroliteVendor, setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
-import { AppModule } from '@/app.module';
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
-import { SerialSendService } from '@/io/serial/serial-send.service';
+import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { Test, TestingModule } from '@nestjs/testing';
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -166,8 +164,6 @@ const GET_FIXTURE = gql`
   }
 `;
 
-const ORIGINAL_ENV = process.env;
-
 function newFixtureDocument(name = 'Import Test Par') {
   return {
     schemaVersion: 1,
@@ -210,30 +206,7 @@ describe('Fixture import/export', () => {
   let catalog: CatalogFixture;
 
   beforeAll(async () => {
-    process.env = {
-      ...ORIGINAL_ENV,
-      BACKEND_PORT: '3000',
-      POSTGRES_USER: 'u',
-      POSTGRES_PASSWORD: 'p',
-      POSTGRES_HOST: 'h',
-      POSTGRES_PORT: '5432',
-      POSTGRES_DB: 'db',
-    };
-
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(SerialSendService)
-      .useValue({
-        onModuleInit: () => undefined,
-        onModuleDestroy: () => undefined,
-      })
-      .compile();
-
-    app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
-
-    await app.init();
-    await app.getHttpAdapter().getInstance().ready();
+    app = await createE2eApp();
 
     const server = app.getHttpAdapter().getInstance().server;
     await createEuroliteVendor(server);
@@ -242,7 +215,6 @@ describe('Fixture import/export', () => {
 
   afterAll(async () => {
     await app.close();
-    process.env = ORIGINAL_ENV;
   });
 
   it('exports every fixture with related vendor, definitions, ranges, modes, and assignments', async () => {

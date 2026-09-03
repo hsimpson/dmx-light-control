@@ -9,6 +9,9 @@ export default mergeConfig(baseConfig, {
     },
   },
   test: {
+    // Shared Testcontainers Postgres and process.env; parallel files race unique rows and native IO.
+    fileParallelism: false,
+    maxWorkers: 1,
     globalSetup: [resolve(import.meta.dirname, 'vitest.setup.ts')],
     root: import.meta.dirname,
     coverage: {

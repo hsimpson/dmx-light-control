@@ -1,24 +1,8 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-const ORIGINAL_ENV = process.env;
-
-beforeAll(() => {
-  process.env = {
-    ...ORIGINAL_ENV,
-    BACKEND_PORT: '3000',
-    POSTGRES_USER: 'u',
-    POSTGRES_PASSWORD: 'p',
-    POSTGRES_HOST: 'h',
-    POSTGRES_PORT: '5432',
-    POSTGRES_DB: 'db',
-  };
-});
-
-afterAll(() => {
-  process.env = ORIGINAL_ENV;
-});
+import { describe, expect, it } from 'vitest';
 
 describe('AppModule', () => {
   it('is defined and decorated as a module', async () => {
+    process.env.BACKEND_PORT ??= '3000';
     const { AppModule } = await import('./app.module');
     expect(AppModule).toBeDefined();
     expect(AppModule.name).toBe('AppModule');
