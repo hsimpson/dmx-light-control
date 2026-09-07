@@ -12,6 +12,7 @@ graphql:
       query($publicId: UUID!) {
         project(publicId: $publicId) {
           createdAt
+          environmentType
           name
           projectFixtures {
             channelMode {

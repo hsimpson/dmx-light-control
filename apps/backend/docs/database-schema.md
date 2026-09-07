@@ -70,6 +70,7 @@ erDiagram
         integer id PK
         uuid public_id UK
         varchar name UK
+        projectenvironmenttype environment_type
         doubleprecision room_width
         doubleprecision room_length
         doubleprecision room_height

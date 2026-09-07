@@ -1,5 +1,6 @@
 import { BaseDto } from '@/db/base.dto';
 import { ProjectFixtureDto } from '@/projects/dto/project-fixture.dto';
+import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { Field, Float, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 
@@ -7,6 +8,9 @@ import { Type } from 'class-transformer';
 export class ProjectDto extends BaseDto {
   @Field({ description: 'The name of the project' })
   public name: string;
+
+  @Field(() => ProjectEnvironmentType, { description: 'The 3D environment used by the project' })
+  public environmentType: ProjectEnvironmentType;
 
   @Field(() => Float, { description: 'Room width in meters' })
   public roomWidth: number;

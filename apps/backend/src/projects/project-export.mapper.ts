@@ -1,6 +1,7 @@
 import { ExportTimestamps, ExportTimestampSource, mapExportTimestamps } from '@/db/export-timestamps';
+import { ProjectEnvironmentType } from '@/projects/project-environment';
 
-export const PROJECT_EXPORT_SCHEMA_VERSION = 3;
+export const PROJECT_EXPORT_SCHEMA_VERSION = 4;
 
 export type ProjectExportFixture = {
   publicId: string;
@@ -12,6 +13,7 @@ export type ProjectExportFixture = {
 export type ProjectExportProject = {
   publicId: string;
   name: string;
+  environmentType: ProjectEnvironmentType;
   roomWidth: number;
   roomLength: number;
   roomHeight: number;
@@ -33,6 +35,7 @@ export type ProjectExportFixtureSource = {
 export type ProjectExportSource = {
   publicId: string | null;
   name: string;
+  environmentType: ProjectEnvironmentType;
   roomWidth: number;
   roomLength: number;
   roomHeight: number;
@@ -56,6 +59,7 @@ export function mapProjectsToExportDocument(projects: ProjectExportSource[]): Pr
       .map(project => ({
         publicId: project.publicId ?? '',
         name: project.name,
+        environmentType: project.environmentType,
         roomWidth: project.roomWidth,
         roomLength: project.roomLength,
         roomHeight: project.roomHeight,

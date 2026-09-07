@@ -171,6 +171,12 @@ enum FixtureChannelPreset {
   ShutterStrobeSlowFast
 }
 
+"""The 3D environment used by a project"""
+enum ProjectEnvironmentType {
+  Room
+  SimpleGround
+}
+
 type FixtureChannelRangeDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
@@ -513,6 +519,9 @@ input ImportProjectInput {
   """The date and time when the entity was created"""
   createdAt: DateTime
 
+  """The 3D environment used by the project"""
+  environmentType: ProjectEnvironmentType
+
   """The name of the project"""
   name: String!
 
@@ -633,6 +642,9 @@ type ProjectDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
 
+  """The 3D environment used by the project"""
+  environmentType: ProjectEnvironmentType!
+
   """The name of the project"""
   name: String!
 
@@ -686,6 +698,9 @@ type ProjectExportFixtureDto {
 type ProjectExportProjectDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
+
+  """The 3D environment used by the project"""
+  environmentType: ProjectEnvironmentType!
 
   """The name of the project"""
   name: String!
@@ -903,6 +918,9 @@ input UpdateProjectFixtureInput {
 }
 
 input UpdateProjectInput {
+  """The 3D environment used by the project"""
+  environmentType: ProjectEnvironmentType
+
   """The name of the project"""
   name: String!
 

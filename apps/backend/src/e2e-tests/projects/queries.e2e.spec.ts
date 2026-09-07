@@ -116,13 +116,19 @@ describe('Project queries', () => {
           roomWidth
           roomLength
           roomHeight
+          environmentType
         }
       }
     `;
 
     const body = await graphqlQuery<
       ProjectQuery & {
-        project: { roomWidth: number; roomLength: number; roomHeight: number } | null;
+        project: {
+          roomWidth: number;
+          roomLength: number;
+          roomHeight: number;
+          environmentType: string;
+        } | null;
       }
     >(app.getHttpAdapter().getInstance().server, query, {
       variables: {
@@ -135,6 +141,7 @@ describe('Project queries', () => {
     expect(body.data?.project?.roomWidth).toBe(10);
     expect(body.data?.project?.roomLength).toBe(8);
     expect(body.data?.project?.roomHeight).toBe(5);
+    expect(body.data?.project?.environmentType).toBe('SimpleGround');
   });
 
   it('should return null for an unknown project publicId', async () => {

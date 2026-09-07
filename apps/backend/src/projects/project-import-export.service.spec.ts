@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { ProjectEnvironmentType } from './project-environment';
 import { ProjectImportExportService } from './project-import-export.service';
 import { ProjectImportInvalidException } from './project.exceptions';
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
@@ -16,6 +17,7 @@ describe('ProjectImportExportService', () => {
         {
           publicId: 'proj-1',
           name: 'Main Show',
+          environmentType: ProjectEnvironmentType.SimpleGround,
           roomWidth: 10,
           roomLength: 8,
           roomHeight: 5,
@@ -31,11 +33,12 @@ describe('ProjectImportExportService', () => {
     );
 
     await expect(service.exportProjects()).resolves.toEqual({
-      schemaVersion: 3,
+      schemaVersion: 4,
       projects: [
         {
           publicId: 'proj-1',
           name: 'Main Show',
+          environmentType: ProjectEnvironmentType.SimpleGround,
           roomWidth: 10,
           roomLength: 8,
           roomHeight: 5,

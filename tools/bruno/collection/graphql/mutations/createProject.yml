@@ -12,6 +12,7 @@ graphql:
       mutation($input: CreateProjectInput!) {
         createProject(input: $input) {
           createdAt
+          environmentType
           name
           projectFixtures {
             channelMode {

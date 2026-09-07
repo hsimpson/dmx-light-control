@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ProjectEnvironmentType } from './project-environment';
 import { mapProjectsToExportDocument } from './project-export.mapper';
 
 const timestamps = {
@@ -13,6 +14,7 @@ describe('mapProjectsToExportDocument', () => {
         {
           publicId: 'b',
           name: 'Zebra',
+          environmentType: ProjectEnvironmentType.SimpleGround,
           roomWidth: 10,
           roomLength: 8,
           roomHeight: 5,
@@ -22,6 +24,7 @@ describe('mapProjectsToExportDocument', () => {
         {
           publicId: 'a',
           name: 'Alpha',
+          environmentType: ProjectEnvironmentType.Room,
           roomWidth: 10,
           roomLength: 8,
           roomHeight: 5,
@@ -30,11 +33,12 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 3,
+      schemaVersion: 4,
       projects: [
         {
           publicId: 'a',
           name: 'Alpha',
+          environmentType: ProjectEnvironmentType.Room,
           roomWidth: 10,
           roomLength: 8,
           roomHeight: 5,
@@ -44,6 +48,7 @@ describe('mapProjectsToExportDocument', () => {
         {
           publicId: 'b',
           name: 'Zebra',
+          environmentType: ProjectEnvironmentType.SimpleGround,
           roomWidth: 10,
           roomLength: 8,
           roomHeight: 5,
@@ -60,6 +65,7 @@ describe('mapProjectsToExportDocument', () => {
         {
           publicId: 'p',
           name: 'Show',
+          environmentType: ProjectEnvironmentType.Room,
           roomWidth: 12,
           roomLength: 9,
           roomHeight: 4,
@@ -83,11 +89,12 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 3,
+      schemaVersion: 4,
       projects: [
         {
           publicId: 'p',
           name: 'Show',
+          environmentType: ProjectEnvironmentType.Room,
           roomWidth: 12,
           roomLength: 9,
           roomHeight: 4,

@@ -12,6 +12,7 @@ graphql:
       mutation($input: UpdateProjectInput!) {
         updateProject(input: $input) {
           createdAt
+          environmentType
           name
           projectFixtures {
             channelMode {
@@ -51,6 +52,7 @@ graphql:
     variables: |
       {
         "input": {
+          "environmentType": null,
           "name": null,
           "publicId": null,
           "roomHeight": null,

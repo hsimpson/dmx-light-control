@@ -1,4 +1,5 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
+import { ProjectEnvironmentType } from '@/shared/types/graphql/graphql';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import ThreeDRoomCanvas from './three-d-room-canvas';
@@ -60,6 +61,30 @@ vi.mock('three', () => {
         public readonly intensity = 1,
       ) {}
     },
+    BoxGeometry: class {
+      public dispose() {
+        return undefined;
+      }
+    },
+    Mesh: class {
+      public position = new Position();
+      public scale = new Position();
+      public geometry = {
+        dispose() {
+          return undefined;
+        },
+      };
+      public material = {
+        dispose() {
+          return undefined;
+        },
+      };
+    },
+    MeshStandardMaterial: class {
+      public dispose() {
+        return undefined;
+      }
+    },
     DirectionalLight: class {
       public position = new Position();
       public constructor(
@@ -98,22 +123,40 @@ vi.mock('three/examples/jsm/loaders/GLTFLoader.js', () => ({
 }));
 
 describe('ThreeDRoomCanvas', () => {
-  it('loads the room glTF', () => {
-    class ResizeObserverMock {
-      public observe() {
-        return undefined;
-      }
-      public disconnect() {
-        return undefined;
-      }
-      public unobserve() {
-        return undefined;
-      }
+  class ResizeObserverMock {
+    public observe() {
+      return undefined;
     }
+    public disconnect() {
+      return undefined;
+    }
+    public unobserve() {
+      return undefined;
+    }
+  }
+
+  it('loads the room glTF', () => {
     vi.stubGlobal('ResizeObserver', ResizeObserverMock);
-    renderWithProviders(<ThreeDRoomCanvas roomWidth={10} roomLength={8} roomHeight={5} />);
+    renderWithProviders(
+      <ThreeDRoomCanvas environmentType={ProjectEnvironmentType.Room} roomWidth={10} roomLength={8} roomHeight={5} />,
+    );
     expect(screen.getByTestId('three-d-room-canvas')).toBeInTheDocument();
     expect(load).toHaveBeenCalled();
     expect(String(load.mock.calls[0]?.[0])).toContain('/assets/3d/room.gltf');
+  });
+
+  it('does not load the room glTF for simple ground', () => {
+    load.mockClear();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+      />,
+    );
+    expect(screen.getByTestId('three-d-room-canvas')).toBeInTheDocument();
+    expect(load).not.toHaveBeenCalled();
   });
 });

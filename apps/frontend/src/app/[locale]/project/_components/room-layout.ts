@@ -30,6 +30,11 @@ export function roomPartTransform(
   }
 }
 
+export function simpleGroundSlabTransform(width: number, length: number): RoomPartTransform {
+  const thickness = ROOM_SLAB_THICKNESS_M;
+  return { position: [0, -thickness / 2, 0], scale: [width, thickness, length] };
+}
+
 type Transformable = {
   position: { set: (x: number, y: number, z: number) => unknown };
   scale: { set: (x: number, y: number, z: number) => unknown };
@@ -50,4 +55,10 @@ export function applyRoomDimensions(
     object.position.set(...transform.position);
     object.scale.set(...transform.scale);
   }
+}
+
+export function applySimpleGroundDimensions(ground: Transformable, width: number, length: number): void {
+  const transform = simpleGroundSlabTransform(width, length);
+  ground.position.set(...transform.position);
+  ground.scale.set(...transform.scale);
 }

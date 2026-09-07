@@ -2,16 +2,19 @@
 
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { Button, NumberInput, Stack, Title } from '@mantine/core';
+import { ProjectEnvironmentType } from '@/shared/types/graphql/graphql';
+import { Button, NumberInput, Select, Stack, Title } from '@mantine/core';
 
 export const ROOM_DIMENSION_MIN = 0.1;
 export const ROOM_DIMENSION_MAX = 200;
 
 export type RoomDimensionsPanelProperties = {
+  environmentType: ProjectEnvironmentType;
   width: number;
   length: number;
   height: number;
   saving: boolean;
+  onEnvironmentTypeChange: (value: ProjectEnvironmentType) => void;
   onWidthChange: (value: number) => void;
   onLengthChange: (value: number) => void;
   onHeightChange: (value: number) => void;
@@ -27,10 +30,12 @@ function toFiniteNumber(value: string | number): number | undefined {
 }
 
 const RoomDimensionsPanel = ({
+  environmentType,
   width,
   length,
   height,
   saving,
+  onEnvironmentTypeChange,
   onWidthChange,
   onLengthChange,
   onHeightChange,
@@ -40,7 +45,27 @@ const RoomDimensionsPanel = ({
 
   return (
     <Stack gap="md">
-      <Title order={3}>{t({ id: 'ProjectDetail.threeD.panelTitle', defaultMessage: 'Room' })}</Title>
+      <Title order={3}>{t({ id: 'ProjectDetail.threeD.panelTitle', defaultMessage: 'Environment' })}</Title>
+      <Select
+        label={t({ id: 'ProjectDetail.threeD.environment', defaultMessage: 'Environment' })}
+        allowDeselect={false}
+        value={environmentType}
+        onChange={value => {
+          if (value === ProjectEnvironmentType.SimpleGround || value === ProjectEnvironmentType.Room) {
+            onEnvironmentTypeChange(value);
+          }
+        }}
+        data={[
+          {
+            value: ProjectEnvironmentType.SimpleGround,
+            label: t({ id: 'ProjectDetail.threeD.environment.simpleGround', defaultMessage: 'Simple ground' }),
+          },
+          {
+            value: ProjectEnvironmentType.Room,
+            label: t({ id: 'ProjectDetail.threeD.environment.room', defaultMessage: 'Room' }),
+          },
+        ]}
+      />
       <NumberInput
         label={t({ id: 'ProjectDetail.threeD.width', defaultMessage: 'Width' })}
         suffix=" m"

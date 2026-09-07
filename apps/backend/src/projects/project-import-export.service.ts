@@ -4,6 +4,7 @@ import { relations } from '@/db/relations';
 import { fixture, fixtureChannelMode } from '@/fixtures/entities';
 import { ImportProjectsInput } from '@/projects/dto/import-projects.dto';
 import { project, projectFixture } from '@/projects/entities';
+import { environmentTypeForImport, optionalEnvironmentType } from '@/projects/project-environment';
 import { mapProjectsToExportDocument, ProjectExportDocument } from '@/projects/project-export.mapper';
 import { assertImportDocument } from '@/projects/project-import.validator';
 import {
@@ -101,7 +102,12 @@ export class ProjectImportExportService {
       }
       const updated = await tx
         .update(project)
-        .set({ name: incoming.name, ...optionalRoomDimensions(incoming), ...optionalImportTimestamps(incoming) })
+        .set({
+          name: incoming.name,
+          ...optionalEnvironmentType(incoming),
+          ...optionalRoomDimensions(incoming),
+          ...optionalImportTimestamps(incoming),
+        })
         .where(eq(project.id, existingId))
         .returning();
       const row = updated[0];
@@ -116,6 +122,7 @@ export class ProjectImportExportService {
         .insert(project)
         .values({
           name: incoming.name,
+          environmentType: environmentTypeForImport(incoming.environmentType),
           ...optionalPublicId(incoming.publicId),
           ...optionalRoomDimensions(incoming),
           ...optionalImportTimestamps(incoming),

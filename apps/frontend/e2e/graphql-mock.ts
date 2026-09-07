@@ -51,6 +51,7 @@ export const mockedProject = {
   __typename: 'ProjectDto',
   publicId: 'proj-1',
   name: 'Main Show',
+  environmentType: 'SimpleGround',
   roomWidth: 10,
   roomLength: 8,
   roomHeight: 5,
@@ -107,6 +108,7 @@ export const mockGraphql = async (page: Page) => {
         input?: {
           publicId?: string;
           name?: string;
+          environmentType?: string;
           roomWidth?: number;
           roomLength?: number;
           roomHeight?: number;
@@ -125,10 +127,14 @@ export const mockGraphql = async (page: Page) => {
       body = {
         data: {
           exportProjects: {
-            schemaVersion: 3,
+            schemaVersion: 4,
             projects: projects.map(project => ({
               publicId: project.publicId,
               name: project.name,
+              environmentType: project.environmentType,
+              roomWidth: project.roomWidth,
+              roomLength: project.roomLength,
+              roomHeight: project.roomHeight,
               createdAt: project.createdAt,
               updatedAt: project.updatedAt,
               projectFixtures: projectFixtures[project.publicId] ?? [],
@@ -149,6 +155,7 @@ export const mockGraphql = async (page: Page) => {
             __typename: 'ProjectDto',
             publicId: item.publicId ?? `proj-${projects.length + 1}`,
             name: item.name,
+            environmentType: 'Room',
             roomWidth: 10,
             roomLength: 8,
             roomHeight: 5,
@@ -186,6 +193,7 @@ export const mockGraphql = async (page: Page) => {
         __typename: 'ProjectDto',
         publicId: `proj-${projects.length + 1}`,
         name,
+        environmentType: 'SimpleGround',
         roomWidth: 10,
         roomLength: 8,
         roomHeight: 5,
@@ -203,6 +211,9 @@ export const mockGraphql = async (page: Page) => {
         existing.name = name;
       }
       if (existing) {
+        if (postData.variables?.input?.environmentType !== undefined) {
+          existing.environmentType = postData.variables.input.environmentType;
+        }
         if (postData.variables?.input?.roomWidth !== undefined) {
           existing.roomWidth = postData.variables.input.roomWidth;
         }

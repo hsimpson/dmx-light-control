@@ -13,6 +13,7 @@ graphql:
         exportProjects {
           projects {
             createdAt
+            environmentType
             name
             projectFixtures {
               channelModePublicId

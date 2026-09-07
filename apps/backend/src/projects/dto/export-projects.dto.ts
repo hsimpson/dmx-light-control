@@ -1,4 +1,5 @@
 import { ExportTimestampsDto } from '@/db/export-timestamps.dto';
+import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
@@ -25,6 +26,9 @@ export class ProjectExportProjectDto extends ExportTimestampsDto {
 
   @Field({ description: 'The name of the project' })
   public name: string;
+
+  @Field(() => ProjectEnvironmentType, { description: 'The 3D environment used by the project' })
+  public environmentType: ProjectEnvironmentType;
 
   @Field(() => Float, { description: 'Room width in meters' })
   public roomWidth: number;

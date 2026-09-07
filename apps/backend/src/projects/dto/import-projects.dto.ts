@@ -1,10 +1,12 @@
 import { ImportTimestampsInput } from '@/db/import-timestamps.input';
 import { ProjectDto } from '@/projects/dto/project.dto';
+import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { ROOM_DIMENSION_MAX, ROOM_DIMENSION_MIN } from '@/projects/project-room-dimensions';
 import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsEnum,
   IsInt,
   IsNumber,
   IsOptional,
@@ -54,6 +56,11 @@ export class ImportProjectInput extends ImportTimestampsInput {
   @IsString()
   @Length(1, 255)
   public name: string;
+
+  @Field(() => ProjectEnvironmentType, { nullable: true, description: 'The 3D environment used by the project' })
+  @IsOptional()
+  @IsEnum(ProjectEnvironmentType)
+  public environmentType?: ProjectEnvironmentType;
 
   @Field(() => Float, { nullable: true, description: 'Room width in meters' })
   @IsOptional()

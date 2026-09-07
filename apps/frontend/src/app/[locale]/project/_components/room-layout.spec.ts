@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
-import { applyRoomDimensions, ROOM_SLAB_THICKNESS_M, roomPartTransform } from './room-layout';
+import {
+  applyRoomDimensions,
+  applySimpleGroundDimensions,
+  ROOM_SLAB_THICKNESS_M,
+  roomPartTransform,
+  simpleGroundSlabTransform,
+} from './room-layout';
 
 describe('roomPartTransform', () => {
   it('keeps floor and wall slab thickness at 0.4m', () => {
@@ -35,5 +41,23 @@ describe('applyRoomDimensions', () => {
     );
     expect(floor.scale.set).toHaveBeenCalledWith(12 + 2 * ROOM_SLAB_THICKNESS_M, 1, 8 + ROOM_SLAB_THICKNESS_M);
     expect(floor.position.set).toHaveBeenCalledWith(0, 0, -ROOM_SLAB_THICKNESS_M / 2);
+  });
+});
+
+describe('simpleGroundSlabTransform', () => {
+  it('places a 0.4m slab with its top face at y=0', () => {
+    expect(simpleGroundSlabTransform(12, 8)).toEqual({
+      position: [0, -ROOM_SLAB_THICKNESS_M / 2, 0],
+      scale: [12, ROOM_SLAB_THICKNESS_M, 8],
+    });
+  });
+});
+
+describe('applySimpleGroundDimensions', () => {
+  it('writes position and scale onto the ground mesh', () => {
+    const ground = { position: { set: vi.fn() }, scale: { set: vi.fn() } };
+    applySimpleGroundDimensions(ground, 12, 8);
+    expect(ground.scale.set).toHaveBeenCalledWith(12, ROOM_SLAB_THICKNESS_M, 8);
+    expect(ground.position.set).toHaveBeenCalledWith(0, -ROOM_SLAB_THICKNESS_M / 2, 0);
   });
 });

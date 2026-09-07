@@ -1,11 +1,15 @@
 'use client';
 
 import { roomGltfUrl } from '@/lib/graphql/graphql-api-origin';
+import { ProjectEnvironmentType } from '@/shared/types/graphql/graphql';
 import { useEffect, useRef } from 'react';
 import {
   AmbientLight,
+  BoxGeometry,
   Color,
   DirectionalLight,
+  Mesh,
+  MeshStandardMaterial,
   type Object3D,
   PerspectiveCamera,
   Scene,
@@ -14,17 +18,19 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { applyRoomDimensions } from './room-layout';
+import { applyRoomDimensions, applySimpleGroundDimensions } from './room-layout';
 
 export type ThreeDRoomCanvasProperties = {
+  environmentType: ProjectEnvironmentType;
   roomWidth: number;
   roomLength: number;
   roomHeight: number;
 };
 
-const ThreeDRoomCanvas = ({ roomWidth, roomLength, roomHeight }: ThreeDRoomCanvasProperties) => {
+const ThreeDRoomCanvas = ({ environmentType, roomWidth, roomLength, roomHeight }: ThreeDRoomCanvasProperties) => {
   const hostRef = useRef<HTMLDivElement>(null);
   const roomRef = useRef<Object3D | null>(null);
+  const groundRef = useRef<Mesh | null>(null);
   const cameraRef = useRef<PerspectiveCamera | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const dimensionsRef = useRef({ roomWidth, roomLength, roomHeight });
@@ -62,18 +68,27 @@ const ThreeDRoomCanvas = ({ roomWidth, roomLength, roomHeight }: ThreeDRoomCanva
       if (roomRef.current) {
         applyRoomDimensions(roomRef.current, width, length, height);
       }
+      if (groundRef.current) {
+        applySimpleGroundDimensions(groundRef.current, width, length);
+      }
       camera.position.set(0, Math.max(height * 0.55, 3), Math.max(length * 1.4, 6));
       controls.target.set(0, height / 2, 0);
       controls.update();
     };
 
-    const loader = new GLTFLoader();
-    loader.load(roomGltfUrl(), gltf => {
-      const room = gltf.scene.getObjectByName('room') ?? gltf.scene;
-      roomRef.current = room;
-      scene.add(gltf.scene);
-      applyDimensions();
-    });
+    if (environmentType === ProjectEnvironmentType.Room) {
+      const loader = new GLTFLoader();
+      loader.load(roomGltfUrl(), gltf => {
+        const room = gltf.scene.getObjectByName('room') ?? gltf.scene;
+        roomRef.current = room;
+        scene.add(gltf.scene);
+        applyDimensions();
+      });
+    } else {
+      const ground = new Mesh(new BoxGeometry(1, 1, 1), new MeshStandardMaterial({ color: 0x6b7280 }));
+      groundRef.current = ground;
+      scene.add(ground);
+    }
 
     applyDimensions();
 
@@ -99,19 +114,27 @@ const ThreeDRoomCanvas = ({ roomWidth, roomLength, roomHeight }: ThreeDRoomCanva
       renderer.setAnimationLoop(null);
       controls.dispose();
       renderer.dispose();
+      groundRef.current?.geometry.dispose();
+      if (groundRef.current?.material instanceof MeshStandardMaterial) {
+        groundRef.current.material.dispose();
+      }
       roomRef.current = null;
+      groundRef.current = null;
       cameraRef.current = null;
       controlsRef.current = null;
       if (renderer.domElement.parentElement === host) {
         host.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [environmentType]);
 
   useEffect(() => {
     dimensionsRef.current = { roomWidth, roomLength, roomHeight };
     if (roomRef.current) {
       applyRoomDimensions(roomRef.current, roomWidth, roomLength, roomHeight);
+    }
+    if (groundRef.current) {
+      applySimpleGroundDimensions(groundRef.current, roomWidth, roomLength);
     }
     cameraRef.current?.position.set(0, Math.max(roomHeight * 0.55, 3), Math.max(roomLength * 1.4, 6));
     if (controlsRef.current) {

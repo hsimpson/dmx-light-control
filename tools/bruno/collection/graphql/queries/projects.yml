@@ -12,6 +12,7 @@ graphql:
       query {
         projects {
           createdAt
+          environmentType
           name
           projectFixtures {
             channelMode {

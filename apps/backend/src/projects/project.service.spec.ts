@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { ProjectEnvironmentType } from './project-environment';
 import { ProjectAlreadyExistsException, ProjectNotFoundException } from './project.exceptions';
 import { ProjectService } from './project.service';
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
@@ -88,9 +89,17 @@ describe('ProjectService', () => {
   it('updateProject patches room dimensions when provided', async () => {
     const { service, projectRepository } = build();
     projectRepository.updateOneByPublicId.mockResolvedValue({ name: 'new', roomWidth: 12 });
-    await service.updateProject({ publicId: 'p', name: 'new', roomWidth: 12, roomLength: 9, roomHeight: 4 });
+    await service.updateProject({
+      publicId: 'p',
+      name: 'new',
+      environmentType: ProjectEnvironmentType.Room,
+      roomWidth: 12,
+      roomLength: 9,
+      roomHeight: 4,
+    });
     expect(projectRepository.updateOneByPublicId).toHaveBeenCalledWith('p', {
       name: 'new',
+      environmentType: ProjectEnvironmentType.Room,
       roomWidth: 12,
       roomLength: 9,
       roomHeight: 4,

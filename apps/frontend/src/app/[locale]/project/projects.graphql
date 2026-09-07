@@ -1,6 +1,7 @@
 fragment ProjectFields on ProjectDto {
   publicId
   name
+  environmentType
   roomWidth
   roomLength
   roomHeight
@@ -92,6 +93,10 @@ query ExportProjects {
     projects {
       publicId
       name
+      environmentType
+      roomWidth
+      roomLength
+      roomHeight
       createdAt
       updatedAt
       projectFixtures {

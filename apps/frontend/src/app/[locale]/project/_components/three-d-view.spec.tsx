@@ -1,5 +1,5 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
-import { GetProjectDocument, UpdateProjectDocument } from '@/shared/types/graphql/graphql';
+import { GetProjectDocument, ProjectEnvironmentType, UpdateProjectDocument } from '@/shared/types/graphql/graphql';
 import { notifications } from '@mantine/notifications';
 import { screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -19,6 +19,7 @@ const project = {
   __typename: 'ProjectDto' as const,
   publicId: 'proj-1',
   name: 'Main Show',
+  environmentType: ProjectEnvironmentType.SimpleGround,
   roomWidth: 10,
   roomLength: 8,
   roomHeight: 5,
@@ -46,6 +47,7 @@ describe('ThreeDView', () => {
               input: {
                 publicId: 'proj-1',
                 name: 'Main Show',
+                environmentType: ProjectEnvironmentType.SimpleGround,
                 roomWidth: 10,
                 roomLength: 8,
                 roomHeight: 5,
@@ -56,6 +58,7 @@ describe('ThreeDView', () => {
             data: {
               updateProject: {
                 ...project,
+                environmentType: ProjectEnvironmentType.SimpleGround,
                 roomWidth: 10,
                 roomLength: 8,
                 roomHeight: 5,

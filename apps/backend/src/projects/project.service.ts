@@ -6,6 +6,7 @@ import { AddProjectFixtureInput } from './dto/add-project-fixture.dto';
 import { CreateProjectInput } from './dto/create-project.dto';
 import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
+import { optionalEnvironmentType } from './project-environment';
 import {
   assertChannelModeBelongsToFixture,
   assertNoPatchOverlap,
@@ -149,6 +150,7 @@ export class ProjectService {
     try {
       const updated = await this.projectRepository.updateOneByPublicId(input.publicId, {
         name: input.name,
+        ...optionalEnvironmentType(input),
         ...optionalRoomDimensions(input),
       });
       if (!updated) {

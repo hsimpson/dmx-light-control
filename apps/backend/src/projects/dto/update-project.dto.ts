@@ -1,6 +1,7 @@
+import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { ROOM_DIMENSION_MAX, ROOM_DIMENSION_MIN } from '@/projects/project-room-dimensions';
 import { Field, Float, InputType } from '@nestjs/graphql';
-import { IsNumber, IsOptional, IsString, IsUUID, Length, Max, Min } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, IsUUID, Length, Max, Min } from 'class-validator';
 import { GraphQLUUID } from 'graphql-scalars';
 
 @InputType()
@@ -13,6 +14,11 @@ export class UpdateProjectInput {
   @IsString()
   @Length(1, 255)
   public name: string;
+
+  @Field(() => ProjectEnvironmentType, { nullable: true, description: 'The 3D environment used by the project' })
+  @IsOptional()
+  @IsEnum(ProjectEnvironmentType)
+  public environmentType?: ProjectEnvironmentType;
 
   @Field(() => Float, { nullable: true, description: 'Room width in meters' })
   @IsOptional()

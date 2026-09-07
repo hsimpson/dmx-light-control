@@ -150,6 +150,7 @@ describe('Project mutations', () => {
           roomWidth
           roomLength
           roomHeight
+          environmentType
         }
       }
     `;
@@ -161,6 +162,7 @@ describe('Project mutations', () => {
         roomWidth: number;
         roomLength: number;
         roomHeight: number;
+        environmentType: string;
       };
     }>(app.getHttpAdapter().getInstance().server, mutation, {
       variables: {
@@ -170,6 +172,7 @@ describe('Project mutations', () => {
           roomWidth: 12,
           roomLength: 9,
           roomHeight: 4,
+          environmentType: 'Room',
         },
       },
     });
@@ -181,6 +184,7 @@ describe('Project mutations', () => {
       roomWidth: 12,
       roomLength: 9,
       roomHeight: 4,
+      environmentType: 'Room',
     });
   });
 

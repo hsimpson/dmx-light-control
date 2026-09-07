@@ -3,7 +3,7 @@
 import { Loading } from '@/components/loading';
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { GetProjectDocument, UpdateProjectDocument } from '@/shared/types/graphql/graphql';
+import { GetProjectDocument, ProjectEnvironmentType, UpdateProjectDocument } from '@/shared/types/graphql/graphql';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Box, Group, Paper, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
@@ -19,6 +19,7 @@ type ThreeDViewProperties = {
 };
 
 type RoomDraft = {
+  environmentType: ProjectEnvironmentType;
   roomWidth: number;
   roomLength: number;
   roomHeight: number;
@@ -42,6 +43,7 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
     return <Text>{t({ id: 'ProjectDetail.notFound', defaultMessage: 'Project not found' })}</Text>;
   }
 
+  const environmentType = draft?.environmentType ?? project.environmentType;
   const roomWidth = draft?.roomWidth ?? project.roomWidth;
   const roomLength = draft?.roomLength ?? project.roomLength;
   const roomHeight = draft?.roomHeight ?? project.roomHeight;
@@ -53,6 +55,7 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
           input: {
             publicId: project.publicId,
             name: project.name,
+            environmentType,
             roomWidth,
             roomLength,
             roomHeight,
@@ -62,13 +65,13 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
       notifications.show({
         color: 'green',
         title: t(globalMessages.success),
-        message: t({ id: 'ProjectDetail.threeD.saved', defaultMessage: 'Room dimensions saved' }),
+        message: t({ id: 'ProjectDetail.threeD.saved', defaultMessage: 'Environment saved' }),
       });
     } catch {
       notifications.show({
         color: 'red',
         title: t(globalMessages.error),
-        message: t({ id: 'ProjectDetail.threeD.saveError', defaultMessage: 'Failed to save room dimensions' }),
+        message: t({ id: 'ProjectDetail.threeD.saveError', defaultMessage: 'Failed to save environment' }),
       });
     }
   };
@@ -76,22 +79,32 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
   return (
     <Group align="stretch" wrap="nowrap" gap="md" className={classes.root}>
       <Box className={classes.canvas}>
-        <ThreeDRoomCanvas roomWidth={roomWidth} roomLength={roomLength} roomHeight={roomHeight} />
+        <ThreeDRoomCanvas
+          key={environmentType}
+          environmentType={environmentType}
+          roomWidth={roomWidth}
+          roomLength={roomLength}
+          roomHeight={roomHeight}
+        />
       </Box>
       <Paper w={280} p="md" withBorder className={classes.panel}>
         <RoomDimensionsPanel
+          environmentType={environmentType}
           width={roomWidth}
           length={roomLength}
           height={roomHeight}
           saving={saving}
+          onEnvironmentTypeChange={value => {
+            setDraft({ environmentType: value, roomWidth, roomLength, roomHeight });
+          }}
           onWidthChange={value => {
-            setDraft({ roomWidth: value, roomLength, roomHeight });
+            setDraft({ environmentType, roomWidth: value, roomLength, roomHeight });
           }}
           onLengthChange={value => {
-            setDraft({ roomWidth, roomLength: value, roomHeight });
+            setDraft({ environmentType, roomWidth, roomLength: value, roomHeight });
           }}
           onHeightChange={value => {
-            setDraft({ roomWidth, roomLength, roomHeight: value });
+            setDraft({ environmentType, roomWidth, roomLength, roomHeight: value });
           }}
           onSave={() => {
             void handleSave();
