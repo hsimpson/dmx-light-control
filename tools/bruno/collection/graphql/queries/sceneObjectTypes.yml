@@ -1,0 +1,33 @@
+info:
+  name: sceneObjectTypes
+  type: graphql
+  seq: 9
+
+graphql:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body:
+    query: |
+      query {
+        sceneObjectTypes {
+          createdAt
+          defaultSizeX
+          defaultSizeY
+          defaultSizeZ
+          geometryKind
+          isScalable
+          modelPath
+          name
+          publicId
+          updatedAt
+        }
+      }
+    variables: |
+      {}
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -5,7 +5,7 @@ info:
 
 graphql:
   method: POST
-  url: "{{backendUrl}}/graphql"
+  url: '{{backendUrl}}/graphql'
   auth: inherit
   body:
     query: |
@@ -15,6 +15,17 @@ graphql:
             createdAt
             environmentType
             name
+            project3dObjects {
+              createdAt
+              name
+              publicId
+              sceneObjectTypePublicId
+              sizeX
+              sizeY
+              sizeZ
+              transform
+              updatedAt
+            }
             projectFixtures {
               channelModePublicId
               createdAt

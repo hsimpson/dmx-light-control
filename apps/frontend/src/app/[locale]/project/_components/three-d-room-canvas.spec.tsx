@@ -1,10 +1,22 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
-import { ProjectEnvironmentType } from '@/shared/types/graphql/graphql';
-import { screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
+import { fireEvent, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ThreeDRoomCanvas from './three-d-room-canvas';
 
 const load = vi.fn();
+
+const { transformControlsConstruct, intersectObjects, intersectBox } = vi.hoisted(() => ({
+  transformControlsConstruct: vi.fn(),
+  intersectObjects: vi.fn(() => [] as { object: { userData: Record<string, unknown>; parent: unknown } }[]),
+  intersectBox: vi.fn(() => null as { x?: number } | null),
+}));
+
+vi.mock('./scene-object-pose', () => ({
+  applyTransformMatrix: vi.fn(),
+  applyVisualSize: vi.fn(),
+  bakeInstancePose: vi.fn(),
+}));
 
 vi.mock('three', () => {
   class Position {
@@ -16,6 +28,9 @@ vi.mock('three', () => {
   class Scene {
     public background: unknown;
     public add() {
+      return this;
+    }
+    public remove() {
       return this;
     }
     public getObjectByName() {
@@ -66,7 +81,24 @@ vi.mock('three', () => {
         return undefined;
       }
     },
+    Box3: class {
+      public setFromObject() {
+        return this;
+      }
+      public isEmpty() {
+        return false;
+      }
+      public expandByScalar() {
+        return this;
+      }
+    },
+    Vector3: class {
+      public distanceToSquared() {
+        return Number.POSITIVE_INFINITY;
+      }
+    },
     Mesh: class {
+      public name = '';
       public position = new Position();
       public scale = new Position();
       public geometry = {
@@ -85,6 +117,37 @@ vi.mock('three', () => {
         return undefined;
       }
     },
+    Group: class {
+      public userData: Record<string, unknown> = {};
+      public add() {
+        return this;
+      }
+      public getObjectByName() {
+        return null;
+      }
+    },
+    Raycaster: class {
+      public ray = {
+        origin: {
+          distanceToSquared() {
+            return 1;
+          },
+        },
+        intersectBox() {
+          return intersectBox();
+        },
+      };
+      public setFromCamera() {
+        return undefined;
+      }
+      public intersectObjects(objects: unknown[]) {
+        return intersectObjects(objects);
+      }
+    },
+    Vector2: class {
+      public x = 0;
+      public y = 0;
+    },
     DirectionalLight: class {
       public position = new Position();
       public constructor(
@@ -98,6 +161,37 @@ vi.mock('three', () => {
     SRGBColorSpace: 'srgb',
   };
 });
+
+vi.mock('three/examples/jsm/controls/TransformControls.js', () => ({
+  TransformControls: class {
+    public object: unknown;
+    public mode = 'translate';
+    public dragging = false;
+    public enabled = true;
+    public size = 1;
+    public constructor(..._args: unknown[]) {
+      transformControlsConstruct();
+    }
+    public addEventListener() {
+      return undefined;
+    }
+    public removeEventListener() {
+      return undefined;
+    }
+    public getHelper() {
+      return { type: 'helper' };
+    }
+    public attach() {
+      return this;
+    }
+    public detach() {
+      return this;
+    }
+    public disconnect() {
+      return undefined;
+    }
+  },
+}));
 
 vi.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
   OrbitControls: class {
@@ -135,6 +229,13 @@ describe('ThreeDRoomCanvas', () => {
     }
   }
 
+  beforeEach(() => {
+    intersectObjects.mockReset();
+    intersectObjects.mockReturnValue([]);
+    intersectBox.mockReset();
+    intersectBox.mockReturnValue(null);
+  });
+
   it('loads the room glTF', () => {
     vi.stubGlobal('ResizeObserver', ResizeObserverMock);
     renderWithProviders(
@@ -158,5 +259,169 @@ describe('ThreeDRoomCanvas', () => {
     );
     expect(screen.getByTestId('three-d-room-canvas')).toBeInTheDocument();
     expect(load).not.toHaveBeenCalled();
+  });
+
+  it('creates translate and rotate TransformControls when an object is selected', () => {
+    transformControlsConstruct.mockClear();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        objects={[
+          {
+            publicId: 'obj-1',
+            sizeX: 1,
+            sizeY: 1,
+            sizeZ: 1,
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            sceneObjectType: {
+              geometryKind: SceneObjectGeometryKind.Box,
+              modelPath: null,
+              isScalable: true,
+            },
+          },
+        ]}
+        selectedObjectPublicId="obj-1"
+      />,
+    );
+    expect(transformControlsConstruct.mock.calls.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('loads a GLTF catalog object from the API origin', () => {
+    load.mockClear();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        objects={[
+          {
+            publicId: 'obj-1',
+            sizeX: null,
+            sizeY: null,
+            sizeZ: null,
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            sceneObjectType: {
+              geometryKind: SceneObjectGeometryKind.Gltf,
+              modelPath: '/assets/3d/light_stand.glb',
+              isScalable: false,
+            },
+          },
+        ]}
+      />,
+    );
+    expect(load).toHaveBeenCalled();
+    expect(String(load.mock.calls[0]?.[0])).toContain('/assets/3d/light_stand.glb');
+  });
+
+  it('clears selection when the empty scene is clicked', () => {
+    const onSelectObject = vi.fn();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        onSelectObject={onSelectObject}
+      />,
+    );
+    fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
+    expect(onSelectObject).toHaveBeenCalledWith(null);
+  });
+
+  it('selects an object even when gizmo helpers are under the pointer', () => {
+    const onSelectObject = vi.fn();
+    intersectBox.mockReturnValue({});
+    intersectObjects.mockImplementation((objects: unknown[]) => {
+      if (Array.isArray(objects) && objects.some(object => (object as { type?: string }).type === 'helper')) {
+        return [{ object: { userData: {}, parent: null } }];
+      }
+      return [{ object: { userData: { project3dObjectId: 'obj-1' }, parent: null } }];
+    });
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        objects={[
+          {
+            publicId: 'obj-1',
+            sizeX: 1,
+            sizeY: 1,
+            sizeZ: 1,
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            sceneObjectType: {
+              geometryKind: SceneObjectGeometryKind.Box,
+              modelPath: null,
+              isScalable: true,
+            },
+          },
+        ]}
+        onSelectObject={onSelectObject}
+      />,
+    );
+    fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
+    expect(onSelectObject).toHaveBeenCalledWith('obj-1');
+    expect(onSelectObject).not.toHaveBeenCalledWith(null);
+  });
+
+  it('clears selection when the click misses objects even if gizmos are under the pointer', () => {
+    const onSelectObject = vi.fn();
+    intersectBox.mockReturnValue(null);
+    intersectObjects.mockReturnValue([{ object: { userData: {}, parent: null } }]);
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        objects={[
+          {
+            publicId: 'obj-1',
+            sizeX: 1,
+            sizeY: 1,
+            sizeZ: 1,
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            sceneObjectType: {
+              geometryKind: SceneObjectGeometryKind.Box,
+              modelPath: null,
+              isScalable: true,
+            },
+          },
+        ]}
+        selectedObjectPublicId="obj-1"
+        onSelectObject={onSelectObject}
+      />,
+    );
+    fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
+    expect(onSelectObject).toHaveBeenCalledWith(null);
+  });
+
+  it('does not change selection after orbiting the camera', () => {
+    const onSelectObject = vi.fn();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        selectedObjectPublicId="obj-1"
+        onSelectObject={onSelectObject}
+      />,
+    );
+    const canvas = screen.getByTestId('three-d-room-canvas');
+    fireEvent.pointerDown(canvas, { clientX: 10, clientY: 10 });
+    fireEvent.pointerUp(canvas, { clientX: 80, clientY: 60 });
+    expect(onSelectObject).not.toHaveBeenCalled();
   });
 });

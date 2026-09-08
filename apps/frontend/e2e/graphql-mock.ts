@@ -127,7 +127,7 @@ export const mockGraphql = async (page: Page) => {
       body = {
         data: {
           exportProjects: {
-            schemaVersion: 4,
+            schemaVersion: 6,
             projects: projects.map(project => ({
               publicId: project.publicId,
               name: project.name,
@@ -138,6 +138,7 @@ export const mockGraphql = async (page: Page) => {
               createdAt: project.createdAt,
               updatedAt: project.updatedAt,
               projectFixtures: projectFixtures[project.publicId] ?? [],
+              project3dObjects: [],
             })),
           },
         },
@@ -172,6 +173,8 @@ export const mockGraphql = async (page: Page) => {
           },
         },
       };
+    } else if (postData.operationName === 'GetSceneObjectTypes' || postData.query?.includes('sceneObjectTypes')) {
+      body = { data: { sceneObjectTypes: [] } };
     } else if (postData.operationName === 'GetProjects' || postData.query?.includes('projects {')) {
       body = { data: { projects: [...projects] } };
     } else if (postData.operationName === 'GetProject' || postData.query?.includes('project(publicId')) {
@@ -183,6 +186,7 @@ export const mockGraphql = async (page: Page) => {
             ? {
                 ...project,
                 projectFixtures: projectFixtures[publicId] ?? [],
+                project3dObjects: [],
               }
             : null,
         },

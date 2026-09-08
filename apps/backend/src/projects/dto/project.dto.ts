@@ -1,4 +1,5 @@
 import { BaseDto } from '@/db/base.dto';
+import { Project3dObjectDto } from '@/projects/dto/project-3d-object.dto';
 import { ProjectFixtureDto } from '@/projects/dto/project-fixture.dto';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { Field, Float, ObjectType } from '@nestjs/graphql';
@@ -27,4 +28,11 @@ export class ProjectDto extends BaseDto {
   })
   @Type(() => ProjectFixtureDto)
   public projectFixtures: ProjectFixtureDto[];
+
+  @Field(() => [Project3dObjectDto], {
+    description: 'The 3D scene objects placed in this project',
+    defaultValue: [],
+  })
+  @Type(() => Project3dObjectDto)
+  public project3dObjects: Project3dObjectDto[];
 }

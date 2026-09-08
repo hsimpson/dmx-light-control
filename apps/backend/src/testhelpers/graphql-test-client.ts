@@ -9,6 +9,7 @@ export type GraphQLResponse<TData> = {
     message: string;
     locations?: { line: number; column: number }[];
     path?: (string | number)[];
+    extensions?: { code?: string };
   }[];
 };
 

@@ -1,7 +1,7 @@
 info:
   name: deleteFixture
   type: graphql
-  seq: 6
+  seq: 7
 
 graphql:
   method: POST

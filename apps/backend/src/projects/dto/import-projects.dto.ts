@@ -5,6 +5,8 @@ import { ROOM_DIMENSION_MAX, ROOM_DIMENSION_MIN } from '@/projects/project-room-
 import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
   IsArray,
   IsEnum,
   IsInt,
@@ -43,6 +45,52 @@ export class ImportProjectFixtureInput extends ImportTimestampsInput {
   @Field(() => GraphQLUUID, { description: 'The public ID of the channel mode' })
   @Matches(IMPORT_PROJECT_PUBLIC_ID_PATTERN, { message: 'channelModePublicId must be a UUID' })
   public channelModePublicId: string;
+}
+
+@InputType()
+export class ImportProject3dObjectInput extends ImportTimestampsInput {
+  @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the project 3D object instance' })
+  @IsOptional()
+  @Matches(IMPORT_PROJECT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })
+  public publicId?: string;
+
+  @Field({ nullable: true, description: 'The display name of the 3D object instance' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  public name?: string;
+
+  @Field(() => GraphQLUUID, { description: 'The public ID of the scene object type' })
+  @Matches(IMPORT_PROJECT_PUBLIC_ID_PATTERN, { message: 'sceneObjectTypePublicId must be a UUID' })
+  public sceneObjectTypePublicId: string;
+
+  @Field(() => Float, { nullable: true, description: 'Width in meters for scalable objects' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public sizeX?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Height in meters for scalable objects' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public sizeY?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Length in meters for scalable objects' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public sizeZ?: number | null;
+
+  @Field(() => [Float], { description: 'Column-major 4×4 transform (16 values)' })
+  @IsArray()
+  @ArrayMinSize(16)
+  @ArrayMaxSize(16)
+  @IsNumber({}, { each: true })
+  public transform: number[];
 }
 
 @InputType()
@@ -92,6 +140,16 @@ export class ImportProjectInput extends ImportTimestampsInput {
   @ValidateNested({ each: true })
   @Type(() => ImportProjectFixtureInput)
   public projectFixtures?: ImportProjectFixtureInput[];
+
+  @Field(() => [ImportProject3dObjectInput], {
+    nullable: true,
+    description: 'The 3D scene objects placed in this project',
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ImportProject3dObjectInput)
+  public project3dObjects?: ImportProject3dObjectInput[];
 }
 
 @InputType()

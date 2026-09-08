@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { identityTransform } from './project-3d-object.transform';
 import { ProjectEnvironmentType } from './project-environment';
 import { mapProjectsToExportDocument } from './project-export.mapper';
 
@@ -33,7 +34,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 4,
+      schemaVersion: 6,
       projects: [
         {
           publicId: 'a',
@@ -43,6 +44,7 @@ describe('mapProjectsToExportDocument', () => {
           roomLength: 8,
           roomHeight: 5,
           projectFixtures: [],
+          project3dObjects: [],
           ...timestamps,
         },
         {
@@ -53,6 +55,7 @@ describe('mapProjectsToExportDocument', () => {
           roomLength: 8,
           roomHeight: 5,
           projectFixtures: [],
+          project3dObjects: [],
           ...timestamps,
         },
       ],
@@ -85,11 +88,33 @@ describe('mapProjectsToExportDocument', () => {
               ...timestamps,
             },
           ],
+          project3dObjects: [
+            {
+              publicId: 'o-2',
+              name: 'Box 2',
+              sizeX: 2,
+              sizeY: 0.5,
+              sizeZ: 1,
+              transform: identityTransform(),
+              sceneObjectType: { publicId: 'type-1' },
+              ...timestamps,
+            },
+            {
+              publicId: 'o-1',
+              name: 'Light stand 1',
+              sizeX: null,
+              sizeY: null,
+              sizeZ: null,
+              transform: identityTransform(1, 0, 0),
+              sceneObjectType: { publicId: 'type-2' },
+              ...timestamps,
+            },
+          ],
           ...timestamps,
         },
       ]),
     ).toEqual({
-      schemaVersion: 4,
+      schemaVersion: 6,
       projects: [
         {
           publicId: 'p',
@@ -111,6 +136,28 @@ describe('mapProjectsToExportDocument', () => {
               startAddress: 10,
               fixturePublicId: 'f-1',
               channelModePublicId: 'm-1',
+              ...timestamps,
+            },
+          ],
+          project3dObjects: [
+            {
+              publicId: 'o-1',
+              name: 'Light stand 1',
+              sceneObjectTypePublicId: 'type-2',
+              sizeX: null,
+              sizeY: null,
+              sizeZ: null,
+              transform: identityTransform(1, 0, 0),
+              ...timestamps,
+            },
+            {
+              publicId: 'o-2',
+              name: 'Box 2',
+              sceneObjectTypePublicId: 'type-1',
+              sizeX: 2,
+              sizeY: 0.5,
+              sizeZ: 1,
+              transform: identityTransform(),
               ...timestamps,
             },
           ],

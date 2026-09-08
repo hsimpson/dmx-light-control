@@ -1,14 +1,19 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { plainToInstance } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
+import { AddProject3dObjectInput } from './dto/add-project-3d-object.dto';
 import { AddProjectFixtureInput } from './dto/add-project-fixture.dto';
 import { CreateProjectInput } from './dto/create-project.dto';
+import { DeleteProject3dObjectPayload } from './dto/delete-project-3d-object-payload.dto';
 import { DeleteProjectFixturePayload } from './dto/delete-project-fixture-payload.dto';
 import { DeleteProjectPayload } from './dto/delete-project-payload.dto';
 import { ProjectExportDocumentDto } from './dto/export-projects.dto';
 import { ImportProjectsInput, ImportProjectsPayload } from './dto/import-projects.dto';
+import { Project3dObjectDto } from './dto/project-3d-object.dto';
 import { ProjectFixtureDto } from './dto/project-fixture.dto';
 import { ProjectDto } from './dto/project.dto';
+import { SceneObjectTypeDto } from './dto/scene-object-type.dto';
+import { UpdateProject3dObjectInput } from './dto/update-project-3d-object.dto';
 import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
 import { ProjectImportExportService } from './project-import-export.service';
@@ -43,6 +48,15 @@ export class ProjectResolver {
       return null;
     }
     return plainToInstance(ProjectDto, project);
+  }
+
+  @Query(() => [SceneObjectTypeDto], {
+    name: 'sceneObjectTypes',
+    description: 'get all scene object types that can be placed in a project',
+  })
+  public async getSceneObjectTypes(): Promise<SceneObjectTypeDto[]> {
+    const types = await this.projectService.getSceneObjectTypes();
+    return plainToInstance(SceneObjectTypeDto, types);
   }
 
   @Query(() => ProjectExportDocumentDto, {
@@ -122,5 +136,34 @@ export class ProjectResolver {
   ): Promise<DeleteProjectFixturePayload> {
     const result = await this.projectService.deleteProjectFixtureByPublicId(publicId);
     return plainToInstance(DeleteProjectFixturePayload, result);
+  }
+
+  @Mutation(() => Project3dObjectDto, {
+    name: 'addProject3dObject',
+    description: 'add a scene object instance to a project',
+  })
+  public async addProject3dObject(@Args('input') input: AddProject3dObjectInput): Promise<Project3dObjectDto> {
+    const object = await this.projectService.addProject3dObject(input);
+    return plainToInstance(Project3dObjectDto, object);
+  }
+
+  @Mutation(() => Project3dObjectDto, {
+    name: 'updateProject3dObject',
+    description: 'update a project 3D object instance',
+  })
+  public async updateProject3dObject(@Args('input') input: UpdateProject3dObjectInput): Promise<Project3dObjectDto> {
+    const object = await this.projectService.updateProject3dObject(input);
+    return plainToInstance(Project3dObjectDto, object);
+  }
+
+  @Mutation(() => DeleteProject3dObjectPayload, {
+    name: 'deleteProject3dObject',
+    description: 'delete a project 3D object instance by public id',
+  })
+  public async deleteProject3dObject(
+    @Args('publicId', { type: () => GraphQLUUID }) publicId: string,
+  ): Promise<DeleteProject3dObjectPayload> {
+    const result = await this.projectService.deleteProject3dObjectByPublicId(publicId);
+    return plainToInstance(DeleteProject3dObjectPayload, result);
   }
 }

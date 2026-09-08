@@ -20,6 +20,30 @@ export class ProjectExportFixtureDto extends ExportTimestampsDto {
 }
 
 @ObjectType()
+export class ProjectExport3dObjectDto extends ExportTimestampsDto {
+  @Field(() => GraphQLUUID, { description: 'The public ID of the project 3D object instance' })
+  public publicId: string;
+
+  @Field({ description: 'The display name of the 3D object instance' })
+  public name: string;
+
+  @Field(() => GraphQLUUID, { description: 'The public ID of the scene object type' })
+  public sceneObjectTypePublicId: string;
+
+  @Field(() => Float, { nullable: true, description: 'Width in meters for scalable objects' })
+  public sizeX: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Height in meters for scalable objects' })
+  public sizeY: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Length in meters for scalable objects' })
+  public sizeZ: number | null;
+
+  @Field(() => [Float], { description: 'Column-major 4×4 transform (16 values)' })
+  public transform: number[];
+}
+
+@ObjectType()
 export class ProjectExportProjectDto extends ExportTimestampsDto {
   @Field(() => GraphQLUUID, { description: 'The public ID of the project' })
   public publicId: string;
@@ -45,6 +69,13 @@ export class ProjectExportProjectDto extends ExportTimestampsDto {
   })
   @Type(() => ProjectExportFixtureDto)
   public projectFixtures: ProjectExportFixtureDto[];
+
+  @Field(() => [ProjectExport3dObjectDto], {
+    description: 'The 3D scene objects placed in this project',
+    defaultValue: [],
+  })
+  @Type(() => ProjectExport3dObjectDto)
+  public project3dObjects: ProjectExport3dObjectDto[];
 }
 
 @ObjectType()
