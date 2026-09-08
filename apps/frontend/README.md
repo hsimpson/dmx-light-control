@@ -8,7 +8,7 @@ Copy `.env.example` to `.env`. The only variable is `NEXT_PUBLIC_GRAPHQL_API_URL
 
 Locale routing uses `src/proxy.ts` (Next.js 16 proxy; there is no `middleware.ts`) with `next-i18n-router`. URLs are prefixed (`/de/...`, `/en/...`); default locale is `de`.
 
-`nx dev frontend` runs `next dev --webpack` (not Turbopack).
+`nx dev frontend` runs `next dev` (Next 16 default Turbopack).
 
 ## Commands
 

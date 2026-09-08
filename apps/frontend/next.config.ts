@@ -15,13 +15,6 @@ const nextConfig: NextConfig = {
     ],
   },
   transpilePackages: ['three'],
-  webpack: (config: { cache?: { type: 'memory' } }, { dev }) => {
-    // PackFileCacheStrategy warns when persisting large CSS/module strings (Mantine).
-    if (dev) {
-      config.cache = { type: 'memory' };
-    }
-    return config;
-  },
 };
 
 export default nextConfig;

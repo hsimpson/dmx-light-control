@@ -7,7 +7,7 @@
   "targets": {
     "dev": {
       "continuous": true,
-      "command": "next dev --webpack",
+      "command": "next dev",
       "options": {
         "cwd": "apps/frontend",
         "port": 3001
