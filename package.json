@@ -10,12 +10,12 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "^12.3.4",
+      "version": "^12.4.0",
       "onFail": "download"
     }
   },
   "devDependencies": {
-    "@eslint-react/eslint-plugin": "^5.18.8",
+    "@eslint-react/eslint-plugin": "^5.18.10",
     "@eslint/js": "^10.0.1",
     "@formatjs/cli": "^6.16.23",
     "@graphql-codegen/cli": "^7.4.0",
