@@ -13,6 +13,7 @@ blob-report/
 # files
 .DS_Store
 .env
+_tmp_*
 
 vite.config.*.timestamp*
 
@@ -20,3 +21,5 @@ vite.config.*.timestamp*
 .next
 out
 *.tsbuildinfo
+
+*.blend1
