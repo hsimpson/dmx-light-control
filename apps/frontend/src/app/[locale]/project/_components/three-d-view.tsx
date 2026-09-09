@@ -253,8 +253,7 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
     try {
       await deleteObject({ variables: { publicId: selectedObjectPublicId } });
       setObjectDrafts(existing => {
-        const next = { ...existing };
-        delete next[selectedObjectPublicId];
+        const { [selectedObjectPublicId]: _removed, ...next } = existing;
         return next;
       });
       setSelectedObjectPublicId(null);

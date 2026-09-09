@@ -160,9 +160,6 @@ const ThreeDRoomCanvas = ({
 
     const commitGizmoPose = (transformControls: TransformControls) => {
       const object = transformControls.object;
-      if (!object) {
-        return;
-      }
       const publicId = object.userData.project3dObjectId as string | undefined;
       const visual = object.getObjectByName('visual');
       if (!publicId || !visual) {
@@ -194,7 +191,7 @@ const ThreeDRoomCanvas = ({
     let skipSelectionOnPointerUp = false;
 
     const onTranslateDraggingChanged = (event: { value: unknown }) => {
-      setOtherGizmosEnabled(translateGizmo.transformControls, !Boolean(event.value));
+      setOtherGizmosEnabled(translateGizmo.transformControls, !event.value);
       controls.enabled = !isAnyGizmoDragging();
       if (event.value) {
         skipSelectionOnPointerUp = true;
@@ -213,7 +210,7 @@ const ThreeDRoomCanvas = ({
     translateGizmo.transformControls.addEventListener('mouseUp', onTranslateMouseUp);
 
     const onRotateDraggingChanged = (event: { value: unknown }) => {
-      setOtherGizmosEnabled(rotateGizmo.transformControls, !Boolean(event.value));
+      setOtherGizmosEnabled(rotateGizmo.transformControls, !event.value);
       controls.enabled = !isAnyGizmoDragging();
       if (event.value) {
         skipSelectionOnPointerUp = true;
@@ -232,7 +229,7 @@ const ThreeDRoomCanvas = ({
     rotateGizmo.transformControls.addEventListener('mouseUp', onRotateMouseUp);
 
     const onScaleDraggingChanged = (event: { value: unknown }) => {
-      setOtherGizmosEnabled(scaleGizmo.transformControls, !Boolean(event.value));
+      setOtherGizmosEnabled(scaleGizmo.transformControls, !event.value);
       controls.enabled = !isAnyGizmoDragging();
       if (event.value) {
         skipSelectionOnPointerUp = true;
@@ -435,11 +432,7 @@ const ThreeDRoomCanvas = ({
       root.userData.isScalable = object.sceneObjectType.isScalable;
       const draggingSelected =
         object.publicId === selectedObjectPublicId &&
-        Boolean(
-          translateControlsRef.current?.dragging ||
-          rotateControlsRef.current?.dragging ||
-          scaleControlsRef.current?.dragging,
-        );
+        [translateControlsRef, rotateControlsRef, scaleControlsRef].some(ref => ref.current?.dragging);
       if (!draggingSelected) {
         applyTransformMatrix(root, object.transform);
         const visual = root.getObjectByName('visual');
