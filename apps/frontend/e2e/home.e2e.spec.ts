@@ -6,9 +6,8 @@ test.describe('home', () => {
     await mockGraphql(page);
   });
 
-  test('shows import and export actions with labels', async ({ page }) => {
+  test('shows the home title', async ({ page }) => {
     await page.goto('/de');
-    await expect(page.getByRole('button', { name: 'Fixtures importieren' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Fixtures exportieren' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Startseite' })).toBeVisible();
   });
 });

@@ -5,6 +5,7 @@ import {
   GetFixturesDocument,
   ImportFixturesDocument,
 } from '@/shared/types/graphql/graphql';
+import { CombinedGraphQLErrors } from '@apollo/client';
 import { notifications } from '@mantine/notifications';
 import { screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -102,6 +103,32 @@ describe('FixtureListToolbar', () => {
     await waitFor(() => {
       expect(notifications.show).toHaveBeenCalledWith(
         expect.objectContaining({ color: 'green', title: 'Fixtures imported', message: 'fixtures.json' }),
+      );
+    });
+  });
+
+  it('shows the GraphQL error message when import fails', async () => {
+    const importDocument = { schemaVersion: 1, fixtures: [] };
+    const { user } = renderWithProviders(<FixtureListToolbar />, {
+      apolloMocks: [
+        {
+          request: { query: ImportFixturesDocument, variables: { document: importDocument } },
+          error: new CombinedGraphQLErrors({
+            errors: [{ message: 'Fixture vendor publicId missing for fixture "Test-001"' }],
+          }),
+        },
+      ],
+    });
+
+    const file = new File([JSON.stringify(importDocument)], 'fixtures.json', { type: 'application/json' });
+    await user.upload(fileInput(), file);
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({
+          color: 'red',
+          message: 'Fixture vendor publicId missing for fixture "Test-001"',
+        }),
       );
     });
   });

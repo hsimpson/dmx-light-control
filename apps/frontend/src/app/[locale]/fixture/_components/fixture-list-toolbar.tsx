@@ -10,11 +10,22 @@ import {
   ImportFixturesDocument,
   ImportFixturesInput,
 } from '@/shared/types/graphql/graphql';
+import { CombinedGraphQLErrors } from '@apollo/client';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 import { Button, FileButton, Group } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { DownloadSimpleIcon, UploadSimpleIcon } from '@phosphor-icons/react';
 import { downloadJsonFile } from './download-json-file';
+
+function importErrorMessage(error: unknown, fallback: string): string {
+  if (CombinedGraphQLErrors.is(error)) {
+    const message = error.errors.find(graphQLError => graphQLError.message)?.message;
+    if (message) {
+      return message;
+    }
+  }
+  return fallback;
+}
 
 const FixtureListToolbar = () => {
   const { t } = useTranslation();
@@ -30,14 +41,14 @@ const FixtureListToolbar = () => {
       downloadJsonFile('fixtures.json', data.exportFixtures);
       notifications.show({
         color: 'green',
-        title: t({ id: 'Home.exported', defaultMessage: 'Fixtures exported' }),
-        message: t({ id: 'Home.title', defaultMessage: 'Home' }),
+        title: t({ id: 'FixtureList.exported', defaultMessage: 'Fixtures exported' }),
+        message: t({ id: 'FixtureList.title', defaultMessage: 'Fixture list' }),
       });
     } catch {
       notifications.show({
         color: 'red',
         title: t(globalMessages.error),
-        message: t({ id: 'Home.exportError', defaultMessage: 'Failed to export fixtures' }),
+        message: t({ id: 'FixtureList.exportError', defaultMessage: 'Failed to export fixtures' }),
       });
     }
   };
@@ -56,14 +67,17 @@ const FixtureListToolbar = () => {
       });
       notifications.show({
         color: 'green',
-        title: t({ id: 'Home.imported', defaultMessage: 'Fixtures imported' }),
+        title: t({ id: 'FixtureList.imported', defaultMessage: 'Fixtures imported' }),
         message: file.name,
       });
-    } catch {
+    } catch (error) {
       notifications.show({
         color: 'red',
         title: t(globalMessages.error),
-        message: t({ id: 'Home.importError', defaultMessage: 'Failed to import fixtures' }),
+        message: importErrorMessage(
+          error,
+          t({ id: 'FixtureList.importError', defaultMessage: 'Failed to import fixtures' }),
+        ),
       });
     }
   };
@@ -78,7 +92,7 @@ const FixtureListToolbar = () => {
             loading={importing}
             rightSection={<UploadSimpleIcon size={ICON_SIZE} weight="duotone" />}
           >
-            {t({ id: 'Home.import', defaultMessage: 'Import fixtures' })}
+            {t({ id: 'FixtureList.import', defaultMessage: 'Import fixtures' })}
           </Button>
         )}
       </FileButton>
@@ -87,7 +101,7 @@ const FixtureListToolbar = () => {
         onClick={() => void handleExport()}
         rightSection={<DownloadSimpleIcon size={ICON_SIZE} weight="duotone" />}
       >
-        {t({ id: 'Home.export', defaultMessage: 'Export fixtures' })}
+        {t({ id: 'FixtureList.export', defaultMessage: 'Export fixtures' })}
       </Button>
     </Group>
   );

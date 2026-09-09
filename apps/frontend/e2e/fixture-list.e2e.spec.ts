@@ -12,6 +12,13 @@ test.describe('fixture list', () => {
     await expect(page.getByText(mockedFixture.fixtureVendor.name)).toBeVisible();
   });
 
+  test('exports mocked fixtures', async ({ page }) => {
+    await page.goto('/de/fixture/list');
+    await expect(page.getByRole('button', { name: 'Fixtures exportieren' })).toBeVisible();
+    await page.getByRole('button', { name: 'Fixtures exportieren' }).click();
+    await expect(page.getByText('Fixtures exportiert')).toBeVisible();
+  });
+
   test('deletes a fixture after confirm', async ({ page }) => {
     await page.goto('/de/fixture/list');
     await expect(page.getByText(mockedFixture.name)).toBeVisible();

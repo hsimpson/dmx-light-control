@@ -5,6 +5,8 @@ import {
   GetProjectsDocument,
   UpdateProjectDocument,
 } from '@/shared/types/graphql/graphql';
+import { Button } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { screen, waitFor, within } from '@testing-library/react';
 import { ReactNode } from 'react';
@@ -52,6 +54,17 @@ vi.mock('mantine-datatable', () => ({
   ),
 }));
 
+const ProjectTableHarness = () => {
+  const [createOpened, { open: openCreate, close: closeCreate }] = useDisclosure(false);
+
+  return (
+    <>
+      <Button onClick={openCreate}>Add project</Button>
+      <ProjectTable createOpened={createOpened} onCloseCreate={closeCreate} />
+    </>
+  );
+};
+
 const now = new Date('2026-01-01T00:00:00.000Z');
 
 const project = {
@@ -77,7 +90,7 @@ describe('ProjectTable', () => {
   });
 
   it('shows a loader while the projects query is in flight', () => {
-    renderWithProviders(<ProjectTable />, {
+    renderWithProviders(<ProjectTable createOpened={false} onCloseCreate={() => undefined} />, {
       apolloMocks: [
         {
           request: { query: GetProjectsDocument },
@@ -91,7 +104,7 @@ describe('ProjectTable', () => {
   });
 
   it('renders an empty table when the query returns no projects', async () => {
-    renderWithProviders(<ProjectTable />, {
+    renderWithProviders(<ProjectTable createOpened={false} onCloseCreate={() => undefined} />, {
       apolloMocks: [
         {
           request: { query: GetProjectsDocument },
@@ -105,7 +118,7 @@ describe('ProjectTable', () => {
   });
 
   it('renders the project name from the query', async () => {
-    renderWithProviders(<ProjectTable />, {
+    renderWithProviders(<ProjectTable createOpened={false} onCloseCreate={() => undefined} />, {
       apolloMocks: [projectsQueryMock],
     });
 
@@ -113,7 +126,7 @@ describe('ProjectTable', () => {
   });
 
   it('creates a project from the create modal', async () => {
-    const { user } = renderWithProviders(<ProjectTable />, {
+    const { user } = renderWithProviders(<ProjectTableHarness />, {
       apolloMocks: [
         projectsQueryMock,
         {
@@ -155,7 +168,7 @@ describe('ProjectTable', () => {
   });
 
   it('does not create a project when the name is whitespace', async () => {
-    const { user } = renderWithProviders(<ProjectTable />, {
+    const { user } = renderWithProviders(<ProjectTableHarness />, {
       apolloMocks: [projectsQueryMock],
     });
 
@@ -168,7 +181,7 @@ describe('ProjectTable', () => {
   });
 
   it('renames a project from the rename modal', async () => {
-    const { user } = renderWithProviders(<ProjectTable />, {
+    const { user } = renderWithProviders(<ProjectTable createOpened={false} onCloseCreate={() => undefined} />, {
       apolloMocks: [
         projectsQueryMock,
         {
@@ -216,7 +229,7 @@ describe('ProjectTable', () => {
   });
 
   it('opens a confirm modal from trash', async () => {
-    const { user } = renderWithProviders(<ProjectTable />, {
+    const { user } = renderWithProviders(<ProjectTable createOpened={false} onCloseCreate={() => undefined} />, {
       apolloMocks: [projectsQueryMock],
     });
 
@@ -227,7 +240,7 @@ describe('ProjectTable', () => {
   });
 
   it('deletes a project after confirm', async () => {
-    const { user } = renderWithProviders(<ProjectTable />, {
+    const { user } = renderWithProviders(<ProjectTable createOpened={false} onCloseCreate={() => undefined} />, {
       apolloMocks: [
         projectsQueryMock,
         {
@@ -253,7 +266,7 @@ describe('ProjectTable', () => {
   });
 
   it('shows an error notification when delete fails', async () => {
-    const { user } = renderWithProviders(<ProjectTable />, {
+    const { user } = renderWithProviders(<ProjectTable createOpened={false} onCloseCreate={() => undefined} />, {
       apolloMocks: [
         projectsQueryMock,
         {
