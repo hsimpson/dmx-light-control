@@ -221,7 +221,7 @@ const ProjectTable = ({ createOpened, onCloseCreate }: ProjectTableProperties) =
           },
         ]}
         onRowClick={record => {
-          router.push(`/project/${record.record.publicId}`);
+          router.push(`/project/${record.record.publicId}/fixtures`);
         }}
       />
       <Modal
