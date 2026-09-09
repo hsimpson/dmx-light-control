@@ -28,232 +28,6 @@
   ],
   "fixtures": [
     {
-      "publicId": "af168eb7-bac4-4240-93d9-196e1656f450",
-      "name": "LED CLS-18 QCL RGBW 18x8W",
-      "createdAt": "2026-08-22T22:46:48.405Z",
-      "updatedAt": "2026-08-26T22:54:37.442Z",
-      "vendor": {
-        "publicId": "3ecfaac4-ec21-4e5e-bd23-505835b30ecc",
-        "name": "eurolite",
-        "createdAt": "2026-08-28T22:03:43.586Z",
-        "updatedAt": "2026-08-28T22:03:43.586Z"
-      },
-      "channelDefinitions": [
-        {
-          "publicId": "8902ec7a-06c5-414e-831c-0b2629007289",
-          "name": "Red",
-          "order": 0,
-          "preset": "IntensityRed",
-          "createdAt": "2026-08-24T20:26:01.689Z",
-          "updatedAt": "2026-08-26T22:54:37.443Z",
-          "ranges": [
-            {
-              "publicId": "58a76c2d-7ae0-4c57-bc6d-c2141f4f3f03",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "Red (0 - 100%)",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            }
-          ]
-        },
-        {
-          "publicId": "51b0a0be-d997-46ff-9944-998ec91be069",
-          "name": "Green",
-          "order": 1,
-          "preset": "IntensityGreen",
-          "createdAt": "2026-08-24T20:26:36.536Z",
-          "updatedAt": "2026-08-26T22:54:37.444Z",
-          "ranges": [
-            {
-              "publicId": "ffcf2058-5c4f-4a21-8f89-626b85823e00",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "Green (0 - 100%)",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            }
-          ]
-        },
-        {
-          "publicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
-          "name": "Blue",
-          "order": 2,
-          "preset": "IntensityBlue",
-          "createdAt": "2026-08-24T20:27:09.145Z",
-          "updatedAt": "2026-08-26T22:54:37.444Z",
-          "ranges": [
-            {
-              "publicId": "c83fd4b2-842f-4719-8379-72ca48f01b01",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "Blue (0 - 100%)",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            }
-          ]
-        },
-        {
-          "publicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
-          "name": "White",
-          "order": 3,
-          "preset": "IntensityWhite",
-          "createdAt": "2026-08-24T20:36:41.739Z",
-          "updatedAt": "2026-08-26T22:54:37.445Z",
-          "ranges": [
-            {
-              "publicId": "7434f52d-87f2-43ac-9d85-79ba539e931a",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "White (0 - 100%)",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            }
-          ]
-        },
-        {
-          "publicId": "c874a0ac-df1e-4e49-8131-2386646dcd71",
-          "name": "Dimmer",
-          "order": 4,
-          "preset": "IntensityMasterDimmer",
-          "createdAt": "2026-08-24T21:50:45.890Z",
-          "updatedAt": "2026-08-26T22:54:37.445Z",
-          "ranges": [
-            {
-              "publicId": "5196e8dc-219d-42a4-a229-ba66855dfc15",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "Dimmer (0 - 100%)",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            }
-          ]
-        },
-        {
-          "publicId": "93282597-1324-48a9-ac74-e5d9d6553657",
-          "name": "Functions",
-          "order": 5,
-          "preset": "Custom",
-          "createdAt": "2026-08-24T22:08:52.086Z",
-          "updatedAt": "2026-08-26T22:54:37.445Z",
-          "ranges": [
-            {
-              "publicId": "2877d1d4-9f82-4134-a25b-b1df00573528",
-              "dmxStart": 0,
-              "dmxEnd": 0,
-              "description": "No Function",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            },
-            {
-              "publicId": "d6f1ea3f-d665-4ffa-b27f-e41fd15663f7",
-              "dmxStart": 1,
-              "dmxEnd": 5,
-              "description": "Sound Control (15 colors)",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            },
-            {
-              "publicId": "e2912017-97b2-4589-ac30-d6662e1b9bf0",
-              "dmxStart": 6,
-              "dmxEnd": 10,
-              "description": "No function",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            },
-            {
-              "publicId": "f3fcd923-2957-45d9-a1ac-65b249e9cccb",
-              "dmxStart": 11,
-              "dmxEnd": 255,
-              "description": "Strobe (increasing)",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            }
-          ]
-        }
-      ],
-      "channelModes": [
-        {
-          "publicId": "de7ba115-2902-4304-b669-373245cbe2ac",
-          "name": "4-channel mode",
-          "order": 0,
-          "createdAt": "2026-08-22T23:20:43.938Z",
-          "updatedAt": "2026-08-26T22:54:37.446Z",
-          "assignments": [
-            {
-              "channelNumber": 1,
-              "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            },
-            {
-              "channelNumber": 2,
-              "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            },
-            {
-              "channelNumber": 3,
-              "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            },
-            {
-              "channelNumber": 4,
-              "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            }
-          ]
-        },
-        {
-          "publicId": "827f5348-56af-4505-bfdb-573f5f47aaf1",
-          "name": "6-channel mode",
-          "order": 1,
-          "createdAt": "2026-08-24T21:45:13.292Z",
-          "updatedAt": "2026-08-26T22:54:37.447Z",
-          "assignments": [
-            {
-              "channelNumber": 1,
-              "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            },
-            {
-              "channelNumber": 2,
-              "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            },
-            {
-              "channelNumber": 3,
-              "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            },
-            {
-              "channelNumber": 4,
-              "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            },
-            {
-              "channelNumber": 5,
-              "channelDefinitionPublicId": "c874a0ac-df1e-4e49-8131-2386646dcd71",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            },
-            {
-              "channelNumber": 6,
-              "channelDefinitionPublicId": "93282597-1324-48a9-ac74-e5d9d6553657",
-              "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-26T22:54:37.438Z"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "publicId": "5f34eb30-d45e-4025-b157-a09ae0f2f9cc",
       "name": "CX-60 HEX",
       "createdAt": "2026-08-22T22:51:27.218Z",
@@ -3151,6 +2925,232 @@
               "channelDefinitionPublicId": "8a622a8d-651d-44e3-838c-adb278a87047",
               "createdAt": "2026-08-30T13:00:35.415Z",
               "updatedAt": "2026-08-30T13:00:35.415Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "publicId": "af168eb7-bac4-4240-93d9-196e1656f450",
+      "name": "LED CLS-18 QCL RGBW 18x8W",
+      "createdAt": "2026-08-22T22:46:48.405Z",
+      "updatedAt": "2026-09-09T09:42:04.610Z",
+      "vendor": {
+        "publicId": "3ecfaac4-ec21-4e5e-bd23-505835b30ecc",
+        "name": "eurolite",
+        "createdAt": "2026-08-28T22:03:43.586Z",
+        "updatedAt": "2026-08-28T22:03:43.586Z"
+      },
+      "channelDefinitions": [
+        {
+          "publicId": "8902ec7a-06c5-414e-831c-0b2629007289",
+          "name": "Red",
+          "order": 0,
+          "preset": "IntensityRed",
+          "createdAt": "2026-08-24T20:26:01.689Z",
+          "updatedAt": "2026-09-09T09:42:04.615Z",
+          "ranges": [
+            {
+              "publicId": "58a76c2d-7ae0-4c57-bc6d-c2141f4f3f03",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Red (0 - 100%)",
+              "createdAt": "2026-08-26T22:54:37.438Z",
+              "updatedAt": "2026-09-09T09:42:04.619Z"
+            }
+          ]
+        },
+        {
+          "publicId": "51b0a0be-d997-46ff-9944-998ec91be069",
+          "name": "Green",
+          "order": 1,
+          "preset": "IntensityGreen",
+          "createdAt": "2026-08-24T20:26:36.536Z",
+          "updatedAt": "2026-09-09T09:42:04.620Z",
+          "ranges": [
+            {
+              "publicId": "ffcf2058-5c4f-4a21-8f89-626b85823e00",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Green (0 - 100%)",
+              "createdAt": "2026-08-26T22:54:37.438Z",
+              "updatedAt": "2026-09-09T09:42:04.623Z"
+            }
+          ]
+        },
+        {
+          "publicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
+          "name": "Blue",
+          "order": 2,
+          "preset": "IntensityBlue",
+          "createdAt": "2026-08-24T20:27:09.145Z",
+          "updatedAt": "2026-09-09T09:42:04.625Z",
+          "ranges": [
+            {
+              "publicId": "c83fd4b2-842f-4719-8379-72ca48f01b01",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Blue (0 - 100%)",
+              "createdAt": "2026-08-26T22:54:37.438Z",
+              "updatedAt": "2026-09-09T09:42:04.627Z"
+            }
+          ]
+        },
+        {
+          "publicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
+          "name": "White",
+          "order": 3,
+          "preset": "IntensityWhite",
+          "createdAt": "2026-08-24T20:36:41.739Z",
+          "updatedAt": "2026-09-09T09:42:04.629Z",
+          "ranges": [
+            {
+              "publicId": "7434f52d-87f2-43ac-9d85-79ba539e931a",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "White (0 - 100%)",
+              "createdAt": "2026-08-26T22:54:37.438Z",
+              "updatedAt": "2026-09-09T09:42:04.632Z"
+            }
+          ]
+        },
+        {
+          "publicId": "c874a0ac-df1e-4e49-8131-2386646dcd71",
+          "name": "Dimmer",
+          "order": 4,
+          "preset": "IntensityMasterDimmer",
+          "createdAt": "2026-08-24T21:50:45.890Z",
+          "updatedAt": "2026-09-09T09:42:04.634Z",
+          "ranges": [
+            {
+              "publicId": "5196e8dc-219d-42a4-a229-ba66855dfc15",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Dimmer (0 - 100%)",
+              "createdAt": "2026-08-26T22:54:37.438Z",
+              "updatedAt": "2026-09-09T09:42:04.637Z"
+            }
+          ]
+        },
+        {
+          "publicId": "93282597-1324-48a9-ac74-e5d9d6553657",
+          "name": "Functions",
+          "order": 5,
+          "preset": "Custom",
+          "createdAt": "2026-08-24T22:08:52.086Z",
+          "updatedAt": "2026-09-09T09:42:04.639Z",
+          "ranges": [
+            {
+              "publicId": "2877d1d4-9f82-4134-a25b-b1df00573528",
+              "dmxStart": 0,
+              "dmxEnd": 0,
+              "description": "No Function",
+              "createdAt": "2026-08-26T22:54:37.438Z",
+              "updatedAt": "2026-09-09T09:42:04.642Z"
+            },
+            {
+              "publicId": "d6f1ea3f-d665-4ffa-b27f-e41fd15663f7",
+              "dmxStart": 1,
+              "dmxEnd": 5,
+              "description": "Sound Control (15 colors)",
+              "createdAt": "2026-08-26T22:54:37.438Z",
+              "updatedAt": "2026-09-09T09:42:04.642Z"
+            },
+            {
+              "publicId": "e2912017-97b2-4589-ac30-d6662e1b9bf0",
+              "dmxStart": 6,
+              "dmxEnd": 10,
+              "description": "No function",
+              "createdAt": "2026-08-26T22:54:37.438Z",
+              "updatedAt": "2026-09-09T09:42:04.643Z"
+            },
+            {
+              "publicId": "f3fcd923-2957-45d9-a1ac-65b249e9cccb",
+              "dmxStart": 11,
+              "dmxEnd": 255,
+              "description": "Strobe (increasing)",
+              "createdAt": "2026-08-26T22:54:37.438Z",
+              "updatedAt": "2026-09-09T09:42:04.643Z"
+            }
+          ]
+        }
+      ],
+      "channelModes": [
+        {
+          "publicId": "de7ba115-2902-4304-b669-373245cbe2ac",
+          "name": "4-channel mode",
+          "order": 0,
+          "createdAt": "2026-08-22T23:20:43.938Z",
+          "updatedAt": "2026-09-09T09:42:04.646Z",
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
+              "createdAt": "2026-09-09T09:42:04.645Z",
+              "updatedAt": "2026-09-09T09:42:04.645Z"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
+              "createdAt": "2026-09-09T09:42:04.645Z",
+              "updatedAt": "2026-09-09T09:42:04.645Z"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
+              "createdAt": "2026-09-09T09:42:04.645Z",
+              "updatedAt": "2026-09-09T09:42:04.645Z"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
+              "createdAt": "2026-09-09T09:42:04.645Z",
+              "updatedAt": "2026-09-09T09:42:04.645Z"
+            }
+          ]
+        },
+        {
+          "publicId": "827f5348-56af-4505-bfdb-573f5f47aaf1",
+          "name": "6-channel mode",
+          "order": 1,
+          "createdAt": "2026-08-24T21:45:13.292Z",
+          "updatedAt": "2026-09-09T09:42:04.648Z",
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
+              "createdAt": "2026-09-09T09:42:04.645Z",
+              "updatedAt": "2026-09-09T09:42:04.645Z"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
+              "createdAt": "2026-09-09T09:42:04.645Z",
+              "updatedAt": "2026-09-09T09:42:04.645Z"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
+              "createdAt": "2026-09-09T09:42:04.645Z",
+              "updatedAt": "2026-09-09T09:42:04.645Z"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
+              "createdAt": "2026-09-09T09:42:04.645Z",
+              "updatedAt": "2026-09-09T09:42:04.645Z"
+            },
+            {
+              "channelNumber": 5,
+              "channelDefinitionPublicId": "c874a0ac-df1e-4e49-8131-2386646dcd71",
+              "createdAt": "2026-09-09T09:42:04.645Z",
+              "updatedAt": "2026-09-09T09:42:04.645Z"
+            },
+            {
+              "channelNumber": 6,
+              "channelDefinitionPublicId": "93282597-1324-48a9-ac74-e5d9d6553657",
+              "createdAt": "2026-09-09T09:42:04.645Z",
+              "updatedAt": "2026-09-09T09:42:04.645Z"
             }
           ]
         }

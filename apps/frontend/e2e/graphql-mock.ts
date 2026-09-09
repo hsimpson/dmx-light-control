@@ -327,6 +327,11 @@ export const mockGraphql = async (page: Page) => {
     } else if (postData.operationName === 'DeleteFixture' || postData.query?.includes('deleteFixture')) {
       fixtures.splice(0, fixtures.length);
       body = { data: { deleteFixture: { publicId: mockedFixture.publicId, deleted: true } } };
+    } else if (postData.operationName === 'GetFixtureVendors' || postData.query?.includes('fixtureVendors')) {
+      body = { data: { fixtureVendors: [{ ...mockedFixture.fixtureVendor }] } };
+    } else if (postData.operationName === 'GetFixture' || postData.query?.includes('fixture(publicId')) {
+      const publicId = postData.variables?.publicId ?? mockedFixture.publicId;
+      body = { data: { fixture: fixtures.find(entry => entry.publicId === publicId) ?? null } };
     } else if (postData.operationName === 'GetFixtures' || postData.query?.includes('fixtures {')) {
       body = { data: { fixtures: [...fixtures] } };
     }

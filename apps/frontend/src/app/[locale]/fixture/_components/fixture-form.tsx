@@ -25,12 +25,14 @@ import FixtureChannelModes, {
   toChannelModeSaveInputs,
   toEditorChannelModes,
 } from './fixture-channel-modes';
+import FixtureDetailTabs from './fixture-detail-tabs';
 
 type Fixture = GetFixturesQuery['fixtures'][number];
 
 type FixtureFormProps = {
   fixture?: Fixture;
   vendors: GetFixtureVendorsQuery['fixtureVendors'];
+  showTabs?: boolean;
 };
 
 const syncChannelModesWithDefinitions = (
@@ -55,7 +57,7 @@ const syncChannelModesWithDefinitions = (
     }),
   }));
 
-const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
+const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) => {
   const { t } = useTranslation();
   const router = useRouter();
   const [updateFixture, { loading: isUpdating }] = useMutation(UpdateFixtureDocument);
@@ -176,7 +178,7 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
           }),
         });
         if (createdPublicId) {
-          router.push(`/fixture/${createdPublicId}`);
+          router.push(`/fixture/${createdPublicId}/general`);
         }
       }
     } catch {
@@ -196,101 +198,128 @@ const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
     }
   };
 
+  const generalFields = (
+    <>
+      <Combobox
+        store={combobox}
+        withinPortal={false}
+        onOptionSubmit={val => {
+          let selectedValue: string;
+
+          if (val === '$create') {
+            setComboBoxData(current => [...current, comboBoxSearch]);
+            setComboBoxValue(comboBoxSearch);
+            setComboBoxPublicId(null);
+            selectedValue = comboBoxSearch;
+          } else {
+            setComboBoxValue(val);
+            setComboBoxSearch(val);
+            setComboBoxPublicId(vendorPublicIdByName.get(val) ?? null);
+            selectedValue = val;
+          }
+
+          form.setFieldValue('vendor', selectedValue);
+          combobox.closeDropdown();
+        }}
+      >
+        <Combobox.Target>
+          <InputBase
+            rightSection={<Combobox.Chevron />}
+            value={comboBoxSearch}
+            onChange={event => {
+              combobox.openDropdown();
+              combobox.updateSelectedOptionIndex();
+              setComboBoxSearch(event.currentTarget.value);
+            }}
+            onClick={() => {
+              combobox.openDropdown();
+            }}
+            onFocus={() => {
+              combobox.openDropdown();
+            }}
+            onBlur={() => {
+              combobox.closeDropdown();
+              setComboBoxSearch(comboBoxValue ?? '');
+            }}
+            placeholder={t({
+              id: 'FixtureForm.vendorPlaceholder',
+              defaultMessage: 'Select or enter vendor name',
+            })}
+            rightSectionPointerEvents="none"
+            label={t({
+              id: 'FixtureForm.vendor',
+              defaultMessage: 'Vendor name:',
+            })}
+            withAsterisk
+            error={form.errors.vendor}
+          />
+        </Combobox.Target>
+
+        <Combobox.Dropdown>
+          <Combobox.Options>
+            {comboBoxOptions}
+            {!exactOptionMatch && comboBoxSearch.trim().length > 0 && (
+              <Combobox.Option value="$create">+ Create {comboBoxSearch}</Combobox.Option>
+            )}
+          </Combobox.Options>
+        </Combobox.Dropdown>
+      </Combobox>
+
+      <TextInput
+        withAsterisk
+        label={t({
+          id: 'FixtureForm.fixtureName',
+          defaultMessage: 'Fixture name:',
+        })}
+        placeholder={t({
+          id: 'FixtureForm.fixtureNamePlaceholder',
+          defaultMessage: 'Enter fixture name',
+        })}
+        key={form.key('fixtureName')}
+        {...form.getInputProps('fixtureName')}
+      />
+    </>
+  );
+
+  const channelDefinitionsFields = (
+    <FixtureChannelDefinitions
+      channelDefinitions={channelDefinitions}
+      onChannelDefinitionsChange={nextDefinitions => {
+        setChannelDefinitions(nextDefinitions);
+        setChannelModes(currentModes => syncChannelModesWithDefinitions(currentModes, nextDefinitions));
+      }}
+    />
+  );
+
+  const channelModesFields = (
+    <FixtureChannelModes
+      channelModes={channelModes}
+      persistedChannelDefinitions={channelDefinitions}
+      onChannelModesChange={setChannelModes}
+    />
+  );
+
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <Flex direction="column" gap="lg" mt="lg">
-        <Combobox
-          store={combobox}
-          withinPortal={false}
-          onOptionSubmit={val => {
-            let selectedValue: string;
-
-            if (val === '$create') {
-              setComboBoxData(current => [...current, comboBoxSearch]);
-              setComboBoxValue(comboBoxSearch);
-              setComboBoxPublicId(null);
-              selectedValue = comboBoxSearch;
-            } else {
-              setComboBoxValue(val);
-              setComboBoxSearch(val);
-              setComboBoxPublicId(vendorPublicIdByName.get(val) ?? null);
-              selectedValue = val;
+        {showTabs && fixture ? (
+          <FixtureDetailTabs
+            fixturePublicId={fixture.publicId}
+            general={
+              <Flex direction="column" gap="lg">
+                {generalFields}
+              </Flex>
             }
-
-            // Update the form value
-            form.setFieldValue('vendor', selectedValue);
-            combobox.closeDropdown();
-          }}
-        >
-          <Combobox.Target>
-            <InputBase
-              rightSection={<Combobox.Chevron />}
-              value={comboBoxSearch}
-              onChange={event => {
-                combobox.openDropdown();
-                combobox.updateSelectedOptionIndex();
-                setComboBoxSearch(event.currentTarget.value);
-              }}
-              onClick={() => {
-                combobox.openDropdown();
-              }}
-              onFocus={() => {
-                combobox.openDropdown();
-              }}
-              onBlur={() => {
-                combobox.closeDropdown();
-                setComboBoxSearch(comboBoxValue ?? '');
-              }}
-              placeholder={t({
-                id: 'FixtureForm.vendorPlaceholder',
-                defaultMessage: 'Select or enter vendor name',
-              })}
-              rightSectionPointerEvents="none"
-              label={t({
-                id: 'FixtureForm.vendor',
-                defaultMessage: 'Vendor name:',
-              })}
-              withAsterisk
-              error={form.errors.vendor}
-            />
-          </Combobox.Target>
-
-          <Combobox.Dropdown>
-            <Combobox.Options>
-              {comboBoxOptions}
-              {!exactOptionMatch && comboBoxSearch.trim().length > 0 && (
-                <Combobox.Option value="$create">+ Create {comboBoxSearch}</Combobox.Option>
-              )}
-            </Combobox.Options>
-          </Combobox.Dropdown>
-        </Combobox>
-
-        <TextInput
-          withAsterisk
-          label={t({
-            id: 'FixtureForm.fixtureName',
-            defaultMessage: 'Fixture name:',
-          })}
-          placeholder={t({
-            id: 'FixtureForm.fixtureNamePlaceholder',
-            defaultMessage: 'Enter fixture name',
-          })}
-          key={form.key('fixtureName')}
-          {...form.getInputProps('fixtureName')}
-        />
-
-        <FixtureChannelDefinitions
-          channelDefinitions={channelDefinitions}
-          onChannelDefinitionsChange={nextDefinitions => {
-            setChannelDefinitions(nextDefinitions);
-            setChannelModes(currentModes => syncChannelModesWithDefinitions(currentModes, nextDefinitions));
-          }}
-        />
-        <FixtureChannelModes
-          channelModes={channelModes}
-          persistedChannelDefinitions={channelDefinitions}
-          onChannelModesChange={setChannelModes}
-        />
+            channels={channelDefinitionsFields}
+            channelModes={channelModesFields}
+          />
+        ) : (
+          <>
+            {generalFields}
+            {channelDefinitionsFields}
+            {channelModesFields}
+          </>
+        )}
 
         <Button
           type="submit"

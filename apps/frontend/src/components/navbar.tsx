@@ -80,7 +80,7 @@ const NavBar = () => {
         listHref="/fixture/list"
         listActive={currentPath === '/fixture/list' || currentPath === '/fixture'}
         sectionActive={isFixtureSection}
-        detailHref={isFixtureDetail ? `/fixture/${detailPublicId}` : undefined}
+        detailHref={isFixtureDetail ? `/fixture/${detailPublicId}/general` : undefined}
         detailLabel={t({ id: 'NavBar.FixtureDetail', defaultMessage: 'Fixture detail' })}
         leftSection={<HeadlightsIcon size={ICON_SIZE} weight="duotone" />}
       />

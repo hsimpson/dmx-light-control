@@ -168,7 +168,7 @@ describe('FixtureTable', () => {
     expect(screen.getByText('8ch')).toBeInTheDocument();
 
     await user.click(screen.getByText('Spot 250'));
-    expect(push).toHaveBeenCalledWith('/fixture/fix-1');
+    expect(push).toHaveBeenCalledWith('/fixture/fix-1/general');
   });
 
   it('opens a confirm modal from trash without navigating', async () => {

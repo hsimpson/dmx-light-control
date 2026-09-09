@@ -186,7 +186,7 @@ const FixtureTable = () => {
           },
         ]}
         onRowClick={record => {
-          router.push(`/fixture/${record.record.publicId}`);
+          router.push(`/fixture/${record.record.publicId}/general`);
         }}
       />
       <Modal
