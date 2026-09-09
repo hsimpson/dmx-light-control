@@ -19,6 +19,7 @@ graphql:
               createdAt
               name
               publicId
+              sceneObjectTypeName
               sceneObjectTypePublicId
               sizeX
               sizeY

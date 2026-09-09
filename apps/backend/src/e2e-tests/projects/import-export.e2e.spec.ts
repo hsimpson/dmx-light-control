@@ -1,5 +1,6 @@
 import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
+import { identityTransform } from '@/projects/project-3d-object.transform';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -94,7 +95,7 @@ describe('Project import/export', () => {
     });
 
     const body = await graphqlQuery<ExportProjectsQuery>(app.getHttpAdapter().getInstance().server, EXPORT_PROJECTS);
-    expect(body.data?.exportProjects.schemaVersion).toBe(6);
+    expect(body.data?.exportProjects.schemaVersion).toBe(7);
     const exported = body.data?.exportProjects.projects.find(project => project.name === 'Export List Project');
     expect(exported?.environmentType).toBe('SimpleGround');
     expect(exported?.createdAt).toBeTruthy();
@@ -215,5 +216,58 @@ describe('Project import/export', () => {
     );
 
     expect(body.errors?.[0]?.message).toContain('schemaVersion');
+  });
+
+  it('imports 3D objects when scene object type publicId differs from seeded catalog ids', async () => {
+    const publicId = 'ffffffff-ffff-4fff-8fff-ffffffffffff';
+    const staleTypePublicId = '77dceb2b-6341-460f-b4f5-c6ea50ee3b64';
+    const imported = await graphqlQuery<ImportProjectsMutation>(
+      app.getHttpAdapter().getInstance().server,
+      IMPORT_PROJECTS,
+      {
+        variables: {
+          document: {
+            schemaVersion: 7,
+            projects: [
+              {
+                publicId,
+                name: 'Imported 3D Show',
+                project3dObjects: [
+                  {
+                    name: 'Stage',
+                    sceneObjectTypePublicId: staleTypePublicId,
+                    sceneObjectTypeName: 'Box',
+                    sizeX: 4,
+                    sizeY: 0.5,
+                    sizeZ: 2,
+                    transform: identityTransform(),
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+    );
+
+    expect(imported.errors).toBeUndefined();
+    expect(imported.data?.importProjects.importedCount).toBe(1);
+
+    const query = gql`
+      query ($publicId: UUID!) {
+        project(publicId: $publicId) {
+          project3dObjects {
+            name
+            sceneObjectType {
+              name
+            }
+          }
+        }
+      }
+    `;
+    const body = await graphqlQuery<{
+      project: { project3dObjects: { name: string; sceneObjectType: { name: string } }[] } | null;
+    }>(app.getHttpAdapter().getInstance().server, query, { variables: { publicId } });
+    expect(body.data?.project?.project3dObjects).toEqual([{ name: 'Stage', sceneObjectType: { name: 'Box' } }]);
   });
 });

@@ -64,6 +64,15 @@ export class ImportProject3dObjectInput extends ImportTimestampsInput {
   @Matches(IMPORT_PROJECT_PUBLIC_ID_PATTERN, { message: 'sceneObjectTypePublicId must be a UUID' })
   public sceneObjectTypePublicId: string;
 
+  @Field({
+    nullable: true,
+    description: 'The display name of the scene object type; used when publicId is not found on import',
+  })
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  public sceneObjectTypeName?: string;
+
   @Field(() => Float, { nullable: true, description: 'Width in meters for scalable objects' })
   @IsOptional()
   @IsNumber()

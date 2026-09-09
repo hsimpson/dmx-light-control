@@ -819,6 +819,11 @@ input ImportProject3dObjectInput {
   publicId: UUID
 
   """
+  The display name of the scene object type; used when publicId is not found on import
+  """
+  sceneObjectTypeName: String
+
+  """
   The public ID of the scene object type
   """
   sceneObjectTypePublicId: UUID!
@@ -1212,6 +1217,11 @@ type ProjectExport3dObjectDto {
   The public ID of the project 3D object instance
   """
   publicId: UUID!
+
+  """
+  The display name of the scene object type catalog entry
+  """
+  sceneObjectTypeName: String!
 
   """
   The public ID of the scene object type

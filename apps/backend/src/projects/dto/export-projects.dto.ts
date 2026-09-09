@@ -30,6 +30,9 @@ export class ProjectExport3dObjectDto extends ExportTimestampsDto {
   @Field(() => GraphQLUUID, { description: 'The public ID of the scene object type' })
   public sceneObjectTypePublicId: string;
 
+  @Field({ description: 'The display name of the scene object type catalog entry' })
+  public sceneObjectTypeName: string;
+
   @Field(() => Float, { nullable: true, description: 'Width in meters for scalable objects' })
   public sizeX: number | null;
 

@@ -34,7 +34,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 6,
+      schemaVersion: 7,
       projects: [
         {
           publicId: 'a',
@@ -96,7 +96,7 @@ describe('mapProjectsToExportDocument', () => {
               sizeY: 0.5,
               sizeZ: 1,
               transform: identityTransform(),
-              sceneObjectType: { publicId: 'type-1' },
+              sceneObjectType: { publicId: 'type-1', name: 'Box' },
               ...timestamps,
             },
             {
@@ -106,7 +106,7 @@ describe('mapProjectsToExportDocument', () => {
               sizeY: null,
               sizeZ: null,
               transform: identityTransform(1, 0, 0),
-              sceneObjectType: { publicId: 'type-2' },
+              sceneObjectType: { publicId: 'type-2', name: 'Light stand' },
               ...timestamps,
             },
           ],
@@ -114,7 +114,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 6,
+      schemaVersion: 7,
       projects: [
         {
           publicId: 'p',
@@ -144,6 +144,7 @@ describe('mapProjectsToExportDocument', () => {
               publicId: 'o-1',
               name: 'Light stand 1',
               sceneObjectTypePublicId: 'type-2',
+              sceneObjectTypeName: 'Light stand',
               sizeX: null,
               sizeY: null,
               sizeZ: null,
@@ -154,6 +155,7 @@ describe('mapProjectsToExportDocument', () => {
               publicId: 'o-2',
               name: 'Box 2',
               sceneObjectTypePublicId: 'type-1',
+              sceneObjectTypeName: 'Box',
               sizeX: 2,
               sizeY: 0.5,
               sizeZ: 1,

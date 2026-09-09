@@ -9,7 +9,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 - **Surgical changes:** Touch only what the task requires. No drive-by refactors. Do not reformat files you did not change. Match existing style. Mention unrelated dead code; don’t delete it. Remove only orphans your changes created.
 - **Goal-driven execution:** Define verifiable success (tests/commands). For multi-step work, brief plan + verify steps; loop until verified.
 - **Bias:** Caution over speed except truly trivial tasks.
-- **Prettier:** After creating or editing files, format those files with Prettier before you finish (`pnpm exec prettier --write <paths>`; config `prettier.config.ts`).
+- **Prettier:** Before finishing, run Prettier on **every file you created or changed** (`pnpm exec prettier --write <paths>`; config `prettier.config.ts`). List paths with `git diff --name-only` (and `git diff --cached --name-only` if staged).
 - **Stop servers you start:** If you start `nx serve backend` or `nx dev frontend` / `nx start frontend` (or equivalent `next`/`node` processes on their ports), stop them when the task is done. Do not leave them running.
 - **Drizzle migrations:** Never generate with drizzle-kit’s random folder names (e.g. `rapid_beast`). Always ask the user for a new snake_case name first, then run `nx run backend:drizzle-generate -- --name <name>`.
 
@@ -47,11 +47,12 @@ NestJS backend + Next.js frontend in Nx monorepo.
 ## Done means
 
 1. Typecheck and lint pass with zero errors `nx run-many --targets typecheck,lint`.
-2. Relevant tests run and pass (show output) `nx run-many --targets test`.
-3. When changing GraphQL resolvers or DTOs, run `nx test backend` (includes `graphql-schema.spec.ts`) and rebuild Bruno requests `nx run bruno:build`.
-4. When database schema has changed (entities, relations) regenerate ER diagram `nx run backend:erd`.
-5. **Harness health-check** (required when change set matches the triggers below — report `Harness: up to date` or `Harness: updated`).
-6. Conventional commit message ready when asked to commit.
+2. Prettier has been run on all created/changed files (`pnpm exec prettier --write <paths>`; use `git diff --name-only` to enumerate).
+3. Relevant tests run and pass (show output) `nx run-many --targets test`.
+4. When changing GraphQL resolvers or DTOs, run `nx test backend` (includes `graphql-schema.spec.ts`) and rebuild Bruno requests `nx run bruno:build`.
+5. When database schema has changed (entities, relations) regenerate ER diagram `nx run backend:erd`.
+6. **Harness health-check** (required when change set matches the triggers below — report `Harness: up to date` or `Harness: updated`).
+7. Conventional commit message ready when asked to commit.
 
 ## Conventions
 
@@ -153,7 +154,7 @@ fixtures/
 ### Prettier
 
 - printWidth 120, single quotes, trailing comma all, arrow parens avoid
-- Format every file you create or change: `pnpm exec prettier --write <paths>`
+- Format every file you create or change before finishing: `pnpm exec prettier --write <paths>` (all changed paths from `git diff --name-only`)
 
 ### NestJS / GraphQL
 

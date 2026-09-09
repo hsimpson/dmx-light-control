@@ -127,7 +127,7 @@ export const mockGraphql = async (page: Page) => {
       body = {
         data: {
           exportProjects: {
-            schemaVersion: 6,
+            schemaVersion: 7,
             projects: projects.map(project => ({
               publicId: project.publicId,
               name: project.name,

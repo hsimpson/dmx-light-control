@@ -1,7 +1,7 @@
 import { ExportTimestamps, ExportTimestampSource, mapExportTimestamps } from '@/db/export-timestamps';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 
-export const PROJECT_EXPORT_SCHEMA_VERSION = 6;
+export const PROJECT_EXPORT_SCHEMA_VERSION = 7;
 
 export type ProjectExportFixture = {
   publicId: string;
@@ -14,6 +14,7 @@ export type ProjectExport3dObject = {
   publicId: string;
   name: string;
   sceneObjectTypePublicId: string;
+  sceneObjectTypeName: string;
   sizeX: number | null;
   sizeY: number | null;
   sizeZ: number | null;
@@ -50,7 +51,7 @@ export type ProjectExport3dObjectSource = {
   sizeY: number | null;
   sizeZ: number | null;
   transform: number[];
-  sceneObjectType: { publicId: string | null } | null;
+  sceneObjectType: { publicId: string | null; name: string } | null;
 } & ExportTimestampSource;
 
 export type ProjectExportSource = {
@@ -79,6 +80,7 @@ function mapProject3dObjectToExport(object: ProjectExport3dObjectSource): Projec
     publicId: object.publicId ?? '',
     name: object.name,
     sceneObjectTypePublicId: object.sceneObjectType?.publicId ?? '',
+    sceneObjectTypeName: object.sceneObjectType?.name ?? '',
     sizeX: object.sizeX,
     sizeY: object.sizeY,
     sizeZ: object.sizeZ,

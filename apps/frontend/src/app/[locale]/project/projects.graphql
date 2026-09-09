@@ -171,6 +171,7 @@ query ExportProjects {
         publicId
         name
         sceneObjectTypePublicId
+        sceneObjectTypeName
         sizeX
         sizeY
         sizeZ

@@ -2,7 +2,7 @@ import { InjectDb } from '@/db/drizzle-db/drizzle-db.provider';
 import { optionalImportTimestamps } from '@/db/import-timestamps.input';
 import { relations } from '@/db/relations';
 import { fixture, fixtureChannelMode } from '@/fixtures/entities';
-import { ImportProjectsInput } from '@/projects/dto/import-projects.dto';
+import { ImportProjectsInput, ImportProject3dObjectInput } from '@/projects/dto/import-projects.dto';
 import { project, project3dObject, projectFixture, sceneObjectType } from '@/projects/entities';
 import { assertValidTransform, resolveSizesForType } from '@/projects/project-3d-object.validation';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from '@/projects/project-3d-object-name';
@@ -215,7 +215,7 @@ export class ProjectImportExportService {
     const usedNames: string[] = [];
     const typeCounts = new Map<number, number>();
     for (const instance of incoming.project3dObjects ?? []) {
-      const typeRow = await this.findSceneObjectTypeByPublicId(tx, instance.sceneObjectTypePublicId);
+      const typeRow = await this.resolveSceneObjectType(tx, instance, incoming.name);
       if (!typeRow?.id) {
         throw new ProjectImportConflictException(
           `Scene object type publicId ${instance.sceneObjectTypePublicId} not found for project "${incoming.name}"`,
@@ -286,6 +286,30 @@ export class ProjectImportExportService {
 
   private async findChannelModeByPublicId(tx: Tx, publicId: string) {
     const rows = await tx.select().from(fixtureChannelMode).where(eq(fixtureChannelMode.publicId, publicId)).limit(1);
+    return rows[0];
+  }
+
+  private async resolveSceneObjectType(tx: Tx, instance: ImportProject3dObjectInput, projectName: string) {
+    const byPublicId = await this.findSceneObjectTypeByPublicId(tx, instance.sceneObjectTypePublicId);
+    if (byPublicId?.id) {
+      return byPublicId;
+    }
+
+    if (instance.sceneObjectTypeName) {
+      const byName = await this.findSceneObjectTypeByName(tx, instance.sceneObjectTypeName);
+      if (byName?.id) {
+        return byName;
+      }
+      throw new ProjectImportConflictException(
+        `Scene object type "${instance.sceneObjectTypeName}" not found for project "${projectName}"`,
+      );
+    }
+
+    return undefined;
+  }
+
+  private async findSceneObjectTypeByName(tx: Tx, name: string) {
+    const rows = await tx.select().from(sceneObjectType).where(eq(sceneObjectType.name, name)).limit(1);
     return rows[0];
   }
 

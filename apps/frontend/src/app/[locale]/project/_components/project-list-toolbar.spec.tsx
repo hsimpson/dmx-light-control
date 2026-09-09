@@ -1,5 +1,6 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { ExportProjectsDocument, GetProjectsDocument, ImportProjectsDocument } from '@/shared/types/graphql/graphql';
+import { CombinedGraphQLErrors } from '@apollo/client';
 import { notifications } from '@mantine/notifications';
 import { screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -92,6 +93,32 @@ describe('ProjectListToolbar', () => {
     await waitFor(() => {
       expect(notifications.show).toHaveBeenCalledWith(
         expect.objectContaining({ color: 'green', title: 'Projects imported', message: 'projects.json' }),
+      );
+    });
+  });
+
+  it('shows the GraphQL error message when import fails', async () => {
+    const importDocument = { schemaVersion: 1, projects: [] };
+    const { user } = renderWithProviders(<ProjectListToolbar />, {
+      apolloMocks: [
+        {
+          request: { query: ImportProjectsDocument, variables: { document: importDocument } },
+          error: new CombinedGraphQLErrors({
+            errors: [{ message: 'Scene object type publicId missing for project "Test-001"' }],
+          }),
+        },
+      ],
+    });
+
+    const file = new File([JSON.stringify(importDocument)], 'projects.json', { type: 'application/json' });
+    await user.upload(fileInput(), file);
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({
+          color: 'red',
+          message: 'Scene object type publicId missing for project "Test-001"',
+        }),
       );
     });
   });

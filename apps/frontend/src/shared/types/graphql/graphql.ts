@@ -163,6 +163,8 @@ export type ImportProject3dObjectInput = {
   name?: string | null | undefined;
   /** The public ID of the project 3D object instance */
   publicId?: string | null | undefined;
+  /** The display name of the scene object type; used when publicId is not found on import */
+  sceneObjectTypeName?: string | null | undefined;
   /** The public ID of the scene object type */
   sceneObjectTypePublicId: string;
   /** Width in meters for scalable objects */
@@ -1148,6 +1150,7 @@ export type ExportProjectsQuery = {
         publicId: string;
         name: string;
         sceneObjectTypePublicId: string;
+        sceneObjectTypeName: string;
         sizeX: number | null;
         sizeY: number | null;
         sizeZ: number | null;
@@ -3870,6 +3873,7 @@ export const ExportProjectsDocument = {
                             { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'sceneObjectTypePublicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'sceneObjectTypeName' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'sizeX' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'sizeY' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'sizeZ' } },
