@@ -133,9 +133,17 @@ describe('Project 3D objects', () => {
   it('lists seeded scene object types', async () => {
     const body = await graphqlQuery<SceneObjectTypesQuery>(app.getHttpAdapter().getInstance().server, GET_TYPES);
     expect(body.errors).toBeUndefined();
-    const names = body.data?.sceneObjectTypes.map(type => type.name) ?? [];
+    const types = body.data?.sceneObjectTypes ?? [];
+    const names = types.map(type => type.name);
     expect(names).toContain('Box');
     expect(names).toContain('Light stand');
+
+    const box = types.find(type => type.name === 'Box');
+    const lightStand = types.find(type => type.name === 'Light stand');
+    expect(box?.publicId).not.toBe('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa');
+    expect(lightStand?.publicId).not.toBe('bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb');
+    expect(box?.publicId).toBe(SCENE_OBJECT_TYPE_BOX_PUBLIC_ID);
+    expect(lightStand?.publicId).toBe(SCENE_OBJECT_TYPE_LIGHT_STAND_PUBLIC_ID);
   });
 
   it('adds a box, rejects scaling a stand, updates transform, and deletes', async () => {
