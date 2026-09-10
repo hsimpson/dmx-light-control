@@ -30,6 +30,20 @@ vi.mock('@/lib/three/axis-orientation-gizmo', () => ({
   }),
 }));
 
+vi.mock('@/lib/three/scene-ao-composer', () => ({
+  createSceneAoComposer: () => ({
+    render() {
+      return undefined;
+    },
+    setSize() {
+      return undefined;
+    },
+    dispose() {
+      return undefined;
+    },
+  }),
+}));
+
 vi.mock('three', async importOriginal => {
   const actual = await importOriginal<typeof import('three')>();
   return {

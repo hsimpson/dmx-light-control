@@ -18,6 +18,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { createAxisOrientationGizmo } from './axis-orientation-gizmo';
 import { frameCameraOnObject } from './frame-camera';
+import { createSceneAoComposer } from './scene-ao-composer';
 
 export type ThreeCanvasContext = {
   host: HTMLDivElement;
@@ -53,7 +54,7 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
     const renderer = new WebGLRenderer({ antialias: true });
     renderer.outputColorSpace = SRGBColorSpace;
     renderer.toneMapping = ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.1;
     renderer.setPixelRatio(window.devicePixelRatio);
     host.appendChild(renderer.domElement);
     renderer.domElement.style.display = 'block';
@@ -64,9 +65,9 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
     environment.dispose();
     scene.environment = environmentMap;
 
-    const ambient = new AmbientLight(0xffffff, 0.45);
+    const ambient = new AmbientLight(0xffffff, 0.32);
     const hemi = new HemisphereLight(0xd7e3f2, 0x1a1b1e, 0.7);
-    const key = new DirectionalLight(0xffffff, 1.6);
+    const key = new DirectionalLight(0xffffff, 1.65);
     key.position.set(6, 10, 8);
     const fill = new DirectionalLight(0xc8d4e8, 0.55);
     fill.position.set(-5, 4, 7);
@@ -89,9 +90,7 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
     });
 
     const orientationGizmo = showOrientationGizmo ? createAxisOrientationGizmo() : undefined;
-    if (orientationGizmo) {
-      renderer.autoClear = false;
-    }
+    const aoComposer = createSceneAoComposer(renderer, scene, camera);
 
     const resize = () => {
       const width = host.clientWidth;
@@ -99,6 +98,7 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
+      aoComposer.setSize(width, height);
     };
 
     const resizeObserver = new ResizeObserver(resize);
@@ -107,13 +107,13 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
 
     renderer.setAnimationLoop(() => {
       controls.update();
+      aoComposer.render();
       if (orientationGizmo) {
-        renderer.clear();
-      }
-      renderer.render(scene, camera);
-      if (orientationGizmo) {
+        const previousAutoClear = renderer.autoClear;
+        renderer.autoClear = false;
         orientationGizmo.updateFrom(camera);
         orientationGizmo.render(renderer, host.clientWidth, Math.max(host.clientHeight, 1));
+        renderer.autoClear = previousAutoClear;
       }
     });
 
@@ -123,6 +123,7 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
       resizeObserver.disconnect();
       renderer.setAnimationLoop(null);
       controls.dispose();
+      aoComposer.dispose();
       environmentMap.dispose();
       pmrem.dispose();
       renderer.dispose();

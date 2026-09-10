@@ -45,6 +45,20 @@ vi.mock('@/lib/three/axis-orientation-gizmo', () => ({
   }),
 }));
 
+vi.mock('@/lib/three/scene-ao-composer', () => ({
+  createSceneAoComposer: () => ({
+    render() {
+      return undefined;
+    },
+    setSize() {
+      return undefined;
+    },
+    dispose() {
+      return undefined;
+    },
+  }),
+}));
+
 vi.mock('three', () => {
   class Position {
     public set(_x: number, _y: number, _z: number) {
