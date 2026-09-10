@@ -28,517 +28,17 @@
   ],
   "fixtures": [
     {
-      "publicId": "5f34eb30-d45e-4025-b157-a09ae0f2f9cc",
-      "name": "CX-60 HEX",
-      "createdAt": "2026-08-22T22:51:27.218Z",
-      "updatedAt": "2026-08-30T12:15:03.823Z",
-      "vendor": {
-        "publicId": "c3528578-6995-4107-96eb-19010414ba24",
-        "name": "Stairville",
-        "createdAt": "2026-08-22T22:51:27.216Z",
-        "updatedAt": "2026-08-22T22:51:27.216Z"
-      },
-      "channelDefinitions": [
-        {
-          "publicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
-          "name": "Red",
-          "order": 0,
-          "preset": "IntensityRed",
-          "createdAt": "2026-08-28T18:50:33.310Z",
-          "updatedAt": "2026-08-30T12:15:03.830Z",
-          "ranges": [
-            {
-              "publicId": "8acb077a-a8c3-4d9f-a6de-5758da84f387",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "Intensity red (0 % to 100 %)",
-              "createdAt": "2026-08-28T19:50:38.013Z",
-              "updatedAt": "2026-08-30T12:15:03.833Z"
-            }
-          ]
-        },
-        {
-          "publicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
-          "name": "Green",
-          "order": 1,
-          "preset": "IntensityGreen",
-          "createdAt": "2026-08-28T18:52:39.252Z",
-          "updatedAt": "2026-08-30T12:15:03.835Z",
-          "ranges": [
-            {
-              "publicId": "e6518c6d-c5e7-4c49-a065-15b604eea318",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "Intensity green (0 % to 100 %)",
-              "createdAt": "2026-08-28T19:50:38.017Z",
-              "updatedAt": "2026-08-30T12:15:03.838Z"
-            }
-          ]
-        },
-        {
-          "publicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
-          "name": "Blue",
-          "order": 2,
-          "preset": "IntensityBlue",
-          "createdAt": "2026-08-28T18:52:39.256Z",
-          "updatedAt": "2026-08-30T12:15:03.841Z",
-          "ranges": [
-            {
-              "publicId": "cec94cee-9a25-488e-95a4-679fd48fda4f",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "Intensity blue (0 % to 100 %)",
-              "createdAt": "2026-08-28T19:50:38.021Z",
-              "updatedAt": "2026-08-30T12:15:03.843Z"
-            }
-          ]
-        },
-        {
-          "publicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
-          "name": "White",
-          "order": 3,
-          "preset": "IntensityWhite",
-          "createdAt": "2026-08-28T18:52:39.262Z",
-          "updatedAt": "2026-08-30T12:15:03.845Z",
-          "ranges": [
-            {
-              "publicId": "fbdf7bed-d94a-4289-977c-32eede100f18",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "Intensity white (0 % to 100 %)",
-              "createdAt": "2026-08-28T19:50:38.025Z",
-              "updatedAt": "2026-08-30T12:15:03.847Z"
-            }
-          ]
-        },
-        {
-          "publicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
-          "name": "Amber",
-          "order": 4,
-          "preset": "IntensityAmber",
-          "createdAt": "2026-08-28T18:52:39.268Z",
-          "updatedAt": "2026-08-30T12:15:03.849Z",
-          "ranges": [
-            {
-              "publicId": "1a590395-c1e3-4021-b182-ce5abc491011",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "Intensity amber (0 % to 100 %)",
-              "createdAt": "2026-08-28T19:50:38.029Z",
-              "updatedAt": "2026-08-30T12:15:03.851Z"
-            }
-          ]
-        },
-        {
-          "publicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
-          "name": "UV",
-          "order": 5,
-          "preset": "IntensityUV",
-          "createdAt": "2026-08-28T18:52:39.274Z",
-          "updatedAt": "2026-08-30T12:15:03.853Z",
-          "ranges": [
-            {
-              "publicId": "97c4dcaa-053d-4a8b-9b3c-cb1834e1bcf5",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "Intensity UV (0 % to 100 %)",
-              "createdAt": "2026-08-28T19:50:38.033Z",
-              "updatedAt": "2026-08-30T12:15:03.855Z"
-            }
-          ]
-        },
-        {
-          "publicId": "a41915dd-9e61-4b7e-8467-86d11c07c953",
-          "name": "Dimmer",
-          "order": 6,
-          "preset": "IntensityMasterDimmer",
-          "createdAt": "2026-08-28T18:55:50.294Z",
-          "updatedAt": "2026-08-30T12:15:03.858Z",
-          "ranges": [
-            {
-              "publicId": "3a4a4bfa-94b7-49fc-962b-36d1e17a2031",
-              "dmxStart": 0,
-              "dmxEnd": 255,
-              "description": "Dimmer (0 % to 100 %)",
-              "createdAt": "2026-08-28T19:50:38.037Z",
-              "updatedAt": "2026-08-30T12:15:03.860Z"
-            }
-          ]
-        },
-        {
-          "publicId": "dcd1396e-651d-46ed-b507-a442971f985a",
-          "name": "Effects speed and sound control sensitivity",
-          "order": 7,
-          "preset": "ColorMacro",
-          "createdAt": "2026-08-28T19:17:02.713Z",
-          "updatedAt": "2026-08-30T12:15:03.862Z",
-          "ranges": [
-            {
-              "publicId": "cdb79e30-fa8d-48a4-9657-4995d38cf4f6",
-              "dmxStart": 0,
-              "dmxEnd": 10,
-              "description": "No automatic colour change",
-              "createdAt": "2026-08-28T19:50:38.041Z",
-              "updatedAt": "2026-08-30T12:15:03.865Z"
-            },
-            {
-              "publicId": "ae468ad3-67a3-4237-a796-772fe07a36f9",
-              "dmxStart": 11,
-              "dmxEnd": 255,
-              "description": "Automatic colour change as set by channel 1, decreasing speed from fast to slow if channel 1 = 64…127\nAutomatic colour change as set by channel 1, increasing speed from slow to fast if channel 1 = 128…191\nSound control sensitivity (from low to high sensitivity) if channel 1 = 192…255",
-              "createdAt": "2026-08-28T19:50:38.041Z",
-              "updatedAt": "2026-08-30T12:15:03.865Z"
-            }
-          ]
-        },
-        {
-          "publicId": "3172aaed-f0a8-47ed-a19d-922539fb06ce",
-          "name": "Fixed colour pattern",
-          "order": 8,
-          "preset": "ColorMacro",
-          "createdAt": "2026-08-28T19:30:30.679Z",
-          "updatedAt": "2026-08-30T12:15:03.868Z",
-          "ranges": [
-            {
-              "publicId": "53eb1566-bd30-4315-9a79-a4ee75f6ff73",
-              "dmxStart": 0,
-              "dmxEnd": 15,
-              "description": "Full brightness, no strobe effect",
-              "createdAt": "2026-08-28T19:50:38.046Z",
-              "updatedAt": "2026-08-30T12:15:03.870Z"
-            },
-            {
-              "publicId": "5b40df82-785f-4106-864b-ce2efe68dfbe",
-              "dmxStart": 16,
-              "dmxEnd": 255,
-              "description": "One of 31 preprogrammed colours, channels 8 and 9 without function",
-              "createdAt": "2026-08-28T19:50:38.046Z",
-              "updatedAt": "2026-08-30T12:15:03.871Z"
-            }
-          ]
-        },
-        {
-          "publicId": "874b038f-5dbd-4879-8de0-b8b9c02b28cf",
-          "name": "Strobe effect",
-          "order": 9,
-          "preset": "ShutterStrobeSlowFast",
-          "createdAt": "2026-08-28T19:33:12.319Z",
-          "updatedAt": "2026-08-30T12:15:03.873Z",
-          "ranges": [
-            {
-              "publicId": "3244808d-460a-40e8-b05a-426d68e5d4b8",
-              "dmxStart": 0,
-              "dmxEnd": 15,
-              "description": "Full brightness, no strobe effect",
-              "createdAt": "2026-08-28T19:50:38.050Z",
-              "updatedAt": "2026-08-30T12:15:03.875Z"
-            },
-            {
-              "publicId": "2fb94e3b-ee9f-404c-976f-f5173d827436",
-              "dmxStart": 16,
-              "dmxEnd": 255,
-              "description": "Strobe effect, increasing speed, if channel 7 = 0…15",
-              "createdAt": "2026-08-28T19:50:38.050Z",
-              "updatedAt": "2026-08-30T12:15:03.875Z"
-            }
-          ]
-        },
-        {
-          "publicId": "062050b2-3cf0-470c-9ec5-54b7273b9c25",
-          "name": "Operating mode selection 8ch",
-          "order": 10,
-          "preset": "ColorMacro",
-          "createdAt": "2026-08-28T19:17:02.708Z",
-          "updatedAt": "2026-08-30T12:15:03.878Z",
-          "ranges": [
-            {
-              "publicId": "63d7c732-5884-4f1a-add1-eef5fcaa4c52",
-              "dmxStart": 0,
-              "dmxEnd": 63,
-              "description": "Constant colour, the hue is set by channels 2 to 5",
-              "createdAt": "2026-08-28T19:50:38.054Z",
-              "updatedAt": "2026-08-30T12:15:03.880Z"
-            },
-            {
-              "publicId": "2cdcca96-e76e-4fd4-b182-444871c2d412",
-              "dmxStart": 64,
-              "dmxEnd": 127,
-              "description": "Automatic colour change with 14 colours, channels 2-7 without function",
-              "createdAt": "2026-08-28T19:50:38.054Z",
-              "updatedAt": "2026-08-30T12:15:03.880Z"
-            },
-            {
-              "publicId": "c9b7760f-aa31-45ef-956a-75d98f45c895",
-              "dmxStart": 128,
-              "dmxEnd": 191,
-              "description": "Automatic colour change with 24 colours, channels 2-7 without function",
-              "createdAt": "2026-08-28T19:50:38.054Z",
-              "updatedAt": "2026-08-30T12:15:03.881Z"
-            },
-            {
-              "publicId": "e904b4c2-a14a-4349-8adc-21fc71f7aa5e",
-              "dmxStart": 192,
-              "dmxEnd": 255,
-              "description": "Automatic colour change with 6 colours, channels 2-7 without function",
-              "createdAt": "2026-08-28T19:50:38.054Z",
-              "updatedAt": "2026-08-30T12:15:03.881Z"
-            }
-          ]
-        },
-        {
-          "publicId": "fe018a8e-ee6f-4df6-a7b0-ded9b260165b",
-          "name": "Operating mode selection 10ch",
-          "order": 11,
-          "preset": "ColorMacro",
-          "createdAt": "2026-08-28T19:34:23.579Z",
-          "updatedAt": "2026-08-30T12:15:03.884Z",
-          "ranges": [
-            {
-              "publicId": "df1b4b8d-0693-47d3-a44a-ef199b380a68",
-              "dmxStart": 0,
-              "dmxEnd": 31,
-              "description": "Constant colour, the hue is set by channels 1 to 6",
-              "createdAt": "2026-08-28T19:50:38.060Z",
-              "updatedAt": "2026-08-30T12:15:03.886Z"
-            },
-            {
-              "publicId": "492bec92-5154-4b9f-830d-bfc12e61b72f",
-              "dmxStart": 32,
-              "dmxEnd": 63,
-              "description": "Fade-out effect, speed controlled by channel 8",
-              "createdAt": "2026-08-28T19:50:38.060Z",
-              "updatedAt": "2026-08-30T12:15:03.887Z"
-            },
-            {
-              "publicId": "45c8a8d3-29f6-48ea-a8a8-87ec47c51852",
-              "dmxStart": 64,
-              "dmxEnd": 95,
-              "description": "Fade-in effect, speed controlled by channel 8",
-              "createdAt": "2026-08-28T19:50:38.060Z",
-              "updatedAt": "2026-08-30T12:15:03.887Z"
-            },
-            {
-              "publicId": "b7ae540b-61c0-4738-a630-97d1cc5b3e54",
-              "dmxStart": 96,
-              "dmxEnd": 127,
-              "description": "Fade-in-out effect, speed controlled by channel 8",
-              "createdAt": "2026-08-28T19:50:38.060Z",
-              "updatedAt": "2026-08-30T12:15:03.887Z"
-            },
-            {
-              "publicId": "aa66b203-a352-4739-96e7-676f8b82d20b",
-              "dmxStart": 128,
-              "dmxEnd": 159,
-              "description": "Auto-mix effect, speed controlled by channel 8, channels 1 to 7 without function",
-              "createdAt": "2026-08-28T19:50:38.060Z",
-              "updatedAt": "2026-08-30T12:15:03.887Z"
-            },
-            {
-              "publicId": "349c21f9-59f8-40d0-8e05-38198e9a9531",
-              "dmxStart": 160,
-              "dmxEnd": 191,
-              "description": "Chase (4 colours), speed controlled by channel 8, channels 1 to 7 without function",
-              "createdAt": "2026-08-28T19:50:38.060Z",
-              "updatedAt": "2026-08-30T12:15:03.888Z"
-            },
-            {
-              "publicId": "ed4f8972-3022-45be-9232-7bbdbca6d256",
-              "dmxStart": 192,
-              "dmxEnd": 223,
-              "description": "Chase (12 colours), speed controlled by channel 8, channels 1 to 7 without function",
-              "createdAt": "2026-08-28T19:50:38.060Z",
-              "updatedAt": "2026-08-30T12:15:03.889Z"
-            },
-            {
-              "publicId": "81c24e94-5da2-4d6a-850a-e23006b91824",
-              "dmxStart": 224,
-              "dmxEnd": 255,
-              "description": "Sound control",
-              "createdAt": "2026-08-28T19:50:38.060Z",
-              "updatedAt": "2026-08-30T12:15:03.889Z"
-            }
-          ]
-        }
-      ],
-      "channelModes": [
-        {
-          "publicId": "a453a015-9c22-47fc-a4ba-2fcf5a925af7",
-          "name": "6-channel mode",
-          "order": 0,
-          "createdAt": "2026-08-28T18:54:00.056Z",
-          "updatedAt": "2026-08-30T12:15:03.893Z",
-          "assignments": [
-            {
-              "channelNumber": 1,
-              "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 2,
-              "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 3,
-              "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 4,
-              "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 5,
-              "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 6,
-              "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            }
-          ]
-        },
-        {
-          "publicId": "b8a8de37-f770-4a0b-8d0b-0dbd4fee2259",
-          "name": "8-channel mode",
-          "order": 1,
-          "createdAt": "2026-08-28T18:54:00.056Z",
-          "updatedAt": "2026-08-30T12:15:03.896Z",
-          "assignments": [
-            {
-              "channelNumber": 1,
-              "channelDefinitionPublicId": "062050b2-3cf0-470c-9ec5-54b7273b9c25",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 2,
-              "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 3,
-              "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 4,
-              "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 5,
-              "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 6,
-              "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 7,
-              "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 8,
-              "channelDefinitionPublicId": "dcd1396e-651d-46ed-b507-a442971f985a",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            }
-          ]
-        },
-        {
-          "publicId": "742dc3d6-2a99-4a43-9d73-a309b633aa2f",
-          "name": "10-channel mode",
-          "order": 2,
-          "createdAt": "2026-08-28T18:54:00.056Z",
-          "updatedAt": "2026-08-30T12:15:03.897Z",
-          "assignments": [
-            {
-              "channelNumber": 1,
-              "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 2,
-              "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 3,
-              "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 4,
-              "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 5,
-              "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 6,
-              "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 7,
-              "channelDefinitionPublicId": "3172aaed-f0a8-47ed-a19d-922539fb06ce",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 8,
-              "channelDefinitionPublicId": "874b038f-5dbd-4879-8de0-b8b9c02b28cf",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 9,
-              "channelDefinitionPublicId": "fe018a8e-ee6f-4df6-a7b0-ded9b260165b",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            },
-            {
-              "channelNumber": 10,
-              "channelDefinitionPublicId": "a41915dd-9e61-4b7e-8467-86d11c07c953",
-              "createdAt": "2026-08-30T12:15:03.893Z",
-              "updatedAt": "2026-08-30T12:15:03.893Z"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "publicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
       "name": "Mega TriPar Profile Plus",
+      "weight": 1.23,
+      "width": 0.22,
+      "length": 0.225,
+      "height": 0.085,
+      "picturePath": "/assets/fixtures/american-dj/mega-tripar-profile-plus/picture.png",
+      "picture2dPath": null,
+      "model3dPath": null,
       "createdAt": "2026-08-16T17:46:58.530Z",
-      "updatedAt": "2026-08-30T12:36:29.231Z",
+      "updatedAt": "2026-09-10T09:33:05.616Z",
       "vendor": {
         "publicId": "aadb2d60-4a8e-45c3-b58a-8726861930b2",
         "name": "American DJ",
@@ -552,7 +52,7 @@
           "order": 0,
           "preset": "IntensityRed",
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.238Z",
+          "updatedAt": "2026-09-10T04:00:06.548Z",
           "ranges": [
             {
               "publicId": "025ef59f-1e6b-4680-921c-09757ba3db46",
@@ -560,7 +60,7 @@
               "dmxEnd": 255,
               "description": "Red, 0% to 100%",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.241Z"
+              "updatedAt": "2026-09-10T04:00:06.551Z"
             }
           ]
         },
@@ -570,7 +70,7 @@
           "order": 1,
           "preset": "IntensityGreen",
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.243Z",
+          "updatedAt": "2026-09-10T04:00:06.552Z",
           "ranges": [
             {
               "publicId": "3e5c8b63-1c70-4ee5-8894-f24b9bdf22ef",
@@ -578,7 +78,7 @@
               "dmxEnd": 255,
               "description": "Green, 0% to 100%",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.246Z"
+              "updatedAt": "2026-09-10T04:00:06.555Z"
             }
           ]
         },
@@ -588,7 +88,7 @@
           "order": 2,
           "preset": "IntensityBlue",
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.247Z",
+          "updatedAt": "2026-09-10T04:00:06.557Z",
           "ranges": [
             {
               "publicId": "716e759f-a978-4fa9-9692-1fdd6c08883c",
@@ -596,7 +96,7 @@
               "dmxEnd": 255,
               "description": "Blue, 0% to 100%",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.250Z"
+              "updatedAt": "2026-09-10T04:00:06.559Z"
             }
           ]
         },
@@ -606,7 +106,7 @@
           "order": 3,
           "preset": "IntensityUV",
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.252Z",
+          "updatedAt": "2026-09-10T04:00:06.561Z",
           "ranges": [
             {
               "publicId": "dcd9e7d9-8b7e-42bc-a902-8698d3eed7b6",
@@ -614,7 +114,7 @@
               "dmxEnd": 255,
               "description": "UV, 0% to 100%",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.254Z"
+              "updatedAt": "2026-09-10T04:00:06.564Z"
             }
           ]
         },
@@ -624,7 +124,7 @@
           "order": 4,
           "preset": "ShutterStrobeSlowFast",
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.256Z",
+          "updatedAt": "2026-09-10T04:00:06.566Z",
           "ranges": [
             {
               "publicId": "495a7d51-cbdb-4f2c-871c-31e78f3d299d",
@@ -632,7 +132,7 @@
               "dmxEnd": 31,
               "description": "LED Off",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.258Z"
+              "updatedAt": "2026-09-10T04:00:06.569Z"
             },
             {
               "publicId": "ca7be5f2-be62-4bf3-8b03-a67147b9e82b",
@@ -640,7 +140,7 @@
               "dmxEnd": 63,
               "description": "LED On",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.258Z"
+              "updatedAt": "2026-09-10T04:00:06.570Z"
             },
             {
               "publicId": "15eeb5e6-d5e0-4f8e-83da-fd824e30ebd6",
@@ -648,7 +148,7 @@
               "dmxEnd": 95,
               "description": "Strobing, slow to fast",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.258Z"
+              "updatedAt": "2026-09-10T04:00:06.570Z"
             },
             {
               "publicId": "99254812-cc7f-4a9a-a275-8b541452d347",
@@ -656,7 +156,7 @@
               "dmxEnd": 127,
               "description": "LED On",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.258Z"
+              "updatedAt": "2026-09-10T04:00:06.571Z"
             },
             {
               "publicId": "901cc894-8b66-44fb-9084-9229d33a686e",
@@ -664,7 +164,7 @@
               "dmxEnd": 159,
               "description": "Strobe Pulse, slow to fast",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.258Z"
+              "updatedAt": "2026-09-10T04:00:06.572Z"
             },
             {
               "publicId": "0ae1eeb6-d89c-4221-89ba-b7c649367e5d",
@@ -672,7 +172,7 @@
               "dmxEnd": 191,
               "description": "LED On",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.259Z"
+              "updatedAt": "2026-09-10T04:00:06.572Z"
             },
             {
               "publicId": "ee60c8cd-c02a-4d5b-800d-a4e1c10ea26d",
@@ -680,7 +180,7 @@
               "dmxEnd": 223,
               "description": "Random Strobe, slow to fast",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.259Z"
+              "updatedAt": "2026-09-10T04:00:06.573Z"
             },
             {
               "publicId": "e6cac35f-78fc-4cdd-bed0-88e8c2055d4e",
@@ -688,7 +188,7 @@
               "dmxEnd": 255,
               "description": "LED On",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.259Z"
+              "updatedAt": "2026-09-10T04:00:06.574Z"
             }
           ]
         },
@@ -698,7 +198,7 @@
           "order": 5,
           "preset": "IntensityMasterDimmer",
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.260Z",
+          "updatedAt": "2026-09-10T04:00:06.576Z",
           "ranges": [
             {
               "publicId": "6d150567-3fc9-4b5e-98d0-1854e2d10dc1",
@@ -706,7 +206,7 @@
               "dmxEnd": 255,
               "description": "Master Dimmer, 0% to 100%",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.262Z"
+              "updatedAt": "2026-09-10T04:00:06.579Z"
             }
           ]
         },
@@ -716,7 +216,7 @@
           "order": 6,
           "preset": "ColorMacro",
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.264Z",
+          "updatedAt": "2026-09-10T04:00:06.582Z",
           "ranges": [
             {
               "publicId": "a3f7e2d1-5c8b-4e9a-b2f6-1d4c7e8a9b3f",
@@ -724,7 +224,7 @@
               "dmxEnd": 51,
               "description": "Dimming Mode",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.268Z"
+              "updatedAt": "2026-09-10T04:00:06.585Z"
             },
             {
               "publicId": "b8e4f1c2-9d7a-4b6e-a3f5-2e8c9d1a4b7e",
@@ -732,7 +232,7 @@
               "dmxEnd": 102,
               "description": "Color Macro Mode",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.268Z"
+              "updatedAt": "2026-09-10T04:00:06.585Z"
             },
             {
               "publicId": "c9f5d3e4-8a6b-4c7d-b9e2-3f1a8c7b5d9e",
@@ -740,7 +240,7 @@
               "dmxEnd": 153,
               "description": "Color Change Mode",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.268Z"
+              "updatedAt": "2026-09-10T04:00:06.586Z"
             },
             {
               "publicId": "d1e6b4f5-7c9a-4d8e-a1f3-4b2c9e8d6a1f",
@@ -748,7 +248,7 @@
               "dmxEnd": 204,
               "description": "Color Fade Mode",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.268Z"
+              "updatedAt": "2026-09-10T04:00:06.587Z"
             },
             {
               "publicId": "e2f7c5a6-6d8b-4e9f-b2a4-5c3d1f9e7b2a",
@@ -756,7 +256,7 @@
               "dmxEnd": 255,
               "description": "Sound Active Mode",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.269Z"
+              "updatedAt": "2026-09-10T04:00:06.587Z"
             }
           ]
         },
@@ -766,7 +266,7 @@
           "order": 7,
           "preset": "ColorMacro",
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.270Z",
+          "updatedAt": "2026-09-10T04:00:06.589Z",
           "ranges": [
             {
               "publicId": "f3a8d6b7-4e9c-4f1a-b8d3-6e2f7c9a4b1e",
@@ -774,7 +274,7 @@
               "dmxEnd": 15,
               "description": "Mode 1",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.274Z"
+              "updatedAt": "2026-09-10T04:00:06.592Z"
             },
             {
               "publicId": "86d9355b-23e7-4ae3-ab82-f8b58114cbc9",
@@ -782,7 +282,7 @@
               "dmxEnd": 31,
               "description": "Mode 2",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.275Z"
+              "updatedAt": "2026-09-10T04:00:06.592Z"
             },
             {
               "publicId": "eae524fb-a9ee-4eec-b2d5-677f633838cc",
@@ -790,7 +290,7 @@
               "dmxEnd": 47,
               "description": "Mode 3",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.275Z"
+              "updatedAt": "2026-09-10T04:00:06.592Z"
             },
             {
               "publicId": "a9bf9045-251c-42c4-bb9b-a82cb3a560fb",
@@ -798,7 +298,7 @@
               "dmxEnd": 63,
               "description": "Mode 4",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.276Z"
+              "updatedAt": "2026-09-10T04:00:06.592Z"
             },
             {
               "publicId": "ce3bb491-71c3-4775-ba1f-f1b380964709",
@@ -806,7 +306,7 @@
               "dmxEnd": 79,
               "description": "Mode 5",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.276Z"
+              "updatedAt": "2026-09-10T04:00:06.593Z"
             },
             {
               "publicId": "e8f4c2a3-9d5b-4e6f-a4c8-2d7e3b5f9a6d",
@@ -814,7 +314,7 @@
               "dmxEnd": 95,
               "description": "Mode 6",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.274Z"
+              "updatedAt": "2026-09-10T04:00:06.593Z"
             },
             {
               "publicId": "f9a5d3b4-1e6c-4f7a-b5d9-3e8f4c6a1b7e",
@@ -822,7 +322,7 @@
               "dmxEnd": 111,
               "description": "Mode 7",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.274Z"
+              "updatedAt": "2026-09-10T04:00:06.593Z"
             },
             {
               "publicId": "fea72be9-3263-4250-a154-1786584e4a2b",
@@ -830,7 +330,7 @@
               "dmxEnd": 127,
               "description": "Mode 8",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.277Z"
+              "updatedAt": "2026-09-10T04:00:06.593Z"
             },
             {
               "publicId": "7f2518e6-b6d3-4f6e-b025-1219cf776bce",
@@ -838,7 +338,7 @@
               "dmxEnd": 143,
               "description": "Mode 9",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.277Z"
+              "updatedAt": "2026-09-10T04:00:06.593Z"
             },
             {
               "publicId": "01afa168-a588-4aa1-b830-c99cd4299247",
@@ -846,7 +346,7 @@
               "dmxEnd": 159,
               "description": "Mode 10",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.277Z"
+              "updatedAt": "2026-09-10T04:00:06.593Z"
             },
             {
               "publicId": "8113d452-1e64-439d-8bd5-5d0682ee644c",
@@ -854,7 +354,7 @@
               "dmxEnd": 175,
               "description": "Mode 11",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.278Z"
+              "updatedAt": "2026-09-10T04:00:06.594Z"
             },
             {
               "publicId": "e5f1c8a9-6d2b-4e3f-a1c5-8d4e9b2f6a3d",
@@ -862,7 +362,7 @@
               "dmxEnd": 191,
               "description": "Mode 12",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.275Z"
+              "updatedAt": "2026-09-10T04:00:06.594Z"
             },
             {
               "publicId": "f6a2d9b1-7e3c-4f4a-b2d6-9e5f1c3a7b4e",
@@ -870,7 +370,7 @@
               "dmxEnd": 207,
               "description": "Mode 13",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.275Z"
+              "updatedAt": "2026-09-10T04:00:06.594Z"
             },
             {
               "publicId": "8598ee3d-4766-42b2-977f-a9718ee5b787",
@@ -878,7 +378,7 @@
               "dmxEnd": 223,
               "description": "Mode 14",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.278Z"
+              "updatedAt": "2026-09-10T04:00:06.594Z"
             },
             {
               "publicId": "9896a005-fea3-4958-8e22-2bd9761f8202",
@@ -886,7 +386,7 @@
               "dmxEnd": 239,
               "description": "Mode 15",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.279Z"
+              "updatedAt": "2026-09-10T04:00:06.594Z"
             },
             {
               "publicId": "7bc668c5-a21e-4b30-ad56-167cbd12d91c",
@@ -894,7 +394,7 @@
               "dmxEnd": 255,
               "description": "Mode 16",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.279Z"
+              "updatedAt": "2026-09-10T04:00:06.594Z"
             }
           ]
         },
@@ -904,7 +404,7 @@
           "order": 8,
           "preset": "Custom",
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.280Z",
+          "updatedAt": "2026-09-10T04:00:06.595Z",
           "ranges": [
             {
               "publicId": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d",
@@ -912,7 +412,7 @@
               "dmxEnd": 255,
               "description": "Slow - fast/least sensitive - most sensitive",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.283Z"
+              "updatedAt": "2026-09-10T04:00:06.598Z"
             }
           ]
         },
@@ -922,7 +422,7 @@
           "order": 9,
           "preset": "Custom",
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.285Z",
+          "updatedAt": "2026-09-10T04:00:06.600Z",
           "ranges": [
             {
               "publicId": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
@@ -930,7 +430,7 @@
               "dmxEnd": 20,
               "description": "Standard",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.288Z"
+              "updatedAt": "2026-09-10T04:00:06.603Z"
             },
             {
               "publicId": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e",
@@ -938,7 +438,7 @@
               "dmxEnd": 40,
               "description": "Stage",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.288Z"
+              "updatedAt": "2026-09-10T04:00:06.603Z"
             },
             {
               "publicId": "77bf0c36-7c58-4663-ad21-41896c25f236",
@@ -946,7 +446,7 @@
               "dmxEnd": 60,
               "description": "TV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.288Z"
+              "updatedAt": "2026-09-10T04:00:06.604Z"
             },
             {
               "publicId": "0acee898-dc9f-4ab0-8b7f-1f33589e16af",
@@ -954,7 +454,7 @@
               "dmxEnd": 80,
               "description": "Architectural",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.288Z"
+              "updatedAt": "2026-09-10T04:00:06.604Z"
             },
             {
               "publicId": "95b56208-be95-4839-bc63-105f89c9831b",
@@ -962,7 +462,7 @@
               "dmxEnd": 100,
               "description": "Theatre",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.288Z"
+              "updatedAt": "2026-09-10T04:00:06.605Z"
             },
             {
               "publicId": "d494e684-b697-4d27-ad1f-015f6c7cfee8",
@@ -970,7 +470,7 @@
               "dmxEnd": 255,
               "description": "Default to unit setting",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T12:36:29.288Z"
+              "updatedAt": "2026-09-10T04:00:06.605Z"
             }
           ]
         }
@@ -981,31 +481,31 @@
           "name": "4 channel mode",
           "order": 0,
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.290Z",
+          "updatedAt": "2026-09-10T04:00:06.608Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             }
           ]
         },
@@ -1014,37 +514,37 @@
           "name": "5 channel mode",
           "order": 1,
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.291Z",
+          "updatedAt": "2026-09-10T04:00:06.611Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 5,
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             }
           ]
         },
@@ -1053,43 +553,43 @@
           "name": "6 channel mode",
           "order": 2,
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.292Z",
+          "updatedAt": "2026-09-10T04:00:06.612Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 5,
               "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 6,
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             }
           ]
         },
@@ -1098,61 +598,61 @@
           "name": "9 channel mode",
           "order": 3,
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.292Z",
+          "updatedAt": "2026-09-10T04:00:06.613Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 5,
               "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 6,
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 7,
               "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 8,
               "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 9,
               "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             }
           ]
         },
@@ -1161,67 +661,67 @@
           "name": "10 channel mode",
           "order": 4,
           "createdAt": "2026-08-16T17:46:58.530Z",
-          "updatedAt": "2026-08-30T12:36:29.293Z",
+          "updatedAt": "2026-09-10T04:00:06.614Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 5,
               "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 6,
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 7,
               "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 8,
               "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 9,
               "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             },
             {
               "channelNumber": 10,
               "channelDefinitionPublicId": "4ce86726-832b-424e-b7c0-ddd75fd98fcc",
-              "createdAt": "2026-08-30T12:36:29.290Z",
-              "updatedAt": "2026-08-30T12:36:29.290Z"
+              "createdAt": "2026-09-10T04:00:06.608Z",
+              "updatedAt": "2026-09-10T04:00:06.608Z"
             }
           ]
         }
@@ -1230,8 +730,15 @@
     {
       "publicId": "37c06d4d-f637-4944-a0ff-3821e94feb84",
       "name": "CLPST64RGBWAU12W",
+      "weight": 4.5,
+      "width": 0.23,
+      "length": 0.255,
+      "height": 0.22,
+      "picturePath": "/assets/fixtures/cameo/clpst64rgbwau12w/picture.png",
+      "picture2dPath": null,
+      "model3dPath": null,
       "createdAt": "2026-08-28T20:18:11.612Z",
-      "updatedAt": "2026-08-30T12:59:37.605Z",
+      "updatedAt": "2026-09-10T11:20:23.071Z",
       "vendor": {
         "publicId": "d54acb12-d9a4-46bf-98e3-8bf8b2d097de",
         "name": "Cameo",
@@ -1245,7 +752,7 @@
           "order": 0,
           "preset": "IntensityMasterDimmer",
           "createdAt": "2026-08-28T20:50:47.896Z",
-          "updatedAt": "2026-08-30T12:59:37.612Z",
+          "updatedAt": "2026-09-10T11:20:23.077Z",
           "ranges": [
             {
               "publicId": "2dbb1e70-6ea1-4036-bd1f-534a36bbf8e1",
@@ -1253,7 +760,7 @@
               "dmxEnd": 255,
               "description": "Master Dimmer (0 - 100%)",
               "createdAt": "2026-08-28T20:50:47.898Z",
-              "updatedAt": "2026-08-30T12:59:37.615Z"
+              "updatedAt": "2026-09-10T11:20:23.080Z"
             }
           ]
         },
@@ -1263,7 +770,7 @@
           "order": 1,
           "preset": "ShutterStrobeSlowFast",
           "createdAt": "2026-08-28T20:56:28.914Z",
-          "updatedAt": "2026-08-30T12:59:37.617Z",
+          "updatedAt": "2026-09-10T11:20:23.082Z",
           "ranges": [
             {
               "publicId": "ee996048-4752-4229-a9d6-a705d48a03b2",
@@ -1271,7 +778,7 @@
               "dmxEnd": 255,
               "description": "Stroboscope (rate 0 - 100%)",
               "createdAt": "2026-08-28T20:56:28.917Z",
-              "updatedAt": "2026-08-30T12:59:37.619Z"
+              "updatedAt": "2026-09-10T11:20:23.085Z"
             }
           ]
         },
@@ -1281,7 +788,7 @@
           "order": 2,
           "preset": "ColorMacro",
           "createdAt": "2026-08-28T20:51:08.778Z",
-          "updatedAt": "2026-08-30T12:59:37.620Z",
+          "updatedAt": "2026-09-10T11:20:23.086Z",
           "ranges": [
             {
               "publicId": "0e5b3ffb-5c01-4019-ac54-fa4b3f636c13",
@@ -1289,7 +796,7 @@
               "dmxEnd": 16,
               "description": "Red",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.623Z"
+              "updatedAt": "2026-09-10T11:20:23.089Z"
             },
             {
               "publicId": "771e823c-c0c0-477a-bbba-f451844c26fe",
@@ -1297,7 +804,7 @@
               "dmxEnd": 33,
               "description": "Green",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.624Z"
+              "updatedAt": "2026-09-10T11:20:23.089Z"
             },
             {
               "publicId": "262b7ff2-97a8-4656-924d-3e2183105d5d",
@@ -1305,7 +812,7 @@
               "dmxEnd": 50,
               "description": "Blue",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.624Z"
+              "updatedAt": "2026-09-10T11:20:23.090Z"
             },
             {
               "publicId": "de38b398-2356-4dc7-9df2-e1d120aa9f37",
@@ -1313,7 +820,7 @@
               "dmxEnd": 67,
               "description": "White",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.624Z"
+              "updatedAt": "2026-09-10T11:20:23.090Z"
             },
             {
               "publicId": "9e8c0da6-0d6a-4656-9361-f36352ed2754",
@@ -1321,7 +828,7 @@
               "dmxEnd": 84,
               "description": "Amber",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.624Z"
+              "updatedAt": "2026-09-10T11:20:23.091Z"
             },
             {
               "publicId": "5fb1673b-8188-40fd-82bb-44b953ce0dbd",
@@ -1329,7 +836,7 @@
               "dmxEnd": 101,
               "description": "UV",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.624Z"
+              "updatedAt": "2026-09-10T11:20:23.091Z"
             },
             {
               "publicId": "e13a6767-4eb8-4947-9490-0f8426819f70",
@@ -1337,7 +844,7 @@
               "dmxEnd": 118,
               "description": "Yellow",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.624Z"
+              "updatedAt": "2026-09-10T11:20:23.091Z"
             },
             {
               "publicId": "c3a72b7f-c399-4937-a3d2-15dd448311f9",
@@ -1345,7 +852,7 @@
               "dmxEnd": 135,
               "description": "Cyan",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.625Z"
+              "updatedAt": "2026-09-10T11:20:23.091Z"
             },
             {
               "publicId": "6f8d5f01-9468-433a-a077-136ec86c08ba",
@@ -1353,7 +860,7 @@
               "dmxEnd": 152,
               "description": "Lavender",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.625Z"
+              "updatedAt": "2026-09-10T11:20:23.092Z"
             },
             {
               "publicId": "2a28c2e3-8a5f-4c8d-85e0-ae3abe2e2351",
@@ -1361,7 +868,7 @@
               "dmxEnd": 169,
               "description": "Light Green",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.625Z"
+              "updatedAt": "2026-09-10T11:20:23.092Z"
             },
             {
               "publicId": "a5b00c31-0f47-4b48-9213-7b1a05175a1a",
@@ -1369,7 +876,7 @@
               "dmxEnd": 186,
               "description": "Magenta",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.625Z"
+              "updatedAt": "2026-09-10T11:20:23.092Z"
             },
             {
               "publicId": "594fa8bd-9cbc-46db-8779-c1c5c64292db",
@@ -1377,7 +884,7 @@
               "dmxEnd": 203,
               "description": "Turquoise",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.625Z"
+              "updatedAt": "2026-09-10T11:20:23.092Z"
             },
             {
               "publicId": "0ef9d6e3-cbff-48ee-939e-8cabece05a79",
@@ -1385,7 +892,7 @@
               "dmxEnd": 220,
               "description": "Orange",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.625Z"
+              "updatedAt": "2026-09-10T11:20:23.092Z"
             },
             {
               "publicId": "cbeba9e5-b89c-453c-892c-1d933a43a543",
@@ -1393,7 +900,7 @@
               "dmxEnd": 237,
               "description": "Cool White",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.626Z"
+              "updatedAt": "2026-09-10T11:20:23.092Z"
             },
             {
               "publicId": "1acf0922-2c1d-4b9d-b583-880beb1d53ad",
@@ -1401,7 +908,7 @@
               "dmxEnd": 255,
               "description": "Warm White",
               "createdAt": "2026-08-28T20:51:30.728Z",
-              "updatedAt": "2026-08-30T12:59:37.626Z"
+              "updatedAt": "2026-09-10T11:20:23.092Z"
             }
           ]
         },
@@ -1411,7 +918,7 @@
           "order": 3,
           "preset": "ColorMacro",
           "createdAt": "2026-08-28T21:01:39.237Z",
-          "updatedAt": "2026-08-30T12:59:37.627Z",
+          "updatedAt": "2026-09-10T11:20:23.093Z",
           "ranges": [
             {
               "publicId": "b0c679c4-43ff-4a82-b633-536fec818057",
@@ -1419,7 +926,7 @@
               "dmxEnd": 4,
               "description": "Blackout",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.629Z"
+              "updatedAt": "2026-09-10T11:20:23.096Z"
             },
             {
               "publicId": "52daa736-5309-42d8-bbe5-9fb5ee1a7099",
@@ -1427,7 +934,7 @@
               "dmxEnd": 10,
               "description": "Red",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.630Z"
+              "updatedAt": "2026-09-10T11:20:23.096Z"
             },
             {
               "publicId": "c5262844-febf-46db-a44a-9c8b022c7005",
@@ -1435,7 +942,7 @@
               "dmxEnd": 15,
               "description": "Green",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.630Z"
+              "updatedAt": "2026-09-10T11:20:23.097Z"
             },
             {
               "publicId": "d15549b3-b382-43cb-987e-a8be85357ed1",
@@ -1443,7 +950,7 @@
               "dmxEnd": 20,
               "description": "Blue",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.630Z"
+              "updatedAt": "2026-09-10T11:20:23.096Z"
             },
             {
               "publicId": "63869bcd-6af8-48ac-b231-a244b6299a3d",
@@ -1451,7 +958,7 @@
               "dmxEnd": 25,
               "description": "White",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.630Z"
+              "updatedAt": "2026-09-10T11:20:23.097Z"
             },
             {
               "publicId": "8a98587f-b7c2-4e21-8ec2-c06386b000f9",
@@ -1459,7 +966,7 @@
               "dmxEnd": 30,
               "description": "Amber",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.630Z"
+              "updatedAt": "2026-09-10T11:20:23.097Z"
             },
             {
               "publicId": "949733d2-9809-413a-82ac-4759fcf9d9f2",
@@ -1467,7 +974,7 @@
               "dmxEnd": 35,
               "description": "UV",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.630Z"
+              "updatedAt": "2026-09-10T11:20:23.097Z"
             },
             {
               "publicId": "5ea6bb30-c0aa-497c-a163-eb1b03611aed",
@@ -1475,7 +982,7 @@
               "dmxEnd": 40,
               "description": "Yellow",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.630Z"
+              "updatedAt": "2026-09-10T11:20:23.097Z"
             },
             {
               "publicId": "c5ead9d6-4339-480a-b7b5-942aaf8e16ae",
@@ -1483,7 +990,7 @@
               "dmxEnd": 45,
               "description": "Cyan",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.631Z"
+              "updatedAt": "2026-09-10T11:20:23.097Z"
             },
             {
               "publicId": "2043fd41-08a1-4ea0-8440-ddcab1a58563",
@@ -1491,7 +998,7 @@
               "dmxEnd": 50,
               "description": "Lavender",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.631Z"
+              "updatedAt": "2026-09-10T11:20:23.097Z"
             },
             {
               "publicId": "ca086909-6a1c-4448-bfb7-38343a7ce688",
@@ -1499,7 +1006,7 @@
               "dmxEnd": 55,
               "description": "Light Green",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.631Z"
+              "updatedAt": "2026-09-10T11:20:23.097Z"
             },
             {
               "publicId": "b41a6dc2-6723-468a-84a0-e2cadb46cba6",
@@ -1507,7 +1014,7 @@
               "dmxEnd": 60,
               "description": "Magenta",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.631Z"
+              "updatedAt": "2026-09-10T11:20:23.097Z"
             },
             {
               "publicId": "e2f8607d-611c-4ad2-998e-acd1576a1d69",
@@ -1515,7 +1022,7 @@
               "dmxEnd": 65,
               "description": "Turquoise",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.631Z"
+              "updatedAt": "2026-09-10T11:20:23.098Z"
             },
             {
               "publicId": "f681aa6d-8c98-4ffe-9ba5-d1ac678f7678",
@@ -1523,7 +1030,7 @@
               "dmxEnd": 70,
               "description": "Orange",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.631Z"
+              "updatedAt": "2026-09-10T11:20:23.098Z"
             },
             {
               "publicId": "c46a70e3-a6c6-4bf9-85ab-f3ca7a27afdb",
@@ -1531,7 +1038,7 @@
               "dmxEnd": 75,
               "description": "Cool White",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.631Z"
+              "updatedAt": "2026-09-10T11:20:23.098Z"
             },
             {
               "publicId": "6f1c7a0b-a5d9-429b-b8ac-9e5a477e9f80",
@@ -1539,7 +1046,7 @@
               "dmxEnd": 80,
               "description": "Warm White",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.632Z"
+              "updatedAt": "2026-09-10T11:20:23.098Z"
             },
             {
               "publicId": "b999ea22-d05a-4f1b-a963-5ff46736a208",
@@ -1547,7 +1054,7 @@
               "dmxEnd": 150,
               "description": "Colour Change (rate)",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.633Z"
+              "updatedAt": "2026-09-10T11:20:23.098Z"
             },
             {
               "publicId": "83974f84-5e81-434d-9ca5-7529f39782b0",
@@ -1555,7 +1062,7 @@
               "dmxEnd": 220,
               "description": "Colour Blending (rate)",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.633Z"
+              "updatedAt": "2026-09-10T11:20:23.098Z"
             },
             {
               "publicId": "67224e69-3283-46b2-b9f8-050922ff6f25",
@@ -1563,7 +1070,7 @@
               "dmxEnd": 255,
               "description": "Music Control (microphone sensitivity)",
               "createdAt": "2026-08-28T21:01:39.239Z",
-              "updatedAt": "2026-08-30T12:59:37.633Z"
+              "updatedAt": "2026-09-10T11:20:23.098Z"
             }
           ]
         },
@@ -1573,7 +1080,7 @@
           "order": 4,
           "preset": "ColorMacro",
           "createdAt": "2026-08-28T21:10:30.118Z",
-          "updatedAt": "2026-08-30T12:59:37.635Z",
+          "updatedAt": "2026-09-10T11:20:23.099Z",
           "ranges": [
             {
               "publicId": "746c9b68-9ecd-4aa5-800e-9c0aaaa9f60e",
@@ -1581,7 +1088,7 @@
               "dmxEnd": 4,
               "description": "Blackout / Colour Mixing CH3 - CH8",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.637Z"
+              "updatedAt": "2026-09-10T11:20:23.102Z"
             },
             {
               "publicId": "6cc056d2-ef87-4028-90a5-6d0152c1d1e7",
@@ -1589,7 +1096,7 @@
               "dmxEnd": 10,
               "description": "Red",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.638Z"
+              "updatedAt": "2026-09-10T11:20:23.102Z"
             },
             {
               "publicId": "f4232ff9-5f69-4948-8ad2-29e1a1d9da49",
@@ -1597,7 +1104,7 @@
               "dmxEnd": 15,
               "description": "Green",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.638Z"
+              "updatedAt": "2026-09-10T11:20:23.102Z"
             },
             {
               "publicId": "0f3d427a-63fb-4863-931a-67c4c35da43d",
@@ -1605,7 +1112,7 @@
               "dmxEnd": 20,
               "description": "Blue",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.639Z"
+              "updatedAt": "2026-09-10T11:20:23.102Z"
             },
             {
               "publicId": "140cbbf2-ad30-413b-a7ec-27786c933e26",
@@ -1613,7 +1120,7 @@
               "dmxEnd": 25,
               "description": "White",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.639Z"
+              "updatedAt": "2026-09-10T11:20:23.102Z"
             },
             {
               "publicId": "810b59c9-933e-4647-abb8-abd05152dc09",
@@ -1621,7 +1128,7 @@
               "dmxEnd": 30,
               "description": "Amber",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.639Z"
+              "updatedAt": "2026-09-10T11:20:23.102Z"
             },
             {
               "publicId": "fc6e2e2a-8b59-4507-818b-61404bd4636b",
@@ -1629,7 +1136,7 @@
               "dmxEnd": 35,
               "description": "UV",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.640Z"
+              "updatedAt": "2026-09-10T11:20:23.102Z"
             },
             {
               "publicId": "4e91dd8f-b877-401f-92c6-ca284427d71a",
@@ -1637,7 +1144,7 @@
               "dmxEnd": 40,
               "description": "Yellow",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.640Z"
+              "updatedAt": "2026-09-10T11:20:23.102Z"
             },
             {
               "publicId": "007e9888-6d06-4132-b8ea-0d10dd4402c1",
@@ -1645,7 +1152,7 @@
               "dmxEnd": 45,
               "description": "Cyan",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.640Z"
+              "updatedAt": "2026-09-10T11:20:23.102Z"
             },
             {
               "publicId": "96d22cb5-1736-4d83-8abf-509144d8a728",
@@ -1653,7 +1160,7 @@
               "dmxEnd": 50,
               "description": "Lavender",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.640Z"
+              "updatedAt": "2026-09-10T11:20:23.102Z"
             },
             {
               "publicId": "4131cd6f-9159-4837-84e3-b89258aacd8c",
@@ -1661,7 +1168,7 @@
               "dmxEnd": 55,
               "description": "Light Green",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.640Z"
+              "updatedAt": "2026-09-10T11:20:23.103Z"
             },
             {
               "publicId": "93aa44bf-ee8b-4d1d-a9ca-582149f5a41d",
@@ -1669,7 +1176,7 @@
               "dmxEnd": 60,
               "description": "Magenta",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.640Z"
+              "updatedAt": "2026-09-10T11:20:23.103Z"
             },
             {
               "publicId": "61e5c2e6-acae-4eaa-b0b1-06f3785db9d3",
@@ -1677,7 +1184,7 @@
               "dmxEnd": 65,
               "description": "Turquoise",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.640Z"
+              "updatedAt": "2026-09-10T11:20:23.103Z"
             },
             {
               "publicId": "894c0fca-838b-4417-98b2-8f1d44a1c559",
@@ -1685,7 +1192,7 @@
               "dmxEnd": 70,
               "description": "Orange",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.641Z"
+              "updatedAt": "2026-09-10T11:20:23.103Z"
             },
             {
               "publicId": "de7b821b-e828-455c-b665-6f481d252d95",
@@ -1693,7 +1200,7 @@
               "dmxEnd": 75,
               "description": "Cool White",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.641Z"
+              "updatedAt": "2026-09-10T11:20:23.103Z"
             },
             {
               "publicId": "abb751b1-6b88-468d-93ce-5cdfa4a345ca",
@@ -1701,7 +1208,7 @@
               "dmxEnd": 80,
               "description": "Warm White",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.641Z"
+              "updatedAt": "2026-09-10T11:20:23.103Z"
             },
             {
               "publicId": "a4abf3ce-cbb1-4d1d-b863-3ac0b8e90e2a",
@@ -1709,7 +1216,7 @@
               "dmxEnd": 150,
               "description": "Colour Change (rate)",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.641Z"
+              "updatedAt": "2026-09-10T11:20:23.103Z"
             },
             {
               "publicId": "9ebcecc9-6877-4b3c-be88-542b3851c4ef",
@@ -1717,7 +1224,7 @@
               "dmxEnd": 220,
               "description": "Colour Blending (rate)",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.641Z"
+              "updatedAt": "2026-09-10T11:20:23.104Z"
             },
             {
               "publicId": "54b0ab8c-5177-48c2-9436-062274a28931",
@@ -1725,7 +1232,7 @@
               "dmxEnd": 255,
               "description": "Music Control (microphone sensitivity)",
               "createdAt": "2026-08-28T21:10:30.120Z",
-              "updatedAt": "2026-08-30T12:59:37.641Z"
+              "updatedAt": "2026-09-10T11:20:23.104Z"
             }
           ]
         },
@@ -1735,7 +1242,7 @@
           "order": 5,
           "preset": "IntensityRed",
           "createdAt": "2026-08-28T21:03:56.712Z",
-          "updatedAt": "2026-08-30T12:59:37.643Z",
+          "updatedAt": "2026-09-10T11:20:23.105Z",
           "ranges": [
             {
               "publicId": "52403ce7-b757-408c-b260-39f652ab0305",
@@ -1743,7 +1250,7 @@
               "dmxEnd": 255,
               "description": "Red (0 - 100%)",
               "createdAt": "2026-08-28T21:03:56.714Z",
-              "updatedAt": "2026-08-30T12:59:37.645Z"
+              "updatedAt": "2026-09-10T11:20:23.108Z"
             }
           ]
         },
@@ -1753,7 +1260,7 @@
           "order": 6,
           "preset": "IntensityGreen",
           "createdAt": "2026-08-28T21:03:56.717Z",
-          "updatedAt": "2026-08-30T12:59:37.646Z",
+          "updatedAt": "2026-09-10T11:20:23.109Z",
           "ranges": [
             {
               "publicId": "05e7e172-33b4-474e-80ce-c03e321c829c",
@@ -1761,7 +1268,7 @@
               "dmxEnd": 255,
               "description": "Green (0 - 100%)",
               "createdAt": "2026-08-28T21:03:56.718Z",
-              "updatedAt": "2026-08-30T12:59:37.648Z"
+              "updatedAt": "2026-09-10T11:20:23.112Z"
             }
           ]
         },
@@ -1771,7 +1278,7 @@
           "order": 7,
           "preset": "IntensityBlue",
           "createdAt": "2026-08-28T21:03:56.721Z",
-          "updatedAt": "2026-08-30T12:59:37.650Z",
+          "updatedAt": "2026-09-10T11:20:23.113Z",
           "ranges": [
             {
               "publicId": "fc73d999-a86a-4ffc-a05f-25966a007771",
@@ -1779,7 +1286,7 @@
               "dmxEnd": 255,
               "description": "Blue (0 - 100%)",
               "createdAt": "2026-08-28T21:03:56.722Z",
-              "updatedAt": "2026-08-30T12:59:37.652Z"
+              "updatedAt": "2026-09-10T11:20:23.115Z"
             }
           ]
         },
@@ -1789,7 +1296,7 @@
           "order": 8,
           "preset": "IntensityWhite",
           "createdAt": "2026-08-28T21:05:32.880Z",
-          "updatedAt": "2026-08-30T12:59:37.654Z",
+          "updatedAt": "2026-09-10T11:20:23.117Z",
           "ranges": [
             {
               "publicId": "d9f1d088-5eef-42af-94ce-c6965ea6b98f",
@@ -1797,7 +1304,7 @@
               "dmxEnd": 255,
               "description": "White (0 - 100%)",
               "createdAt": "2026-08-28T21:05:32.882Z",
-              "updatedAt": "2026-08-30T12:59:37.656Z"
+              "updatedAt": "2026-09-10T11:20:23.119Z"
             }
           ]
         },
@@ -1807,7 +1314,7 @@
           "order": 9,
           "preset": "IntensityAmber",
           "createdAt": "2026-08-28T21:05:32.886Z",
-          "updatedAt": "2026-08-30T12:59:37.657Z",
+          "updatedAt": "2026-09-10T11:20:23.120Z",
           "ranges": [
             {
               "publicId": "d990aa65-7929-4b85-9526-c08ef249f111",
@@ -1815,7 +1322,7 @@
               "dmxEnd": 255,
               "description": "Amber (0 - 100%)",
               "createdAt": "2026-08-28T21:05:32.888Z",
-              "updatedAt": "2026-08-30T12:59:37.659Z"
+              "updatedAt": "2026-09-10T11:20:23.123Z"
             }
           ]
         },
@@ -1825,7 +1332,7 @@
           "order": 10,
           "preset": "IntensityUV",
           "createdAt": "2026-08-28T21:05:32.891Z",
-          "updatedAt": "2026-08-30T12:59:37.660Z",
+          "updatedAt": "2026-09-10T11:20:23.124Z",
           "ranges": [
             {
               "publicId": "2e652e7f-d637-45fd-b2ca-960a166a5795",
@@ -1833,7 +1340,7 @@
               "dmxEnd": 255,
               "description": "UV (0 - 100%)",
               "createdAt": "2026-08-28T21:05:32.893Z",
-              "updatedAt": "2026-08-30T12:59:37.662Z"
+              "updatedAt": "2026-09-10T11:20:23.126Z"
             }
           ]
         }
@@ -1844,19 +1351,19 @@
           "name": "2 Channel Mode",
           "order": 0,
           "createdAt": "2026-08-28T20:56:28.921Z",
-          "updatedAt": "2026-08-30T12:59:37.665Z",
+          "updatedAt": "2026-09-10T11:20:23.128Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "57a70470-3bc8-4d96-9c08-1e0d6db3ee1f",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "3a40050d-abd5-45e1-924a-c49f82328f8a",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             }
           ]
         },
@@ -1865,25 +1372,25 @@
           "name": "3 Channel Mode",
           "order": 1,
           "createdAt": "2026-08-28T21:01:58.755Z",
-          "updatedAt": "2026-08-30T12:59:37.666Z",
+          "updatedAt": "2026-09-10T11:20:23.128Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "57a70470-3bc8-4d96-9c08-1e0d6db3ee1f",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "621a9e61-e78b-4132-8618-a72c6378b3f5",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             }
           ]
         },
@@ -1892,25 +1399,25 @@
           "name": "3 Channel Mode 2",
           "order": 2,
           "createdAt": "2026-08-28T21:03:56.724Z",
-          "updatedAt": "2026-08-30T12:59:37.667Z",
+          "updatedAt": "2026-09-10T11:20:23.129Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             }
           ]
         },
@@ -1919,43 +1426,43 @@
           "name": "6 Channel Mode",
           "order": 3,
           "createdAt": "2026-08-28T21:05:32.897Z",
-          "updatedAt": "2026-08-30T12:59:37.667Z",
+          "updatedAt": "2026-09-10T11:20:23.129Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 5,
               "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 6,
               "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             }
           ]
         },
@@ -1964,61 +1471,61 @@
           "name": "9 Channel Mode",
           "order": 4,
           "createdAt": "2026-08-28T21:10:30.154Z",
-          "updatedAt": "2026-08-30T12:59:37.668Z",
+          "updatedAt": "2026-09-10T11:20:23.130Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "57a70470-3bc8-4d96-9c08-1e0d6db3ee1f",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 5,
               "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 6,
               "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 7,
               "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 8,
               "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             },
             {
               "channelNumber": 9,
               "channelDefinitionPublicId": "2b43d2bf-c59a-4467-933a-40cad34c5d0e",
-              "createdAt": "2026-08-30T12:59:37.664Z",
-              "updatedAt": "2026-08-30T12:59:37.664Z"
+              "createdAt": "2026-09-10T11:20:23.128Z",
+              "updatedAt": "2026-09-10T11:20:23.128Z"
             }
           ]
         }
@@ -2027,8 +1534,15 @@
     {
       "publicId": "7b46ef92-ea25-4cde-ba59-49c0c6b78f5e",
       "name": "LED SLS-3 HCL 3x10W",
+      "weight": 2,
+      "width": 0.115,
+      "length": 0.21,
+      "height": 0.225,
+      "picturePath": "/assets/fixtures/eurolite/led-sls-3-hcl-3x10w/picture.png",
+      "picture2dPath": null,
+      "model3dPath": null,
       "createdAt": "2026-08-22T22:48:50.177Z",
-      "updatedAt": "2026-08-30T13:00:35.351Z",
+      "updatedAt": "2026-09-10T11:22:46.587Z",
       "vendor": {
         "publicId": "3ecfaac4-ec21-4e5e-bd23-505835b30ecc",
         "name": "eurolite",
@@ -2042,7 +1556,7 @@
           "order": 0,
           "preset": "IntensityRed",
           "createdAt": "2026-08-26T22:02:52.869Z",
-          "updatedAt": "2026-08-30T13:00:35.356Z",
+          "updatedAt": "2026-09-10T11:22:46.592Z",
           "ranges": [
             {
               "publicId": "6b79877f-9472-4a17-a98f-8eec5e8d12d1",
@@ -2050,7 +1564,7 @@
               "dmxEnd": 255,
               "description": "Red (0-100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.361Z"
+              "updatedAt": "2026-09-10T11:22:46.595Z"
             }
           ]
         },
@@ -2060,7 +1574,7 @@
           "order": 1,
           "preset": "IntensityGreen",
           "createdAt": "2026-08-26T22:02:52.876Z",
-          "updatedAt": "2026-08-30T13:00:35.363Z",
+          "updatedAt": "2026-09-10T11:22:46.597Z",
           "ranges": [
             {
               "publicId": "af764662-ca7f-4d85-8149-917ef8870bb0",
@@ -2068,7 +1582,7 @@
               "dmxEnd": 255,
               "description": "Green (0-100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.366Z"
+              "updatedAt": "2026-09-10T11:22:46.599Z"
             }
           ]
         },
@@ -2078,7 +1592,7 @@
           "order": 2,
           "preset": "IntensityBlue",
           "createdAt": "2026-08-26T22:03:56.068Z",
-          "updatedAt": "2026-08-30T13:00:35.367Z",
+          "updatedAt": "2026-09-10T11:22:46.601Z",
           "ranges": [
             {
               "publicId": "62571a3a-8759-4357-852e-44ad3a0fcc26",
@@ -2086,7 +1600,7 @@
               "dmxEnd": 255,
               "description": "Blue (0-100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.371Z"
+              "updatedAt": "2026-09-10T11:22:46.604Z"
             }
           ]
         },
@@ -2096,7 +1610,7 @@
           "order": 3,
           "preset": "IntensityWhite",
           "createdAt": "2026-08-26T22:04:32.524Z",
-          "updatedAt": "2026-08-30T13:00:35.373Z",
+          "updatedAt": "2026-09-10T11:22:46.605Z",
           "ranges": [
             {
               "publicId": "9e0c6e6e-4df6-4cb2-9853-ba3ab6113640",
@@ -2104,7 +1618,7 @@
               "dmxEnd": 255,
               "description": "White (0-100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.377Z"
+              "updatedAt": "2026-09-10T11:22:46.608Z"
             }
           ]
         },
@@ -2114,7 +1628,7 @@
           "order": 4,
           "preset": "IntensityAmber",
           "createdAt": "2026-08-26T22:06:38.313Z",
-          "updatedAt": "2026-08-30T13:00:35.379Z",
+          "updatedAt": "2026-09-10T11:22:46.610Z",
           "ranges": [
             {
               "publicId": "4cd55fd7-f5fc-4b26-8530-d471b6b6de88",
@@ -2122,7 +1636,7 @@
               "dmxEnd": 255,
               "description": "Amber (0-100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.382Z"
+              "updatedAt": "2026-09-10T11:22:46.613Z"
             }
           ]
         },
@@ -2132,7 +1646,7 @@
           "order": 5,
           "preset": "IntensityUV",
           "createdAt": "2026-08-26T22:23:55.381Z",
-          "updatedAt": "2026-08-30T13:00:35.384Z",
+          "updatedAt": "2026-09-10T11:22:46.614Z",
           "ranges": [
             {
               "publicId": "4202819b-39b4-48d7-aedc-0961ff6872ce",
@@ -2140,7 +1654,7 @@
               "dmxEnd": 255,
               "description": "UV (0-100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.387Z"
+              "updatedAt": "2026-09-10T11:22:46.618Z"
             }
           ]
         },
@@ -2150,7 +1664,7 @@
           "order": 6,
           "preset": "IntensityMasterDimmer",
           "createdAt": "2026-08-26T22:24:46.642Z",
-          "updatedAt": "2026-08-30T13:00:35.389Z",
+          "updatedAt": "2026-09-10T11:22:46.620Z",
           "ranges": [
             {
               "publicId": "2d8538d0-ae2f-4ca4-9fd2-92d621290439",
@@ -2158,7 +1672,7 @@
               "dmxEnd": 255,
               "description": "Dimmer (0-100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.392Z"
+              "updatedAt": "2026-09-10T11:22:46.622Z"
             }
           ]
         },
@@ -2168,7 +1682,7 @@
           "order": 7,
           "preset": "ShutterStrobeSlowFast",
           "createdAt": "2026-08-26T22:26:31.694Z",
-          "updatedAt": "2026-08-30T13:00:35.394Z",
+          "updatedAt": "2026-09-10T11:22:46.624Z",
           "ranges": [
             {
               "publicId": "1523e301-abda-45ae-aee1-40a0786098b4",
@@ -2176,7 +1690,7 @@
               "dmxEnd": 15,
               "description": "Strobe off",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.397Z"
+              "updatedAt": "2026-09-10T11:22:46.626Z"
             },
             {
               "publicId": "d6919204-a435-445c-a51e-545f65e43dd9",
@@ -2184,7 +1698,7 @@
               "dmxEnd": 255,
               "description": "Strobe (increasing)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.398Z"
+              "updatedAt": "2026-09-10T11:22:46.626Z"
             }
           ]
         },
@@ -2194,7 +1708,7 @@
           "order": 8,
           "preset": "ColorMacro",
           "createdAt": "2026-08-26T22:27:15.925Z",
-          "updatedAt": "2026-08-30T13:00:35.400Z",
+          "updatedAt": "2026-09-10T11:22:46.627Z",
           "ranges": [
             {
               "publicId": "9a4c01aa-03df-44dd-8157-59e7d5c43938",
@@ -2202,7 +1716,7 @@
               "dmxEnd": 3,
               "description": "Off",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.402Z"
+              "updatedAt": "2026-09-10T11:22:46.631Z"
             },
             {
               "publicId": "8073a0d9-eed2-4837-ac1a-52a241d27045",
@@ -2210,7 +1724,7 @@
               "dmxEnd": 7,
               "description": "Red",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.403Z"
+              "updatedAt": "2026-09-10T11:22:46.632Z"
             },
             {
               "publicId": "4353e16f-c3d9-4758-a0e7-16b78128e3cc",
@@ -2218,7 +1732,7 @@
               "dmxEnd": 11,
               "description": "Green",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.403Z"
+              "updatedAt": "2026-09-10T11:22:46.630Z"
             },
             {
               "publicId": "3da84354-a0d4-4201-be68-03e3f57d4b30",
@@ -2226,7 +1740,7 @@
               "dmxEnd": 15,
               "description": "Blue",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.403Z"
+              "updatedAt": "2026-09-10T11:22:46.630Z"
             },
             {
               "publicId": "bb391cb2-a1af-4385-92e2-3846e7549599",
@@ -2234,7 +1748,7 @@
               "dmxEnd": 19,
               "description": "White",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.404Z"
+              "updatedAt": "2026-09-10T11:22:46.630Z"
             },
             {
               "publicId": "3c590c60-79d7-4d63-88da-3c3340c424e3",
@@ -2242,7 +1756,7 @@
               "dmxEnd": 23,
               "description": "Amber",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.404Z"
+              "updatedAt": "2026-09-10T11:22:46.631Z"
             },
             {
               "publicId": "8a7df69d-3f6c-4486-9819-6b31e2bf5967",
@@ -2250,7 +1764,7 @@
               "dmxEnd": 27,
               "description": "UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.404Z"
+              "updatedAt": "2026-09-10T11:22:46.631Z"
             },
             {
               "publicId": "360ebfb0-87b8-4e18-bfbe-2909ae201235",
@@ -2258,7 +1772,7 @@
               "dmxEnd": 31,
               "description": "R+G",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.404Z"
+              "updatedAt": "2026-09-10T11:22:46.631Z"
             },
             {
               "publicId": "38c72472-3bad-41c8-96b4-caa13c32e76c",
@@ -2266,7 +1780,7 @@
               "dmxEnd": 35,
               "description": "R+B",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.405Z"
+              "updatedAt": "2026-09-10T11:22:46.631Z"
             },
             {
               "publicId": "f3518e01-76a5-4ff0-8144-a25751b7fe33",
@@ -2274,7 +1788,7 @@
               "dmxEnd": 39,
               "description": "R+W",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.405Z"
+              "updatedAt": "2026-09-10T11:22:46.631Z"
             },
             {
               "publicId": "72ff5022-26a2-412e-af08-2a75ea2a119f",
@@ -2282,7 +1796,7 @@
               "dmxEnd": 43,
               "description": "R+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.405Z"
+              "updatedAt": "2026-09-10T11:22:46.631Z"
             },
             {
               "publicId": "45172a55-fe31-4f20-85a1-3448db96c040",
@@ -2290,7 +1804,7 @@
               "dmxEnd": 47,
               "description": "R+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.405Z"
+              "updatedAt": "2026-09-10T11:22:46.632Z"
             },
             {
               "publicId": "18d0f3f3-1938-4cd1-8e0e-f5b43556a305",
@@ -2298,7 +1812,7 @@
               "dmxEnd": 51,
               "description": "G+B",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.405Z"
+              "updatedAt": "2026-09-10T11:22:46.632Z"
             },
             {
               "publicId": "e59f4d2b-2718-4c75-8061-8365befab86c",
@@ -2306,7 +1820,7 @@
               "dmxEnd": 55,
               "description": "G+W",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.406Z"
+              "updatedAt": "2026-09-10T11:22:46.632Z"
             },
             {
               "publicId": "80daa59a-b47d-4f4b-96e3-143eeb9111cf",
@@ -2314,7 +1828,7 @@
               "dmxEnd": 59,
               "description": "G+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.406Z"
+              "updatedAt": "2026-09-10T11:22:46.632Z"
             },
             {
               "publicId": "545819d8-3485-4928-81c2-f518ab40cd30",
@@ -2322,7 +1836,7 @@
               "dmxEnd": 63,
               "description": "G+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.406Z"
+              "updatedAt": "2026-09-10T11:22:46.632Z"
             },
             {
               "publicId": "ec309ed0-e408-4b26-bb22-56754efc42e6",
@@ -2330,7 +1844,7 @@
               "dmxEnd": 67,
               "description": "B+W",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.406Z"
+              "updatedAt": "2026-09-10T11:22:46.632Z"
             },
             {
               "publicId": "4b568195-c43b-4b95-844b-210546bb10d1",
@@ -2338,7 +1852,7 @@
               "dmxEnd": 71,
               "description": "B+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.406Z"
+              "updatedAt": "2026-09-10T11:22:46.632Z"
             },
             {
               "publicId": "653f6150-bf7f-4a2f-9982-2a1af8261607",
@@ -2346,7 +1860,7 @@
               "dmxEnd": 75,
               "description": "B+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.406Z"
+              "updatedAt": "2026-09-10T11:22:46.633Z"
             },
             {
               "publicId": "7bdb112c-a36e-4773-adc4-92401fc4ba53",
@@ -2354,7 +1868,7 @@
               "dmxEnd": 79,
               "description": "W+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.406Z"
+              "updatedAt": "2026-09-10T11:22:46.635Z"
             },
             {
               "publicId": "cdd8bfbf-5512-4303-ad11-6ef7f039fe1e",
@@ -2362,7 +1876,7 @@
               "dmxEnd": 83,
               "description": "W+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.406Z"
+              "updatedAt": "2026-09-10T11:22:46.635Z"
             },
             {
               "publicId": "a54a0f84-5c94-4e61-be33-d376bf536ef3",
@@ -2370,7 +1884,7 @@
               "dmxEnd": 87,
               "description": "A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.406Z"
+              "updatedAt": "2026-09-10T11:22:46.635Z"
             },
             {
               "publicId": "a212092a-23da-46a7-86ad-34a35e3f8751",
@@ -2378,7 +1892,7 @@
               "dmxEnd": 91,
               "description": "R+G+B",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.406Z"
+              "updatedAt": "2026-09-10T11:22:46.633Z"
             },
             {
               "publicId": "dc1f2d3c-4050-444c-adef-652a4b5d2ca5",
@@ -2386,7 +1900,7 @@
               "dmxEnd": 95,
               "description": "R+G+W",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.407Z"
+              "updatedAt": "2026-09-10T11:22:46.633Z"
             },
             {
               "publicId": "1ff42e20-c183-4c31-a06e-d12a68b0831e",
@@ -2394,7 +1908,7 @@
               "dmxEnd": 99,
               "description": "R+G+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.407Z"
+              "updatedAt": "2026-09-10T11:22:46.633Z"
             },
             {
               "publicId": "c61f0400-e37c-442b-a488-ffcce14ed9c1",
@@ -2402,7 +1916,7 @@
               "dmxEnd": 103,
               "description": "R+G+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.407Z"
+              "updatedAt": "2026-09-10T11:22:46.633Z"
             },
             {
               "publicId": "f8c1fd16-b453-42ed-99ad-183e13f3c559",
@@ -2410,7 +1924,7 @@
               "dmxEnd": 107,
               "description": "R+B+W",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.407Z"
+              "updatedAt": "2026-09-10T11:22:46.633Z"
             },
             {
               "publicId": "44bf736d-2017-430b-9811-92da6027d650",
@@ -2418,7 +1932,7 @@
               "dmxEnd": 111,
               "description": "R+B+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.407Z"
+              "updatedAt": "2026-09-10T11:22:46.634Z"
             },
             {
               "publicId": "3f9f444b-3218-40e9-972e-f0bc7bc16f42",
@@ -2426,7 +1940,7 @@
               "dmxEnd": 115,
               "description": "R+B+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.634Z"
             },
             {
               "publicId": "79eb222a-1149-469f-90ae-afc2993d9601",
@@ -2434,7 +1948,7 @@
               "dmxEnd": 119,
               "description": "R+W+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.634Z"
             },
             {
               "publicId": "83afd479-f0c2-427d-95a5-51937752dd99",
@@ -2442,7 +1956,7 @@
               "dmxEnd": 123,
               "description": "R+W+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.634Z"
             },
             {
               "publicId": "d565e16d-db87-4136-94a7-6f31a6c7478c",
@@ -2450,7 +1964,7 @@
               "dmxEnd": 127,
               "description": "R+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.634Z"
             },
             {
               "publicId": "ec3e545e-41cc-4d82-820a-335cf8c6d955",
@@ -2458,7 +1972,7 @@
               "dmxEnd": 131,
               "description": "G+B+W",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.634Z"
             },
             {
               "publicId": "ac4fb98a-e377-4404-8070-49d681fbb97b",
@@ -2466,7 +1980,7 @@
               "dmxEnd": 135,
               "description": "G+B+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.634Z"
             },
             {
               "publicId": "46e5f6fb-cadd-471f-8230-a40026eed9a8",
@@ -2474,7 +1988,7 @@
               "dmxEnd": 139,
               "description": "G+B+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.634Z"
             },
             {
               "publicId": "78ed5281-7da2-476c-9c8a-26d37a4fad0b",
@@ -2482,7 +1996,7 @@
               "dmxEnd": 143,
               "description": "G+W+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.634Z"
             },
             {
               "publicId": "4bf70332-854d-4410-b9ec-512fd1ab8d38",
@@ -2490,7 +2004,7 @@
               "dmxEnd": 147,
               "description": "G+W+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.635Z"
             },
             {
               "publicId": "3eeabea6-417f-45fe-ad71-def203754fcc",
@@ -2498,7 +2012,7 @@
               "dmxEnd": 151,
               "description": "G+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.635Z"
             },
             {
               "publicId": "c8206b2d-c213-4fd0-99d2-2f8514fcde6d",
@@ -2506,7 +2020,7 @@
               "dmxEnd": 155,
               "description": "B+W+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.635Z"
             },
             {
               "publicId": "4f83e37f-d9c3-4aee-af68-72d1de448016",
@@ -2514,7 +2028,7 @@
               "dmxEnd": 159,
               "description": "B+W+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.408Z"
+              "updatedAt": "2026-09-10T11:22:46.636Z"
             },
             {
               "publicId": "f7af86f1-0986-4bea-ba20-dde5b550db0d",
@@ -2522,7 +2036,7 @@
               "dmxEnd": 163,
               "description": "B+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.409Z"
+              "updatedAt": "2026-09-10T11:22:46.636Z"
             },
             {
               "publicId": "bc0c634f-430d-4cbd-afc2-faf8030315ef",
@@ -2530,7 +2044,7 @@
               "dmxEnd": 167,
               "description": "W+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.409Z"
+              "updatedAt": "2026-09-10T11:22:46.636Z"
             },
             {
               "publicId": "8e3a1dac-4774-4bb2-89dc-0db9712495d7",
@@ -2538,7 +2052,7 @@
               "dmxEnd": 171,
               "description": "R+G+B+W",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.409Z"
+              "updatedAt": "2026-09-10T11:22:46.636Z"
             },
             {
               "publicId": "9312daf9-1833-466e-9ed4-093291340ca6",
@@ -2546,7 +2060,7 @@
               "dmxEnd": 175,
               "description": "R+G+B+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.409Z"
+              "updatedAt": "2026-09-10T11:22:46.636Z"
             },
             {
               "publicId": "f4dc5fc6-7465-4c54-ac4d-7edcb7151cf5",
@@ -2554,7 +2068,7 @@
               "dmxEnd": 179,
               "description": "R+G+B+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.409Z"
+              "updatedAt": "2026-09-10T11:22:46.636Z"
             },
             {
               "publicId": "3a9349ff-58ad-4141-b3a0-00f43a6000f5",
@@ -2562,7 +2076,7 @@
               "dmxEnd": 183,
               "description": "R+G+W+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.409Z"
+              "updatedAt": "2026-09-10T11:22:46.636Z"
             },
             {
               "publicId": "be4e2803-9d5d-441d-81b0-1cfa7a2e822a",
@@ -2570,7 +2084,7 @@
               "dmxEnd": 187,
               "description": "R+G+W+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.409Z"
+              "updatedAt": "2026-09-10T11:22:46.636Z"
             },
             {
               "publicId": "404fddf5-ba30-4074-bdb1-638f54b1df7a",
@@ -2578,7 +2092,7 @@
               "dmxEnd": 191,
               "description": "R+G+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.409Z"
+              "updatedAt": "2026-09-10T11:22:46.637Z"
             },
             {
               "publicId": "527ec9d6-c335-4d81-91ce-cc9a14eaad77",
@@ -2586,7 +2100,7 @@
               "dmxEnd": 195,
               "description": "R+B+W+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.409Z"
+              "updatedAt": "2026-09-10T11:22:46.637Z"
             },
             {
               "publicId": "e1357046-3600-44af-ae78-17475a6aa195",
@@ -2594,7 +2108,7 @@
               "dmxEnd": 199,
               "description": "R+B+W+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.409Z"
+              "updatedAt": "2026-09-10T11:22:46.637Z"
             },
             {
               "publicId": "c1d5a575-01fe-4a6c-8b31-87e4c2928d5f",
@@ -2602,7 +2116,7 @@
               "dmxEnd": 203,
               "description": "R+B+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.410Z"
+              "updatedAt": "2026-09-10T11:22:46.637Z"
             },
             {
               "publicId": "5199417a-8952-48eb-a166-84cfa2da54ac",
@@ -2610,7 +2124,7 @@
               "dmxEnd": 207,
               "description": "R+W+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.410Z"
+              "updatedAt": "2026-09-10T11:22:46.637Z"
             },
             {
               "publicId": "29d1e9ab-e061-4bfa-8f0f-606498424ee9",
@@ -2618,7 +2132,7 @@
               "dmxEnd": 211,
               "description": "G+B+W+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.410Z"
+              "updatedAt": "2026-09-10T11:22:46.637Z"
             },
             {
               "publicId": "e2c8317a-496b-4910-92e7-cc41a27a747e",
@@ -2626,7 +2140,7 @@
               "dmxEnd": 215,
               "description": "G+B+W+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.410Z"
+              "updatedAt": "2026-09-10T11:22:46.637Z"
             },
             {
               "publicId": "7ad21e7f-5450-4a9f-8bb5-03a5de12e647",
@@ -2634,7 +2148,7 @@
               "dmxEnd": 219,
               "description": "G+B+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.410Z"
+              "updatedAt": "2026-09-10T11:22:46.637Z"
             },
             {
               "publicId": "88a30977-ec71-484d-8ce3-bacbe9104840",
@@ -2642,7 +2156,7 @@
               "dmxEnd": 223,
               "description": "G+W+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.410Z"
+              "updatedAt": "2026-09-10T11:22:46.638Z"
             },
             {
               "publicId": "cba47d90-2a6b-4b3e-b2cb-cf6ed7260937",
@@ -2650,7 +2164,7 @@
               "dmxEnd": 227,
               "description": "B+W+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.411Z"
+              "updatedAt": "2026-09-10T11:22:46.638Z"
             },
             {
               "publicId": "849abb33-a927-43f5-8704-2782090cdd56",
@@ -2658,7 +2172,7 @@
               "dmxEnd": 231,
               "description": "R+G+B+W+A",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.411Z"
+              "updatedAt": "2026-09-10T11:22:46.638Z"
             },
             {
               "publicId": "fa2a289b-722a-4cec-bbf2-ea80c1317126",
@@ -2666,7 +2180,7 @@
               "dmxEnd": 235,
               "description": "R+G+B+W+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.411Z"
+              "updatedAt": "2026-09-10T11:22:46.638Z"
             },
             {
               "publicId": "8559ddaf-3480-4f98-8dbc-b06db3dd301b",
@@ -2674,7 +2188,7 @@
               "dmxEnd": 239,
               "description": "R+G+B+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.412Z"
+              "updatedAt": "2026-09-10T11:22:46.638Z"
             },
             {
               "publicId": "703c6226-311b-4826-9eda-23b44ea6b048",
@@ -2682,7 +2196,7 @@
               "dmxEnd": 243,
               "description": "R+G+W+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.412Z"
+              "updatedAt": "2026-09-10T11:22:46.638Z"
             },
             {
               "publicId": "d5088d59-4614-4554-b8ad-02ff0e519591",
@@ -2690,7 +2204,7 @@
               "dmxEnd": 247,
               "description": "R+B+W+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.413Z"
+              "updatedAt": "2026-09-10T11:22:46.639Z"
             },
             {
               "publicId": "6e09b9bb-e58a-4fbb-b9bd-b08a8bb26377",
@@ -2698,7 +2212,7 @@
               "dmxEnd": 251,
               "description": "G+B+W+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.413Z"
+              "updatedAt": "2026-09-10T11:22:46.639Z"
             },
             {
               "publicId": "d7932868-de58-4d06-b810-18b75daa86aa",
@@ -2706,7 +2220,7 @@
               "dmxEnd": 255,
               "description": "R+G+B+W+A+UV",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-08-30T13:00:35.414Z"
+              "updatedAt": "2026-09-10T11:22:46.639Z"
             }
           ]
         }
@@ -2717,43 +2231,43 @@
           "name": "6-Channel Mode",
           "order": 0,
           "createdAt": "2026-08-26T21:55:23.004Z",
-          "updatedAt": "2026-08-30T13:00:35.416Z",
+          "updatedAt": "2026-09-10T11:22:46.642Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 5,
               "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 6,
               "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             }
           ]
         },
@@ -2762,49 +2276,49 @@
           "name": "7-Channel Mode",
           "order": 1,
           "createdAt": "2026-08-26T21:56:11.544Z",
-          "updatedAt": "2026-08-30T13:00:35.417Z",
+          "updatedAt": "2026-09-10T11:22:46.643Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 5,
               "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 6,
               "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 7,
               "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             }
           ]
         },
@@ -2813,55 +2327,55 @@
           "name": "8-Channel Mode",
           "order": 2,
           "createdAt": "2026-08-26T21:56:11.544Z",
-          "updatedAt": "2026-08-30T13:00:35.417Z",
+          "updatedAt": "2026-09-10T11:22:46.644Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 5,
               "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 6,
               "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 7,
               "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 8,
               "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             }
           ]
         },
@@ -2870,61 +2384,61 @@
           "name": "9-Channel Mode",
           "order": 3,
           "createdAt": "2026-08-26T21:56:11.544Z",
-          "updatedAt": "2026-08-30T13:00:35.418Z",
+          "updatedAt": "2026-09-10T11:22:46.644Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 5,
               "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 6,
               "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 7,
               "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 8,
               "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             },
             {
               "channelNumber": 9,
               "channelDefinitionPublicId": "8a622a8d-651d-44e3-838c-adb278a87047",
-              "createdAt": "2026-08-30T13:00:35.415Z",
-              "updatedAt": "2026-08-30T13:00:35.415Z"
+              "createdAt": "2026-09-10T11:22:46.642Z",
+              "updatedAt": "2026-09-10T11:22:46.642Z"
             }
           ]
         }
@@ -2933,8 +2447,15 @@
     {
       "publicId": "af168eb7-bac4-4240-93d9-196e1656f450",
       "name": "LED CLS-18 QCL RGBW 18x8W",
+      "weight": 5,
+      "width": 0.34,
+      "length": 0.17,
+      "height": 0.22,
+      "picturePath": "/assets/fixtures/eurolite/led-cls-18-qcl-rgbw-18x8w/picture.png",
+      "picture2dPath": null,
+      "model3dPath": null,
       "createdAt": "2026-08-22T22:46:48.405Z",
-      "updatedAt": "2026-09-09T09:42:04.610Z",
+      "updatedAt": "2026-09-10T11:24:04.574Z",
       "vendor": {
         "publicId": "3ecfaac4-ec21-4e5e-bd23-505835b30ecc",
         "name": "eurolite",
@@ -2948,7 +2469,7 @@
           "order": 0,
           "preset": "IntensityRed",
           "createdAt": "2026-08-24T20:26:01.689Z",
-          "updatedAt": "2026-09-09T09:42:04.615Z",
+          "updatedAt": "2026-09-10T11:24:04.580Z",
           "ranges": [
             {
               "publicId": "58a76c2d-7ae0-4c57-bc6d-c2141f4f3f03",
@@ -2956,7 +2477,7 @@
               "dmxEnd": 255,
               "description": "Red (0 - 100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-09-09T09:42:04.619Z"
+              "updatedAt": "2026-09-10T11:24:04.583Z"
             }
           ]
         },
@@ -2966,7 +2487,7 @@
           "order": 1,
           "preset": "IntensityGreen",
           "createdAt": "2026-08-24T20:26:36.536Z",
-          "updatedAt": "2026-09-09T09:42:04.620Z",
+          "updatedAt": "2026-09-10T11:24:04.584Z",
           "ranges": [
             {
               "publicId": "ffcf2058-5c4f-4a21-8f89-626b85823e00",
@@ -2974,7 +2495,7 @@
               "dmxEnd": 255,
               "description": "Green (0 - 100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-09-09T09:42:04.623Z"
+              "updatedAt": "2026-09-10T11:24:04.587Z"
             }
           ]
         },
@@ -2984,7 +2505,7 @@
           "order": 2,
           "preset": "IntensityBlue",
           "createdAt": "2026-08-24T20:27:09.145Z",
-          "updatedAt": "2026-09-09T09:42:04.625Z",
+          "updatedAt": "2026-09-10T11:24:04.589Z",
           "ranges": [
             {
               "publicId": "c83fd4b2-842f-4719-8379-72ca48f01b01",
@@ -2992,7 +2513,7 @@
               "dmxEnd": 255,
               "description": "Blue (0 - 100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-09-09T09:42:04.627Z"
+              "updatedAt": "2026-09-10T11:24:04.591Z"
             }
           ]
         },
@@ -3002,7 +2523,7 @@
           "order": 3,
           "preset": "IntensityWhite",
           "createdAt": "2026-08-24T20:36:41.739Z",
-          "updatedAt": "2026-09-09T09:42:04.629Z",
+          "updatedAt": "2026-09-10T11:24:04.593Z",
           "ranges": [
             {
               "publicId": "7434f52d-87f2-43ac-9d85-79ba539e931a",
@@ -3010,7 +2531,7 @@
               "dmxEnd": 255,
               "description": "White (0 - 100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-09-09T09:42:04.632Z"
+              "updatedAt": "2026-09-10T11:24:04.596Z"
             }
           ]
         },
@@ -3020,7 +2541,7 @@
           "order": 4,
           "preset": "IntensityMasterDimmer",
           "createdAt": "2026-08-24T21:50:45.890Z",
-          "updatedAt": "2026-09-09T09:42:04.634Z",
+          "updatedAt": "2026-09-10T11:24:04.597Z",
           "ranges": [
             {
               "publicId": "5196e8dc-219d-42a4-a229-ba66855dfc15",
@@ -3028,7 +2549,7 @@
               "dmxEnd": 255,
               "description": "Dimmer (0 - 100%)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-09-09T09:42:04.637Z"
+              "updatedAt": "2026-09-10T11:24:04.599Z"
             }
           ]
         },
@@ -3038,7 +2559,7 @@
           "order": 5,
           "preset": "Custom",
           "createdAt": "2026-08-24T22:08:52.086Z",
-          "updatedAt": "2026-09-09T09:42:04.639Z",
+          "updatedAt": "2026-09-10T11:24:04.601Z",
           "ranges": [
             {
               "publicId": "2877d1d4-9f82-4134-a25b-b1df00573528",
@@ -3046,7 +2567,7 @@
               "dmxEnd": 0,
               "description": "No Function",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-09-09T09:42:04.642Z"
+              "updatedAt": "2026-09-10T11:24:04.603Z"
             },
             {
               "publicId": "d6f1ea3f-d665-4ffa-b27f-e41fd15663f7",
@@ -3054,7 +2575,7 @@
               "dmxEnd": 5,
               "description": "Sound Control (15 colors)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-09-09T09:42:04.642Z"
+              "updatedAt": "2026-09-10T11:24:04.603Z"
             },
             {
               "publicId": "e2912017-97b2-4589-ac30-d6662e1b9bf0",
@@ -3062,7 +2583,7 @@
               "dmxEnd": 10,
               "description": "No function",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-09-09T09:42:04.643Z"
+              "updatedAt": "2026-09-10T11:24:04.603Z"
             },
             {
               "publicId": "f3fcd923-2957-45d9-a1ac-65b249e9cccb",
@@ -3070,7 +2591,7 @@
               "dmxEnd": 255,
               "description": "Strobe (increasing)",
               "createdAt": "2026-08-26T22:54:37.438Z",
-              "updatedAt": "2026-09-09T09:42:04.643Z"
+              "updatedAt": "2026-09-10T11:24:04.604Z"
             }
           ]
         }
@@ -3081,31 +2602,31 @@
           "name": "4-channel mode",
           "order": 0,
           "createdAt": "2026-08-22T23:20:43.938Z",
-          "updatedAt": "2026-09-09T09:42:04.646Z",
+          "updatedAt": "2026-09-10T11:24:04.606Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
-              "createdAt": "2026-09-09T09:42:04.645Z",
-              "updatedAt": "2026-09-09T09:42:04.645Z"
+              "createdAt": "2026-09-10T11:24:04.605Z",
+              "updatedAt": "2026-09-10T11:24:04.605Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
-              "createdAt": "2026-09-09T09:42:04.645Z",
-              "updatedAt": "2026-09-09T09:42:04.645Z"
+              "createdAt": "2026-09-10T11:24:04.605Z",
+              "updatedAt": "2026-09-10T11:24:04.605Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
-              "createdAt": "2026-09-09T09:42:04.645Z",
-              "updatedAt": "2026-09-09T09:42:04.645Z"
+              "createdAt": "2026-09-10T11:24:04.605Z",
+              "updatedAt": "2026-09-10T11:24:04.605Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
-              "createdAt": "2026-09-09T09:42:04.645Z",
-              "updatedAt": "2026-09-09T09:42:04.645Z"
+              "createdAt": "2026-09-10T11:24:04.605Z",
+              "updatedAt": "2026-09-10T11:24:04.605Z"
             }
           ]
         },
@@ -3114,43 +2635,557 @@
           "name": "6-channel mode",
           "order": 1,
           "createdAt": "2026-08-24T21:45:13.292Z",
-          "updatedAt": "2026-09-09T09:42:04.648Z",
+          "updatedAt": "2026-09-10T11:24:04.607Z",
           "assignments": [
             {
               "channelNumber": 1,
               "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
-              "createdAt": "2026-09-09T09:42:04.645Z",
-              "updatedAt": "2026-09-09T09:42:04.645Z"
+              "createdAt": "2026-09-10T11:24:04.605Z",
+              "updatedAt": "2026-09-10T11:24:04.605Z"
             },
             {
               "channelNumber": 2,
               "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
-              "createdAt": "2026-09-09T09:42:04.645Z",
-              "updatedAt": "2026-09-09T09:42:04.645Z"
+              "createdAt": "2026-09-10T11:24:04.605Z",
+              "updatedAt": "2026-09-10T11:24:04.605Z"
             },
             {
               "channelNumber": 3,
               "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
-              "createdAt": "2026-09-09T09:42:04.645Z",
-              "updatedAt": "2026-09-09T09:42:04.645Z"
+              "createdAt": "2026-09-10T11:24:04.605Z",
+              "updatedAt": "2026-09-10T11:24:04.605Z"
             },
             {
               "channelNumber": 4,
               "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
-              "createdAt": "2026-09-09T09:42:04.645Z",
-              "updatedAt": "2026-09-09T09:42:04.645Z"
+              "createdAt": "2026-09-10T11:24:04.605Z",
+              "updatedAt": "2026-09-10T11:24:04.605Z"
             },
             {
               "channelNumber": 5,
               "channelDefinitionPublicId": "c874a0ac-df1e-4e49-8131-2386646dcd71",
-              "createdAt": "2026-09-09T09:42:04.645Z",
-              "updatedAt": "2026-09-09T09:42:04.645Z"
+              "createdAt": "2026-09-10T11:24:04.605Z",
+              "updatedAt": "2026-09-10T11:24:04.605Z"
             },
             {
               "channelNumber": 6,
               "channelDefinitionPublicId": "93282597-1324-48a9-ac74-e5d9d6553657",
-              "createdAt": "2026-09-09T09:42:04.645Z",
-              "updatedAt": "2026-09-09T09:42:04.645Z"
+              "createdAt": "2026-09-10T11:24:04.605Z",
+              "updatedAt": "2026-09-10T11:24:04.605Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "publicId": "5f34eb30-d45e-4025-b157-a09ae0f2f9cc",
+      "name": "CX-60 HEX",
+      "weight": 3.3,
+      "width": 0.275,
+      "length": 0.405,
+      "height": 0.275,
+      "picturePath": "/assets/fixtures/stairville/cx-60-hex/picture.jpg",
+      "picture2dPath": null,
+      "model3dPath": null,
+      "createdAt": "2026-08-22T22:51:27.218Z",
+      "updatedAt": "2026-09-10T11:25:49.078Z",
+      "vendor": {
+        "publicId": "c3528578-6995-4107-96eb-19010414ba24",
+        "name": "Stairville",
+        "createdAt": "2026-08-22T22:51:27.216Z",
+        "updatedAt": "2026-08-22T22:51:27.216Z"
+      },
+      "channelDefinitions": [
+        {
+          "publicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
+          "name": "Red",
+          "order": 0,
+          "preset": "IntensityRed",
+          "createdAt": "2026-08-28T18:50:33.310Z",
+          "updatedAt": "2026-09-10T11:25:49.085Z",
+          "ranges": [
+            {
+              "publicId": "8acb077a-a8c3-4d9f-a6de-5758da84f387",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Intensity red (0 % to 100 %)",
+              "createdAt": "2026-08-28T19:50:38.013Z",
+              "updatedAt": "2026-09-10T11:25:49.090Z"
+            }
+          ]
+        },
+        {
+          "publicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
+          "name": "Green",
+          "order": 1,
+          "preset": "IntensityGreen",
+          "createdAt": "2026-08-28T18:52:39.252Z",
+          "updatedAt": "2026-09-10T11:25:49.091Z",
+          "ranges": [
+            {
+              "publicId": "e6518c6d-c5e7-4c49-a065-15b604eea318",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Intensity green (0 % to 100 %)",
+              "createdAt": "2026-08-28T19:50:38.017Z",
+              "updatedAt": "2026-09-10T11:25:49.093Z"
+            }
+          ]
+        },
+        {
+          "publicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
+          "name": "Blue",
+          "order": 2,
+          "preset": "IntensityBlue",
+          "createdAt": "2026-08-28T18:52:39.256Z",
+          "updatedAt": "2026-09-10T11:25:49.095Z",
+          "ranges": [
+            {
+              "publicId": "cec94cee-9a25-488e-95a4-679fd48fda4f",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Intensity blue (0 % to 100 %)",
+              "createdAt": "2026-08-28T19:50:38.021Z",
+              "updatedAt": "2026-09-10T11:25:49.098Z"
+            }
+          ]
+        },
+        {
+          "publicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
+          "name": "White",
+          "order": 3,
+          "preset": "IntensityWhite",
+          "createdAt": "2026-08-28T18:52:39.262Z",
+          "updatedAt": "2026-09-10T11:25:49.099Z",
+          "ranges": [
+            {
+              "publicId": "fbdf7bed-d94a-4289-977c-32eede100f18",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Intensity white (0 % to 100 %)",
+              "createdAt": "2026-08-28T19:50:38.025Z",
+              "updatedAt": "2026-09-10T11:25:49.102Z"
+            }
+          ]
+        },
+        {
+          "publicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
+          "name": "Amber",
+          "order": 4,
+          "preset": "IntensityAmber",
+          "createdAt": "2026-08-28T18:52:39.268Z",
+          "updatedAt": "2026-09-10T11:25:49.104Z",
+          "ranges": [
+            {
+              "publicId": "1a590395-c1e3-4021-b182-ce5abc491011",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Intensity amber (0 % to 100 %)",
+              "createdAt": "2026-08-28T19:50:38.029Z",
+              "updatedAt": "2026-09-10T11:25:49.107Z"
+            }
+          ]
+        },
+        {
+          "publicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
+          "name": "UV",
+          "order": 5,
+          "preset": "IntensityUV",
+          "createdAt": "2026-08-28T18:52:39.274Z",
+          "updatedAt": "2026-09-10T11:25:49.108Z",
+          "ranges": [
+            {
+              "publicId": "97c4dcaa-053d-4a8b-9b3c-cb1834e1bcf5",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Intensity UV (0 % to 100 %)",
+              "createdAt": "2026-08-28T19:50:38.033Z",
+              "updatedAt": "2026-09-10T11:25:49.111Z"
+            }
+          ]
+        },
+        {
+          "publicId": "a41915dd-9e61-4b7e-8467-86d11c07c953",
+          "name": "Dimmer",
+          "order": 6,
+          "preset": "IntensityMasterDimmer",
+          "createdAt": "2026-08-28T18:55:50.294Z",
+          "updatedAt": "2026-09-10T11:25:49.113Z",
+          "ranges": [
+            {
+              "publicId": "3a4a4bfa-94b7-49fc-962b-36d1e17a2031",
+              "dmxStart": 0,
+              "dmxEnd": 255,
+              "description": "Dimmer (0 % to 100 %)",
+              "createdAt": "2026-08-28T19:50:38.037Z",
+              "updatedAt": "2026-09-10T11:25:49.116Z"
+            }
+          ]
+        },
+        {
+          "publicId": "dcd1396e-651d-46ed-b507-a442971f985a",
+          "name": "Effects speed and sound control sensitivity",
+          "order": 7,
+          "preset": "ColorMacro",
+          "createdAt": "2026-08-28T19:17:02.713Z",
+          "updatedAt": "2026-09-10T11:25:49.118Z",
+          "ranges": [
+            {
+              "publicId": "cdb79e30-fa8d-48a4-9657-4995d38cf4f6",
+              "dmxStart": 0,
+              "dmxEnd": 10,
+              "description": "No automatic colour change",
+              "createdAt": "2026-08-28T19:50:38.041Z",
+              "updatedAt": "2026-09-10T11:25:49.122Z"
+            },
+            {
+              "publicId": "ae468ad3-67a3-4237-a796-772fe07a36f9",
+              "dmxStart": 11,
+              "dmxEnd": 255,
+              "description": "Automatic colour change as set by channel 1, decreasing speed from fast to slow if channel 1 = 64…127\nAutomatic colour change as set by channel 1, increasing speed from slow to fast if channel 1 = 128…191\nSound control sensitivity (from low to high sensitivity) if channel 1 = 192…255",
+              "createdAt": "2026-08-28T19:50:38.041Z",
+              "updatedAt": "2026-09-10T11:25:49.122Z"
+            }
+          ]
+        },
+        {
+          "publicId": "3172aaed-f0a8-47ed-a19d-922539fb06ce",
+          "name": "Fixed colour pattern",
+          "order": 8,
+          "preset": "ColorMacro",
+          "createdAt": "2026-08-28T19:30:30.679Z",
+          "updatedAt": "2026-09-10T11:25:49.124Z",
+          "ranges": [
+            {
+              "publicId": "53eb1566-bd30-4315-9a79-a4ee75f6ff73",
+              "dmxStart": 0,
+              "dmxEnd": 15,
+              "description": "Full brightness, no strobe effect",
+              "createdAt": "2026-08-28T19:50:38.046Z",
+              "updatedAt": "2026-09-10T11:25:49.126Z"
+            },
+            {
+              "publicId": "5b40df82-785f-4106-864b-ce2efe68dfbe",
+              "dmxStart": 16,
+              "dmxEnd": 255,
+              "description": "One of 31 preprogrammed colours, channels 8 and 9 without function",
+              "createdAt": "2026-08-28T19:50:38.046Z",
+              "updatedAt": "2026-09-10T11:25:49.127Z"
+            }
+          ]
+        },
+        {
+          "publicId": "874b038f-5dbd-4879-8de0-b8b9c02b28cf",
+          "name": "Strobe effect",
+          "order": 9,
+          "preset": "ShutterStrobeSlowFast",
+          "createdAt": "2026-08-28T19:33:12.319Z",
+          "updatedAt": "2026-09-10T11:25:49.128Z",
+          "ranges": [
+            {
+              "publicId": "3244808d-460a-40e8-b05a-426d68e5d4b8",
+              "dmxStart": 0,
+              "dmxEnd": 15,
+              "description": "Full brightness, no strobe effect",
+              "createdAt": "2026-08-28T19:50:38.050Z",
+              "updatedAt": "2026-09-10T11:25:49.131Z"
+            },
+            {
+              "publicId": "2fb94e3b-ee9f-404c-976f-f5173d827436",
+              "dmxStart": 16,
+              "dmxEnd": 255,
+              "description": "Strobe effect, increasing speed, if channel 7 = 0…15",
+              "createdAt": "2026-08-28T19:50:38.050Z",
+              "updatedAt": "2026-09-10T11:25:49.131Z"
+            }
+          ]
+        },
+        {
+          "publicId": "062050b2-3cf0-470c-9ec5-54b7273b9c25",
+          "name": "Operating mode selection 8ch",
+          "order": 10,
+          "preset": "ColorMacro",
+          "createdAt": "2026-08-28T19:17:02.708Z",
+          "updatedAt": "2026-09-10T11:25:49.133Z",
+          "ranges": [
+            {
+              "publicId": "63d7c732-5884-4f1a-add1-eef5fcaa4c52",
+              "dmxStart": 0,
+              "dmxEnd": 63,
+              "description": "Constant colour, the hue is set by channels 2 to 5",
+              "createdAt": "2026-08-28T19:50:38.054Z",
+              "updatedAt": "2026-09-10T11:25:49.135Z"
+            },
+            {
+              "publicId": "2cdcca96-e76e-4fd4-b182-444871c2d412",
+              "dmxStart": 64,
+              "dmxEnd": 127,
+              "description": "Automatic colour change with 14 colours, channels 2-7 without function",
+              "createdAt": "2026-08-28T19:50:38.054Z",
+              "updatedAt": "2026-09-10T11:25:49.135Z"
+            },
+            {
+              "publicId": "c9b7760f-aa31-45ef-956a-75d98f45c895",
+              "dmxStart": 128,
+              "dmxEnd": 191,
+              "description": "Automatic colour change with 24 colours, channels 2-7 without function",
+              "createdAt": "2026-08-28T19:50:38.054Z",
+              "updatedAt": "2026-09-10T11:25:49.135Z"
+            },
+            {
+              "publicId": "e904b4c2-a14a-4349-8adc-21fc71f7aa5e",
+              "dmxStart": 192,
+              "dmxEnd": 255,
+              "description": "Automatic colour change with 6 colours, channels 2-7 without function",
+              "createdAt": "2026-08-28T19:50:38.054Z",
+              "updatedAt": "2026-09-10T11:25:49.135Z"
+            }
+          ]
+        },
+        {
+          "publicId": "fe018a8e-ee6f-4df6-a7b0-ded9b260165b",
+          "name": "Operating mode selection 10ch",
+          "order": 11,
+          "preset": "ColorMacro",
+          "createdAt": "2026-08-28T19:34:23.579Z",
+          "updatedAt": "2026-09-10T11:25:49.137Z",
+          "ranges": [
+            {
+              "publicId": "df1b4b8d-0693-47d3-a44a-ef199b380a68",
+              "dmxStart": 0,
+              "dmxEnd": 31,
+              "description": "Constant colour, the hue is set by channels 1 to 6",
+              "createdAt": "2026-08-28T19:50:38.060Z",
+              "updatedAt": "2026-09-10T11:25:49.139Z"
+            },
+            {
+              "publicId": "492bec92-5154-4b9f-830d-bfc12e61b72f",
+              "dmxStart": 32,
+              "dmxEnd": 63,
+              "description": "Fade-out effect, speed controlled by channel 8",
+              "createdAt": "2026-08-28T19:50:38.060Z",
+              "updatedAt": "2026-09-10T11:25:49.139Z"
+            },
+            {
+              "publicId": "45c8a8d3-29f6-48ea-a8a8-87ec47c51852",
+              "dmxStart": 64,
+              "dmxEnd": 95,
+              "description": "Fade-in effect, speed controlled by channel 8",
+              "createdAt": "2026-08-28T19:50:38.060Z",
+              "updatedAt": "2026-09-10T11:25:49.139Z"
+            },
+            {
+              "publicId": "b7ae540b-61c0-4738-a630-97d1cc5b3e54",
+              "dmxStart": 96,
+              "dmxEnd": 127,
+              "description": "Fade-in-out effect, speed controlled by channel 8",
+              "createdAt": "2026-08-28T19:50:38.060Z",
+              "updatedAt": "2026-09-10T11:25:49.140Z"
+            },
+            {
+              "publicId": "aa66b203-a352-4739-96e7-676f8b82d20b",
+              "dmxStart": 128,
+              "dmxEnd": 159,
+              "description": "Auto-mix effect, speed controlled by channel 8, channels 1 to 7 without function",
+              "createdAt": "2026-08-28T19:50:38.060Z",
+              "updatedAt": "2026-09-10T11:25:49.140Z"
+            },
+            {
+              "publicId": "349c21f9-59f8-40d0-8e05-38198e9a9531",
+              "dmxStart": 160,
+              "dmxEnd": 191,
+              "description": "Chase (4 colours), speed controlled by channel 8, channels 1 to 7 without function",
+              "createdAt": "2026-08-28T19:50:38.060Z",
+              "updatedAt": "2026-09-10T11:25:49.140Z"
+            },
+            {
+              "publicId": "ed4f8972-3022-45be-9232-7bbdbca6d256",
+              "dmxStart": 192,
+              "dmxEnd": 223,
+              "description": "Chase (12 colours), speed controlled by channel 8, channels 1 to 7 without function",
+              "createdAt": "2026-08-28T19:50:38.060Z",
+              "updatedAt": "2026-09-10T11:25:49.141Z"
+            },
+            {
+              "publicId": "81c24e94-5da2-4d6a-850a-e23006b91824",
+              "dmxStart": 224,
+              "dmxEnd": 255,
+              "description": "Sound control",
+              "createdAt": "2026-08-28T19:50:38.060Z",
+              "updatedAt": "2026-09-10T11:25:49.141Z"
+            }
+          ]
+        }
+      ],
+      "channelModes": [
+        {
+          "publicId": "a453a015-9c22-47fc-a4ba-2fcf5a925af7",
+          "name": "6-channel mode",
+          "order": 0,
+          "createdAt": "2026-08-28T18:54:00.056Z",
+          "updatedAt": "2026-09-10T11:25:49.143Z",
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 5,
+              "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 6,
+              "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            }
+          ]
+        },
+        {
+          "publicId": "b8a8de37-f770-4a0b-8d0b-0dbd4fee2259",
+          "name": "8-channel mode",
+          "order": 1,
+          "createdAt": "2026-08-28T18:54:00.056Z",
+          "updatedAt": "2026-09-10T11:25:49.144Z",
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "062050b2-3cf0-470c-9ec5-54b7273b9c25",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 5,
+              "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 6,
+              "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 7,
+              "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 8,
+              "channelDefinitionPublicId": "dcd1396e-651d-46ed-b507-a442971f985a",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            }
+          ]
+        },
+        {
+          "publicId": "742dc3d6-2a99-4a43-9d73-a309b633aa2f",
+          "name": "10-channel mode",
+          "order": 2,
+          "createdAt": "2026-08-28T18:54:00.056Z",
+          "updatedAt": "2026-09-10T11:25:49.144Z",
+          "assignments": [
+            {
+              "channelNumber": 1,
+              "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 2,
+              "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 3,
+              "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 4,
+              "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 5,
+              "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 6,
+              "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 7,
+              "channelDefinitionPublicId": "3172aaed-f0a8-47ed-a19d-922539fb06ce",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 8,
+              "channelDefinitionPublicId": "874b038f-5dbd-4879-8de0-b8b9c02b28cf",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 9,
+              "channelDefinitionPublicId": "fe018a8e-ee6f-4df6-a7b0-ded9b260165b",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
+            },
+            {
+              "channelNumber": 10,
+              "channelDefinitionPublicId": "a41915dd-9e61-4b7e-8467-86d11c07c953",
+              "createdAt": "2026-09-10T11:25:49.142Z",
+              "updatedAt": "2026-09-10T11:25:49.142Z"
             }
           ]
         }
