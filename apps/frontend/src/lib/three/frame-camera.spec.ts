@@ -33,7 +33,7 @@ describe('frameCameraOnObject', () => {
     const fitDistance = 2 / (2 * Math.tan(fovRadians / 2));
     const distance = fitDistance * 1.35;
 
-    expect(camera.position.x).toBeCloseTo(distance * 0.55);
+    expect(camera.position.x).toBeCloseTo(-distance * 0.22);
     expect(camera.position.y).toBeCloseTo(distance * 0.22);
     expect(camera.position.z).toBeCloseTo(distance * 0.8);
     expect(camera.near).toBeCloseTo(Math.max(distance / 100, 0.01));
