@@ -56,6 +56,13 @@ const vendor: GetFixtureVendorsQuery['fixtureVendors'][number] = {
 const existingFixture: GetFixturesQuery['fixtures'][number] = {
   publicId: fixturePublicId,
   name: 'SlimPAR',
+  weight: null,
+  width: null,
+  length: null,
+  height: null,
+  picturePath: null,
+  picture2dPath: null,
+  model3dPath: null,
   createdAt: now,
   updatedAt: now,
   fixtureVendor: vendor,

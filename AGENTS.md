@@ -94,7 +94,8 @@ Harness maintenance is part of **done**, not optional docs.
 - Events: `AppEventEmitter` extends `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`; IO modules import `EventsModule`. `AppModule` also provides `AppEventEmitter` and imports `EventEmitterModule.forRoot()`.
 - CLI command via `nest-commander`: `dmx-sniffer` (Linux-only)
 - Global `DrizzleDbModule` exports DB; `@/` path alias → `apps/backend/src/`
-- Static files: Fastify serves Rspack-copied `src/assets` at `/assets/` (`@fastify/static`). 3D models live under `apps/backend/src/assets/3d/` (e.g. `room.gltf`).
+- Static files: Fastify serves `apps/backend/src/assets` at `/assets/` when that directory exists (`nx serve`), otherwise Rspack-copied `dist/.../assets`. 3D models live under `apps/backend/src/assets/3d/` (e.g. `room.gltf`). Fixture catalog assets live under `apps/backend/src/assets/fixtures/$VENDOR/$FIXTURE_NAME` with generic defaults in `_defaults/`.
+- Fixture asset uploads: REST multipart `POST/DELETE /fixtures/:publicId/assets/:kind` (`picture` \| `picture2d` \| `model3d`); GraphQL stores relative `/assets/...` paths and dimensions (`weight` kg, `width`/`length`/`height` in meters).
 - IO layer: `io/dmx/`, `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
 
 ### Domain module structure (e.g. `fixtures/`, `projects/`)
@@ -103,8 +104,11 @@ Domain modules today: `fixtures/`, `projects/`.
 
 ```text
 fixtures/
-├── fixtures.module.ts # NestJS module (providers only)
+├── fixtures.module.ts # NestJS module (providers + fixture asset REST controller)
 ├── fixture.service.ts # CRUD business logic
+├── fixture-asset.service.ts # disk upload/delete under src/assets/fixtures
+├── fixture-asset.controller.ts # REST multipart POST/DELETE /fixtures/:publicId/assets/:kind
+├── fixture-asset-path.ts # slug + default asset paths
 ├── fixture-import-export.service.ts # export/import (InjectDb + transactions)
 ├── fixture-export.mapper.ts
 ├── fixture-import.validator.ts

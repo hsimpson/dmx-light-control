@@ -11,18 +11,24 @@ import {
   type FixtureDetailTab,
 } from './fixture-detail-tabs.constants';
 import classes from './fixture-detail-tabs.module.css';
-import FixtureTabEmptyState from './fixture-tab-empty-state';
 
 type FixtureDetailTabsProperties = {
   fixturePublicId: string;
   general: ReactNode;
+  properties: ReactNode;
   channels: ReactNode;
   channelModes: ReactNode;
 };
 
 const getFixtureTabHref = (fixturePublicId: string, tab: FixtureDetailTab) => `/fixture/${fixturePublicId}/${tab}`;
 
-const FixtureDetailTabs = ({ fixturePublicId, general, channels, channelModes }: FixtureDetailTabsProperties) => {
+const FixtureDetailTabs = ({
+  fixturePublicId,
+  general,
+  properties,
+  channels,
+  channelModes,
+}: FixtureDetailTabsProperties) => {
   const { t } = useTranslation();
   const router = useRouter();
   const { tab } = useParams<{ tab?: string }>();
@@ -58,9 +64,7 @@ const FixtureDetailTabs = ({ fixturePublicId, general, channels, channelModes }:
       </Tabs.Panel>
 
       <Tabs.Panel value="properties" pt="md">
-        <FixtureTabEmptyState
-          message={t({ id: 'FixtureDetail.emptyView', defaultMessage: 'This view is not available yet.' })}
-        />
+        {properties}
       </Tabs.Panel>
 
       <Tabs.Panel value="channels" pt="md">

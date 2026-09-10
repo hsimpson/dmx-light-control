@@ -41,4 +41,12 @@ test.describe('fixture detail', () => {
     await expect(page).toHaveURL(new RegExp(`/de/fixture/${mockedFixture.publicId}/channel-modes$`));
     await expect(page.getByRole('tab', { name: 'Kanalmodi' })).toHaveAttribute('aria-selected', 'true');
   });
+
+  test('shows dimensions on the properties tab', async ({ page }) => {
+    await page.goto(`/de/fixture/${mockedFixture.publicId}/properties`);
+
+    await expect(page.getByRole('tab', { name: 'Eigenschaften' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('heading', { name: 'Abmessungen' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Assets' })).toBeVisible();
+  });
 });

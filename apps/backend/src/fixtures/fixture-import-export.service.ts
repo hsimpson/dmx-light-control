@@ -12,6 +12,7 @@ import {
   fixtureVendor,
 } from '@/fixtures/entities';
 import { FixtureExportDocument, mapFixturesToExportDocument } from '@/fixtures/fixture-export.mapper';
+import { fixturePropertyPatch } from './fixture-property-patch';
 import { assertImportDocument, resolveDefinitionRef } from '@/fixtures/fixture-import.validator';
 import { FixtureImportConflictException, FixtureVendorCreationFailedException } from '@/fixtures/fixture.exceptions';
 import { FixtureVendorRepository } from '@/fixtures/repositories/fixture-vendor.repository';
@@ -159,7 +160,12 @@ export class FixtureImportExportService {
     if (existing) {
       const updated = await tx
         .update(fixture)
-        .set({ name: incoming.name, vendorId: vendor.id, ...optionalImportTimestamps(incoming) })
+        .set({
+          name: incoming.name,
+          vendorId: vendor.id,
+          ...fixturePropertyPatch(incoming),
+          ...optionalImportTimestamps(incoming),
+        })
         .where(eq(fixture.id, requireNumericId(existing.id, incoming.name)))
         .returning();
       const row = updated[0];
@@ -175,6 +181,7 @@ export class FixtureImportExportService {
         .values({
           name: incoming.name,
           vendorId: vendor.id,
+          ...fixturePropertyPatch(incoming),
           ...optionalPublicId(incoming.publicId),
           ...optionalImportTimestamps(incoming),
         })

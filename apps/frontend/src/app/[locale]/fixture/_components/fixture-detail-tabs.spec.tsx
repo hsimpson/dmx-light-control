@@ -22,6 +22,7 @@ describe('FixtureDetailTabs', () => {
       <FixtureDetailTabs
         fixturePublicId="fix-1"
         general={<div data-testid="general-panel" />}
+        properties={<div data-testid="properties-panel" />}
         channels={<div data-testid="channels-panel" />}
         channelModes={<div data-testid="channel-modes-panel" />}
       />,
@@ -37,6 +38,7 @@ describe('FixtureDetailTabs', () => {
       <FixtureDetailTabs
         fixturePublicId="fix-1"
         general={<div data-testid="general-panel" />}
+        properties={<div data-testid="properties-panel" />}
         channels={<div data-testid="channels-panel" />}
         channelModes={<div data-testid="channel-modes-panel" />}
       />,
@@ -54,6 +56,7 @@ describe('FixtureDetailTabs', () => {
       <FixtureDetailTabs
         fixturePublicId="fix-1"
         general={<div data-testid="general-panel" />}
+        properties={<div data-testid="properties-panel" />}
         channels={<div data-testid="channels-panel" />}
         channelModes={<div data-testid="channel-modes-panel" />}
       />,

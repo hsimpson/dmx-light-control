@@ -26,6 +26,7 @@ import FixtureChannelModes, {
   toEditorChannelModes,
 } from './fixture-channel-modes';
 import FixtureDetailTabs from './fixture-detail-tabs';
+import FixtureProperties, { type FixturePropertiesValues } from './fixture-properties';
 
 type Fixture = GetFixturesQuery['fixtures'][number];
 
@@ -103,6 +104,15 @@ const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) =
   const [channelDefinitions, setChannelDefinitions] = useState(() =>
     toEditorChannelDefinitions(fixture?.fixtureChannelDefinitions ?? []),
   );
+  const [properties, setProperties] = useState<FixturePropertiesValues>({
+    weight: fixture?.weight ?? null,
+    width: fixture?.width ?? null,
+    length: fixture?.length ?? null,
+    height: fixture?.height ?? null,
+    picturePath: fixture?.picturePath ?? null,
+    picture2dPath: fixture?.picture2dPath ?? null,
+    model3dPath: fixture?.model3dPath ?? null,
+  });
 
   const exactOptionMatch = comboBoxData.some(item => item === comboBoxSearch);
   const filteredOptions = exactOptionMatch
@@ -135,6 +145,10 @@ const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) =
               publicId: fixture.publicId,
               name: values.fixtureName,
               vendor: vendorInput,
+              weight: properties.weight,
+              width: properties.width,
+              length: properties.length,
+              height: properties.height,
               channelModes: toChannelModeSaveInputs(channelModes),
               channelDefinitions: toChannelDefinitionSaveInputs(channelDefinitions),
             },
@@ -162,6 +176,10 @@ const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) =
             input: {
               name: values.fixtureName,
               vendor: vendorInput,
+              weight: properties.weight,
+              width: properties.width,
+              length: properties.length,
+              height: properties.height,
               channelModes: toChannelModeSaveInputs(channelModes),
               channelDefinitions: toChannelDefinitionSaveInputs(channelDefinitions),
             },
@@ -309,6 +327,26 @@ const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) =
               <Flex direction="column" gap="lg">
                 {generalFields}
               </Flex>
+            }
+            properties={
+              <FixtureProperties
+                fixturePublicId={fixture.publicId}
+                values={properties}
+                onDimensionsChange={next => {
+                  setProperties(current => ({ ...current, ...next }));
+                }}
+                onAssetPathChange={(kind, path) => {
+                  setProperties(current => {
+                    if (kind === 'picture') {
+                      return { ...current, picturePath: path };
+                    }
+                    if (kind === 'picture2d') {
+                      return { ...current, picture2dPath: path };
+                    }
+                    return { ...current, model3dPath: path };
+                  });
+                }}
+              />
             }
             channels={channelDefinitionsFields}
             channelModes={channelModesFields}

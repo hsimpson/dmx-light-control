@@ -1,4 +1,5 @@
 import { AppModule } from '@/app.module';
+import { registerHttpPlugins } from '@/http-plugins';
 import { MidiService } from '@/io/midi/midi.service';
 import { SerialSendService } from '@/io/serial/serial-send.service';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -31,6 +32,7 @@ export async function createE2eApp(options: CreateE2eAppOptions = {}): Promise<N
     .compile();
 
   const app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+  await registerHttpPlugins(app);
   await app.init();
   await app.getHttpAdapter().getInstance().ready();
   return app;
