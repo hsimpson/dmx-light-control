@@ -1,0 +1,36 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px;
+  border-radius: var(--mantine-radius-sm);
+}
+
+.box[data-fixture-variant='0'] {
+  background-color: var(--mantine-primary-color-light);
+}
+
+.box[data-fixture-variant='1'] {
+  background-color: var(--mantine-color-teal-light);
+}
+
+.label {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--mantine-color-dimmed);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.channels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.channelSlot:not(:last-child) {
+  border-right: 1px solid light-dark(var(--mantine-color-gray-6), var(--mantine-color-gray-4));
+}
