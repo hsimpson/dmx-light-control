@@ -23,10 +23,11 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run infra:db-reset`                            | Reset local Postgres (removes volumes)                             |
 | `nx run infra:db-logs`                             | Tail local Postgres logs                                           |
 | `nx dev frontend` / `nx start frontend`            | Frontend Next.js Turbopack-dev (port 3001) / prod start            |
-| `nx build backend/frontend`                        | Production build                                                   |
-| `nx typecheck backend/frontend`                    | Type check                                                         |
-| `nx lint backend/frontend`                         | Lint                                                               |
+| `nx build backend` / `nx build frontend`           | Production build                                                   |
+| `nx typecheck backend` / `nx typecheck frontend`   | Type check                                                         |
+| `nx lint backend` / `nx lint frontend`             | Lint                                                               |
 | `nx test backend`                                  | Backend unit/integration + e2e tests                               |
+| `nx test backend --coverage`                       | Backend coverage under `coverage/apps/backend`                     |
 | `nx test frontend`                                 | Frontend Vitest unit/component tests                               |
 | `nx test frontend --coverage`                      | Frontend coverage under `coverage/apps/frontend`                   |
 | `nx e2e frontend`                                  | Playwright e2e (mocked GraphQL, no backend)                        |
@@ -36,13 +37,13 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run bruno:build`                               | Rebuild Bruno API collection                                       |
 | `nx run backend:drizzle-migrate`                   | Run migrations                                                     |
 | `nx run backend:drizzle-studio`                    | Open Drizzle Studio                                                |
-| `nx run frontend:graphql-codegen`                  | Generate GraphQL types                                             |
-| `nx run frontend:i18n-extract`                     | Extract translations                                               |
+| `nx run frontend:graphql-codegen`                  | Generate GraphQL types (needs a reachable schema URL)              |
+| `nx run frontend:i18n-extract`                     | Extract keys into `src/lang/en.json` only                          |
 | `nx run frontend:i18n-verify`                      | Verify translation files are in sync                               |
 
 **Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.21.0. **pnpm:** ^12.4.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
-**Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; used for GraphQL stack-trace stripping), `BACKEND_PORT` (HTTP; GraphQL at `/graphql`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (`postgres:18.4`, same image as `infra/docker-compose.yml`).
+**Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; GraphQL stack-trace stripping and Rspack asset-copy mode), `BACKEND_PORT` (required; HTTP; GraphQL at `/graphql`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Optional `FIXTURE_ASSETS_ROOT` overrides the fixture-asset disk root (used in tests; not in `.env.example`). Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL`. Nest `ConfigModule` loads workspace-root `.env`. Drizzle-kit targets run with cwd `apps/backend` and `dotenv/config` (so `apps/backend/.env` or already-exported vars). Infra compose uses `--env-file ../.env`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (`postgres:18.4`, same image as `infra/docker-compose.yml`).
 
 ## Done means
 
@@ -89,7 +90,7 @@ Harness maintenance is part of **done**, not optional docs.
 - NestJS + Apollo GraphQL on Fastify (`autoSchemaFile: true`)
 - Domain modules: `FixturesModule`, `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` is imported by `DmxModule`. `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
 - Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). Import/export is Resolver → `FixtureImportExportService` / `ProjectImportExportService` (`InjectDb()` + repositories + transactions). IO resolvers may emit events or call services without repositories.
-- Tests: Vitest unit/integration (`src/**/*.spec.ts`); GraphQL e2e in `src/e2e-tests/`; Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
+- Tests: Vitest unit/integration (`src/**/*.spec.ts`); e2e in `src/e2e-tests/` (GraphQL, REST fixture assets, DMX/MIDI IO); Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
 - Repositories use `InjectDb()` for typed Drizzle connection
 - ORM repositories extend `BaseRepository` (`apps/backend/src/db/base.repository.ts`) for shared `publicId` CRUD; pass `relationalFind` for nested `with` graphs, add domain-specific methods as needed
 - Events: `AppEventEmitter` extends `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`; IO modules import `EventsModule`. `AppModule` also provides `AppEventEmitter` and imports `EventEmitterModule.forRoot()`.
@@ -132,12 +133,12 @@ fixtures/
 - i18n: `next-i18n-router` + `react-intl`; German/English (`src/lang/en.json`, `de.json`)
 - `'use client'` on client boundary components (pages, wrappers); prop types named `*Props` or `*Properties`
 - `@/` path alias → `apps/frontend/src/`
-- Apollo Client setup: `lib/graphql/graphql-client.ts` + `lib/graphql/apollo-wrapper.tsx`
+- Apollo Client setup: `src/lib/graphql/graphql-client.ts` + `src/lib/graphql/apollo-wrapper.tsx`
 
 ### Database (`apps/backend/src/db/`)
 
-- Schema: `schema.ts` → `relations.ts` (`defineRelations()`) → `columns.helpers.ts` (`pk`, `timestamps`)
-- Entities: `d.snakeCase.table('name', { ...pk, ...timestamps, fields })`
+- Schema barrel: `schema.ts` re-exports domain tables (`@/fixtures/entities`, `@/projects/entities`). Relations: `relations.ts` (`defineRelations()`). Helpers: `columns.helpers.ts` (`pk`, `timestamps`).
+- Entities live in domain `entities/` files: `d.snakeCase.table('name', { ...pk, ...timestamps, fields })`
 - Repositories: one per entity/group, use `InferSelectModel`/`InferInsertModel`
 - Migrations: `src/db/migrations/` (timestamp + snake_case name from `--name`; never drizzle-kit random names)
 - ER diagram: `nx run backend:erd` → `apps/backend/docs/database-schema.md`
@@ -181,9 +182,9 @@ fixtures/
 
 ## Important Notes
 
-- Frontend: Vitest colocated `*.spec.ts` / `*.spec.tsx`; Playwright e2e in `apps/frontend/e2e/*.e2e.spec.ts` (mocked GraphQL). Install Chromium once with `pnpm exec playwright install chromium`. Backend uses Vitest with GraphQL e2e in `src/e2e-tests/`
+- Frontend: Vitest colocated `*.spec.ts` / `*.spec.tsx`; Playwright e2e in `apps/frontend/e2e/*.e2e.spec.ts` (mocked GraphQL). Install Chromium once with `pnpm exec playwright install chromium`. Backend Vitest e2e lives in `src/e2e-tests/`
 - `nx dev frontend` runs `next dev` (Next 16 default Turbopack) on port 3001.
-- `REVIEW` comments mark incomplete implementations (DMX device selection, hardcoded serial paths, ValidationPipe `disableErrorMessages` in `main.ts`)
+- `REVIEW` comments mark incomplete implementations (hardcoded serial path in `SerialSendService`, ValidationPipe `disableErrorMessages` in `main.ts`)
 - IO layer is Linux-focused (`/dev/usbmon`, serial ports)
 - Production hides stack traces from GraphQL errors
 - `BaseDomainError` → `GlobalGqlExceptionFilter` maps to GraphQL errors with `code` + `http.status` extension
@@ -193,4 +194,4 @@ fixtures/
 - Translations live in `apps/frontend/src/lang/{en,de}.json`; keys are referenced via `t({ id, defaultMessage })` from `react-intl` (see `useTranslation()`).
 - **When you change, add, or remove any i18n string, you MUST keep all language files in sync** — add/update/remove the key in every locale file (`en.json`, `de.json`, …). Use the `defaultMessage` as the English (`en.json`) value.
 - Keep keys sorted alphabetically within each language file.
-- After editing translations, run `nx run frontend:i18n-extract` to refresh extracted keys, then `nx run frontend:i18n-verify` to confirm no missing or extra keys remain.
+- After editing translations, run `nx run frontend:i18n-extract` (writes `en.json` only), sync the same keys in `de.json`, then `nx run frontend:i18n-verify` to confirm no missing or extra keys remain.
