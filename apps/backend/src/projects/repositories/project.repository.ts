@@ -4,11 +4,15 @@ import { relations } from '@/db/relations';
 import * as schema from '@/db/schema';
 import { Injectable } from '@nestjs/common';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { project3dObjectRelations } from './project-3d-object.repository';
 import { projectFixtureRelations } from './project-fixture.repository';
 
 export const projectRelations = {
   projectFixtures: {
     with: projectFixtureRelations,
+  },
+  project3dObjects: {
+    with: project3dObjectRelations,
   },
 } as const;
 

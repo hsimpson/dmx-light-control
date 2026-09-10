@@ -10,10 +10,21 @@ import {
   ImportProjectsDocument,
   ImportProjectsInput,
 } from '@/shared/types/graphql/graphql';
+import { CombinedGraphQLErrors } from '@apollo/client';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 import { Button, FileButton, Group } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { DownloadSimpleIcon, UploadSimpleIcon } from '@phosphor-icons/react';
+
+function importErrorMessage(error: unknown, fallback: string): string {
+  if (CombinedGraphQLErrors.is(error)) {
+    const message = error.errors.find(graphQLError => graphQLError.message)?.message;
+    if (message) {
+      return message;
+    }
+  }
+  return fallback;
+}
 
 const ProjectListToolbar = () => {
   const { t } = useTranslation();
@@ -58,11 +69,14 @@ const ProjectListToolbar = () => {
         title: t({ id: 'ProjectList.imported', defaultMessage: 'Projects imported' }),
         message: file.name,
       });
-    } catch {
+    } catch (error) {
       notifications.show({
         color: 'red',
         title: t(globalMessages.error),
-        message: t({ id: 'ProjectList.importError', defaultMessage: 'Failed to import projects' }),
+        message: importErrorMessage(
+          error,
+          t({ id: 'ProjectList.importError', defaultMessage: 'Failed to import projects' }),
+        ),
       });
     }
   };

@@ -1,0 +1,4 @@
+# Isolated plugin workers write `_tmp_*` in the workspace root. The daemon
+# watcher treats those as graph-invalidating changes and loops on
+# "Creating project graph nodes with N plugins" (nrwl/nx#36844).
+/_tmp_*

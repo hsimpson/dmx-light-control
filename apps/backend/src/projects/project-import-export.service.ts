@@ -2,8 +2,11 @@ import { InjectDb } from '@/db/drizzle-db/drizzle-db.provider';
 import { optionalImportTimestamps } from '@/db/import-timestamps.input';
 import { relations } from '@/db/relations';
 import { fixture, fixtureChannelMode } from '@/fixtures/entities';
-import { ImportProjectsInput } from '@/projects/dto/import-projects.dto';
-import { project, projectFixture } from '@/projects/entities';
+import { ImportProjectsInput, ImportProject3dObjectInput } from '@/projects/dto/import-projects.dto';
+import { project, project3dObject, projectFixture, sceneObjectType } from '@/projects/entities';
+import { assertValidTransform, resolveSizesForType } from '@/projects/project-3d-object.validation';
+import { nextUniqueSceneObjectName, normalizeSceneObjectName } from '@/projects/project-3d-object-name';
+import { environmentTypeForImport, optionalEnvironmentType } from '@/projects/project-environment';
 import { mapProjectsToExportDocument, ProjectExportDocument } from '@/projects/project-export.mapper';
 import { assertImportDocument } from '@/projects/project-import.validator';
 import {
@@ -13,6 +16,7 @@ import {
   channelCountFromMode,
   OccupiedPatch,
 } from '@/projects/project-fixture.validation';
+import { optionalRoomDimensions } from '@/projects/project-room-dimensions';
 import { ProjectImportConflictException } from '@/projects/project.exceptions';
 import { ProjectFixtureRepository } from '@/projects/repositories/project-fixture.repository';
 import { ProjectRepository } from '@/projects/repositories/project.repository';
@@ -69,6 +73,7 @@ export class ProjectImportExportService {
       for (const incoming of document.projects) {
         const row = await this.upsertProject(tx, incoming);
         await this.replaceProjectFixtures(tx, row, incoming);
+        await this.replaceProject3dObjects(tx, row, incoming);
         publicIds.push(row.publicId ?? incoming.publicId ?? incoming.name);
       }
       return publicIds;
@@ -100,7 +105,12 @@ export class ProjectImportExportService {
       }
       const updated = await tx
         .update(project)
-        .set({ name: incoming.name, ...optionalImportTimestamps(incoming) })
+        .set({
+          name: incoming.name,
+          ...optionalEnvironmentType(incoming),
+          ...optionalRoomDimensions(incoming),
+          ...optionalImportTimestamps(incoming),
+        })
         .where(eq(project.id, existingId))
         .returning();
       const row = updated[0];
@@ -113,7 +123,13 @@ export class ProjectImportExportService {
     try {
       const inserted = await tx
         .insert(project)
-        .values({ name: incoming.name, ...optionalPublicId(incoming.publicId), ...optionalImportTimestamps(incoming) })
+        .values({
+          name: incoming.name,
+          environmentType: environmentTypeForImport(incoming.environmentType),
+          ...optionalPublicId(incoming.publicId),
+          ...optionalRoomDimensions(incoming),
+          ...optionalImportTimestamps(incoming),
+        })
         .returning();
       const row = inserted[0];
       if (!row) {
@@ -184,6 +200,75 @@ export class ProjectImportExportService {
     }
   }
 
+  private async replaceProject3dObjects(
+    tx: Tx,
+    projectRow: ProjectRow,
+    incoming: ImportProjectsInput['projects'][number],
+  ): Promise<void> {
+    const projectId = projectRow.id;
+    if (projectId === null) {
+      throw new ProjectImportConflictException(`Failed to import 3D objects for project "${incoming.name}"`);
+    }
+
+    await tx.delete(project3dObject).where(eq(project3dObject.projectId, projectId));
+
+    const usedNames: string[] = [];
+    const typeCounts = new Map<number, number>();
+    for (const instance of incoming.project3dObjects ?? []) {
+      const typeRow = await this.resolveSceneObjectType(tx, instance, incoming.name);
+      if (!typeRow?.id) {
+        throw new ProjectImportConflictException(
+          `Scene object type publicId ${instance.sceneObjectTypePublicId} not found for project "${incoming.name}"`,
+        );
+      }
+
+      const sizes = resolveSizesForType(
+        typeRow.isScalable,
+        { sizeX: instance.sizeX, sizeY: instance.sizeY, sizeZ: instance.sizeZ },
+        {
+          sizeX: typeRow.defaultSizeX,
+          sizeY: typeRow.defaultSizeY,
+          sizeZ: typeRow.defaultSizeZ,
+        },
+      );
+      assertValidTransform(instance.transform);
+
+      const typeCount = typeCounts.get(typeRow.id) ?? 0;
+      const name =
+        instance.name !== undefined && instance.name !== ''
+          ? normalizeSceneObjectName(instance.name)
+          : nextUniqueSceneObjectName(typeRow.name, typeCount, usedNames);
+      if (usedNames.includes(name)) {
+        throw new ProjectImportConflictException(
+          `Scene object name "${name}" is duplicated in import for project "${incoming.name}"`,
+        );
+      }
+      usedNames.push(name);
+      typeCounts.set(typeRow.id, typeCount + 1);
+
+      try {
+        await tx.insert(project3dObject).values({
+          projectId,
+          sceneObjectTypeId: typeRow.id,
+          name,
+          sizeX: sizes.sizeX,
+          sizeY: sizes.sizeY,
+          sizeZ: sizes.sizeZ,
+          transform: instance.transform,
+          ...optionalPublicId(instance.publicId),
+          ...optionalImportTimestamps(instance),
+        });
+      } catch (error) {
+        if (isPostgresUniqueViolation(error)) {
+          throw new ProjectImportConflictException(
+            `Scene object name "${name}" already exists in project "${incoming.name}"`,
+          );
+        }
+        throw error;
+      }
+    }
+  }
+
   private async findByPublicId(tx: Tx, publicId: string): Promise<ProjectRow | undefined> {
     const rows = await tx.select().from(project).where(eq(project.publicId, publicId)).limit(1);
     return rows[0];
@@ -201,6 +286,35 @@ export class ProjectImportExportService {
 
   private async findChannelModeByPublicId(tx: Tx, publicId: string) {
     const rows = await tx.select().from(fixtureChannelMode).where(eq(fixtureChannelMode.publicId, publicId)).limit(1);
+    return rows[0];
+  }
+
+  private async resolveSceneObjectType(tx: Tx, instance: ImportProject3dObjectInput, projectName: string) {
+    const byPublicId = await this.findSceneObjectTypeByPublicId(tx, instance.sceneObjectTypePublicId);
+    if (byPublicId?.id) {
+      return byPublicId;
+    }
+
+    if (instance.sceneObjectTypeName) {
+      const byName = await this.findSceneObjectTypeByName(tx, instance.sceneObjectTypeName);
+      if (byName?.id) {
+        return byName;
+      }
+      throw new ProjectImportConflictException(
+        `Scene object type "${instance.sceneObjectTypeName}" not found for project "${projectName}"`,
+      );
+    }
+
+    return undefined;
+  }
+
+  private async findSceneObjectTypeByName(tx: Tx, name: string) {
+    const rows = await tx.select().from(sceneObjectType).where(eq(sceneObjectType.name, name)).limit(1);
+    return rows[0];
+  }
+
+  private async findSceneObjectTypeByPublicId(tx: Tx, publicId: string) {
+    const rows = await tx.select().from(sceneObjectType).where(eq(sceneObjectType.publicId, publicId)).limit(1);
     return rows[0];
   }
 }

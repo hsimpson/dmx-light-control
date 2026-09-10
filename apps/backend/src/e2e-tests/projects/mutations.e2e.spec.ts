@@ -126,6 +126,68 @@ describe('Project mutations', () => {
     expect(body.data?.updateProject.name).toBe('Renamed Project');
   });
 
+  it('should update room dimensions via updateProject', async () => {
+    const created = await graphqlQuery<CreateProjectMutation>(
+      app.getHttpAdapter().getInstance().server,
+      CREATE_PROJECT,
+      {
+        variables: {
+          input: {
+            name: 'Room Dimensions Project',
+          },
+        },
+      },
+    );
+
+    const publicId = created.data?.createProject.publicId;
+    expect(publicId).toBeDefined();
+
+    const mutation = gql`
+      mutation ($input: UpdateProjectInput!) {
+        updateProject(input: $input) {
+          name
+          publicId
+          roomWidth
+          roomLength
+          roomHeight
+          environmentType
+        }
+      }
+    `;
+
+    const body = await graphqlQuery<{
+      updateProject: {
+        name: string;
+        publicId: string;
+        roomWidth: number;
+        roomLength: number;
+        roomHeight: number;
+        environmentType: string;
+      };
+    }>(app.getHttpAdapter().getInstance().server, mutation, {
+      variables: {
+        input: {
+          publicId,
+          name: 'Room Dimensions Project',
+          roomWidth: 12,
+          roomLength: 9,
+          roomHeight: 4,
+          environmentType: 'Room',
+        },
+      },
+    });
+
+    expect(body.errors).toBeUndefined();
+    expect(body.data?.updateProject).toEqual({
+      name: 'Room Dimensions Project',
+      publicId,
+      roomWidth: 12,
+      roomLength: 9,
+      roomHeight: 4,
+      environmentType: 'Room',
+    });
+  });
+
   it('should reject renaming to an existing project name', async () => {
     await graphqlQuery<CreateProjectMutation>(app.getHttpAdapter().getInstance().server, CREATE_PROJECT, {
       variables: {

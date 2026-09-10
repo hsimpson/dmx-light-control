@@ -33,7 +33,9 @@ const App = ({ children }: AppProperties) => {
         <NavBar />
       </AppShell.Navbar>
 
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main display="flex" style={{ flexDirection: 'column' }}>
+        {children}
+      </AppShell.Main>
     </AppShell>
   );
 };

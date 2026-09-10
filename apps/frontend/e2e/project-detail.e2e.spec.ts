@@ -10,18 +10,49 @@ test.describe('project detail', () => {
     await page.goto('/de/project/list');
     await page.getByRole('cell', { name: mockedProject.name }).click();
 
+    await expect(page).toHaveURL(new RegExp(`/de/project/${mockedProject.publicId}/fixtures$`));
     await expect(page.getByRole('heading', { name: mockedProject.name })).toBeVisible();
     await expect(page.getByRole('tab', { name: 'Geräte' })).toBeVisible();
 
+    const addFixtureDialog = page.getByRole('dialog', { name: 'Gerät hinzufügen' });
     await page.getByRole('button', { name: 'Gerät hinzufügen' }).click();
-    await page.getByLabel('Gerät').click();
+    await addFixtureDialog.getByRole('combobox', { name: 'Gerät' }).click();
     await page.getByRole('option', { name: 'Acme Lights – Spot 250' }).click();
-    await page.getByLabel('Kanalmodus').click();
+    await addFixtureDialog.getByRole('combobox', { name: 'Kanalmodus' }).click();
     await page.getByRole('option', { name: '8ch' }).click();
-    await page.getByLabel('Startadresse').fill('10');
-    await page.getByRole('dialog').getByRole('button', { name: 'Speichern' }).click();
+    await addFixtureDialog.getByLabel('Startadresse').fill('10');
+    await addFixtureDialog.getByRole('button', { name: 'Speichern' }).click();
 
-    await expect(page.getByRole('cell', { name: '10' })).toBeVisible();
-    await expect(page.getByRole('cell', { name: 'Spot 250' })).toBeVisible();
+    const fixturesPanel = page.getByRole('tabpanel', { name: 'Geräte' });
+    const fixtureRow = fixturesPanel.getByRole('row').filter({ hasText: 'Spot 250' });
+    await expect(fixtureRow).toContainText('10');
+    await expect(fixtureRow.getByRole('cell', { name: 'Spot 250' })).toBeVisible();
+  });
+
+  test('redirects bare project detail URL to the fixtures tab', async ({ page }) => {
+    await page.goto(`/de/project/${mockedProject.publicId}`);
+
+    await expect(page).toHaveURL(new RegExp(`/de/project/${mockedProject.publicId}/fixtures$`));
+    await expect(page.getByRole('tab', { name: 'Geräte' })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  test('preserves the active tab on reload', async ({ page }) => {
+    await page.goto(`/de/project/${mockedProject.publicId}/3d`);
+
+    await expect(page.getByRole('tab', { name: '3D-Ansicht' })).toHaveAttribute('aria-selected', 'true');
+
+    await page.reload();
+
+    await expect(page).toHaveURL(new RegExp(`/de/project/${mockedProject.publicId}/3d$`));
+    await expect(page.getByRole('tab', { name: '3D-Ansicht' })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  test('switches tabs via URL when clicking a tab', async ({ page }) => {
+    await page.goto(`/de/project/${mockedProject.publicId}/fixtures`);
+
+    await page.getByRole('tab', { name: 'Universumsansicht' }).click();
+
+    await expect(page).toHaveURL(new RegExp(`/de/project/${mockedProject.publicId}/universe$`));
+    await expect(page.getByRole('tab', { name: 'Universumsansicht' })).toHaveAttribute('aria-selected', 'true');
   });
 });

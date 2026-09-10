@@ -1,8 +1,24 @@
 import { ImportTimestampsInput } from '@/db/import-timestamps.input';
 import { ProjectDto } from '@/projects/dto/project.dto';
-import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
+import { ProjectEnvironmentType } from '@/projects/project-environment';
+import { ROOM_DIMENSION_MAX, ROOM_DIMENSION_MIN } from '@/projects/project-room-dimensions';
+import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
-import { IsArray, IsInt, IsOptional, IsString, Length, Matches, Max, Min, ValidateNested } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { GraphQLUUID } from 'graphql-scalars';
 
 /** Postgres `uuid` shape (8-4-4-4-12 hex). RFC 4122 variant bits are not required. */
@@ -32,6 +48,61 @@ export class ImportProjectFixtureInput extends ImportTimestampsInput {
 }
 
 @InputType()
+export class ImportProject3dObjectInput extends ImportTimestampsInput {
+  @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the project 3D object instance' })
+  @IsOptional()
+  @Matches(IMPORT_PROJECT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })
+  public publicId?: string;
+
+  @Field({ nullable: true, description: 'The display name of the 3D object instance' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  public name?: string;
+
+  @Field(() => GraphQLUUID, { description: 'The public ID of the scene object type' })
+  @Matches(IMPORT_PROJECT_PUBLIC_ID_PATTERN, { message: 'sceneObjectTypePublicId must be a UUID' })
+  public sceneObjectTypePublicId: string;
+
+  @Field({
+    nullable: true,
+    description: 'The display name of the scene object type; used when publicId is not found on import',
+  })
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  public sceneObjectTypeName?: string;
+
+  @Field(() => Float, { nullable: true, description: 'Width in meters for scalable objects' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public sizeX?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Height in meters for scalable objects' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public sizeY?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Length in meters for scalable objects' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public sizeZ?: number | null;
+
+  @Field(() => [Float], { description: 'Column-major 4×4 transform (16 values)' })
+  @IsArray()
+  @ArrayMinSize(16)
+  @ArrayMaxSize(16)
+  @IsNumber({}, { each: true })
+  public transform: number[];
+}
+
+@InputType()
 export class ImportProjectInput extends ImportTimestampsInput {
   @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the project' })
   @IsOptional()
@@ -43,6 +114,32 @@ export class ImportProjectInput extends ImportTimestampsInput {
   @Length(1, 255)
   public name: string;
 
+  @Field(() => ProjectEnvironmentType, { nullable: true, description: 'The 3D environment used by the project' })
+  @IsOptional()
+  @IsEnum(ProjectEnvironmentType)
+  public environmentType?: ProjectEnvironmentType;
+
+  @Field(() => Float, { nullable: true, description: 'Room width in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public roomWidth?: number;
+
+  @Field(() => Float, { nullable: true, description: 'Room length in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public roomLength?: number;
+
+  @Field(() => Float, { nullable: true, description: 'Room height in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(ROOM_DIMENSION_MIN)
+  @Max(ROOM_DIMENSION_MAX)
+  public roomHeight?: number;
+
   @Field(() => [ImportProjectFixtureInput], {
     nullable: true,
     description: 'The fixture instances patched into this project',
@@ -52,6 +149,16 @@ export class ImportProjectInput extends ImportTimestampsInput {
   @ValidateNested({ each: true })
   @Type(() => ImportProjectFixtureInput)
   public projectFixtures?: ImportProjectFixtureInput[];
+
+  @Field(() => [ImportProject3dObjectInput], {
+    nullable: true,
+    description: 'The 3D scene objects placed in this project',
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ImportProject3dObjectInput)
+  public project3dObjects?: ImportProject3dObjectInput[];
 }
 
 @InputType()

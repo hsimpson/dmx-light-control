@@ -1,0 +1,52 @@
+info:
+  name: updateProject3dObject
+  type: graphql
+  seq: 18
+
+graphql:
+  method: POST
+  url: '{{backendUrl}}/graphql'
+  auth: inherit
+  body:
+    query: |
+      mutation($input: UpdateProject3dObjectInput!) {
+        updateProject3dObject(input: $input) {
+          createdAt
+          name
+          publicId
+          sceneObjectType {
+            createdAt
+            defaultSizeX
+            defaultSizeY
+            defaultSizeZ
+            geometryKind
+            isScalable
+            modelPath
+            name
+            publicId
+            updatedAt
+          }
+          sizeX
+          sizeY
+          sizeZ
+          transform
+          updatedAt
+        }
+      }
+    variables: |
+      {
+        "input": {
+          "name": null,
+          "publicId": null,
+          "sizeX": null,
+          "sizeY": null,
+          "sizeZ": null,
+          "transform": []
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

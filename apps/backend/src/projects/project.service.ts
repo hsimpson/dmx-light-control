@@ -2,10 +2,16 @@ import { ChannelModeNotFoundException, FixtureNotFoundException } from '@/fixtur
 import { FixtureChannelModeRepository } from '@/fixtures/repositories/fixture-channel-mode.repository';
 import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
 import { Injectable } from '@nestjs/common';
+import { AddProject3dObjectInput } from './dto/add-project-3d-object.dto';
 import { AddProjectFixtureInput } from './dto/add-project-fixture.dto';
 import { CreateProjectInput } from './dto/create-project.dto';
+import { UpdateProject3dObjectInput } from './dto/update-project-3d-object.dto';
 import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
+import { defaultTransformForObject } from './project-3d-object.transform';
+import { nextUniqueSceneObjectName, normalizeSceneObjectName } from './project-3d-object-name';
+import { assertValidTransform, resolveSizesForType } from './project-3d-object.validation';
+import { optionalEnvironmentType } from './project-environment';
 import {
   assertChannelModeBelongsToFixture,
   assertNoPatchOverlap,
@@ -13,13 +19,19 @@ import {
   channelCountFromMode,
   OccupiedPatch,
 } from './project-fixture.validation';
+import { optionalRoomDimensions } from './project-room-dimensions';
 import {
+  Project3dObjectNameExistsException,
+  Project3dObjectNotFoundException,
   ProjectAlreadyExistsException,
   ProjectFixtureNotFoundException,
   ProjectNotFoundException,
+  SceneObjectTypeNotFoundException,
 } from './project.exceptions';
+import { Project3dObjectRepository } from './repositories/project-3d-object.repository';
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
 import { LoadedProject, ProjectRepository } from './repositories/project.repository';
+import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
 
 function getErrorCode(error: unknown): unknown {
   if (typeof error !== 'object' || error === null || !('code' in error)) {
@@ -39,6 +51,7 @@ function isPostgresUniqueViolation(error: unknown): boolean {
 }
 
 type LoadedProjectFixture = NonNullable<LoadedProject['projectFixtures']>[number];
+type LoadedProject3dObject = NonNullable<LoadedProject['project3dObjects']>[number];
 
 function occupiedPatchesFromFixtures(
   fixtures: {
@@ -103,6 +116,32 @@ function mapProjectFixtureToDto(fixture: LoadedProjectFixture) {
   };
 }
 
+function sortProject3dObjects(objects: LoadedProject3dObject[]): LoadedProject3dObject[] {
+  return [...objects].sort((left, right) => (left.publicId ?? '').localeCompare(right.publicId ?? ''));
+}
+
+function mapProject3dObjectToDto(object: LoadedProject3dObject) {
+  const type = object.sceneObjectType;
+  if (!type) {
+    throw new Project3dObjectNotFoundException(object.publicId ?? 'unknown');
+  }
+  return {
+    publicId: object.publicId,
+    createdAt: object.createdAt,
+    updatedAt: object.updatedAt,
+    name: object.name,
+    sizeX: object.sizeX ?? null,
+    sizeY: object.sizeY ?? null,
+    sizeZ: object.sizeZ ?? null,
+    transform: [...object.transform],
+    sceneObjectType: type,
+  };
+}
+
+function emptyProjectExtras() {
+  return { projectFixtures: [], project3dObjects: [] };
+}
+
 function mapProjectToDto(project: LoadedProject | undefined) {
   if (!project) {
     return undefined;
@@ -110,6 +149,7 @@ function mapProjectToDto(project: LoadedProject | undefined) {
   return {
     ...project,
     projectFixtures: sortProjectFixtures(project.projectFixtures).map(mapProjectFixtureToDto),
+    project3dObjects: sortProject3dObjects(project.project3dObjects).map(mapProject3dObjectToDto),
   };
 }
 
@@ -118,13 +158,20 @@ export class ProjectService {
   public constructor(
     private readonly projectRepository: ProjectRepository,
     private readonly projectFixtureRepository: ProjectFixtureRepository,
+    private readonly project3dObjectRepository: Project3dObjectRepository,
+    private readonly sceneObjectTypeRepository: SceneObjectTypeRepository,
     private readonly fixtureRepository: FixtureRepository,
     private readonly fixtureChannelModeRepository: FixtureChannelModeRepository,
   ) {}
 
   public async getAllProjects() {
     const projects = await this.projectRepository.findMany();
-    return projects.map(project => ({ ...project, projectFixtures: [] }));
+    return projects.map(project => ({ ...project, ...emptyProjectExtras() }));
+  }
+
+  public async getSceneObjectTypes() {
+    const types = await this.sceneObjectTypeRepository.findMany();
+    return [...types].sort((left, right) => left.name.localeCompare(right.name));
   }
 
   public async getProjectByPublicId(publicId: string) {
@@ -135,7 +182,7 @@ export class ProjectService {
   public async createProject(input: CreateProjectInput) {
     try {
       const created = await this.projectRepository.createOne(input);
-      return created ? { ...created, projectFixtures: [] } : created;
+      return created ? { ...created, ...emptyProjectExtras() } : created;
     } catch (error) {
       if (isPostgresUniqueViolation(error)) {
         throw new ProjectAlreadyExistsException(input.name);
@@ -146,11 +193,15 @@ export class ProjectService {
 
   public async updateProject(input: UpdateProjectInput) {
     try {
-      const updated = await this.projectRepository.updateOneByPublicId(input.publicId, { name: input.name });
+      const updated = await this.projectRepository.updateOneByPublicId(input.publicId, {
+        name: input.name,
+        ...optionalEnvironmentType(input),
+        ...optionalRoomDimensions(input),
+      });
       if (!updated) {
         throw new ProjectNotFoundException(input.publicId);
       }
-      return { ...updated, projectFixtures: [] };
+      return { ...updated, ...emptyProjectExtras() };
     } catch (error) {
       if (error instanceof ProjectNotFoundException) {
         throw error;
@@ -251,6 +302,131 @@ export class ProjectService {
   public async deleteProjectFixtureByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {
     const deleted = await this.projectFixtureRepository.deleteOneByPublicId(publicId);
     return { publicId, deleted };
+  }
+
+  public async addProject3dObject(input: AddProject3dObjectInput) {
+    const project = await this.projectRepository.findOneByPublicId(input.projectPublicId);
+    if (!project?.id) {
+      throw new ProjectNotFoundException(input.projectPublicId);
+    }
+
+    const type = await this.sceneObjectTypeRepository.findOneByPublicId(input.sceneObjectTypePublicId);
+    if (!type?.id) {
+      throw new SceneObjectTypeNotFoundException(input.sceneObjectTypePublicId);
+    }
+
+    const sizes = resolveSizesForType(type.isScalable, input, {
+      sizeX: type.defaultSizeX,
+      sizeY: type.defaultSizeY,
+      sizeZ: type.defaultSizeZ,
+    });
+    const transform = input.transform ?? defaultTransformForObject(type.isScalable, sizes.sizeY);
+    assertValidTransform(transform);
+
+    const siblings = await this.project3dObjectRepository.listByProjectId(project.id);
+    const name =
+      input.name === undefined
+        ? nextUniqueSceneObjectName(
+            type.name,
+            siblings.filter(sibling => sibling.sceneObjectTypeId === type.id).length,
+            siblings.map(sibling => sibling.name),
+          )
+        : normalizeSceneObjectName(input.name);
+
+    let created;
+    try {
+      created = await this.project3dObjectRepository.createOne({
+        projectId: project.id,
+        sceneObjectTypeId: type.id,
+        name,
+        sizeX: sizes.sizeX,
+        sizeY: sizes.sizeY,
+        sizeZ: sizes.sizeZ,
+        transform,
+      });
+    } catch (error) {
+      if (isPostgresUniqueViolation(error)) {
+        throw new Project3dObjectNameExistsException(name);
+      }
+      throw error;
+    }
+    if (!created?.publicId) {
+      throw new Project3dObjectNotFoundException(input.projectPublicId);
+    }
+
+    return this.loadProject3dObject(created.publicId);
+  }
+
+  public async updateProject3dObject(input: UpdateProject3dObjectInput) {
+    const existing = await this.project3dObjectRepository.findOneByPublicId(input.publicId);
+    if (!existing?.publicId) {
+      throw new Project3dObjectNotFoundException(input.publicId);
+    }
+
+    const type = await this.sceneObjectTypeRepository.findOneById(existing.sceneObjectTypeId);
+    if (!type) {
+      throw new SceneObjectTypeNotFoundException(String(existing.sceneObjectTypeId));
+    }
+    const sizes = resolveSizesForType(
+      type.isScalable,
+      input,
+      {
+        sizeX: type.defaultSizeX,
+        sizeY: type.defaultSizeY,
+        sizeZ: type.defaultSizeZ,
+      },
+      {
+        sizeX: existing.sizeX ?? null,
+        sizeY: existing.sizeY ?? null,
+        sizeZ: existing.sizeZ ?? null,
+      },
+    );
+    const transform = input.transform ?? existing.transform;
+    assertValidTransform(transform);
+
+    const updatePayload: {
+      sizeX: number | null;
+      sizeY: number | null;
+      sizeZ: number | null;
+      transform: number[];
+      name?: string;
+    } = {
+      sizeX: sizes.sizeX,
+      sizeY: sizes.sizeY,
+      sizeZ: sizes.sizeZ,
+      transform,
+    };
+    if (input.name !== undefined) {
+      updatePayload.name = normalizeSceneObjectName(input.name);
+    }
+
+    let updated;
+    try {
+      updated = await this.project3dObjectRepository.updateOneByPublicId(input.publicId, updatePayload);
+    } catch (error) {
+      if (isPostgresUniqueViolation(error)) {
+        throw new Project3dObjectNameExistsException(updatePayload.name ?? existing.name);
+      }
+      throw error;
+    }
+    if (!updated?.publicId) {
+      throw new Project3dObjectNotFoundException(input.publicId);
+    }
+
+    return this.loadProject3dObject(updated.publicId);
+  }
+
+  public async deleteProject3dObjectByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {
+    const deleted = await this.project3dObjectRepository.deleteOneByPublicId(publicId);
+    return { publicId, deleted };
+  }
+
+  private async loadProject3dObject(publicId: string) {
+    const loaded = await this.project3dObjectRepository.findOneByPublicId(publicId);
+    if (!loaded) {
+      throw new Project3dObjectNotFoundException(publicId);
+    }
+    return mapProject3dObjectToDto(loaded as LoadedProject3dObject);
   }
 
   private async loadChannelModeWithAssignments(publicId: string) {

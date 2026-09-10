@@ -1,0 +1,40 @@
+.root {
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
+}
+
+.canvas {
+  align-self: stretch;
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.canvas:focus {
+  outline: none;
+}
+
+.gizmoHint {
+  background: rgb(0 0 0 / 35%);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.75rem;
+  left: 0.75rem;
+  line-height: 1.45;
+  padding: 0.35rem 0.55rem;
+  pointer-events: none;
+  position: absolute;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 55%);
+  top: 0.75rem;
+  z-index: 1;
+}
+
+.panel {
+  align-self: stretch;
+  flex-shrink: 0;
+  overflow: auto;
+}

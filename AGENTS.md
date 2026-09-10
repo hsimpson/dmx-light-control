@@ -9,7 +9,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 - **Surgical changes:** Touch only what the task requires. No drive-by refactors. Do not reformat files you did not change. Match existing style. Mention unrelated dead code; don’t delete it. Remove only orphans your changes created.
 - **Goal-driven execution:** Define verifiable success (tests/commands). For multi-step work, brief plan + verify steps; loop until verified.
 - **Bias:** Caution over speed except truly trivial tasks.
-- **Prettier:** After creating or editing files, format those files with Prettier before you finish (`pnpm exec prettier --write <paths>`; config `prettier.config.ts`).
+- **Prettier:** Before finishing, run Prettier on **every file you created or changed** (`pnpm exec prettier --write <paths>`; config `prettier.config.ts`). List paths with `git diff --name-only` (and `git diff --cached --name-only` if staged).
 - **Stop servers you start:** If you start `nx serve backend` or `nx dev frontend` / `nx start frontend` (or equivalent `next`/`node` processes on their ports), stop them when the task is done. Do not leave them running.
 - **Drizzle migrations:** Never generate with drizzle-kit’s random folder names (e.g. `rapid_beast`). Always ask the user for a new snake_case name first, then run `nx run backend:drizzle-generate -- --name <name>`.
 
@@ -22,7 +22,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run infra:db-stop`                             | Stop local Postgres                                                |
 | `nx run infra:db-reset`                            | Reset local Postgres (removes volumes)                             |
 | `nx run infra:db-logs`                             | Tail local Postgres logs                                           |
-| `nx dev frontend` / `nx start frontend`            | Frontend Next.js webpack-dev (port 3001) / prod start              |
+| `nx dev frontend` / `nx start frontend`            | Frontend Next.js Turbopack-dev (port 3001) / prod start            |
 | `nx build backend/frontend`                        | Production build                                                   |
 | `nx typecheck backend/frontend`                    | Type check                                                         |
 | `nx lint backend/frontend`                         | Lint                                                               |
@@ -40,18 +40,19 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run frontend:i18n-extract`                     | Extract translations                                               |
 | `nx run frontend:i18n-verify`                      | Verify translation files are in sync                               |
 
-**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.20.0. **pnpm:** ^11.25.0.
+**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.20.0. **pnpm:** ^12.4.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
 **Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; used for GraphQL stack-trace stripping), `BACKEND_PORT` (HTTP; GraphQL at `/graphql`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (`postgres:18.4`, same image as `infra/docker-compose.yml`).
 
 ## Done means
 
 1. Typecheck and lint pass with zero errors `nx run-many --targets typecheck,lint`.
-2. Relevant tests run and pass (show output) `nx run-many --targets test`.
-3. When changing GraphQL resolvers or DTOs, run `nx test backend` (includes `graphql-schema.spec.ts`) and rebuild Bruno requests `nx run bruno:build`.
-4. When database schema has changed (entities, relations) regenerate ER diagram `nx run backend:erd`.
-5. **Harness health-check** (required when change set matches the triggers below — report `Harness: up to date` or `Harness: updated`).
-6. Conventional commit message ready when asked to commit.
+2. Prettier has been run on all created/changed files (`pnpm exec prettier --write <paths>`; use `git diff --name-only` to enumerate).
+3. Relevant tests run and pass (show output) `nx run-many --targets test`.
+4. When changing GraphQL resolvers or DTOs, run `nx test backend` (includes `graphql-schema.spec.ts`) and rebuild Bruno requests `nx run bruno:build`.
+5. When database schema has changed (entities, relations) regenerate ER diagram `nx run backend:erd`.
+6. **Harness health-check** (required when change set matches the triggers below — report `Harness: up to date` or `Harness: updated`).
+7. Conventional commit message ready when asked to commit.
 
 ## Conventions
 
@@ -93,6 +94,7 @@ Harness maintenance is part of **done**, not optional docs.
 - Events: `AppEventEmitter` extends `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`; IO modules import `EventsModule`. `AppModule` also provides `AppEventEmitter` and imports `EventEmitterModule.forRoot()`.
 - CLI command via `nest-commander`: `dmx-sniffer` (Linux-only)
 - Global `DrizzleDbModule` exports DB; `@/` path alias → `apps/backend/src/`
+- Static files: Fastify serves Rspack-copied `src/assets` at `/assets/` (`@fastify/static`). 3D models live under `apps/backend/src/assets/3d/` (e.g. `room.gltf`).
 - IO layer: `io/dmx/`, `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
 
 ### Domain module structure (e.g. `fixtures/`, `projects/`)
@@ -152,7 +154,7 @@ fixtures/
 ### Prettier
 
 - printWidth 120, single quotes, trailing comma all, arrow parens avoid
-- Format every file you create or change: `pnpm exec prettier --write <paths>`
+- Format every file you create or change before finishing: `pnpm exec prettier --write <paths>` (all changed paths from `git diff --name-only`)
 
 ### NestJS / GraphQL
 
@@ -174,7 +176,7 @@ fixtures/
 ## Important Notes
 
 - Frontend: Vitest colocated `*.spec.ts` / `*.spec.tsx`; Playwright e2e in `apps/frontend/e2e/*.e2e.spec.ts` (mocked GraphQL). Install Chromium once with `pnpm exec playwright install chromium`. Backend uses Vitest with GraphQL e2e in `src/e2e-tests/`
-- `nx dev frontend` runs `next dev --webpack` (not Turbopack). Next 16 Turbopack exceeds Linux `fs.inotify.max_user_watches` on this pnpm tree and then reports missing modules (and PostCSS `picocolors` eval errors).
+- `nx dev frontend` runs `next dev` (Next 16 default Turbopack) on port 3001.
 - `REVIEW` comments mark incomplete implementations (DMX device selection, hardcoded serial paths, ValidationPipe `disableErrorMessages` in `main.ts`)
 - IO layer is Linux-focused (`/dev/usbmon`, serial ports)
 - Production hides stack traces from GraphQL errors

@@ -107,9 +107,14 @@ describe('ProjectFixtureTable', () => {
                 __typename: 'ProjectDto',
                 publicId: 'proj-1',
                 name: 'Main Show',
+                environmentType: 'SimpleGround',
+                roomWidth: 10,
+                roomLength: 8,
+                roomHeight: 5,
                 createdAt: now,
                 updatedAt: now,
                 projectFixtures: [],
+                project3dObjects: [],
               },
             },
           },
@@ -143,6 +148,10 @@ describe('ProjectFixtureTable', () => {
                 __typename: 'ProjectDto',
                 publicId: 'proj-1',
                 name: 'Main Show',
+                environmentType: 'SimpleGround',
+                roomWidth: 10,
+                roomLength: 8,
+                roomHeight: 5,
                 createdAt: now,
                 updatedAt: now,
                 projectFixtures: [
@@ -150,6 +159,7 @@ describe('ProjectFixtureTable', () => {
                   projectFixture({ publicId: 'pf-b', name: 'Spot', startAddress: 1 }),
                   projectFixture({ publicId: 'pf-c', name: 'Wash', startAddress: 20 }),
                 ],
+                project3dObjects: [],
               },
             },
           },
@@ -201,9 +211,14 @@ describe('ProjectFixtureTable', () => {
                 __typename: 'ProjectDto',
                 publicId: 'proj-1',
                 name: 'Main Show',
+                environmentType: 'SimpleGround',
+                roomWidth: 10,
+                roomLength: 8,
+                roomHeight: 5,
                 createdAt: now,
                 updatedAt: now,
                 projectFixtures: [projectFixture({ publicId: 'pf-a', name: 'PAR 64', startAddress: 1 })],
+                project3dObjects: [],
               },
             },
           },
@@ -263,7 +278,10 @@ describe('ProjectFixtureTable', () => {
     await user.click(channelModeSelect);
     const modeOption = (await screen.findAllByText('3ch')).find(node => node.tagName === 'SPAN');
     expect(modeOption).toBeDefined();
-    await user.click(modeOption!);
+    if (!modeOption) {
+      throw new Error('expected channel mode option');
+    }
+    await user.click(modeOption);
 
     expect(dialog).toHaveTextContent('This address range overlaps another fixture in the project');
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();

@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 7,
+  "projects": [
+    {
+      "publicId": "63208a07-9dc5-4711-93d5-cce441a9390e",
+      "name": "Test-001",
+      "environmentType": "Room",
+      "roomWidth": 12,
+      "roomLength": 16,
+      "roomHeight": 6,
+      "createdAt": "2026-08-28T22:55:51.687Z",
+      "updatedAt": "2026-09-08T19:54:30.667Z",
+      "projectFixtures": [
+        {
+          "publicId": "3fec16ae-17c5-468b-9ee0-0965de847985",
+          "startAddress": 1,
+          "fixturePublicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
+          "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
+          "createdAt": "2026-08-28T23:02:04.889Z",
+          "updatedAt": "2026-08-28T23:02:04.889Z"
+        },
+        {
+          "publicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5",
+          "startAddress": 10,
+          "fixturePublicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
+          "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
+          "createdAt": "2026-08-28T23:08:07.745Z",
+          "updatedAt": "2026-08-28T23:08:07.745Z"
+        },
+        {
+          "publicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b",
+          "startAddress": 19,
+          "fixturePublicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
+          "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
+          "createdAt": "2026-08-28T23:08:49.831Z",
+          "updatedAt": "2026-08-28T23:08:49.831Z"
+        },
+        {
+          "publicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9",
+          "startAddress": 28,
+          "fixturePublicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
+          "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
+          "createdAt": "2026-08-30T13:35:29.583Z",
+          "updatedAt": "2026-08-30T13:35:29.583Z"
+        },
+        {
+          "publicId": "abb4d4bb-92cd-4511-8849-123435bb1475",
+          "startAddress": 37,
+          "fixturePublicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
+          "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
+          "createdAt": "2026-08-30T13:54:49.114Z",
+          "updatedAt": "2026-08-30T13:54:49.114Z"
+        },
+        {
+          "publicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73",
+          "startAddress": 46,
+          "fixturePublicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
+          "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
+          "createdAt": "2026-08-30T13:55:15.535Z",
+          "updatedAt": "2026-08-30T13:55:15.535Z"
+        },
+        {
+          "publicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303",
+          "startAddress": 55,
+          "fixturePublicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
+          "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
+          "createdAt": "2026-08-30T13:55:39.399Z",
+          "updatedAt": "2026-08-30T13:55:39.399Z"
+        },
+        {
+          "publicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1",
+          "startAddress": 64,
+          "fixturePublicId": "aadb2d60-4a8e-45c3-b58a-8726861930b1",
+          "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
+          "createdAt": "2026-08-30T13:56:24.138Z",
+          "updatedAt": "2026-08-30T13:56:35.500Z"
+        },
+        {
+          "publicId": "0c8f305c-fe11-4823-9902-36265f01106f",
+          "startAddress": 73,
+          "fixturePublicId": "37c06d4d-f637-4944-a0ff-3821e94feb84",
+          "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
+          "createdAt": "2026-08-30T13:57:20.085Z",
+          "updatedAt": "2026-08-30T13:57:20.085Z"
+        },
+        {
+          "publicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284",
+          "startAddress": 82,
+          "fixturePublicId": "37c06d4d-f637-4944-a0ff-3821e94feb84",
+          "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
+          "createdAt": "2026-09-03T07:58:19.032Z",
+          "updatedAt": "2026-09-03T07:58:19.032Z"
+        },
+        {
+          "publicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689",
+          "startAddress": 91,
+          "fixturePublicId": "5f34eb30-d45e-4025-b157-a09ae0f2f9cc",
+          "channelModePublicId": "742dc3d6-2a99-4a43-9d73-a309b633aa2f",
+          "createdAt": "2026-09-03T11:03:30.706Z",
+          "updatedAt": "2026-09-03T11:03:30.706Z"
+        },
+        {
+          "publicId": "a095dba7-8a57-4f17-8623-1b79f059248a",
+          "startAddress": 101,
+          "fixturePublicId": "7b46ef92-ea25-4cde-ba59-49c0c6b78f5e",
+          "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
+          "createdAt": "2026-09-03T10:57:14.461Z",
+          "updatedAt": "2026-09-03T11:03:03.068Z"
+        },
+        {
+          "publicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1",
+          "startAddress": 109,
+          "fixturePublicId": "7b46ef92-ea25-4cde-ba59-49c0c6b78f5e",
+          "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
+          "createdAt": "2026-09-03T10:58:09.372Z",
+          "updatedAt": "2026-09-03T11:02:56.042Z"
+        },
+        {
+          "publicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399",
+          "startAddress": 117,
+          "fixturePublicId": "af168eb7-bac4-4240-93d9-196e1656f450",
+          "channelModePublicId": "827f5348-56af-4505-bfdb-573f5f47aaf1",
+          "createdAt": "2026-09-03T10:58:41.150Z",
+          "updatedAt": "2026-09-03T11:02:43.858Z"
+        },
+        {
+          "publicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc",
+          "startAddress": 123,
+          "fixturePublicId": "af168eb7-bac4-4240-93d9-196e1656f450",
+          "channelModePublicId": "827f5348-56af-4505-bfdb-573f5f47aaf1",
+          "createdAt": "2026-09-03T10:59:02.819Z",
+          "updatedAt": "2026-09-03T11:03:54.271Z"
+        },
+        {
+          "publicId": "2464da63-909a-43ba-a93a-c8a33d4f25de",
+          "startAddress": 129,
+          "fixturePublicId": "7b46ef92-ea25-4cde-ba59-49c0c6b78f5e",
+          "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
+          "createdAt": "2026-09-03T11:00:34.880Z",
+          "updatedAt": "2026-09-03T11:05:19.108Z"
+        },
+        {
+          "publicId": "a0e2ab07-3d39-4971-a247-8b062b819780",
+          "startAddress": 137,
+          "fixturePublicId": "7b46ef92-ea25-4cde-ba59-49c0c6b78f5e",
+          "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
+          "createdAt": "2026-09-03T11:04:41.595Z",
+          "updatedAt": "2026-09-03T11:05:25.416Z"
+        },
+        {
+          "publicId": "f9decd3b-7c97-4513-9f63-f811a507c754",
+          "startAddress": 145,
+          "fixturePublicId": "5f34eb30-d45e-4025-b157-a09ae0f2f9cc",
+          "channelModePublicId": "742dc3d6-2a99-4a43-9d73-a309b633aa2f",
+          "createdAt": "2026-09-03T11:05:00.604Z",
+          "updatedAt": "2026-09-03T11:05:38.550Z"
+        },
+        {
+          "publicId": "381028c7-bb4c-4052-9135-f80467697064",
+          "startAddress": 155,
+          "fixturePublicId": "37c06d4d-f637-4944-a0ff-3821e94feb84",
+          "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
+          "createdAt": "2026-09-03T07:59:37.324Z",
+          "updatedAt": "2026-09-03T11:05:47.005Z"
+        },
+        {
+          "publicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a",
+          "startAddress": 164,
+          "fixturePublicId": "37c06d4d-f637-4944-a0ff-3821e94feb84",
+          "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
+          "createdAt": "2026-09-03T07:59:50.742Z",
+          "updatedAt": "2026-09-03T11:05:58.396Z"
+        }
+      ],
+      "project3dObjects": [
+        {
+          "publicId": "050ee45e-8a65-400d-ae2a-8ef0ba23e46b",
+          "name": "Bühne",
+          "sceneObjectTypePublicId": "77dceb2b-6341-460f-b4f5-c6ea50ee3b64",
+          "sceneObjectTypeName": "Box",
+          "sizeX": 9,
+          "sizeY": 1.5,
+          "sizeZ": 1,
+          "transform": [
+            1, 7.359870936702364e-36, -1.852775203663249e-70, 0, -7.359870936702364e-36, 1, -2.5174017582615335e-35, 0,
+            0, 2.5174017582615335e-35, 1, 0, 0, 0.75, -7.516841165115441, 1
+          ],
+          "createdAt": "2026-09-08T16:25:38.953Z",
+          "updatedAt": "2026-09-08T19:43:24.414Z"
+        },
+        {
+          "publicId": "8d5b4735-1b96-42d0-8022-bd6323d9e841",
+          "name": "Light stand 1",
+          "sceneObjectTypePublicId": "25d1cb7c-e1a6-41c7-b524-e9c7b132ecea",
+          "sceneObjectTypeName": "Light stand",
+          "sizeX": null,
+          "sizeY": null,
+          "sizeZ": null,
+          "transform": [
+            0.0003725034558887952, 0, -0.9999999306205853, 0, 0, 1, 0, 0, 0.9999999306205853, 0, 0.0003725034558887952,
+            0, 4.948139142982703, 0, -4.106896325681704, 1
+          ],
+          "createdAt": "2026-09-08T16:26:01.619Z",
+          "updatedAt": "2026-09-08T19:53:19.141Z"
+        },
+        {
+          "publicId": "9259fe99-d4ba-480e-90ea-8949564d0060",
+          "name": "Light stand 4",
+          "sceneObjectTypePublicId": "25d1cb7c-e1a6-41c7-b524-e9c7b132ecea",
+          "sceneObjectTypeName": "Light stand",
+          "sizeX": null,
+          "sizeY": null,
+          "sizeZ": null,
+          "transform": [
+            2.220446049250313e-16, 0, 1, 0, 0, 1, 0, 0, -1, 0, 2.220446049250313e-16, 0, -4.693270413204931, 0,
+            -3.990580028452574, 1
+          ],
+          "createdAt": "2026-09-08T19:51:04.316Z",
+          "updatedAt": "2026-09-08T19:53:19.309Z"
+        },
+        {
+          "publicId": "9833ebf1-6c8e-4aeb-ba3f-b833405e1ec5",
+          "name": "Light stand 3",
+          "sceneObjectTypePublicId": "25d1cb7c-e1a6-41c7-b524-e9c7b132ecea",
+          "sceneObjectTypeName": "Light stand",
+          "sizeX": null,
+          "sizeY": null,
+          "sizeZ": null,
+          "transform": [
+            0.9395054790516244, 0, 0.34253387399201535, 0, 0, 1, 0, 0, -0.34253387399201535, 0, 0.9395054790516244, 0,
+            -3, 0, 0, 1
+          ],
+          "createdAt": "2026-09-08T19:50:08.976Z",
+          "updatedAt": "2026-09-08T19:53:19.257Z"
+        },
+        {
+          "publicId": "ee102b68-e209-4be5-bd0f-3debd2300eee",
+          "name": "Light stand 2",
+          "sceneObjectTypePublicId": "25d1cb7c-e1a6-41c7-b524-e9c7b132ecea",
+          "sceneObjectTypeName": "Light stand",
+          "sizeX": null,
+          "sizeY": null,
+          "sizeZ": null,
+          "transform": [
+            0.9396926207859084, 0, -0.34202014332566866, 0, 0, 1, 0, 0, 0.34202014332566866, 0, 0.9396926207859084, 0,
+            3, 0, 0, 1
+          ],
+          "createdAt": "2026-09-08T19:48:23.917Z",
+          "updatedAt": "2026-09-08T19:53:19.200Z"
+        }
+      ]
+    }
+  ]
+}

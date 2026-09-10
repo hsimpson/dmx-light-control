@@ -10,6 +10,8 @@ erDiagram
     fixtures ||--o{ fixture_channel_definitions : "fixture_id"
     fixtures ||--o{ fixture_channel_modes : "fixture_id"
     fixture_channel_definitions ||--o{ fixture_channel_ranges : "fixture_channel_definition_id"
+    projects ||--o{ project_3d_objects : "project_id"
+    scene_object_types ||--o{ project_3d_objects : "scene_object_type_id"
     projects ||--o{ project_fixtures : "project_id"
     fixtures ||--o{ project_fixtures : "fixture_id"
     fixture_channel_modes ||--o{ project_fixtures : "fixture_channel_mode_id"
@@ -70,6 +72,23 @@ erDiagram
         integer id PK
         uuid public_id UK
         varchar name UK
+        projectenvironmenttype environment_type
+        doubleprecision room_width
+        doubleprecision room_length
+        doubleprecision room_height
+        timestamp created_at
+        timestamp updated_at
+    }
+    project_3d_objects {
+        integer id PK
+        uuid public_id UK
+        integer project_id FK,UK
+        integer scene_object_type_id FK
+        varchar name UK
+        doubleprecision size_x
+        doubleprecision size_y
+        doubleprecision size_z
+        doubleprecision transform
         timestamp created_at
         timestamp updated_at
     }
@@ -80,6 +99,19 @@ erDiagram
         integer fixture_id FK
         integer fixture_channel_mode_id FK
         integer start_address
+        timestamp created_at
+        timestamp updated_at
+    }
+    scene_object_types {
+        integer id PK
+        uuid public_id UK
+        varchar name UK
+        sceneobjectgeometrykind geometry_kind
+        varchar model_path
+        boolean is_scalable
+        doubleprecision default_size_x
+        doubleprecision default_size_y
+        doubleprecision default_size_z
         timestamp created_at
         timestamp updated_at
     }

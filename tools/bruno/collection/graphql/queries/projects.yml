@@ -12,7 +12,30 @@ graphql:
       query {
         projects {
           createdAt
+          environmentType
           name
+          project3dObjects {
+            createdAt
+            name
+            publicId
+            sceneObjectType {
+              createdAt
+              defaultSizeX
+              defaultSizeY
+              defaultSizeZ
+              geometryKind
+              isScalable
+              modelPath
+              name
+              publicId
+              updatedAt
+            }
+            sizeX
+            sizeY
+            sizeZ
+            transform
+            updatedAt
+          }
           projectFixtures {
             channelMode {
               createdAt
@@ -42,6 +65,9 @@ graphql:
             updatedAt
           }
           publicId
+          roomHeight
+          roomLength
+          roomWidth
           updatedAt
         }
       }

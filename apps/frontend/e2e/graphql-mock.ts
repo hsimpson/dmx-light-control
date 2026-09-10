@@ -51,6 +51,10 @@ export const mockedProject = {
   __typename: 'ProjectDto',
   publicId: 'proj-1',
   name: 'Main Show',
+  environmentType: 'SimpleGround',
+  roomWidth: 10,
+  roomLength: 8,
+  roomHeight: 5,
   createdAt: now,
   updatedAt: now,
 };
@@ -104,6 +108,10 @@ export const mockGraphql = async (page: Page) => {
         input?: {
           publicId?: string;
           name?: string;
+          environmentType?: string;
+          roomWidth?: number;
+          roomLength?: number;
+          roomHeight?: number;
           projectPublicId?: string;
           fixturePublicId?: string;
           channelModePublicId?: string;
@@ -119,13 +127,18 @@ export const mockGraphql = async (page: Page) => {
       body = {
         data: {
           exportProjects: {
-            schemaVersion: 2,
+            schemaVersion: 7,
             projects: projects.map(project => ({
               publicId: project.publicId,
               name: project.name,
+              environmentType: project.environmentType,
+              roomWidth: project.roomWidth,
+              roomLength: project.roomLength,
+              roomHeight: project.roomHeight,
               createdAt: project.createdAt,
               updatedAt: project.updatedAt,
               projectFixtures: projectFixtures[project.publicId] ?? [],
+              project3dObjects: [],
             })),
           },
         },
@@ -143,6 +156,10 @@ export const mockGraphql = async (page: Page) => {
             __typename: 'ProjectDto',
             publicId: item.publicId ?? `proj-${projects.length + 1}`,
             name: item.name,
+            environmentType: 'Room',
+            roomWidth: 10,
+            roomLength: 8,
+            roomHeight: 5,
             createdAt: now,
             updatedAt: now,
           });
@@ -156,6 +173,8 @@ export const mockGraphql = async (page: Page) => {
           },
         },
       };
+    } else if (postData.operationName === 'GetSceneObjectTypes' || postData.query?.includes('sceneObjectTypes')) {
+      body = { data: { sceneObjectTypes: [] } };
     } else if (postData.operationName === 'GetProjects' || postData.query?.includes('projects {')) {
       body = { data: { projects: [...projects] } };
     } else if (postData.operationName === 'GetProject' || postData.query?.includes('project(publicId')) {
@@ -167,6 +186,7 @@ export const mockGraphql = async (page: Page) => {
             ? {
                 ...project,
                 projectFixtures: projectFixtures[publicId] ?? [],
+                project3dObjects: [],
               }
             : null,
         },
@@ -177,6 +197,10 @@ export const mockGraphql = async (page: Page) => {
         __typename: 'ProjectDto',
         publicId: `proj-${projects.length + 1}`,
         name,
+        environmentType: 'SimpleGround',
+        roomWidth: 10,
+        roomLength: 8,
+        roomHeight: 5,
         createdAt: now,
         updatedAt: now,
       };
@@ -189,6 +213,20 @@ export const mockGraphql = async (page: Page) => {
       const existing = projects.find(project => project.publicId === publicId);
       if (existing && name) {
         existing.name = name;
+      }
+      if (existing) {
+        if (postData.variables?.input?.environmentType !== undefined) {
+          existing.environmentType = postData.variables.input.environmentType;
+        }
+        if (postData.variables?.input?.roomWidth !== undefined) {
+          existing.roomWidth = postData.variables.input.roomWidth;
+        }
+        if (postData.variables?.input?.roomLength !== undefined) {
+          existing.roomLength = postData.variables.input.roomLength;
+        }
+        if (postData.variables?.input?.roomHeight !== undefined) {
+          existing.roomHeight = postData.variables.input.roomHeight;
+        }
       }
       body = { data: { updateProject: existing ?? null } };
     } else if (postData.operationName === 'DeleteProject' || postData.query?.includes('deleteProject')) {
@@ -289,6 +327,11 @@ export const mockGraphql = async (page: Page) => {
     } else if (postData.operationName === 'DeleteFixture' || postData.query?.includes('deleteFixture')) {
       fixtures.splice(0, fixtures.length);
       body = { data: { deleteFixture: { publicId: mockedFixture.publicId, deleted: true } } };
+    } else if (postData.operationName === 'GetFixtureVendors' || postData.query?.includes('fixtureVendors')) {
+      body = { data: { fixtureVendors: [{ ...mockedFixture.fixtureVendor }] } };
+    } else if (postData.operationName === 'GetFixture' || postData.query?.includes('fixture(publicId')) {
+      const publicId = postData.variables?.publicId ?? mockedFixture.publicId;
+      body = { data: { fixture: fixtures.find(entry => entry.publicId === publicId) ?? null } };
     } else if (postData.operationName === 'GetFixtures' || postData.query?.includes('fixtures {')) {
       body = { data: { fixtures: [...fixtures] } };
     }

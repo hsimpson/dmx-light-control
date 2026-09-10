@@ -6,6 +6,8 @@ import { Client } from 'pg';
 let dbTestContainer: StartedPostgreSqlContainer;
 
 export async function setup() {
+  process.env.TESTCONTAINERS_RYUK_DISABLED ??= 'true';
+
   dbTestContainer = await new PostgreSqlContainer('postgres:18.4').start();
   const connectionString = dbTestContainer.getConnectionUri();
   const url = new URL(connectionString);

@@ -1,6 +1,10 @@
 fragment ProjectFields on ProjectDto {
   publicId
   name
+  environmentType
+  roomWidth
+  roomLength
+  roomHeight
   createdAt
   updatedAt
 }
@@ -30,6 +34,44 @@ fragment ProjectFixtureFields on ProjectFixtureDto {
   updatedAt
 }
 
+fragment Project3dObjectFields on Project3dObjectDto {
+  publicId
+  name
+  sizeX
+  sizeY
+  sizeZ
+  transform
+  sceneObjectType {
+    publicId
+    name
+    geometryKind
+    modelPath
+    isScalable
+    defaultSizeX
+    defaultSizeY
+    defaultSizeZ
+    createdAt
+    updatedAt
+  }
+  createdAt
+  updatedAt
+}
+
+query GetSceneObjectTypes {
+  sceneObjectTypes {
+    publicId
+    name
+    geometryKind
+    modelPath
+    isScalable
+    defaultSizeX
+    defaultSizeY
+    defaultSizeZ
+    createdAt
+    updatedAt
+  }
+}
+
 query GetProjects {
   projects {
     ...ProjectFields
@@ -41,6 +83,9 @@ query GetProject($publicId: UUID!) {
     ...ProjectFields
     projectFixtures {
       ...ProjectFixtureFields
+    }
+    project3dObjects {
+      ...Project3dObjectFields
     }
   }
 }
@@ -83,12 +128,35 @@ mutation DeleteProjectFixture($publicId: UUID!) {
   }
 }
 
+mutation AddProject3dObject($input: AddProject3dObjectInput!) {
+  addProject3dObject(input: $input) {
+    ...Project3dObjectFields
+  }
+}
+
+mutation UpdateProject3dObject($input: UpdateProject3dObjectInput!) {
+  updateProject3dObject(input: $input) {
+    ...Project3dObjectFields
+  }
+}
+
+mutation DeleteProject3dObject($publicId: UUID!) {
+  deleteProject3dObject(publicId: $publicId) {
+    publicId
+    deleted
+  }
+}
+
 query ExportProjects {
   exportProjects {
     schemaVersion
     projects {
       publicId
       name
+      environmentType
+      roomWidth
+      roomLength
+      roomHeight
       createdAt
       updatedAt
       projectFixtures {
@@ -96,6 +164,18 @@ query ExportProjects {
         startAddress
         fixturePublicId
         channelModePublicId
+        createdAt
+        updatedAt
+      }
+      project3dObjects {
+        publicId
+        name
+        sceneObjectTypePublicId
+        sceneObjectTypeName
+        sizeX
+        sizeY
+        sizeZ
+        transform
         createdAt
         updatedAt
       }

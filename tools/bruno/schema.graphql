@@ -1,43 +1,102 @@
-input AddProjectFixtureInput {
-  """The public ID of the channel mode"""
-  channelModePublicId: UUID!
+input AddProject3dObjectInput {
+  """
+  Unique name within the project. Defaults to "{type} {n}".
+  """
+  name: String
 
-  """The public ID of the catalog fixture"""
-  fixturePublicId: UUID!
-
-  """The public ID of the project"""
+  """
+  The public ID of the project
+  """
   projectPublicId: UUID!
 
-  """The DMX start address (1–512)"""
+  """
+  The public ID of the scene object type
+  """
+  sceneObjectTypePublicId: UUID!
+
+  """
+  Width in meters for scalable objects
+  """
+  sizeX: Float
+
+  """
+  Height in meters for scalable objects
+  """
+  sizeY: Float
+
+  """
+  Length in meters for scalable objects
+  """
+  sizeZ: Float
+
+  """
+  Column-major 4×4 transform (16 values). Defaults to sitting on the floor.
+  """
+  transform: [Float!]
+}
+
+input AddProjectFixtureInput {
+  """
+  The public ID of the channel mode
+  """
+  channelModePublicId: UUID!
+
+  """
+  The public ID of the catalog fixture
+  """
+  fixturePublicId: UUID!
+
+  """
+  The public ID of the project
+  """
+  projectPublicId: UUID!
+
+  """
+  The DMX start address (1–512)
+  """
   startAddress: Int!
 }
 
 input ChannelValuesInput {
-  """The list of DMX channel values"""
+  """
+  The list of DMX channel values
+  """
   dmxValues: [DmxValueInput!]! = [{ channel: 1, value: 127 }]
 }
 
 input CreateFixtureInput {
-  """Channel definitions to create with the fixture"""
+  """
+  Channel definitions to create with the fixture
+  """
   channelDefinitions: [UpdateFixtureChannelDefinitionInput!]
 
-  """Channel modes to create with the fixture"""
+  """
+  Channel modes to create with the fixture
+  """
   channelModes: [UpdateFixtureChannelModeInput!]
 
-  """The name of the fixture"""
+  """
+  The name of the fixture
+  """
   name: String!
 
-  """The vendor of the fixture (existing publicId or new name)"""
+  """
+  The vendor of the fixture (existing publicId or new name)
+  """
   vendor: UpdateFixtureVendorInput!
 }
 
 input CreateFixtureVendorInput {
-  """The name of the fixture vendor"""
+  """
+  The name of the fixture vendor
+  """
   name: String!
 }
 
 input CreateProjectInput {
-  """The name of the project"""
+  """
+  The name of the project
+  """
   name: String!
 }
 
@@ -52,15 +111,33 @@ type DeleteFixturePayload {
   """
   deleted: Boolean!
 
-  """The public id of the fixture that was requested for deletion"""
+  """
+  The public id of the fixture that was requested for deletion
+  """
   publicId: UUID!
 }
 
 type DeleteFixtureVendorPayload {
-  """True if a vendor was deleted, false if no vendor matched the public id"""
+  """
+  True if a vendor was deleted, false if no vendor matched the public id
+  """
   deleted: Boolean!
 
-  """The public id of the vendor that was requested for deletion"""
+  """
+  The public id of the vendor that was requested for deletion
+  """
+  publicId: UUID!
+}
+
+type DeleteProject3dObjectPayload {
+  """
+  True if a project 3D object was deleted, false if no instance matched the public id
+  """
+  deleted: Boolean!
+
+  """
+  The public id of the project 3D object that was requested for deletion
+  """
   publicId: UUID!
 }
 
@@ -70,7 +147,9 @@ type DeleteProjectFixturePayload {
   """
   deleted: Boolean!
 
-  """The public id of the project fixture that was requested for deletion"""
+  """
+  The public id of the project fixture that was requested for deletion
+  """
   publicId: UUID!
 }
 
@@ -80,82 +159,128 @@ type DeleteProjectPayload {
   """
   deleted: Boolean!
 
-  """The public id of the project that was requested for deletion"""
+  """
+  The public id of the project that was requested for deletion
+  """
   publicId: UUID!
 }
 
 input DmxValueInput {
-  """The DMX channel number (1-512)"""
+  """
+  The DMX channel number (1-512)
+  """
   channel: Int!
 
-  """The DMX channel value (0-255)"""
+  """
+  The DMX channel value (0-255)
+  """
   value: Int!
 }
 
 type FixtureChannelAssignmentDto {
-  """The number of the channel assignment"""
+  """
+  The number of the channel assignment
+  """
   channelNumber: Int!
 
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The channel definition assigned to this channel number"""
+  """
+  The channel definition assigned to this channel number
+  """
   fixtureChannelDefinition: FixtureChannelDefinitionDto!
 
-  """The public id, unique identifier of the entity"""
+  """
+  The public id, unique identifier of the entity
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type FixtureChannelDefinitionDto {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The channel assignments of the channel mode"""
+  """
+  The channel assignments of the channel mode
+  """
   fixtureChannelAssignments: [FixtureChannelAssignmentDto!]!
 
-  """The channel ranges of the channel definition"""
+  """
+  The channel ranges of the channel definition
+  """
   fixtureChannelRanges: [FixtureChannelRangeDto!]!
 
-  """The name of the channel definition"""
+  """
+  The name of the channel definition
+  """
   name: String!
 
-  """The order of the channel definition"""
+  """
+  The order of the channel definition
+  """
   order: Int!
 
-  """The preset of the channel assignment"""
+  """
+  The preset of the channel assignment
+  """
   preset: FixtureChannelPreset!
 
-  """The public id, unique identifier of the entity"""
+  """
+  The public id, unique identifier of the entity
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type FixtureChannelModeDto {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The channel assignments of the channel mode"""
+  """
+  The channel assignments of the channel mode
+  """
   fixtureChannelAssignments: [FixtureChannelAssignmentDto!]!
 
-  """The name of the channel mode"""
+  """
+  The name of the channel mode
+  """
   name: String!
 
-  """The order of the channel mode"""
+  """
+  The order of the channel mode
+  """
   order: Int!
 
-  """The public id, unique identifier of the entity"""
+  """
+  The public id, unique identifier of the entity
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
-"""The preset of a fixture channel assignment"""
+"""
+The preset of a fixture channel assignment
+"""
 enum FixtureChannelPreset {
   ColorMacro
   Custom
@@ -172,418 +297,749 @@ enum FixtureChannelPreset {
 }
 
 type FixtureChannelRangeDto {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The description of the channel range"""
+  """
+  The description of the channel range
+  """
   description: String!
 
-  """The DMX end channel of the channel range"""
+  """
+  The DMX end channel of the channel range
+  """
   dmxEnd: Int!
 
-  """The DMX start channel of the channel range"""
+  """
+  The DMX start channel of the channel range
+  """
   dmxStart: Int!
 
-  """The public id, unique identifier of the entity"""
+  """
+  The public id, unique identifier of the entity
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type FixtureDto {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The channel definitions of the fixture"""
+  """
+  The channel definitions of the fixture
+  """
   fixtureChannelDefinitions: [FixtureChannelDefinitionDto!]!
 
-  """The channel modes of the fixture"""
+  """
+  The channel modes of the fixture
+  """
   fixtureChannelModes: [FixtureChannelModeDto!]!
 
-  """The vendor of the fixture"""
+  """
+  The vendor of the fixture
+  """
   fixtureVendor: FixtureVendorDto!
 
-  """The name of the fixture"""
+  """
+  The name of the fixture
+  """
   name: String!
 
-  """The public id, unique identifier of the entity"""
+  """
+  The public id, unique identifier of the entity
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type FixtureExportAssignmentDto {
-  """The public ID of the assigned channel definition"""
+  """
+  The public ID of the assigned channel definition
+  """
   channelDefinitionPublicId: UUID!
 
-  """The 1-based DMX channel number of the assignment"""
+  """
+  The 1-based DMX channel number of the assignment
+  """
   channelNumber: Int!
 
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type FixtureExportDefinitionDto {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The name of the channel definition"""
+  """
+  The name of the channel definition
+  """
   name: String!
 
-  """The order of the channel definition"""
+  """
+  The order of the channel definition
+  """
   order: Int!
 
-  """The preset of the channel definition"""
+  """
+  The preset of the channel definition
+  """
   preset: FixtureChannelPreset!
 
-  """The public ID of the channel definition"""
+  """
+  The public ID of the channel definition
+  """
   publicId: UUID!
 
-  """The channel ranges of the channel definition"""
+  """
+  The channel ranges of the channel definition
+  """
   ranges: [FixtureExportRangeDto!]!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type FixtureExportDocumentDto {
-  """The fixtures included in the export"""
+  """
+  The fixtures included in the export
+  """
   fixtures: [FixtureExportFixtureDto!]!
 
-  """The fixture export document schema version"""
+  """
+  The fixture export document schema version
+  """
   schemaVersion: Int!
 
-  """All fixture vendors, including those without fixtures"""
+  """
+  All fixture vendors, including those without fixtures
+  """
   vendors: [FixtureExportVendorDto!]!
 }
 
 type FixtureExportFixtureDto {
-  """The channel definitions of the fixture"""
+  """
+  The channel definitions of the fixture
+  """
   channelDefinitions: [FixtureExportDefinitionDto!]!
 
-  """The channel modes of the fixture"""
+  """
+  The channel modes of the fixture
+  """
   channelModes: [FixtureExportModeDto!]!
 
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The name of the fixture"""
+  """
+  The name of the fixture
+  """
   name: String!
 
-  """The public ID of the fixture"""
+  """
+  The public ID of the fixture
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 
-  """The vendor of the fixture"""
+  """
+  The vendor of the fixture
+  """
   vendor: FixtureExportVendorDto!
 }
 
 type FixtureExportModeDto {
-  """The channel assignments of the channel mode"""
+  """
+  The channel assignments of the channel mode
+  """
   assignments: [FixtureExportAssignmentDto!]!
 
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The name of the channel mode"""
+  """
+  The name of the channel mode
+  """
   name: String!
 
-  """The order of the channel mode"""
+  """
+  The order of the channel mode
+  """
   order: Int!
 
-  """The public ID of the channel mode"""
+  """
+  The public ID of the channel mode
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type FixtureExportRangeDto {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The description of the channel range"""
+  """
+  The description of the channel range
+  """
   description: String!
 
-  """The DMX end value of the channel range"""
+  """
+  The DMX end value of the channel range
+  """
   dmxEnd: Int!
 
-  """The DMX start value of the channel range"""
+  """
+  The DMX start value of the channel range
+  """
   dmxStart: Int!
 
-  """The public ID of the channel range"""
+  """
+  The public ID of the channel range
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type FixtureExportVendorDto {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The name of the vendor"""
+  """
+  The name of the vendor
+  """
   name: String!
 
-  """The public ID of the vendor"""
+  """
+  The public ID of the vendor
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type FixtureVendorDto {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The name of the vendor"""
+  """
+  The name of the vendor
+  """
   name: String!
 
-  """The public id, unique identifier of the entity"""
+  """
+  The public id, unique identifier of the entity
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 input ImportFixtureAssignmentInput {
-  """The name of the assigned channel definition when publicId is omitted"""
+  """
+  The name of the assigned channel definition when publicId is omitted
+  """
   channelDefinitionName: String
 
-  """The public ID of the assigned channel definition in this fixture"""
+  """
+  The public ID of the assigned channel definition in this fixture
+  """
   channelDefinitionPublicId: UUID
 
-  """The 1-based DMX channel number of the assignment"""
+  """
+  The 1-based DMX channel number of the assignment
+  """
   channelNumber: Int!
 
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime
 }
 
 input ImportFixtureDefinitionInput {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime
 
-  """The name of the channel definition"""
+  """
+  The name of the channel definition
+  """
   name: String!
 
-  """The order of the channel definition"""
+  """
+  The order of the channel definition
+  """
   order: Int!
 
-  """The preset of the channel definition"""
+  """
+  The preset of the channel definition
+  """
   preset: FixtureChannelPreset!
 
-  """The public ID of the channel definition"""
+  """
+  The public ID of the channel definition
+  """
   publicId: UUID
 
-  """The channel ranges of the channel definition"""
+  """
+  The channel ranges of the channel definition
+  """
   ranges: [ImportFixtureRangeInput!]!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime
 }
 
 input ImportFixtureInput {
-  """The channel definitions of the fixture"""
+  """
+  The channel definitions of the fixture
+  """
   channelDefinitions: [ImportFixtureDefinitionInput!]!
 
-  """The channel modes of the fixture"""
+  """
+  The channel modes of the fixture
+  """
   channelModes: [ImportFixtureModeInput!]!
 
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime
 
-  """The name of the fixture"""
+  """
+  The name of the fixture
+  """
   name: String!
 
-  """The public ID of the fixture"""
+  """
+  The public ID of the fixture
+  """
   publicId: UUID
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime
 
-  """The vendor of the fixture"""
+  """
+  The vendor of the fixture
+  """
   vendor: ImportFixtureVendorInput!
 }
 
 input ImportFixtureModeInput {
-  """The channel assignments of the channel mode"""
+  """
+  The channel assignments of the channel mode
+  """
   assignments: [ImportFixtureAssignmentInput!]!
 
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime
 
-  """The name of the channel mode"""
+  """
+  The name of the channel mode
+  """
   name: String!
 
-  """The order of the channel mode"""
+  """
+  The order of the channel mode
+  """
   order: Int!
 
-  """The public ID of the channel mode"""
+  """
+  The public ID of the channel mode
+  """
   publicId: UUID
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime
 }
 
 input ImportFixtureRangeInput {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime
 
-  """The description of the channel range"""
+  """
+  The description of the channel range
+  """
   description: String!
 
-  """The DMX end value of the channel range"""
+  """
+  The DMX end value of the channel range
+  """
   dmxEnd: Int!
 
-  """The DMX start value of the channel range"""
+  """
+  The DMX start value of the channel range
+  """
   dmxStart: Int!
 
-  """The public ID of the channel range"""
+  """
+  The public ID of the channel range
+  """
   publicId: UUID
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime
 }
 
 input ImportFixtureVendorInput {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime
 
-  """The name of the vendor"""
+  """
+  The name of the vendor
+  """
   name: String!
 
-  """The public ID of the vendor"""
+  """
+  The public ID of the vendor
+  """
   publicId: UUID
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime
 }
 
 input ImportFixturesInput {
-  """The fixtures to import"""
+  """
+  The fixtures to import
+  """
   fixtures: [ImportFixtureInput!]!
 
-  """The fixture export document schema version"""
+  """
+  The fixture export document schema version
+  """
   schemaVersion: Int!
 
-  """Fixture vendors to upsert, including those without fixtures"""
+  """
+  Fixture vendors to upsert, including those without fixtures
+  """
   vendors: [ImportFixtureVendorInput!]
 }
 
 type ImportFixturesPayload {
-  """The imported fixtures with related entities"""
+  """
+  The imported fixtures with related entities
+  """
   fixtures: [FixtureDto!]!
 
-  """The number of fixtures upserted from the document"""
+  """
+  The number of fixtures upserted from the document
+  """
   importedCount: Int!
 }
 
-input ImportProjectFixtureInput {
-  """The public ID of the channel mode"""
-  channelModePublicId: UUID!
-
-  """The date and time when the entity was created"""
+input ImportProject3dObjectInput {
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime
 
-  """The public ID of the catalog fixture"""
-  fixturePublicId: UUID!
+  """
+  The display name of the 3D object instance
+  """
+  name: String
 
-  """The public ID of the project fixture instance"""
+  """
+  The public ID of the project 3D object instance
+  """
   publicId: UUID
 
-  """The DMX start address of the patched fixture instance"""
+  """
+  The display name of the scene object type; used when publicId is not found on import
+  """
+  sceneObjectTypeName: String
+
+  """
+  The public ID of the scene object type
+  """
+  sceneObjectTypePublicId: UUID!
+
+  """
+  Width in meters for scalable objects
+  """
+  sizeX: Float
+
+  """
+  Height in meters for scalable objects
+  """
+  sizeY: Float
+
+  """
+  Length in meters for scalable objects
+  """
+  sizeZ: Float
+
+  """
+  Column-major 4×4 transform (16 values)
+  """
+  transform: [Float!]!
+
+  """
+  The date and time when the entity was last updated
+  """
+  updatedAt: DateTime
+}
+
+input ImportProjectFixtureInput {
+  """
+  The public ID of the channel mode
+  """
+  channelModePublicId: UUID!
+
+  """
+  The date and time when the entity was created
+  """
+  createdAt: DateTime
+
+  """
+  The public ID of the catalog fixture
+  """
+  fixturePublicId: UUID!
+
+  """
+  The public ID of the project fixture instance
+  """
+  publicId: UUID
+
+  """
+  The DMX start address of the patched fixture instance
+  """
   startAddress: Int!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime
 }
 
 input ImportProjectInput {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime
 
-  """The name of the project"""
+  """
+  The 3D environment used by the project
+  """
+  environmentType: ProjectEnvironmentType
+
+  """
+  The name of the project
+  """
   name: String!
 
-  """The fixture instances patched into this project"""
+  """
+  The 3D scene objects placed in this project
+  """
+  project3dObjects: [ImportProject3dObjectInput!]
+
+  """
+  The fixture instances patched into this project
+  """
   projectFixtures: [ImportProjectFixtureInput!]
 
-  """The public ID of the project"""
+  """
+  The public ID of the project
+  """
   publicId: UUID
 
-  """The date and time when the entity was last updated"""
+  """
+  Room height in meters
+  """
+  roomHeight: Float
+
+  """
+  Room length in meters
+  """
+  roomLength: Float
+
+  """
+  Room width in meters
+  """
+  roomWidth: Float
+
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime
 }
 
 input ImportProjectsInput {
-  """The projects to import"""
+  """
+  The projects to import
+  """
   projects: [ImportProjectInput!]!
 
-  """The project export document schema version"""
+  """
+  The project export document schema version
+  """
   schemaVersion: Int!
 }
 
 type ImportProjectsPayload {
-  """The number of projects upserted from the document"""
+  """
+  The number of projects upserted from the document
+  """
   importedCount: Int!
 
-  """The imported projects"""
+  """
+  The imported projects
+  """
   projects: [ProjectDto!]!
 }
 
 type MidiDeviceDto {
-  """The name of the MIDI device"""
+  """
+  The name of the MIDI device
+  """
   name: String!
 
-  """The port number of the MIDI device"""
+  """
+  The port number of the MIDI device
+  """
   port: Int!
 }
 
 type MidiDevicesDto {
-  """The list of MIDI input devices"""
+  """
+  The list of MIDI input devices
+  """
   inputDevices: [MidiDeviceDto!]!
 
-  """The list of MIDI output devices"""
+  """
+  The list of MIDI output devices
+  """
   outputDevices: [MidiDeviceDto!]!
 }
 
 type Mutation {
-  """add a catalog fixture instance to a project"""
+  """
+  add a scene object instance to a project
+  """
+  addProject3dObject(input: AddProject3dObjectInput!): Project3dObjectDto!
+
+  """
+  add a catalog fixture instance to a project
+  """
   addProjectFixture(input: AddProjectFixtureInput!): ProjectFixtureDto!
 
-  """Close the specified MIDI ports"""
+  """
+  Close the specified MIDI ports
+  """
   closePorts: Boolean
 
-  """create a new fixture; creates the vendor when only a name is given"""
+  """
+  create a new fixture; creates the vendor when only a name is given
+  """
   createFixture(input: CreateFixtureInput!): FixtureDto!
 
-  """create a new fixture vendor"""
+  """
+  create a new fixture vendor
+  """
   createFixtureVendor(input: CreateFixtureVendorInput!): FixtureVendorDto!
 
-  """create a new project"""
+  """
+  create a new project
+  """
   createProject(input: CreateProjectInput!): ProjectDto!
 
-  """delete a fixture by public id"""
+  """
+  delete a fixture by public id
+  """
   deleteFixture(publicId: UUID!): DeleteFixturePayload!
 
-  """delete a fixture vendor by public id"""
+  """
+  delete a fixture vendor by public id
+  """
   deleteFixtureVendor(publicId: UUID!): DeleteFixtureVendorPayload!
 
-  """delete a project by public id"""
+  """
+  delete a project by public id
+  """
   deleteProject(publicId: UUID!): DeleteProjectPayload!
 
-  """delete a project fixture instance by public id"""
+  """
+  delete a project 3D object instance by public id
+  """
+  deleteProject3dObject(publicId: UUID!): DeleteProject3dObjectPayload!
+
+  """
+  delete a project fixture instance by public id
+  """
   deleteProjectFixture(publicId: UUID!): DeleteProjectFixturePayload!
 
   """
@@ -596,156 +1052,406 @@ type Mutation {
   """
   importProjects(document: ImportProjectsInput!): ImportProjectsPayload!
 
-  """Open the specified MIDI ports"""
+  """
+  Open the specified MIDI ports
+  """
   openPorts(openPortsDto: OpenPortsInput!): Boolean
 
-  """Set DMX channel values"""
+  """
+  Set DMX channel values
+  """
   setChannelValues(channelValues: ChannelValuesInput!): String!
 
-  """update an existing fixture"""
+  """
+  update an existing fixture
+  """
   updateFixture(input: UpdateFixtureInput!): FixtureDto!
 
-  """update an existing project"""
+  """
+  update an existing project
+  """
   updateProject(input: UpdateProjectInput!): ProjectDto!
 
-  """update a project fixture instance"""
+  """
+  update a project 3D object instance
+  """
+  updateProject3dObject(input: UpdateProject3dObjectInput!): Project3dObjectDto!
+
+  """
+  update a project fixture instance
+  """
   updateProjectFixture(input: UpdateProjectFixtureInput!): ProjectFixtureDto!
 }
 
 input OpenPortsInput {
-  """The MIDI input port number to open"""
+  """
+  The MIDI input port number to open
+  """
   inputPort: Int! = 1
 
-  """The MIDI output port number to open"""
+  """
+  The MIDI output port number to open
+  """
   outputPort: Int! = 1
 }
 
-type ProjectDto {
-  """The date and time when the entity was created"""
+type Project3dObjectDto {
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The name of the project"""
+  """
+  The unique name of this instance within the project
+  """
   name: String!
 
-  """The fixture instances patched into this project"""
-  projectFixtures: [ProjectFixtureDto!]!
-
-  """The public id, unique identifier of the entity"""
+  """
+  The public id, unique identifier of the entity
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The catalog type of this instance
+  """
+  sceneObjectType: SceneObjectTypeDto!
+
+  """
+  Width in meters for scalable objects
+  """
+  sizeX: Float
+
+  """
+  Height in meters for scalable objects
+  """
+  sizeY: Float
+
+  """
+  Length in meters for scalable objects
+  """
+  sizeZ: Float
+
+  """
+  Column-major 4×4 transform (16 values, translation and rotation only)
+  """
+  transform: [Float!]!
+
+  """
+  The date and time when the entity was last updated
+  """
+  updatedAt: DateTime!
+}
+
+type ProjectDto {
+  """
+  The date and time when the entity was created
+  """
+  createdAt: DateTime!
+
+  """
+  The 3D environment used by the project
+  """
+  environmentType: ProjectEnvironmentType!
+
+  """
+  The name of the project
+  """
+  name: String!
+
+  """
+  The 3D scene objects placed in this project
+  """
+  project3dObjects: [Project3dObjectDto!]!
+
+  """
+  The fixture instances patched into this project
+  """
+  projectFixtures: [ProjectFixtureDto!]!
+
+  """
+  The public id, unique identifier of the entity
+  """
+  publicId: UUID!
+
+  """
+  Room height in meters
+  """
+  roomHeight: Float!
+
+  """
+  Room length in meters
+  """
+  roomLength: Float!
+
+  """
+  Room width in meters
+  """
+  roomWidth: Float!
+
+  """
+  The date and time when the entity was last updated
+  """
+  updatedAt: DateTime!
+}
+
+"""
+The 3D environment used by a project
+"""
+enum ProjectEnvironmentType {
+  Room
+  SimpleGround
+}
+
+type ProjectExport3dObjectDto {
+  """
+  The date and time when the entity was created
+  """
+  createdAt: DateTime!
+
+  """
+  The display name of the 3D object instance
+  """
+  name: String!
+
+  """
+  The public ID of the project 3D object instance
+  """
+  publicId: UUID!
+
+  """
+  The display name of the scene object type catalog entry
+  """
+  sceneObjectTypeName: String!
+
+  """
+  The public ID of the scene object type
+  """
+  sceneObjectTypePublicId: UUID!
+
+  """
+  Width in meters for scalable objects
+  """
+  sizeX: Float
+
+  """
+  Height in meters for scalable objects
+  """
+  sizeY: Float
+
+  """
+  Length in meters for scalable objects
+  """
+  sizeZ: Float
+
+  """
+  Column-major 4×4 transform (16 values)
+  """
+  transform: [Float!]!
+
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type ProjectExportDocumentDto {
-  """The projects included in the export"""
+  """
+  The projects included in the export
+  """
   projects: [ProjectExportProjectDto!]!
 
-  """The project export document schema version"""
+  """
+  The project export document schema version
+  """
   schemaVersion: Int!
 }
 
 type ProjectExportFixtureDto {
-  """The public ID of the channel mode"""
+  """
+  The public ID of the channel mode
+  """
   channelModePublicId: UUID!
 
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The public ID of the catalog fixture"""
+  """
+  The public ID of the catalog fixture
+  """
   fixturePublicId: UUID!
 
-  """The public ID of the project fixture instance"""
+  """
+  The public ID of the project fixture instance
+  """
   publicId: UUID!
 
-  """The DMX start address of the patched fixture instance"""
+  """
+  The DMX start address of the patched fixture instance
+  """
   startAddress: Int!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type ProjectExportProjectDto {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The name of the project"""
+  """
+  The 3D environment used by the project
+  """
+  environmentType: ProjectEnvironmentType!
+
+  """
+  The name of the project
+  """
   name: String!
 
-  """The fixture instances patched into this project"""
+  """
+  The 3D scene objects placed in this project
+  """
+  project3dObjects: [ProjectExport3dObjectDto!]!
+
+  """
+  The fixture instances patched into this project
+  """
   projectFixtures: [ProjectExportFixtureDto!]!
 
-  """The public ID of the project"""
+  """
+  The public ID of the project
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  Room height in meters
+  """
+  roomHeight: Float!
+
+  """
+  Room length in meters
+  """
+  roomLength: Float!
+
+  """
+  Room width in meters
+  """
+  roomWidth: Float!
+
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type ProjectFixtureChannelAssignmentDto {
-  """The 1-based DMX channel number of the assignment"""
+  """
+  The 1-based DMX channel number of the assignment
+  """
   channelNumber: Int!
 
-  """The channel definition assigned to this channel number"""
+  """
+  The channel definition assigned to this channel number
+  """
   fixtureChannelDefinition: ProjectFixtureChannelDefinitionDto!
 }
 
 type ProjectFixtureChannelDefinitionDto {
-  """The preset of the channel definition"""
+  """
+  The preset of the channel definition
+  """
   preset: FixtureChannelPreset!
 }
 
 type ProjectFixtureChannelModeDto {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The channel assignments of the channel mode"""
+  """
+  The channel assignments of the channel mode
+  """
   fixtureChannelAssignments: [ProjectFixtureChannelAssignmentDto!]!
 
-  """The name of the channel mode"""
+  """
+  The name of the channel mode
+  """
   name: String!
 
-  """The public id, unique identifier of the entity"""
+  """
+  The public id, unique identifier of the entity
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type ProjectFixtureDto {
-  """The channel mode used for this instance"""
+  """
+  The channel mode used for this instance
+  """
   channelMode: ProjectFixtureChannelModeDto!
 
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The catalog fixture type of this instance"""
+  """
+  The catalog fixture type of this instance
+  """
   fixture: ProjectFixtureFixtureDto!
 
-  """The public id, unique identifier of the entity"""
+  """
+  The public id, unique identifier of the entity
+  """
   publicId: UUID!
 
-  """The DMX start address of the patched fixture instance"""
+  """
+  The DMX start address of the patched fixture instance
+  """
   startAddress: Int!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
 type ProjectFixtureFixtureDto {
-  """The date and time when the entity was created"""
+  """
+  The date and time when the entity was created
+  """
   createdAt: DateTime!
 
-  """The vendor of the fixture"""
+  """
+  The vendor of the fixture
+  """
   fixtureVendor: FixtureVendorDto!
 
-  """The name of the fixture"""
+  """
+  The name of the fixture
+  """
   name: String!
 
-  """The public id, unique identifier of the entity"""
+  """
+  The public id, unique identifier of the entity
+  """
   publicId: UUID!
 
-  """The date and time when the entity was last updated"""
+  """
+  The date and time when the entity was last updated
+  """
   updatedAt: DateTime!
 }
 
@@ -755,26 +1461,105 @@ type Query {
   """
   exportFixtures: FixtureExportDocumentDto!
 
-  """export all projects as a versioned JSON document"""
+  """
+  export all projects as a versioned JSON document
+  """
   exportProjects: ProjectExportDocumentDto!
 
-  """get fixture by external id"""
+  """
+  get fixture by external id
+  """
   fixture(publicId: UUID!): FixtureDto
 
-  """get all fixture vendors"""
+  """
+  get all fixture vendors
+  """
   fixtureVendors: [FixtureVendorDto!]!
 
-  """get all fixtures"""
+  """
+  get all fixtures
+  """
   fixtures: [FixtureDto!]!
 
-  """Get the list of MIDI input and output devices"""
+  """
+  Get the list of MIDI input and output devices
+  """
   getMidiDevices: MidiDevicesDto!
 
-  """get project by external id"""
+  """
+  get project by external id
+  """
   project(publicId: UUID!): ProjectDto
 
-  """get all projects"""
+  """
+  get all projects
+  """
   projects: [ProjectDto!]!
+
+  """
+  get all scene object types that can be placed in a project
+  """
+  sceneObjectTypes: [SceneObjectTypeDto!]!
+}
+
+"""
+How a scene object type is rendered in the 3D view
+"""
+enum SceneObjectGeometryKind {
+  Box
+  Gltf
+}
+
+type SceneObjectTypeDto {
+  """
+  The date and time when the entity was created
+  """
+  createdAt: DateTime!
+
+  """
+  Default width in meters when adding a scalable instance
+  """
+  defaultSizeX: Float!
+
+  """
+  Default height in meters when adding a scalable instance
+  """
+  defaultSizeY: Float!
+
+  """
+  Default length in meters when adding a scalable instance
+  """
+  defaultSizeZ: Float!
+
+  """
+  How this type is rendered in the 3D view
+  """
+  geometryKind: SceneObjectGeometryKind!
+
+  """
+  Whether instances of this type can be resized
+  """
+  isScalable: Boolean!
+
+  """
+  Static asset path for GLTF types, relative to the API origin
+  """
+  modelPath: String
+
+  """
+  The display name of the scene object type
+  """
+  name: String!
+
+  """
+  The public id, unique identifier of the entity
+  """
+  publicId: UUID!
+
+  """
+  The date and time when the entity was last updated
+  """
+  updatedAt: DateTime!
 }
 
 """
@@ -783,12 +1568,16 @@ A field whose value is a generic Universally Unique Identifier: https://en.wikip
 scalar UUID
 
 input UpdateFixtureChannelAssignmentInput {
-  """The public ID of the channel definition to assign"""
+  """
+  The public ID of the channel definition to assign
+  """
   channelDefinitionPublicId: UUID!
 }
 
 input UpdateFixtureChannelDefinitionInput {
-  """The new name of the channel definition"""
+  """
+  The new name of the channel definition
+  """
   name: String!
 
   """
@@ -796,7 +1585,9 @@ input UpdateFixtureChannelDefinitionInput {
   """
   order: Int
 
-  """The new preset of the channel definition"""
+  """
+  The new preset of the channel definition
+  """
   preset: FixtureChannelPreset
 
   """
@@ -811,27 +1602,41 @@ input UpdateFixtureChannelDefinitionInput {
 }
 
 input UpdateFixtureChannelModeInput {
-  """The channel assignments of the channel mode, in channel-number order"""
+  """
+  The channel assignments of the channel mode, in channel-number order
+  """
   assignments: [UpdateFixtureChannelAssignmentInput!]!
 
-  """The name of the channel mode"""
+  """
+  The name of the channel mode
+  """
   name: String!
 
-  """The public ID of an existing channel mode; omit to create"""
+  """
+  The public ID of an existing channel mode; omit to create
+  """
   publicId: UUID
 }
 
 input UpdateFixtureChannelRangeInput {
-  """The description of the range"""
+  """
+  The description of the range
+  """
   description: String!
 
-  """The DMX end channel of the range"""
+  """
+  The DMX end channel of the range
+  """
   dmxEnd: Int!
 
-  """The DMX start channel of the range"""
+  """
+  The DMX start channel of the range
+  """
   dmxStart: Int!
 
-  """The public ID of the channel range. Omit to create a new range."""
+  """
+  The public ID of the channel range. Omit to create a new range.
+  """
   publicId: UUID
 }
 
@@ -846,39 +1651,111 @@ input UpdateFixtureInput {
   """
   channelModes: [UpdateFixtureChannelModeInput!]
 
-  """The name of the fixture"""
+  """
+  The name of the fixture
+  """
   name: String
 
-  """The public ID of the fixture"""
+  """
+  The public ID of the fixture
+  """
   publicId: UUID!
 
-  """The vendor of the fixture"""
+  """
+  The vendor of the fixture
+  """
   vendor: UpdateFixtureVendorInput
 }
 
 input UpdateFixtureVendorInput {
-  """The name of the vendor"""
+  """
+  The name of the vendor
+  """
   name: String
 
-  """The public ID of the vendor (used for updates)"""
+  """
+  The public ID of the vendor (used for updates)
+  """
   publicId: UUID
 }
 
-input UpdateProjectFixtureInput {
-  """The public ID of the channel mode"""
-  channelModePublicId: UUID
+input UpdateProject3dObjectInput {
+  """
+  Unique name within the project.
+  """
+  name: String
 
-  """The public ID of the project fixture instance"""
+  """
+  The public ID of the project 3D object instance
+  """
   publicId: UUID!
 
-  """The DMX start address (1–512)"""
+  """
+  Width in meters for scalable objects
+  """
+  sizeX: Float
+
+  """
+  Height in meters for scalable objects
+  """
+  sizeY: Float
+
+  """
+  Length in meters for scalable objects
+  """
+  sizeZ: Float
+
+  """
+  Column-major 4×4 transform (16 values, translation and rotation only)
+  """
+  transform: [Float!]
+}
+
+input UpdateProjectFixtureInput {
+  """
+  The public ID of the channel mode
+  """
+  channelModePublicId: UUID
+
+  """
+  The public ID of the project fixture instance
+  """
+  publicId: UUID!
+
+  """
+  The DMX start address (1–512)
+  """
   startAddress: Int
 }
 
 input UpdateProjectInput {
-  """The name of the project"""
+  """
+  The 3D environment used by the project
+  """
+  environmentType: ProjectEnvironmentType
+
+  """
+  The name of the project
+  """
   name: String!
 
-  """The public ID of the project"""
+  """
+  The public ID of the project
+  """
   publicId: UUID!
+
+  """
+  Room height in meters
+  """
+  roomHeight: Float
+
+  """
+  Room length in meters
+  """
+  roomLength: Float
+
+  """
+  Room width in meters
+  """
+  roomWidth: Float
 }

@@ -2,11 +2,14 @@ import { HttpStatus } from '@nestjs/common';
 import { describe, expect, it } from 'vitest';
 import { BaseDomainError } from '@/fixtures/fixture.exceptions';
 import {
+  InvalidProject3dObjectNameException,
+  Project3dObjectNameExistsException,
   ProjectAlreadyExistsException,
   ProjectFixtureAddressOverlapException,
   ProjectImportConflictException,
   ProjectImportInvalidException,
   ProjectNotFoundException,
+  SceneObjectNotScalableException,
 } from './project.exceptions';
 
 describe('project exceptions', () => {
@@ -51,5 +54,30 @@ describe('project exceptions', () => {
     expect(err.statusCode).toBe(HttpStatus.CONFLICT);
     expect(err.message).toBe('DMX address range 3–6 overlaps an existing fixture at 1–4.');
     expect(err.name).toBe('ProjectFixtureAddressOverlapError');
+  });
+
+  it('SceneObjectNotScalableException maps to BAD_REQUEST', () => {
+    const err = new SceneObjectNotScalableException();
+    expect(err).toBeInstanceOf(BaseDomainError);
+    expect(err.code).toBe('SCENE_OBJECT_NOT_SCALABLE');
+    expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+  });
+
+  it('Project3dObjectNameExistsException maps to CONFLICT', () => {
+    const err = new Project3dObjectNameExistsException('Box 1');
+    expect(err).toBeInstanceOf(BaseDomainError);
+    expect(err.code).toBe('PROJECT_3D_OBJECT_NAME_EXISTS');
+    expect(err.statusCode).toBe(HttpStatus.CONFLICT);
+    expect(err.message).toBe('Scene object with name Box 1 already exists in this project.');
+    expect(err.name).toBe('Project3dObjectNameExistsError');
+  });
+
+  it('InvalidProject3dObjectNameException maps to BAD_REQUEST', () => {
+    const err = new InvalidProject3dObjectNameException();
+    expect(err).toBeInstanceOf(BaseDomainError);
+    expect(err.code).toBe('INVALID_PROJECT_3D_OBJECT_NAME');
+    expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(err.message).toBe('Scene object name must be between 1 and 255 characters.');
+    expect(err.name).toBe('InvalidProject3dObjectNameError');
   });
 });

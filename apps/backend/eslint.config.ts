@@ -5,7 +5,7 @@ export default [
 
   // CJS config files are not part of any tsconfig project
   {
-    ignores: ['webpack.config.cjs'],
+    ignores: ['rspack.config.cjs'],
   },
 
   {

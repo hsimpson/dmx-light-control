@@ -5,7 +5,7 @@ import { FactoryIcon, FolderIcon, HeadlightsIcon, HouseIcon } from '@phosphor-ic
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
-const DETAIL_PATH_PATTERN = /^\/(project|fixture)\/([^/]+)$/;
+const DETAIL_PATH_PATTERN = /^\/(project|fixture)\/([^/]+)(?:\/([^/]+))?$/;
 
 type SectionNavLinkProperties = {
   label: string;
@@ -65,7 +65,7 @@ const NavBar = () => {
         listHref="/project/list"
         listActive={currentPath === '/project/list' || currentPath === '/project'}
         sectionActive={isProjectSection}
-        detailHref={isProjectDetail ? `/project/${detailPublicId}` : undefined}
+        detailHref={isProjectDetail ? `/project/${detailPublicId}/fixtures` : undefined}
         detailLabel={t({ id: 'NavBar.ProjectDetail', defaultMessage: 'Project detail' })}
         leftSection={<FolderIcon size={ICON_SIZE} weight="duotone" />}
       />
@@ -80,7 +80,7 @@ const NavBar = () => {
         listHref="/fixture/list"
         listActive={currentPath === '/fixture/list' || currentPath === '/fixture'}
         sectionActive={isFixtureSection}
-        detailHref={isFixtureDetail ? `/fixture/${detailPublicId}` : undefined}
+        detailHref={isFixtureDetail ? `/fixture/${detailPublicId}/general` : undefined}
         detailLabel={t({ id: 'NavBar.FixtureDetail', defaultMessage: 'Fixture detail' })}
         leftSection={<HeadlightsIcon size={ICON_SIZE} weight="duotone" />}
       />

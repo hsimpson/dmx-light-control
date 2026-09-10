@@ -15,14 +15,19 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { ActionIcon, Button, Group, Modal, TextInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { PencilSimpleIcon, PlusCircleIcon, TrashIcon } from '@phosphor-icons/react';
+import { PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react';
 import { DataTable } from 'mantine-datatable';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 type Project = GetProjectsQuery['projects'][number];
 
-const ProjectTable = () => {
+type ProjectTableProperties = {
+  createOpened: boolean;
+  onCloseCreate: () => void;
+};
+
+const ProjectTable = ({ createOpened, onCloseCreate }: ProjectTableProperties) => {
   const { t } = useTranslation();
   const router = useRouter();
   const { data, loading } = useQuery(GetProjectsDocument);
@@ -32,7 +37,6 @@ const ProjectTable = () => {
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [projectToRename, setProjectToRename] = useState<Project | null>(null);
   const [confirmOpened, { open: openConfirm, close: closeConfirm }] = useDisclosure(false);
-  const [createOpened, { open: openCreate, close: closeCreate }] = useDisclosure(false);
   const [renameOpened, { open: openRename, close: closeRename }] = useDisclosure(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [renameName, setRenameName] = useState('');
@@ -117,7 +121,7 @@ const ProjectTable = () => {
         message: t({ id: 'ProjectList.createError', defaultMessage: 'Failed to create project' }),
       });
     } finally {
-      closeCreate();
+      onCloseCreate();
     }
   };
 
@@ -159,11 +163,6 @@ const ProjectTable = () => {
 
   return (
     <>
-      <Group justify="flex-end" mb="md">
-        <Button rightSection={<PlusCircleIcon size={ICON_SIZE} weight="duotone" />} onClick={openCreate}>
-          {t({ id: 'ProjectList.create', defaultMessage: 'Add project' })}
-        </Button>
-      </Group>
       <DataTable
         withTableBorder
         borderRadius="sm"
@@ -222,7 +221,7 @@ const ProjectTable = () => {
           },
         ]}
         onRowClick={record => {
-          router.push(`/project/${record.record.publicId}`);
+          router.push(`/project/${record.record.publicId}/fixtures`);
         }}
       />
       <Modal
@@ -242,7 +241,7 @@ const ProjectTable = () => {
       </Modal>
       <Modal
         opened={createOpened}
-        onClose={closeCreate}
+        onClose={onCloseCreate}
         title={t({ id: 'ProjectList.create', defaultMessage: 'Add project' })}
         centered
       >
@@ -262,7 +261,7 @@ const ProjectTable = () => {
           mb="md"
         />
         <Group justify="space-between">
-          <Button variant="default" onClick={closeCreate}>
+          <Button variant="default" onClick={onCloseCreate}>
             {t(globalMessages.cancel)}
           </Button>
           <Button loading={creating} disabled={createDisabled} onClick={() => void handleCreate()}>

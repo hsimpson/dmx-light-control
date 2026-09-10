@@ -58,10 +58,10 @@
       }
     },
     {
-      "plugin": "@nx/webpack/plugin",
+      "plugin": "@nx/rspack/plugin",
       "options": {
         "buildTargetName": "build",
-        "serveTargetName": "serve",
+        "serveTargetName": "rspack-serve",
         "previewTargetName": "preview",
         "buildDepsTargetName": "build-deps",
         "watchDepsTargetName": "watch-deps",
@@ -77,15 +77,6 @@
         "serveStaticTargetName": "serve-static",
         "buildDepsTargetName": "build-deps",
         "watchDepsTargetName": "watch-deps"
-      }
-    },
-    {
-      "plugin": "@nx/next/plugin",
-      "options": {
-        "buildTargetName": "build",
-        "devTargetName": "start",
-        "startTargetName": "start",
-        "serveStaticTargetName": "serve-static"
       }
     },
     {

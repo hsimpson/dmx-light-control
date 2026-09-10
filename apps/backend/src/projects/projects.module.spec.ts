@@ -4,8 +4,10 @@ import { ProjectImportExportService } from './project-import-export.service';
 import { ProjectResolver } from './project.resolver';
 import { ProjectService } from './project.service';
 import { ProjectsModule } from './projects.module';
+import { Project3dObjectRepository } from './repositories/project-3d-object.repository';
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
 import { ProjectRepository } from './repositories/project.repository';
+import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
 
 describe('ProjectsModule', () => {
   it('is an NgModule providing its domain providers', () => {
@@ -16,6 +18,8 @@ describe('ProjectsModule', () => {
     expect(providers).toBeDefined();
     expect(providers).toContain(ProjectRepository);
     expect(providers).toContain(ProjectFixtureRepository);
+    expect(providers).toContain(Project3dObjectRepository);
+    expect(providers).toContain(SceneObjectTypeRepository);
     expect(providers).toContain(ProjectService);
     expect(providers).toContain(ProjectImportExportService);
     expect(providers).toContain(ProjectResolver);

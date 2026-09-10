@@ -1,7 +1,7 @@
 info:
   name: updateProject
   type: graphql
-  seq: 15
+  seq: 17
 
 graphql:
   method: POST
@@ -12,7 +12,30 @@ graphql:
       mutation($input: UpdateProjectInput!) {
         updateProject(input: $input) {
           createdAt
+          environmentType
           name
+          project3dObjects {
+            createdAt
+            name
+            publicId
+            sceneObjectType {
+              createdAt
+              defaultSizeX
+              defaultSizeY
+              defaultSizeZ
+              geometryKind
+              isScalable
+              modelPath
+              name
+              publicId
+              updatedAt
+            }
+            sizeX
+            sizeY
+            sizeZ
+            transform
+            updatedAt
+          }
           projectFixtures {
             channelMode {
               createdAt
@@ -42,14 +65,21 @@ graphql:
             updatedAt
           }
           publicId
+          roomHeight
+          roomLength
+          roomWidth
           updatedAt
         }
       }
     variables: |
       {
         "input": {
+          "environmentType": null,
           "name": null,
-          "publicId": null
+          "publicId": null,
+          "roomHeight": null,
+          "roomLength": null,
+          "roomWidth": null
         }
       }
 

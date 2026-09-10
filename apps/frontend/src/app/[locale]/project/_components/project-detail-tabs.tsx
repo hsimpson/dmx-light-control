@@ -2,27 +2,55 @@
 
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { Tabs } from '@mantine/core';
+import { useParams, useRouter } from 'next/navigation';
+import {
+  DEFAULT_PROJECT_DETAIL_TAB,
+  isValidProjectDetailTab,
+  PROJECT_DETAIL_TABS,
+  type ProjectDetailTab,
+} from './project-detail-tabs.constants';
+import classes from './project-detail-tabs.module.css';
 import ProjectFixtureTable from './project-fixture-table';
 import ProjectTabEmptyState from './project-tab-empty-state';
+import ThreeDView from './three-d-view';
 import UniverseView from './universe-view';
 
 type ProjectDetailTabsProperties = {
   projectPublicId: string;
 };
 
+const getProjectTabHref = (projectPublicId: string, tab: ProjectDetailTab) => `/project/${projectPublicId}/${tab}`;
+
 const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { tab } = useParams<{ tab?: string }>();
+  const activeTab = tab && isValidProjectDetailTab(tab) ? tab : DEFAULT_PROJECT_DETAIL_TAB;
+
+  const handleTabChange = (value: string | null) => {
+    if (!value || !isValidProjectDetailTab(value)) {
+      return;
+    }
+
+    router.push(getProjectTabHref(projectPublicId, value));
+  };
+
+  const tabLabels: Record<ProjectDetailTab, string> = {
+    fixtures: t({ id: 'ProjectDetail.tabs.fixtures', defaultMessage: 'Fixtures' }),
+    universe: t({ id: 'ProjectDetail.tabs.universeView', defaultMessage: 'Universe View' }),
+    dmx: t({ id: 'ProjectDetail.tabs.dmxView', defaultMessage: 'DMX View' }),
+    '2d': t({ id: 'ProjectDetail.tabs.twoDView', defaultMessage: '2D View' }),
+    '3d': t({ id: 'ProjectDetail.tabs.threeDView', defaultMessage: '3D View' }),
+  };
 
   return (
-    <Tabs defaultValue="fixtures">
+    <Tabs value={activeTab} onChange={handleTabChange} className={classes.root}>
       <Tabs.List>
-        <Tabs.Tab value="fixtures">{t({ id: 'ProjectDetail.tabs.fixtures', defaultMessage: 'Fixtures' })}</Tabs.Tab>
-        <Tabs.Tab value="universe">
-          {t({ id: 'ProjectDetail.tabs.universeView', defaultMessage: 'Universe View' })}
-        </Tabs.Tab>
-        <Tabs.Tab value="dmx">{t({ id: 'ProjectDetail.tabs.dmxView', defaultMessage: 'DMX View' })}</Tabs.Tab>
-        <Tabs.Tab value="2d">{t({ id: 'ProjectDetail.tabs.twoDView', defaultMessage: '2D View' })}</Tabs.Tab>
-        <Tabs.Tab value="3d">{t({ id: 'ProjectDetail.tabs.threeDView', defaultMessage: '3D View' })}</Tabs.Tab>
+        {PROJECT_DETAIL_TABS.map(tabValue => (
+          <Tabs.Tab key={tabValue} value={tabValue}>
+            {tabLabels[tabValue]}
+          </Tabs.Tab>
+        ))}
       </Tabs.List>
 
       <Tabs.Panel value="fixtures" pt="md">
@@ -45,10 +73,8 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
         />
       </Tabs.Panel>
 
-      <Tabs.Panel value="3d" pt="md">
-        <ProjectTabEmptyState
-          message={t({ id: 'ProjectDetail.emptyView', defaultMessage: 'This view is not available yet.' })}
-        />
+      <Tabs.Panel value="3d" pt="md" keepMounted={false} className={classes.threeDPanel}>
+        <ThreeDView projectPublicId={projectPublicId} />
       </Tabs.Panel>
     </Tabs>
   );
