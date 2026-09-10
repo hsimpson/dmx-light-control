@@ -267,7 +267,7 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
   };
 
   return (
-    <Group align="stretch" wrap="nowrap" gap="md" className={classes.root}>
+    <Group align="stretch" wrap="nowrap" gap="md" h="100%" className={classes.root}>
       <Box
         className={classes.canvas}
         tabIndex={0}

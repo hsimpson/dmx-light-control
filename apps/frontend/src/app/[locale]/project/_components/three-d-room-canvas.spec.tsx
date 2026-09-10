@@ -6,16 +6,21 @@ import ThreeDRoomCanvas from './three-d-room-canvas';
 
 const load = vi.fn();
 
-const { transformControlsConstruct, intersectObjects, intersectBox } = vi.hoisted(() => ({
+const { transformControlsConstruct, intersectObjects, intersectBox, frameCameraOnObject } = vi.hoisted(() => ({
   transformControlsConstruct: vi.fn(),
   intersectObjects: vi.fn(() => [] as { object: { userData: Record<string, unknown>; parent: unknown } }[]),
   intersectBox: vi.fn(() => null as { x?: number } | null),
+  frameCameraOnObject: vi.fn(),
 }));
 
 vi.mock('./scene-object-pose', () => ({
   applyTransformMatrix: vi.fn(),
   applyVisualSize: vi.fn(),
   bakeInstancePose: vi.fn(),
+}));
+
+vi.mock('@/lib/three/frame-camera', () => ({
+  frameCameraOnObject,
 }));
 
 vi.mock('three', () => {
@@ -48,6 +53,8 @@ vi.mock('three', () => {
 
   class WebGLRenderer {
     public outputColorSpace = '';
+    public toneMapping = 0;
+    public toneMappingExposure = 1;
     public domElement = document.createElement('canvas');
     public setPixelRatio() {
       return undefined;
@@ -159,8 +166,38 @@ vi.mock('three', () => {
       public constructor(public readonly hex = 0) {}
     },
     SRGBColorSpace: 'srgb',
+    ACESFilmicToneMapping: 4,
+    HemisphereLight: class {
+      public constructor(
+        public readonly sky = 0,
+        public readonly ground = 0,
+        public readonly intensity = 1,
+      ) {}
+    },
+    PMREMGenerator: class {
+      public fromScene() {
+        return {
+          texture: {
+            dispose() {
+              return undefined;
+            },
+          },
+        };
+      }
+      public dispose() {
+        return undefined;
+      }
+    },
   };
 });
+
+vi.mock('three/examples/jsm/environments/RoomEnvironment.js', () => ({
+  RoomEnvironment: class {
+    public dispose() {
+      return undefined;
+    }
+  },
+}));
 
 vi.mock('three/examples/jsm/controls/TransformControls.js', () => ({
   TransformControls: class {
@@ -196,10 +233,15 @@ vi.mock('three/examples/jsm/controls/TransformControls.js', () => ({
 vi.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
   OrbitControls: class {
     public target = {
+      copy() {
+        return undefined;
+      },
       set() {
         return undefined;
       },
     };
+    public minDistance = 0;
+    public maxDistance = 0;
     public enableDamping = false;
     public update() {
       return undefined;
@@ -234,6 +276,7 @@ describe('ThreeDRoomCanvas', () => {
     intersectObjects.mockReturnValue([]);
     intersectBox.mockReset();
     intersectBox.mockReturnValue(null);
+    frameCameraOnObject.mockReset();
   });
 
   it('loads the room glTF', () => {
@@ -259,6 +302,49 @@ describe('ThreeDRoomCanvas', () => {
     );
     expect(screen.getByTestId('three-d-room-canvas')).toBeInTheDocument();
     expect(load).not.toHaveBeenCalled();
+    expect(frameCameraOnObject).toHaveBeenCalled();
+  });
+
+  it('AABB-frames the room after the glTF loads', () => {
+    load.mockClear();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas environmentType={ProjectEnvironmentType.Room} roomWidth={10} roomLength={8} roomHeight={5} />,
+    );
+    const onLoad = load.mock.calls[0]?.[1] as
+      | ((gltf: { scene: { getObjectByName: () => { name: string; getObjectByName: () => undefined } } }) => void)
+      | undefined;
+    expect(onLoad).toEqual(expect.any(Function));
+    const room = { name: 'room', getObjectByName: () => undefined };
+    onLoad?.({
+      scene: {
+        getObjectByName: () => room,
+      },
+    });
+    expect(frameCameraOnObject).toHaveBeenCalledWith(expect.anything(), expect.anything(), room);
+  });
+
+  it('AABB-frames the environment again when room dimensions change', () => {
+    load.mockClear();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    const { rerender } = renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+      />,
+    );
+    const callsAfterMount = frameCameraOnObject.mock.calls.length;
+    rerender(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={20}
+        roomLength={12}
+        roomHeight={6}
+      />,
+    );
+    expect(frameCameraOnObject.mock.calls.length).toBeGreaterThan(callsAfterMount);
   });
 
   it('creates translate and rotate TransformControls when an object is selected', () => {

@@ -1,0 +1,8 @@
+.host {
+  inset: 0;
+  position: absolute;
+}
+
+.host canvas {
+  display: block;
+}

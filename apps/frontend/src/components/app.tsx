@@ -16,7 +16,15 @@ const App = ({ children }: AppProperties) => {
   return (
     <AppShell
       padding="md"
-      styles={{ root: { minHeight: '100dvh' } }}
+      styles={{
+        root: { height: '100dvh', minHeight: '100dvh' },
+        main: {
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: 'calc(100dvh - var(--app-shell-header-height, 60px))',
+          overflow: 'auto',
+        },
+      }}
       header={{ height: 60 }}
       navbar={{
         width: 250,
@@ -34,9 +42,7 @@ const App = ({ children }: AppProperties) => {
         <NavBar />
       </AppShell.Navbar>
 
-      <AppShell.Main display="flex" style={{ flex: 1, flexDirection: 'column', minHeight: 0 }}>
-        {children}
-      </AppShell.Main>
+      <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
   );
 };

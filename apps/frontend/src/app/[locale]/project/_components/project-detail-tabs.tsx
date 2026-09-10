@@ -44,7 +44,7 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
   };
 
   return (
-    <Tabs value={activeTab} onChange={handleTabChange} className={classes.root}>
+    <Tabs value={activeTab} onChange={handleTabChange} className={classes.root} h="100%">
       <Tabs.List>
         {PROJECT_DETAIL_TABS.map(tabValue => (
           <Tabs.Tab key={tabValue} value={tabValue}>

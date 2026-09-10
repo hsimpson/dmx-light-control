@@ -10,7 +10,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 - **Goal-driven execution:** Define verifiable success (tests/commands). For multi-step work, brief plan + verify steps; loop until verified.
 - **Bias:** Caution over speed except truly trivial tasks.
 - **Prettier:** Before finishing, run Prettier on **every file you created or changed** (`pnpm exec prettier --write <paths>`; config `prettier.config.ts`). List paths with `git diff --name-only` (and `git diff --cached --name-only` if staged).
-- **Stop servers you start:** If you start `nx serve backend` or `nx dev frontend` / `nx start frontend` (or equivalent `next`/`node` processes on their ports), stop them when the task is done. Do not leave them running.
+- **Stop servers you start:** If you start `nx serve backend` or `nx dev frontend` / `nx start frontend` (or equivalent `next`/`node` processes on their ports), stop them when the task is done. Do not leave them running. Leave Postgres (`infra:db-start`) alone unless you started it outside `nx serve backend` and the user asked you to stop it.
 - **Drizzle migrations:** Never generate with drizzle-kit’s random folder names (e.g. `rapid_beast`). Always ask the user for a new snake_case name first, then run `nx run backend:drizzle-generate -- --name <name>`.
 
 ## Commands
@@ -53,6 +53,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 5. When database schema has changed (entities, relations) regenerate ER diagram `nx run backend:erd`.
 6. **Harness health-check** (required when change set matches the triggers below — report `Harness: up to date` or `Harness: updated`).
 7. Conventional commit message ready when asked to commit.
+8. Stop any backend or frontend server **you started** (`nx serve backend`, `nx dev frontend` / `nx start frontend`, or equivalent `next`/`node` on those ports). Do not leave them running after the task.
 
 ## Conventions
 
