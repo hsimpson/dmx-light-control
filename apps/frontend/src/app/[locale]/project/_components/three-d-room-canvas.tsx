@@ -1,6 +1,7 @@
 'use client';
 
 import { roomGltfUrl, sceneAssetUrl } from '@/lib/graphql/graphql-api-origin';
+import { applyMeshShadowFlags } from '@/lib/three/mesh-shadow-flags';
 import ThreeCanvas, { type ThreeCanvasContext } from '@/lib/three/three-canvas';
 import { ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
 import { useCallback, useEffect, useRef } from 'react';
@@ -229,12 +230,15 @@ const ThreeDRoomCanvas = ({
         const loader = new GLTFLoader();
         loader.load(roomGltfUrl(), gltf => {
           const room = gltf.scene.getObjectByName('room') ?? gltf.scene;
+          applyMeshShadowFlags(gltf.scene, { castShadow: false, receiveShadow: true });
           roomRef.current = room;
           scene.add(gltf.scene);
           applyDimensions();
         });
       } else {
         const ground = new Mesh(new BoxGeometry(1, 1, 1), new MeshStandardMaterial({ color: 0x6b7280 }));
+        ground.castShadow = false;
+        ground.receiveShadow = true;
         groundRef.current = ground;
         scene.add(ground);
       }
@@ -352,6 +356,8 @@ const ThreeDRoomCanvas = ({
         if (object.sceneObjectType.geometryKind === SceneObjectGeometryKind.Box) {
           const mesh = new Mesh(new BoxGeometry(1, 1, 1), new MeshStandardMaterial({ color: 0x8b5a2b }));
           mesh.name = 'visual';
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
           visualParent.add(mesh);
         } else if (object.sceneObjectType.modelPath) {
           const loader = new GLTFLoader();
@@ -361,6 +367,7 @@ const ThreeDRoomCanvas = ({
               return;
             }
             gltf.scene.name = 'visual';
+            applyMeshShadowFlags(gltf.scene, { castShadow: true, receiveShadow: true });
             capturedRoot.add(gltf.scene);
           });
         }

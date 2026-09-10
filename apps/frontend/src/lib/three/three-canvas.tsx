@@ -8,6 +8,7 @@ import {
   DirectionalLight,
   HemisphereLight,
   type Object3D,
+  PCFSoftShadowMap,
   PerspectiveCamera,
   PMREMGenerator,
   Scene,
@@ -28,6 +29,14 @@ export type ThreeCanvasContext = {
   controls: OrbitControls;
   frameObject: (object: Object3D) => void;
 };
+
+const KEY_SHADOW_MAP_SIZE = 2048;
+const KEY_SHADOW_CAMERA_EXTENT_M = 22;
+const KEY_SHADOW_CAMERA_NEAR_M = 0.5;
+const KEY_SHADOW_CAMERA_FAR_M = 50;
+const KEY_SHADOW_BIAS = -0.0002;
+const KEY_SHADOW_NORMAL_BIAS_M = 0.04;
+const KEY_SHADOW_RADIUS = 4;
 
 export type ThreeCanvasProperties = {
   className?: string;
@@ -55,6 +64,8 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
     renderer.outputColorSpace = SRGBColorSpace;
     renderer.toneMapping = ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.1;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = PCFSoftShadowMap;
     renderer.setPixelRatio(window.devicePixelRatio);
     host.appendChild(renderer.domElement);
     renderer.domElement.style.display = 'block';
@@ -69,9 +80,23 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
     const hemi = new HemisphereLight(0xd7e3f2, 0x1a1b1e, 0.7);
     const key = new DirectionalLight(0xffffff, 1.65);
     key.position.set(6, 10, 8);
+    key.castShadow = true;
+    key.shadow.mapSize.set(KEY_SHADOW_MAP_SIZE, KEY_SHADOW_MAP_SIZE);
+    key.shadow.radius = KEY_SHADOW_RADIUS;
+    key.shadow.blurSamples = 8;
+    key.shadow.bias = KEY_SHADOW_BIAS;
+    key.shadow.normalBias = KEY_SHADOW_NORMAL_BIAS_M;
+    key.shadow.camera.left = -KEY_SHADOW_CAMERA_EXTENT_M;
+    key.shadow.camera.right = KEY_SHADOW_CAMERA_EXTENT_M;
+    key.shadow.camera.top = KEY_SHADOW_CAMERA_EXTENT_M;
+    key.shadow.camera.bottom = -KEY_SHADOW_CAMERA_EXTENT_M;
+    key.shadow.camera.near = KEY_SHADOW_CAMERA_NEAR_M;
+    key.shadow.camera.far = KEY_SHADOW_CAMERA_FAR_M;
+    key.shadow.camera.updateProjectionMatrix();
     const fill = new DirectionalLight(0xc8d4e8, 0.55);
     fill.position.set(-5, 4, 7);
-    scene.add(ambient, hemi, key, fill);
+    fill.castShadow = false;
+    scene.add(ambient, hemi, key, key.target, fill);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;

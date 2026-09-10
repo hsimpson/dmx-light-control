@@ -1,6 +1,6 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen } from '@testing-library/react';
-import { ACESFilmicToneMapping } from 'three';
+import { ACESFilmicToneMapping, DirectionalLight, PCFSoftShadowMap } from 'three';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ThreeCanvas, { type ThreeCanvasContext } from './three-canvas';
 
@@ -57,6 +57,7 @@ vi.mock('three', async importOriginal => {
       public outputColorSpace = '';
       public toneMapping = 0;
       public toneMappingExposure = 1;
+      public shadowMap = { enabled: false, type: 0 };
       public domElement = document.createElement('canvas');
       public setPixelRatio() {
         return undefined;
@@ -184,6 +185,21 @@ describe('ThreeCanvas', () => {
     expect(context.frameObject).toEqual(expect.any(Function));
     expect(context.controls.enableDamping).toBe(true);
     expect(context.renderer.toneMapping).toBe(ACESFilmicToneMapping);
+    expect(context.renderer.shadowMap.enabled).toBe(true);
+    expect(context.renderer.shadowMap.type).toBe(PCFSoftShadowMap);
+    const directionalLights = context.scene.children.filter(
+      (child): child is DirectionalLight => child instanceof DirectionalLight,
+    );
+    const key = directionalLights.find(light => light.intensity === 1.65);
+    const fill = directionalLights.find(light => light.intensity === 0.55);
+    expect(key?.castShadow).toBe(true);
+    expect(key?.shadow.mapSize.x).toBe(2048);
+    expect(key?.shadow.mapSize.y).toBe(2048);
+    expect(key?.shadow.camera.left).toBe(-22);
+    expect(key?.shadow.camera.right).toBe(22);
+    expect(key?.shadow.camera.top).toBe(22);
+    expect(key?.shadow.camera.bottom).toBe(-22);
+    expect(fill?.castShadow).toBe(false);
     expect(fromScene).toHaveBeenCalled();
     expect(environmentDispose).toHaveBeenCalled();
     expect(createSceneAoComposer).toHaveBeenCalledWith(context.renderer, context.scene, context.camera);

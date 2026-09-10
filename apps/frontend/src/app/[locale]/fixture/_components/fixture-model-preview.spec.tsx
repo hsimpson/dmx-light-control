@@ -1,13 +1,14 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen } from '@testing-library/react';
-import { BoxGeometry, Group, Mesh, MeshPhysicalMaterial } from 'three';
+import { BoxGeometry, Group, Mesh, MeshPhysicalMaterial, PCFSoftShadowMap } from 'three';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import FixtureModelPreview, { prepareFixtureModelForPreview } from './fixture-model-preview';
 
 const load = vi.fn();
 
-const { capturedThreeCanvasProps } = vi.hoisted(() => ({
+const { capturedThreeCanvasProps, capturedRenderer } = vi.hoisted(() => ({
   capturedThreeCanvasProps: { current: undefined as { showOrientationGizmo?: boolean } | undefined },
+  capturedRenderer: { current: undefined as { shadowMap: { enabled: boolean; type: number } } | undefined },
 }));
 
 vi.mock('@/lib/three/three-canvas', async importOriginal => {
@@ -17,7 +18,13 @@ vi.mock('@/lib/three/three-canvas', async importOriginal => {
     ...actual,
     default: (props: Parameters<typeof ThreeCanvas>[0]) => {
       capturedThreeCanvasProps.current = props;
-      return ThreeCanvas(props);
+      return ThreeCanvas({
+        ...props,
+        onReady: ctx => {
+          capturedRenderer.current = ctx.renderer;
+          return props.onReady(ctx);
+        },
+      });
     },
   };
 });
@@ -52,6 +59,7 @@ vi.mock('three', async importOriginal => {
       public outputColorSpace = '';
       public toneMapping = 0;
       public toneMappingExposure = 1;
+      public shadowMap = { enabled: false, type: 0 };
       public domElement = document.createElement('canvas');
       public setPixelRatio() {
         return undefined;
@@ -138,6 +146,7 @@ describe('FixtureModelPreview', () => {
   beforeEach(() => {
     load.mockReset();
     capturedThreeCanvasProps.current = undefined;
+    capturedRenderer.current = undefined;
     vi.stubGlobal('ResizeObserver', ResizeObserverMock);
   });
 
@@ -154,6 +163,13 @@ describe('FixtureModelPreview', () => {
     expect(capturedThreeCanvasProps.current?.showOrientationGizmo).toBe(true);
   });
 
+  it('enables PCF soft shadows on the preview renderer', () => {
+    renderWithProviders(<FixtureModelPreview url="/assets/fixtures/_defaults/model.glb" />);
+
+    expect(capturedRenderer.current?.shadowMap.enabled).toBe(true);
+    expect(capturedRenderer.current?.shadowMap.type).toBe(PCFSoftShadowMap);
+  });
+
   it('turns off glass transmission so overlapping lenses keep their shape', () => {
     const material = new MeshPhysicalMaterial({ transmission: 0.15, transparent: true });
     const root = new Group();
@@ -163,13 +179,17 @@ describe('FixtureModelPreview', () => {
 
     expect(material.transmission).toBe(0);
     expect(material.transparent).toBe(false);
+    const mesh = root.children[0] as Mesh;
+    expect(mesh.castShadow).toBe(true);
+    expect(mesh.receiveShadow).toBe(true);
   });
 
   it('clears transmission without relying on MeshPhysicalMaterial instanceof', () => {
     const material = { transmission: 0.15, transparent: true, depthWrite: false };
+    const mesh = { isMesh: true, material, castShadow: false, receiveShadow: false };
     const root = {
-      traverse(callback: (object: { isMesh: boolean; material: typeof material }) => void) {
-        callback({ isMesh: true, material });
+      traverse(callback: (object: typeof mesh) => void) {
+        callback(mesh);
       },
     };
 
@@ -178,5 +198,7 @@ describe('FixtureModelPreview', () => {
     expect(material.transmission).toBe(0);
     expect(material.transparent).toBe(false);
     expect(material.depthWrite).toBe(true);
+    expect(mesh.castShadow).toBe(true);
+    expect(mesh.receiveShadow).toBe(true);
   });
 });

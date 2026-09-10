@@ -33,6 +33,8 @@ export const prepareFixtureModelForPreview = (root: Object3D) => {
       return;
     }
 
+    object.castShadow = true;
+    object.receiveShadow = true;
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     for (const material of materials) {
       disableTransmission(material);
