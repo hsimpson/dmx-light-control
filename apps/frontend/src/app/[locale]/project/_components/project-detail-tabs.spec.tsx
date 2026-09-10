@@ -19,6 +19,10 @@ vi.mock('./universe-view', () => ({
   default: () => <div data-testid="universe-view" />,
 }));
 
+vi.mock('./dmx-view', () => ({
+  default: () => <div data-testid="dmx-view" />,
+}));
+
 vi.mock('./three-d-view', () => ({
   default: () => <div data-testid="three-d-view" />,
 }));
@@ -51,5 +55,13 @@ describe('ProjectDetailTabs', () => {
     renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
 
     expect(screen.getByTestId('three-d-view')).toBeInTheDocument();
+  });
+
+  it('shows the DMX view panel when the route tab is dmx', () => {
+    mockUseParams.mockReturnValue({ tab: 'dmx' });
+
+    renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
+
+    expect(screen.getByTestId('dmx-view')).toBeInTheDocument();
   });
 });

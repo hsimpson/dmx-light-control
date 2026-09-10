@@ -10,6 +10,7 @@ import {
   type ProjectDetailTab,
 } from './project-detail-tabs.constants';
 import classes from './project-detail-tabs.module.css';
+import DmxView from './dmx-view';
 import ProjectFixtureTable from './project-fixture-table';
 import ProjectTabEmptyState from './project-tab-empty-state';
 import ThreeDView from './three-d-view';
@@ -62,9 +63,7 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
       </Tabs.Panel>
 
       <Tabs.Panel value="dmx" pt="md">
-        <ProjectTabEmptyState
-          message={t({ id: 'ProjectDetail.emptyView', defaultMessage: 'This view is not available yet.' })}
-        />
+        <DmxView projectPublicId={projectPublicId} />
       </Tabs.Panel>
 
       <Tabs.Panel value="2d" pt="md">
