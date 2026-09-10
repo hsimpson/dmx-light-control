@@ -1,7 +1,8 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen } from '@testing-library/react';
+import { BoxGeometry, Group, Mesh, MeshPhysicalMaterial } from 'three';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import FixtureModelPreview from './fixture-model-preview';
+import FixtureModelPreview, { prepareFixtureModelForPreview } from './fixture-model-preview';
 
 const load = vi.fn();
 
@@ -11,6 +12,8 @@ vi.mock('three', async importOriginal => {
     ...actual,
     WebGLRenderer: class {
       public outputColorSpace = '';
+      public toneMapping = 0;
+      public toneMappingExposure = 1;
       public domElement = document.createElement('canvas');
       public setPixelRatio() {
         return undefined;
@@ -28,8 +31,30 @@ vi.mock('three', async importOriginal => {
         return undefined;
       }
     },
+    PMREMGenerator: class {
+      public fromScene() {
+        return {
+          texture: {
+            dispose() {
+              return undefined;
+            },
+          },
+        };
+      }
+      public dispose() {
+        return undefined;
+      }
+    },
   };
 });
+
+vi.mock('three/examples/jsm/environments/RoomEnvironment.js', () => ({
+  RoomEnvironment: class {
+    public dispose() {
+      return undefined;
+    }
+  },
+}));
 
 vi.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
   OrbitControls: class {
@@ -82,5 +107,31 @@ describe('FixtureModelPreview', () => {
 
     expect(screen.getByTestId('fixture-model-preview')).toBeInTheDocument();
     expect(load).toHaveBeenCalledWith('/assets/fixtures/_defaults/model.glb', expect.any(Function));
+  });
+
+  it('turns off glass transmission so overlapping lenses keep their shape', () => {
+    const material = new MeshPhysicalMaterial({ transmission: 0.15, transparent: true });
+    const root = new Group();
+    root.add(new Mesh(new BoxGeometry(), material));
+
+    prepareFixtureModelForPreview(root);
+
+    expect(material.transmission).toBe(0);
+    expect(material.transparent).toBe(false);
+  });
+
+  it('clears transmission without relying on MeshPhysicalMaterial instanceof', () => {
+    const material = { transmission: 0.15, transparent: true, depthWrite: false };
+    const root = {
+      traverse(callback: (object: { isMesh: boolean; material: typeof material }) => void) {
+        callback({ isMesh: true, material });
+      },
+    };
+
+    prepareFixtureModelForPreview(root as never);
+
+    expect(material.transmission).toBe(0);
+    expect(material.transparent).toBe(false);
+    expect(material.depthWrite).toBe(true);
   });
 });
