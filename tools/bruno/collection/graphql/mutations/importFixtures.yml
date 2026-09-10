@@ -56,9 +56,16 @@ graphql:
               publicId
               updatedAt
             }
+            height
+            length
+            model3dPath
             name
+            picture2dPath
+            picturePath
             publicId
             updatedAt
+            weight
+            width
           }
           importedCount
         }

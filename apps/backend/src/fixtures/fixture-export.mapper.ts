@@ -38,6 +38,13 @@ export type FixtureExportVendor = {
 export type FixtureExportFixture = {
   publicId: string;
   name: string;
+  weight: number | null;
+  width: number | null;
+  length: number | null;
+  height: number | null;
+  picturePath: string | null;
+  picture2dPath: string | null;
+  model3dPath: string | null;
   vendor: FixtureExportVendor;
   channelDefinitions: FixtureExportDefinition[];
   channelModes: FixtureExportMode[];
@@ -79,6 +86,13 @@ type ModeRow = {
 export type FixtureExportSource = {
   publicId: string | null;
   name: string;
+  weight?: number | null;
+  width?: number | null;
+  length?: number | null;
+  height?: number | null;
+  picturePath?: string | null;
+  picture2dPath?: string | null;
+  model3dPath?: string | null;
   fixtureVendor?: ({ publicId: string | null; name: string } & ExportTimestampSource) | null;
   fixtureChannelDefinitions?: DefinitionRow[];
   fixtureChannelModes?: ModeRow[];
@@ -126,6 +140,13 @@ export function mapFixturesToExportDocument(
     fixtures: fixtures.map(fixture => ({
       publicId: fixture.publicId ?? '',
       name: fixture.name,
+      weight: fixture.weight ?? null,
+      width: fixture.width ?? null,
+      length: fixture.length ?? null,
+      height: fixture.height ?? null,
+      picturePath: fixture.picturePath ?? null,
+      picture2dPath: fixture.picture2dPath ?? null,
+      model3dPath: fixture.model3dPath ?? null,
       ...mapExportTimestamps(fixture),
       vendor: mapVendor(fixture.fixtureVendor),
       channelDefinitions: [...(fixture.fixtureChannelDefinitions ?? [])].sort(byOrder).map(definition => ({

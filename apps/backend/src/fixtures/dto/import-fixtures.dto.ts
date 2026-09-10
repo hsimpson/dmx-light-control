@@ -1,12 +1,13 @@
 import { ImportTimestampsInput } from '@/db/import-timestamps.input';
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
 import { FixtureDto } from '@/fixtures/dto/fixture.dto';
-import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Length,
@@ -146,6 +147,52 @@ export class ImportFixtureInput extends ImportTimestampsInput {
   @IsString()
   @Length(1, 255)
   public name: string;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture weight in kilograms' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(10000)
+  public weight?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture width in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0.001)
+  @Max(100)
+  public width?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture length in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0.001)
+  @Max(100)
+  public length?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture height in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0.001)
+  @Max(100)
+  public height?: number | null;
+
+  @Field(() => String, { nullable: true, description: 'Product photo path relative to the API origin' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 512)
+  public picturePath?: string | null;
+
+  @Field(() => String, { nullable: true, description: '2D plot symbol path relative to the API origin' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 512)
+  public picture2dPath?: string | null;
+
+  @Field(() => String, { nullable: true, description: '3D model path relative to the API origin' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 512)
+  public model3dPath?: string | null;
 
   @Field(() => ImportFixtureVendorInput, { description: 'The vendor of the fixture' })
   @ValidateNested()

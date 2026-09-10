@@ -9,7 +9,7 @@ import {
   UpdateFixtureDocument,
 } from '@/shared/types/graphql/graphql';
 import { useMutation } from '@apollo/client/react';
-import { Button, Combobox, Flex, InputBase, TextInput, useCombobox } from '@mantine/core';
+import { Button, Combobox, Flex, InputBase, TextInput, Title, useCombobox } from '@mantine/core';
 import { schemaResolver, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { useRouter } from 'next/navigation';
@@ -26,13 +26,32 @@ import FixtureChannelModes, {
   toEditorChannelModes,
 } from './fixture-channel-modes';
 import FixtureDetailTabs from './fixture-detail-tabs';
+import { NEW_FIXTURE_PATH_ID } from './fixture-detail-tabs.constants';
+import FixtureProperties, { type FixturePropertiesValues } from './fixture-properties';
+import formClasses from './fixture-form.module.css';
 
 type Fixture = GetFixturesQuery['fixtures'][number];
 
 type FixtureFormProps = {
   fixture?: Fixture;
   vendors: GetFixtureVendorsQuery['fixtureVendors'];
-  showTabs?: boolean;
+};
+
+const formatFixtureHeaderTitle = (vendor: string, fixtureName: string): string | null => {
+  const vendorLabel = vendor.trim();
+  const fixtureNameLabel = fixtureName.trim();
+
+  if (vendorLabel && fixtureNameLabel) {
+    return `${vendorLabel} / ${fixtureNameLabel}`;
+  }
+  if (vendorLabel) {
+    return vendorLabel;
+  }
+  if (fixtureNameLabel) {
+    return fixtureNameLabel;
+  }
+
+  return null;
 };
 
 const syncChannelModesWithDefinitions = (
@@ -57,7 +76,7 @@ const syncChannelModesWithDefinitions = (
     }),
   }));
 
-const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) => {
+const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const { t } = useTranslation();
   const router = useRouter();
   const [updateFixture, { loading: isUpdating }] = useMutation(UpdateFixtureDocument);
@@ -103,6 +122,15 @@ const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) =
   const [channelDefinitions, setChannelDefinitions] = useState(() =>
     toEditorChannelDefinitions(fixture?.fixtureChannelDefinitions ?? []),
   );
+  const [properties, setProperties] = useState<FixturePropertiesValues>({
+    weight: fixture?.weight ?? null,
+    width: fixture?.width ?? null,
+    length: fixture?.length ?? null,
+    height: fixture?.height ?? null,
+    picturePath: fixture?.picturePath ?? null,
+    picture2dPath: fixture?.picture2dPath ?? null,
+    model3dPath: fixture?.model3dPath ?? null,
+  });
 
   const exactOptionMatch = comboBoxData.some(item => item === comboBoxSearch);
   const filteredOptions = exactOptionMatch
@@ -135,6 +163,10 @@ const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) =
               publicId: fixture.publicId,
               name: values.fixtureName,
               vendor: vendorInput,
+              weight: properties.weight,
+              width: properties.width,
+              length: properties.length,
+              height: properties.height,
               channelModes: toChannelModeSaveInputs(channelModes),
               channelDefinitions: toChannelDefinitionSaveInputs(channelDefinitions),
             },
@@ -162,6 +194,10 @@ const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) =
             input: {
               name: values.fixtureName,
               vendor: vendorInput,
+              weight: properties.weight,
+              width: properties.width,
+              length: properties.length,
+              height: properties.height,
               channelModes: toChannelModeSaveInputs(channelModes),
               channelDefinitions: toChannelDefinitionSaveInputs(channelDefinitions),
             },
@@ -299,38 +335,60 @@ const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) =
     />
   );
 
+  const headerTitle =
+    formatFixtureHeaderTitle(comboBoxValue ?? comboBoxSearch, form.values.fixtureName) ??
+    (fixture
+      ? t({ id: 'EditFixturePage.title', defaultMessage: 'Edit Fixture' })
+      : t({ id: 'AddFixturePage.title', defaultMessage: 'Add Fixture' }));
+
   return (
-    <form onSubmit={form.onSubmit(onSubmit)}>
-      <Flex direction="column" gap="lg" mt="lg">
-        {showTabs && fixture ? (
+    <form onSubmit={form.onSubmit(onSubmit)} className={formClasses.form}>
+      <div className={formClasses.body}>
+        <Title order={1}>{headerTitle}</Title>
+        <div className={formClasses.tabsHost}>
           <FixtureDetailTabs
-            fixturePublicId={fixture.publicId}
+            fixturePublicId={fixture?.publicId ?? NEW_FIXTURE_PATH_ID}
             general={
               <Flex direction="column" gap="lg">
                 {generalFields}
               </Flex>
             }
+            properties={
+              <FixtureProperties
+                fixturePublicId={fixture?.publicId}
+                values={properties}
+                onDimensionsChange={next => {
+                  setProperties(current => ({ ...current, ...next }));
+                }}
+                onAssetPathChange={(kind, path) => {
+                  setProperties(current => {
+                    if (kind === 'picture') {
+                      return { ...current, picturePath: path };
+                    }
+                    if (kind === 'picture2d') {
+                      return { ...current, picture2dPath: path };
+                    }
+                    return { ...current, model3dPath: path };
+                  });
+                }}
+              />
+            }
             channels={channelDefinitionsFields}
             channelModes={channelModesFields}
           />
-        ) : (
-          <>
-            {generalFields}
-            {channelDefinitionsFields}
-            {channelModesFields}
-          </>
-        )}
+        </div>
 
         <Button
           type="submit"
           mt="sm"
           w="fit-content"
+          className={formClasses.saveButton}
           style={{ alignSelf: 'flex-end' }}
           disabled={isUpdating || isCreating}
         >
           {t(globalMessages.save)}
         </Button>
-      </Flex>
+      </div>
     </form>
   );
 };

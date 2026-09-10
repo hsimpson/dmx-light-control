@@ -73,9 +73,16 @@ graphql:
             publicId
             updatedAt
           }
+          height
+          length
+          model3dPath
           name
+          picture2dPath
+          picturePath
           publicId
           updatedAt
+          weight
+          width
         }
       }
     variables: |
@@ -83,11 +90,15 @@ graphql:
         "input": {
           "channelDefinitions": [],
           "channelModes": [],
+          "height": null,
+          "length": null,
           "name": null,
           "vendor": {
             "name": null,
             "publicId": null
-          }
+          },
+          "weight": null,
+          "width": null
         }
       }
 

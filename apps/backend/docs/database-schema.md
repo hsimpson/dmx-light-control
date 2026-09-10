@@ -20,6 +20,13 @@ erDiagram
         uuid public_id UK
         integer vendor_id FK
         varchar name UK
+        doubleprecision weight
+        doubleprecision width
+        doubleprecision length
+        doubleprecision height
+        varchar picture_path
+        varchar picture2d_path
+        varchar model3d_path
         timestamp created_at
         timestamp updated_at
     }

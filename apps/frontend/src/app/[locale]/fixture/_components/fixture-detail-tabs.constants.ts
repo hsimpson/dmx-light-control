@@ -4,5 +4,7 @@ export type FixtureDetailTab = (typeof FIXTURE_DETAIL_TABS)[number];
 
 export const DEFAULT_FIXTURE_DETAIL_TAB: FixtureDetailTab = 'general';
 
+export const NEW_FIXTURE_PATH_ID = 'new';
+
 export const isValidFixtureDetailTab = (tab: string): tab is FixtureDetailTab =>
   (FIXTURE_DETAIL_TABS as readonly string[]).includes(tab);

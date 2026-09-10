@@ -11,12 +11,19 @@ import { screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import FixtureForm from './fixture-form';
 
+const mockUseParams = vi.hoisted(() => vi.fn(() => ({ tab: 'channels' })));
+
 vi.mock('next/navigation', () => ({
+  useParams: () => mockUseParams(),
   useRouter: () => ({ push: vi.fn() }),
 }));
 
 vi.mock('@mantine/notifications', () => ({
   notifications: { show: vi.fn() },
+}));
+
+vi.mock('./fixture-model-preview', () => ({
+  default: () => <div data-testid="model-preview" />,
 }));
 
 const now = new Date('2026-01-01T00:00:00.000Z');
@@ -56,6 +63,13 @@ const vendor: GetFixtureVendorsQuery['fixtureVendors'][number] = {
 const existingFixture: GetFixturesQuery['fixtures'][number] = {
   publicId: fixturePublicId,
   name: 'SlimPAR',
+  weight: null,
+  width: null,
+  length: null,
+  height: null,
+  picturePath: null,
+  picture2dPath: null,
+  model3dPath: null,
   createdAt: now,
   updatedAt: now,
   fixtureVendor: vendor,
@@ -79,7 +93,28 @@ const savedFixture: GetFixturesQuery['fixtures'][number] = {
 
 describe('FixtureForm', () => {
   beforeEach(() => {
+    mockUseParams.mockReturnValue({ tab: 'channels' });
     vi.mocked(notifications.show).mockClear();
+  });
+
+  it('shows the general tab for a new fixture', () => {
+    mockUseParams.mockReturnValue({ tab: 'general' });
+
+    renderWithProviders(<FixtureForm vendors={[vendor]} />, { apolloMocks: [] });
+
+    expect(screen.getByRole('heading', { name: 'Add Fixture' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'General' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByLabelText(/Vendor name/)).toBeVisible();
+    expect(screen.getByPlaceholderText('Add Channel Definition')).not.toBeVisible();
+  });
+
+  it('shows vendor and fixture name in the header when editing', () => {
+    mockUseParams.mockReturnValue({ tab: 'properties' });
+
+    renderWithProviders(<FixtureForm fixture={existingFixture} vendors={[vendor]} />, { apolloMocks: [] });
+
+    expect(screen.getByRole('heading', { name: 'Chauvet / SlimPAR' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Properties' })).toHaveAttribute('aria-selected', 'true');
   });
 
   it('hydrates new channel definition publicIds from updateFixture so the next save updates them', async () => {

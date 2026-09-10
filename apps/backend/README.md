@@ -1,6 +1,6 @@
 # Backend
 
-This is the backend application for the DMX Light Control project. It is built using NestJS and Fastify, with Apollo GraphQL at `/graphql` on `BACKEND_PORT` (default 3000). The API covers the fixture catalog and projects (including import/export) plus DMX/MIDI IO. There is also a Linux-only CLI for sniffing DMX data from USB devices.
+This is the backend application for the DMX Light Control project. It is built using NestJS and Fastify, with Apollo GraphQL at `/graphql` on `BACKEND_PORT` (required; see root `.env.example`, typically `3000`). The API covers the fixture catalog and projects (including import/export) plus DMX/MIDI IO, and REST multipart fixture-asset upload/delete. There is also a Linux-only CLI for sniffing DMX data from USB devices.
 
 ## Database
 
@@ -8,7 +8,7 @@ The backend uses a PostgreSQL database to store fixtures, vendors, projects, and
 
 ### Drizzle ORM
 
-The backend uses Drizzle ORM for database interactions. The database schema is defined in `src/db/schema.ts`, and migrations are generated in the `src/db/migrations` directory. To generate a new migration after modifying the schema, pass a required snake_case `--name` (never omit it — drizzle-kit otherwise picks a random folder name):
+The backend uses Drizzle ORM for database interactions. Table definitions live in domain `entities/` files. `src/db/schema.ts` is a barrel that re-exports them; migrations are generated in `src/db/migrations`. Drizzle-kit commands run with cwd `apps/backend` and load `.env` from that directory (`dotenv/config`). Nest itself loads the workspace-root `.env`. To generate a new migration after modifying the schema, pass a required snake_case `--name` (never omit it — drizzle-kit otherwise picks a random folder name):
 
 ```bash
 nx run backend:drizzle-generate -- --name <migration_name>
@@ -65,11 +65,16 @@ Tests use Vitest with a Testcontainers PostgreSQL instance (`postgres:18.4`, sam
 
 ```bash
 nx test backend
+nx test backend --coverage
 ```
 
+Coverage reports go to `coverage/apps/backend`.
+
 - Unit/integration tests: `src/**/*.spec.ts`
-- GraphQL e2e tests: `src/e2e-tests/`
+- E2e tests: `src/e2e-tests/` (GraphQL, REST fixture assets, DMX/MIDI IO)
 - Test helpers: `src/testhelpers/`
+
+Optional `FIXTURE_ASSETS_ROOT` overrides the on-disk fixture-asset root (used by asset e2e tests).
 
 ## DMX Sniffer Command
 

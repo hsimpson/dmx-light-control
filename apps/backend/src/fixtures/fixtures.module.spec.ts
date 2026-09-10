@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import 'reflect-metadata';
+import { FixtureAssetController } from './fixture-asset.controller';
+import { FixtureAssetService } from './fixture-asset.service';
 import { FixtureImportExportService } from './fixture-import-export.service';
 import { FixtureResolver } from './fixture.resolver';
 import { FixtureService } from './fixture.service';
@@ -20,7 +22,9 @@ describe('FixturesModule', () => {
     expect(providers).toContain(FixtureChannelDefinitionRepository);
     expect(providers).toContain(FixtureService);
     expect(providers).toContain(FixtureImportExportService);
+    expect(providers).toContain(FixtureAssetService);
     expect(providers).toContain(FixtureResolver);
+    expect(Reflect.getMetadata('controllers', FixturesModule)).toContain(FixtureAssetController);
     expect(exports).toEqual([FixtureRepository, FixtureChannelModeRepository]);
   });
 });

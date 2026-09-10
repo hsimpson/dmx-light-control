@@ -60,6 +60,13 @@ const fixture = {
   __typename: 'FixtureDto',
   publicId: 'fix-1',
   name: 'Spot 250',
+  weight: null,
+  width: null,
+  length: null,
+  height: null,
+  picturePath: null,
+  picture2dPath: null,
+  model3dPath: null,
   createdAt: now,
   updatedAt: now,
   fixtureVendor: {

@@ -1,6 +1,6 @@
 import { ExportTimestampsDto } from '@/db/export-timestamps.dto';
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
 
@@ -79,6 +79,27 @@ export class FixtureExportFixtureDto extends ExportTimestampsDto {
 
   @Field({ description: 'The name of the fixture' })
   public name: string;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture weight in kilograms' })
+  public weight?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture width in meters' })
+  public width?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture length in meters' })
+  public length?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture height in meters' })
+  public height?: number | null;
+
+  @Field(() => String, { nullable: true, description: 'Product photo path relative to the API origin' })
+  public picturePath?: string | null;
+
+  @Field(() => String, { nullable: true, description: '2D plot symbol path relative to the API origin' })
+  public picture2dPath?: string | null;
+
+  @Field(() => String, { nullable: true, description: '3D model path relative to the API origin' })
+  public model3dPath?: string | null;
 
   @Field(() => FixtureExportVendorDto, { description: 'The vendor of the fixture' })
   @Type(() => FixtureExportVendorDto)

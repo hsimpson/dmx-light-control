@@ -19,7 +19,9 @@ import { UpdateFixtureChannelDefinitionInput } from './dto/update-fixture-channe
 import { UpdateFixtureChannelRangeInput } from './dto/update-fixture-channel-range.dto';
 import { UpdateFixtureChannelModeInput } from './dto/update-fixture-channel-mode.dto';
 import { UpdateFixtureInput } from './dto/update-fixture.dto';
+import { FixtureAssetService, toFixtureAssetIdentity } from './fixture-asset.service';
 import { fixture } from './entities';
+import { fixtureDimensionPatch } from './fixture-property-patch';
 import { FixtureChannelDefinitionRepository } from './repositories/fixture-channel-definition.repository';
 import {
   FixtureChannelModeRepository,
@@ -60,6 +62,7 @@ export class FixtureService {
     private readonly fixtureRepository: FixtureRepository,
     private readonly channelModeRepository: FixtureChannelModeRepository,
     private readonly channelDefinitionRepository: FixtureChannelDefinitionRepository,
+    private readonly fixtureAssetService: FixtureAssetService,
   ) {}
 
   public async getAllVendors() {
@@ -75,7 +78,12 @@ export class FixtureService {
   }
 
   public async updateFixture(input: UpdateFixtureInput) {
-    const updateData: Partial<InferSelectModel<typeof fixture>> = {};
+    const previous =
+      input.name || input.vendor ? await this.fixtureRepository.findOneByPublicId(input.publicId) : undefined;
+
+    const updateData: Partial<InferSelectModel<typeof fixture>> = {
+      ...fixtureDimensionPatch(input),
+    };
     if (input.name) {
       updateData.name = input.name;
     }
@@ -110,6 +118,12 @@ export class FixtureService {
 
     const loadedFixture = await this.fixtureRepository.findOneByPublicId(input.publicId);
 
+    const previousIdentity = toFixtureAssetIdentity(previous);
+    const nextIdentity = toFixtureAssetIdentity(loadedFixture);
+    if (previousIdentity && nextIdentity) {
+      await this.fixtureAssetService.moveIfRenamed(previousIdentity, nextIdentity);
+    }
+
     if (input.channelDefinitions === undefined && input.channelModes === undefined) {
       return loadedFixture;
     }
@@ -135,7 +149,12 @@ export class FixtureService {
   }
 
   public async deleteFixtureByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {
+    const existing = await this.fixtureRepository.findOneByPublicId(publicId);
     const deleted = await this.fixtureRepository.deleteOneByPublicId(publicId);
+    const existingIdentity = toFixtureAssetIdentity(existing);
+    if (deleted && existingIdentity) {
+      await this.fixtureAssetService.deleteFixtureAssets(existingIdentity);
+    }
     return { publicId, deleted };
   }
 
@@ -153,6 +172,7 @@ export class FixtureService {
     const createdFixture = await this.fixtureRepository.createOne({
       name: input.name,
       vendorId,
+      ...fixtureDimensionPatch(input),
     });
     if (!createdFixture) {
       throw new FixtureCreationFailedException(input.name);

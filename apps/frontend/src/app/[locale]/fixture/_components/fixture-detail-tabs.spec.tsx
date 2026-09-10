@@ -22,6 +22,7 @@ describe('FixtureDetailTabs', () => {
       <FixtureDetailTabs
         fixturePublicId="fix-1"
         general={<div data-testid="general-panel" />}
+        properties={<div data-testid="properties-panel" />}
         channels={<div data-testid="channels-panel" />}
         channelModes={<div data-testid="channel-modes-panel" />}
       />,
@@ -37,6 +38,7 @@ describe('FixtureDetailTabs', () => {
       <FixtureDetailTabs
         fixturePublicId="fix-1"
         general={<div data-testid="general-panel" />}
+        properties={<div data-testid="properties-panel" />}
         channels={<div data-testid="channels-panel" />}
         channelModes={<div data-testid="channel-modes-panel" />}
       />,
@@ -47,6 +49,22 @@ describe('FixtureDetailTabs', () => {
     expect(push).toHaveBeenCalledWith('/fixture/fix-1/channels');
   });
 
+  it('navigates new fixtures via the new path', async () => {
+    const { user } = renderWithProviders(
+      <FixtureDetailTabs
+        fixturePublicId="new"
+        general={<div data-testid="general-panel" />}
+        properties={<div data-testid="properties-panel" />}
+        channels={<div data-testid="channels-panel" />}
+        channelModes={<div data-testid="channel-modes-panel" />}
+      />,
+    );
+
+    await user.click(screen.getByRole('tab', { name: 'Channels' }));
+
+    expect(push).toHaveBeenCalledWith('/fixture/new/channels');
+  });
+
   it('shows the channels panel when the route tab is channels', () => {
     mockUseParams.mockReturnValue({ tab: 'channels' });
 
@@ -54,6 +72,7 @@ describe('FixtureDetailTabs', () => {
       <FixtureDetailTabs
         fixturePublicId="fix-1"
         general={<div data-testid="general-panel" />}
+        properties={<div data-testid="properties-panel" />}
         channels={<div data-testid="channels-panel" />}
         channelModes={<div data-testid="channel-modes-panel" />}
       />,

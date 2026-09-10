@@ -1,6 +1,6 @@
 # Frontend project
 
-This project contains the frontend code for the DMX Light Control application. It is a Next.js App Router app (port **3001**) for fixture, fixture-vendor, and project management; it talks to the backend GraphQL API.
+This project contains the frontend code for the DMX Light Control application. It is a Next.js App Router app (port **3001**) that talks to the backend GraphQL API. Surfaces include fixture catalog CRUD (with JSON import/export), fixture vendors, and projects: patch (start address / channel mode), DMX universe occupancy, and a Three.js 3D room. Project tabs `dmx` and `2d` exist as placeholders.
 
 ## Development setup
 
@@ -50,7 +50,7 @@ Browser e2e (Playwright, mocked GraphQL, no backend required). Install Chromium 
 nx e2e frontend
 ```
 
-To extract translation keys from the source code and update the translation files, run the following command:
+To extract translation keys from the source code into `src/lang/en.json` only (then sync `de.json` with the same keys), run:
 
 ```bash
 nx run frontend:i18n-extract

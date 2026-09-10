@@ -1,6 +1,6 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, Float, InputType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
-import { IsArray, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString, Length, Max, Min, ValidateNested } from 'class-validator';
 import { UpdateFixtureVendorInput } from './fixture.input';
 import { UpdateFixtureChannelDefinitionInput } from './update-fixture-channel-definition.dto';
 import { UpdateFixtureChannelModeInput } from './update-fixture-channel-mode.dto';
@@ -16,6 +16,34 @@ export class CreateFixtureInput {
   @ValidateNested()
   @Type(() => UpdateFixtureVendorInput)
   public vendor: UpdateFixtureVendorInput;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture weight in kilograms' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(10000)
+  public weight?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture width in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0.001)
+  @Max(100)
+  public width?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture length in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0.001)
+  @Max(100)
+  public length?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Fixture height in meters' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0.001)
+  @Max(100)
+  public height?: number | null;
 
   @Field(() => [UpdateFixtureChannelDefinitionInput], {
     nullable: true,

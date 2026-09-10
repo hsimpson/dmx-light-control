@@ -1,26 +1,8 @@
-'use client';
+import { DEFAULT_FIXTURE_DETAIL_TAB } from '@/app/[locale]/fixture/_components/fixture-detail-tabs.constants';
+import { redirect } from 'next/navigation';
 
-import { Loading } from '@/components/loading';
-import { useTranslation } from '@/lib/i18n/use-translation';
-import { GetFixtureVendorsDocument } from '@/shared/types/graphql/graphql';
-import { useQuery } from '@apollo/client/react';
-import { Title } from '@mantine/core';
-import FixtureForm from '../_components/fixture-form';
-
-const AddFixturePage = () => {
-  const { t } = useTranslation();
-  const { data: vendorsData, loading: vendorsLoading } = useQuery(GetFixtureVendorsDocument);
-
-  if (vendorsLoading) {
-    return <Loading />;
-  }
-
-  return (
-    <>
-      <Title order={1}>{t({ id: 'AddFixturePage.title', defaultMessage: 'Add Fixture' })}</Title>
-      <FixtureForm vendors={vendorsData?.fixtureVendors ?? []} />
-    </>
-  );
+const AddFixtureRedirectPage = () => {
+  redirect(`/fixture/new/${DEFAULT_FIXTURE_DETAIL_TAB}`);
 };
 
-export default AddFixturePage;
+export default AddFixtureRedirectPage;

@@ -51,6 +51,13 @@ fragment FixtureChannelModeFields on FixtureChannelModeDto {
 fragment FixtureFields on FixtureDto {
   publicId
   name
+  weight
+  width
+  length
+  height
+  picturePath
+  picture2dPath
+  model3dPath
 
   fixtureChannelDefinitions {
     ...FixtureChannelDefinitionFields
@@ -111,6 +118,13 @@ query ExportFixtures {
     fixtures {
       publicId
       name
+      weight
+      width
+      length
+      height
+      picturePath
+      picture2dPath
+      model3dPath
       createdAt
       updatedAt
       vendor {

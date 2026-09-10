@@ -1,11 +1,10 @@
-import fastifyStatic from '@fastify/static';
 import { ClassSerializerInterceptor, INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { CommandFactory } from 'nest-commander';
-import { join } from 'node:path';
 import { AppModule } from './app.module';
+import { registerHttpPlugins } from './http-plugins';
 
 function registerGlobals(app: INestApplication) {
   app.useGlobalPipes(
@@ -34,10 +33,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
   registerGlobals(app);
   app.enableCors();
-  await app.register(fastifyStatic, {
-    root: join(__dirname, 'assets'),
-    prefix: '/assets/',
-  });
+  await registerHttpPlugins(app);
   const configService = app.get(ConfigService);
   const port = configService.getOrThrow<number>('port');
   await app.listen(port);

@@ -31,7 +31,7 @@ const ProjectDetailLayout = ({ children }: ProjectDetailLayoutProperties) => {
   }
 
   return (
-    <Box flex={1} mih={0} display="flex" style={{ flexDirection: 'column' }}>
+    <Box flex={1} mih={0} h="100%" display="flex" style={{ flexDirection: 'column' }}>
       <Title order={1} mb="md">
         {project.name}
       </Title>

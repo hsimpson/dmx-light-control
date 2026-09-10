@@ -98,9 +98,9 @@
       "name": "room",
       "pbrMetallicRoughness": {
         "baseColorFactor": [
-          0.55,
-          0.55,
-          0.58,
+          0.16,
+          0.16,
+          0.18,
           1
         ],
         "metallicFactor": 0,

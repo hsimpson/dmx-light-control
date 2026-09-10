@@ -4,7 +4,7 @@ Builds a [Bruno](https://www.usebruno.com/) API collection in [OpenCollection](h
 
 ## Commands
 
-Requires a running backend for schema introspection (`http://localhost:$BACKEND_PORT/graphql`, default port 3000). Re-run after GraphQL resolver or DTO changes. The committed `collection/environments/local.yml` `backendUrl` is independent of `BACKEND_PORT`.
+Requires a running backend for schema introspection. The build runs with cwd `tools/bruno` and `dotenv/config`, so it does **not** load the workspace-root `.env`; it uses `BACKEND_PORT` from the process environment, otherwise `3000`. Re-run after GraphQL resolver or DTO changes. The committed `collection/environments/local.yml` `backendUrl` is independent of `BACKEND_PORT`.
 
 ```bash
 nx run bruno:build

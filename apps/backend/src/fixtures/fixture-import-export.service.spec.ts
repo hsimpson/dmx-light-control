@@ -55,6 +55,13 @@ describe('FixtureImportExportService', () => {
         {
           publicId: 'fix-1',
           name: 'Spot',
+          weight: null,
+          width: null,
+          length: null,
+          height: null,
+          picturePath: null,
+          picture2dPath: null,
+          model3dPath: null,
           ...timestamps,
           vendor: { publicId: 'vendor-1', name: 'Acme', ...timestamps },
           channelDefinitions: [

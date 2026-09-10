@@ -10,6 +10,7 @@ import {
   FixtureVendorCreationFailedException,
   FixtureVendorNotFoundException,
 } from './fixture.exceptions';
+import { FixtureAssetService } from './fixture-asset.service';
 import { FixtureService } from './fixture.service';
 import { FixtureChannelDefinitionRepository } from './repositories/fixture-channel-definition.repository';
 import { FixtureChannelModeRepository } from './repositories/fixture-channel-mode.repository';
@@ -39,13 +40,18 @@ function build() {
     findOneByPublicId: vi.fn<() => Promise<unknown>>(),
     createOneForFixture: vi.fn<() => Promise<unknown>>(),
   };
+  const fixtureAssetService = {
+    moveIfRenamed: vi.fn(),
+    deleteFixtureAssets: vi.fn(),
+  };
   const service = new FixtureService(
     vendorRepo as unknown as FixtureVendorRepository,
     fixtureRepo as unknown as FixtureRepository,
     channelModeRepo as unknown as FixtureChannelModeRepository,
     channelDefinitionRepo as unknown as FixtureChannelDefinitionRepository,
+    fixtureAssetService as unknown as FixtureAssetService,
   );
-  return { service, vendorRepo, fixtureRepo, channelModeRepo, channelDefinitionRepo };
+  return { service, vendorRepo, fixtureRepo, channelModeRepo, channelDefinitionRepo, fixtureAssetService };
 }
 
 const fixtureGraph = {
@@ -97,8 +103,8 @@ describe('FixtureService', () => {
     vendorRepo.findOneByPublicId.mockResolvedValue({ id: 7 });
     fixtureRepo.createOne.mockResolvedValue({ publicId: 'fp' });
     fixtureRepo.findOneByPublicId.mockResolvedValue('reloaded');
-    const res = await service.createFixture({ name: 'My Fixture', vendor: { publicId: 'vp' } });
-    expect(fixtureRepo.createOne).toHaveBeenCalledWith({ name: 'My Fixture', vendorId: 7 });
+    const res = await service.createFixture({ name: 'My Fixture', vendor: { publicId: 'vp' }, weight: 5.5 });
+    expect(fixtureRepo.createOne).toHaveBeenCalledWith({ name: 'My Fixture', vendorId: 7, weight: 5.5 });
     expect(res).toBe('reloaded');
   });
 
@@ -186,6 +192,14 @@ describe('FixtureService', () => {
     const res = await service.updateFixture({ publicId: 'p', name: 'new' });
     expect(fixtureRepo.updateOneByPublicId).toHaveBeenCalledWith('p', { name: 'new' });
     expect(res).toBe('result');
+  });
+
+  it('updateFixture persists dimensions including null', async () => {
+    const { service, fixtureRepo } = build();
+    fixtureRepo.updateOneByPublicId.mockResolvedValue({ id: 1 });
+    fixtureRepo.findOneByPublicId.mockResolvedValue('result');
+    await service.updateFixture({ publicId: 'p', weight: null, width: 0.3 });
+    expect(fixtureRepo.updateOneByPublicId).toHaveBeenCalledWith('p', { weight: null, width: 0.3 });
   });
 
   it('updateFixture with vendor.publicId throws when vendor missing', async () => {

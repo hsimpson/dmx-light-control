@@ -239,6 +239,61 @@ describe('Fixture mutations', () => {
     expect(body.data?.createFixture.fixtureVendor.name).toBe('E2E Auto Vendor');
   });
 
+  it('should persist optional fixture dimensions', async () => {
+    const mutation = gql`
+      mutation ($input: CreateFixtureInput!) {
+        createFixture(input: $input) {
+          publicId
+          weight
+          width
+          length
+          height
+        }
+      }
+    `;
+    const created = await graphqlQuery<{
+      createFixture: { publicId: string; weight: number | null; width: number | null; height: number | null };
+    }>(app.getHttpAdapter().getInstance().server, mutation, {
+      variables: {
+        input: {
+          name: 'E2E Dimension Fixture',
+          vendor: { name: 'E2E Dimension Vendor' },
+          weight: 6.5,
+          width: 0.25,
+          length: 0.4,
+          height: 0.3,
+        },
+      },
+    });
+    expect(created.data?.createFixture.weight).toBe(6.5);
+    expect(created.data?.createFixture.width).toBe(0.25);
+
+    const update = gql`
+      mutation ($input: UpdateFixtureInput!) {
+        updateFixture(input: $input) {
+          publicId
+          weight
+          width
+        }
+      }
+    `;
+    const updated = await graphqlQuery<{ updateFixture: { weight: number | null; width: number | null } }>(
+      app.getHttpAdapter().getInstance().server,
+      update,
+      {
+        variables: {
+          input: {
+            publicId: created.data?.createFixture.publicId,
+            weight: null,
+            width: 0.5,
+          },
+        },
+      },
+    );
+    expect(updated.data?.updateFixture.weight).toBeNull();
+    expect(updated.data?.updateFixture.width).toBe(0.5);
+  });
+
   it('should create a fixture via createFixture reusing an existing vendor publicId', async () => {
     const vendorMutation = gql`
       mutation ($input: CreateFixtureVendorInput!) {

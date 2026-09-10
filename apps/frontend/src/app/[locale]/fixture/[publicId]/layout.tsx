@@ -4,7 +4,7 @@ import { Loading } from '@/components/loading';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { GetFixtureDocument, GetFixtureVendorsDocument } from '@/shared/types/graphql/graphql';
 import { useQuery } from '@apollo/client/react';
-import { Box, Text, Title } from '@mantine/core';
+import { Box, Text } from '@mantine/core';
 import { useParams } from 'next/navigation';
 import type { ReactNode } from 'react';
 import FixtureForm from '../_components/fixture-form';
@@ -34,9 +34,13 @@ const FixtureDetailLayout = ({ children }: FixtureDetailLayoutProperties) => {
   }
 
   return (
-    <Box flex={1} mih={0} display="flex" style={{ flexDirection: 'column' }}>
-      <Title order={1}>{t({ id: 'EditFixturePage.title', defaultMessage: 'Edit Fixture' })}</Title>
-      <FixtureForm fixture={fixture} vendors={vendorsData?.fixtureVendors ?? []} showTabs />
+    <Box
+      flex={1}
+      display="flex"
+      mih="calc(100dvh - var(--app-shell-header-height, 60px) - 2 * var(--mantine-spacing-md))"
+      style={{ flexDirection: 'column' }}
+    >
+      <FixtureForm fixture={fixture} vendors={vendorsData?.fixtureVendors ?? []} />
       {children}
     </Box>
   );

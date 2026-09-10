@@ -1,5 +1,6 @@
 import { GraphQLSchemaBuilderModule, GraphQLSchemaFactory } from '@nestjs/graphql';
 import { Test } from '@nestjs/testing';
+import { GraphQLObjectType } from 'graphql';
 import { describe, expect, it } from 'vitest';
 import { AppEventEmitter } from './events/app-event-emitter';
 import { FixtureImportExportService } from './fixtures/fixture-import-export.service';
@@ -38,6 +39,9 @@ describe('GraphQL schema generation', () => {
     expect(schema.getQueryType()?.getFields().projects).toBeDefined();
     expect(schema.getQueryType()?.getFields().project).toBeDefined();
     expect(schema.getMutationType()?.getFields().importFixtures).toBeDefined();
+    const fixtureDto = schema.getType('FixtureDto') as GraphQLObjectType | undefined;
+    expect(fixtureDto?.getFields().weight).toBeDefined();
+    expect(fixtureDto?.getFields().picturePath).toBeDefined();
     expect(schema.getMutationType()?.getFields().createProject).toBeDefined();
     expect(schema.getQueryType()?.getFields().exportProjects).toBeDefined();
     expect(schema.getType('ProjectEnvironmentType')).toBeDefined();
