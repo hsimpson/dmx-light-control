@@ -6,6 +6,30 @@ import FixtureModelPreview, { prepareFixtureModelForPreview } from './fixture-mo
 
 const load = vi.fn();
 
+const { capturedThreeCanvasProps } = vi.hoisted(() => ({
+  capturedThreeCanvasProps: { current: undefined as { showOrientationGizmo?: boolean } | undefined },
+}));
+
+vi.mock('@/lib/three/three-canvas', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/lib/three/three-canvas')>();
+  const ThreeCanvas = actual.default;
+  return {
+    ...actual,
+    default: (props: Parameters<typeof ThreeCanvas>[0]) => {
+      capturedThreeCanvasProps.current = props;
+      return ThreeCanvas(props);
+    },
+  };
+});
+
+vi.mock('@/lib/three/axis-orientation-gizmo', () => ({
+  createAxisOrientationGizmo: () => ({
+    updateFrom: vi.fn(),
+    render: vi.fn(),
+    dispose: vi.fn(),
+  }),
+}));
+
 vi.mock('three', async importOriginal => {
   const actual = await importOriginal<typeof import('three')>();
   return {
@@ -99,6 +123,7 @@ describe('FixtureModelPreview', () => {
 
   beforeEach(() => {
     load.mockReset();
+    capturedThreeCanvasProps.current = undefined;
     vi.stubGlobal('ResizeObserver', ResizeObserverMock);
   });
 
@@ -107,6 +132,12 @@ describe('FixtureModelPreview', () => {
 
     expect(screen.getByTestId('fixture-model-preview')).toBeInTheDocument();
     expect(load).toHaveBeenCalledWith('/assets/fixtures/_defaults/model.glb', expect.any(Function));
+  });
+
+  it('opts the fixture preview into the orientation gizmo', () => {
+    renderWithProviders(<FixtureModelPreview url="/assets/fixtures/_defaults/model.glb" />);
+
+    expect(capturedThreeCanvasProps.current?.showOrientationGizmo).toBe(true);
   });
 
   it('turns off glass transmission so overlapping lenses keep their shape', () => {

@@ -14,12 +14,34 @@ const environmentDispose = vi.fn();
 const setAnimationLoop = vi.fn();
 const rendererDispose = vi.fn();
 const controlsDispose = vi.fn();
+const rendererRender = vi.fn();
+const rendererClear = vi.fn();
+const rendererClearDepth = vi.fn();
+const rendererGetSize = vi.fn();
+const rendererSetViewport = vi.fn();
+const rendererSetScissor = vi.fn();
+const rendererSetScissorTest = vi.fn();
+const gizmoUpdateFrom = vi.fn();
+const gizmoRender = vi.fn();
+const gizmoDispose = vi.fn();
+const createAxisOrientationGizmo = vi.fn(() => ({
+  scene: {},
+  camera: {},
+  updateFrom: gizmoUpdateFrom,
+  render: gizmoRender,
+  dispose: gizmoDispose,
+}));
+
+vi.mock('./axis-orientation-gizmo', () => ({
+  createAxisOrientationGizmo: (...args: unknown[]) => createAxisOrientationGizmo(...args),
+}));
 
 vi.mock('three', async importOriginal => {
   const actual = await importOriginal<typeof import('three')>();
   return {
     ...actual,
     WebGLRenderer: class {
+      public autoClear = true;
       public outputColorSpace = '';
       public toneMapping = 0;
       public toneMappingExposure = 1;
@@ -37,7 +59,29 @@ vi.mock('three', async importOriginal => {
         rendererDispose();
       }
       public render() {
-        return undefined;
+        rendererRender();
+      }
+      public clear() {
+        rendererClear();
+      }
+      public clearDepth() {
+        rendererClearDepth();
+      }
+      public getSize(target: { set: (width: number, height: number) => unknown }) {
+        rendererGetSize();
+        return target.set(640, 480);
+      }
+      public getPixelRatio() {
+        return 1;
+      }
+      public setViewport(x: number, y: number, width: number, height: number) {
+        rendererSetViewport(x, y, width, height);
+      }
+      public setScissor(x: number, y: number, width: number, height: number) {
+        rendererSetScissor(x, y, width, height);
+      }
+      public setScissorTest(enabled: boolean) {
+        rendererSetScissorTest(enabled);
       }
     },
     PMREMGenerator: class {
@@ -96,6 +140,17 @@ describe('ThreeCanvas', () => {
     setAnimationLoop.mockReset();
     rendererDispose.mockClear();
     controlsDispose.mockClear();
+    rendererRender.mockClear();
+    rendererClear.mockClear();
+    rendererClearDepth.mockClear();
+    rendererGetSize.mockClear();
+    rendererSetViewport.mockClear();
+    rendererSetScissor.mockClear();
+    rendererSetScissorTest.mockClear();
+    gizmoUpdateFrom.mockClear();
+    gizmoRender.mockClear();
+    gizmoDispose.mockClear();
+    createAxisOrientationGizmo.mockClear();
     vi.stubGlobal('ResizeObserver', ResizeObserverMock);
   });
 
@@ -124,6 +179,29 @@ describe('ThreeCanvas', () => {
     expect(setAnimationLoop).toHaveBeenCalledWith(null);
     expect(controlsDispose).toHaveBeenCalled();
     expect(pmremDispose).toHaveBeenCalled();
+    expect(rendererDispose).toHaveBeenCalled();
+  });
+
+  it('renders the orientation gizmo from the animation loop and disposes it on unmount', () => {
+    const { unmount } = renderWithProviders(
+      <ThreeCanvas testId="shared-three-canvas" showOrientationGizmo onReady={() => undefined} />,
+    );
+
+    expect(createAxisOrientationGizmo).toHaveBeenCalledTimes(1);
+    const loop = setAnimationLoop.mock.calls.find(([callback]) => typeof callback === 'function')?.[0] as
+      (() => void) | undefined;
+    expect(loop).toEqual(expect.any(Function));
+    loop?.();
+
+    expect(rendererClear).toHaveBeenCalled();
+    expect(rendererRender).toHaveBeenCalled();
+    expect(gizmoUpdateFrom).toHaveBeenCalled();
+    expect(gizmoRender).toHaveBeenCalled();
+
+    unmount();
+
+    expect(gizmoDispose).toHaveBeenCalled();
+    expect(setAnimationLoop).toHaveBeenCalledWith(null);
     expect(rendererDispose).toHaveBeenCalled();
   });
 });

@@ -16,6 +16,7 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { createAxisOrientationGizmo } from './axis-orientation-gizmo';
 import { frameCameraOnObject } from './frame-camera';
 
 export type ThreeCanvasContext = {
@@ -31,10 +32,11 @@ export type ThreeCanvasProperties = {
   className?: string;
   style?: CSSProperties;
   testId?: string;
+  showOrientationGizmo?: boolean;
   onReady: (ctx: ThreeCanvasContext) => (() => void) | undefined;
 };
 
-const ThreeCanvas = ({ className, style, testId, onReady }: ThreeCanvasProperties) => {
+const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, onReady }: ThreeCanvasProperties) => {
   const hostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -86,6 +88,11 @@ const ThreeCanvas = ({ className, style, testId, onReady }: ThreeCanvasPropertie
       frameObject,
     });
 
+    const orientationGizmo = showOrientationGizmo ? createAxisOrientationGizmo() : undefined;
+    if (orientationGizmo) {
+      renderer.autoClear = false;
+    }
+
     const resize = () => {
       const width = host.clientWidth;
       const height = Math.max(host.clientHeight, 1);
@@ -100,11 +107,19 @@ const ThreeCanvas = ({ className, style, testId, onReady }: ThreeCanvasPropertie
 
     renderer.setAnimationLoop(() => {
       controls.update();
+      if (orientationGizmo) {
+        renderer.clear();
+      }
       renderer.render(scene, camera);
+      if (orientationGizmo) {
+        orientationGizmo.updateFrom(camera);
+        orientationGizmo.render(renderer, host.clientWidth, Math.max(host.clientHeight, 1));
+      }
     });
 
     return () => {
       extraCleanup?.();
+      orientationGizmo?.dispose();
       resizeObserver.disconnect();
       renderer.setAnimationLoop(null);
       controls.dispose();
@@ -115,7 +130,7 @@ const ThreeCanvas = ({ className, style, testId, onReady }: ThreeCanvasPropertie
         host.removeChild(renderer.domElement);
       }
     };
-  }, [onReady]);
+  }, [onReady, showOrientationGizmo]);
 
   return <div ref={hostRef} className={className} style={style} data-testid={testId} />;
 };

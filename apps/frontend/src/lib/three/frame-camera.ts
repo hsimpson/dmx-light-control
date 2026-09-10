@@ -14,7 +14,7 @@ export const frameCameraOnObject = (camera: PerspectiveCamera, controls: OrbitCo
   const fitDistance = maxDim / (2 * Math.tan(fovRadians / 2));
   const distance = fitDistance * 1.35;
 
-  camera.position.set(center.x + distance * 0.55, center.y + distance * 0.22, center.z - distance * 0.8);
+  camera.position.set(center.x - distance * 0.22, center.y + distance * 0.22, center.z + distance * 0.8);
   camera.near = Math.max(distance / 100, 0.01);
   camera.far = Math.max(distance * 100, 100);
   camera.updateProjectionMatrix();

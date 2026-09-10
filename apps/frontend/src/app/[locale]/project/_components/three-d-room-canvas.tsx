@@ -408,7 +408,7 @@ const ThreeDRoomCanvas = ({
     }
   }, [selectedObjectPublicId, scaleGizmoEnabled, poseGizmoMode, objects]);
 
-  return <ThreeCanvas className={classes.host} testId="three-d-room-canvas" onReady={onReady} />;
+  return <ThreeCanvas className={classes.host} testId="three-d-room-canvas" showOrientationGizmo onReady={onReady} />;
 };
 
 export default ThreeDRoomCanvas;

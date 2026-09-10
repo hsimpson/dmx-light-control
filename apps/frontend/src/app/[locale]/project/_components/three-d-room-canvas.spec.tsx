@@ -6,12 +6,26 @@ import ThreeDRoomCanvas from './three-d-room-canvas';
 
 const load = vi.fn();
 
-const { transformControlsConstruct, intersectObjects, intersectBox, frameCameraOnObject } = vi.hoisted(() => ({
-  transformControlsConstruct: vi.fn(),
-  intersectObjects: vi.fn(() => [] as { object: { userData: Record<string, unknown>; parent: unknown } }[]),
-  intersectBox: vi.fn(() => null as { x?: number } | null),
-  frameCameraOnObject: vi.fn(),
-}));
+const { transformControlsConstruct, intersectObjects, intersectBox, frameCameraOnObject, capturedThreeCanvasProps } =
+  vi.hoisted(() => ({
+    transformControlsConstruct: vi.fn(),
+    intersectObjects: vi.fn(() => [] as { object: { userData: Record<string, unknown>; parent: unknown } }[]),
+    intersectBox: vi.fn(() => null as { x?: number } | null),
+    frameCameraOnObject: vi.fn(),
+    capturedThreeCanvasProps: { current: undefined as { showOrientationGizmo?: boolean } | undefined },
+  }));
+
+vi.mock('@/lib/three/three-canvas', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/lib/three/three-canvas')>();
+  const ThreeCanvas = actual.default;
+  return {
+    ...actual,
+    default: (props: Parameters<typeof ThreeCanvas>[0]) => {
+      capturedThreeCanvasProps.current = props;
+      return ThreeCanvas(props);
+    },
+  };
+});
 
 vi.mock('./scene-object-pose', () => ({
   applyTransformMatrix: vi.fn(),
@@ -21,6 +35,14 @@ vi.mock('./scene-object-pose', () => ({
 
 vi.mock('@/lib/three/frame-camera', () => ({
   frameCameraOnObject,
+}));
+
+vi.mock('@/lib/three/axis-orientation-gizmo', () => ({
+  createAxisOrientationGizmo: () => ({
+    updateFrom: vi.fn(),
+    render: vi.fn(),
+    dispose: vi.fn(),
+  }),
 }));
 
 vi.mock('three', () => {
@@ -69,6 +91,9 @@ vi.mock('three', () => {
       return undefined;
     }
     public render() {
+      return undefined;
+    }
+    public clear() {
       return undefined;
     }
   }
@@ -277,6 +302,15 @@ describe('ThreeDRoomCanvas', () => {
     intersectBox.mockReset();
     intersectBox.mockReturnValue(null);
     frameCameraOnObject.mockReset();
+    capturedThreeCanvasProps.current = undefined;
+  });
+
+  it('opts the room canvas into the orientation gizmo', () => {
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas environmentType={ProjectEnvironmentType.Room} roomWidth={10} roomLength={8} roomHeight={5} />,
+    );
+    expect(capturedThreeCanvasProps.current?.showOrientationGizmo).toBe(true);
   });
 
   it('loads the room glTF', () => {

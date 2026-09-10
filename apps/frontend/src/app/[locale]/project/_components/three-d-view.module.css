@@ -25,6 +25,7 @@
   font-size: 0.75rem;
   left: 0.75rem;
   line-height: 1.45;
+  max-width: calc(100% - 96px - 1.5rem);
   padding: 0.35rem 0.55rem;
   pointer-events: none;
   position: absolute;

@@ -61,7 +61,15 @@ const FixtureModelPreview = ({ url }: FixtureModelPreviewProperties) => {
     [url],
   );
 
-  return <ThreeCanvas key={url} className={classes.host} testId="fixture-model-preview" onReady={onReady} />;
+  return (
+    <ThreeCanvas
+      key={url}
+      className={classes.host}
+      testId="fixture-model-preview"
+      showOrientationGizmo
+      onReady={onReady}
+    />
+  );
 };
 
 export default FixtureModelPreview;
