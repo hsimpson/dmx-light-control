@@ -1,7 +1,7 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
 import { fireEvent, screen } from '@testing-library/react';
-import { PCFSoftShadowMap } from 'three';
+import { PCFShadowMap } from 'three';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ThreeDRoomCanvas from './three-d-room-canvas';
 
@@ -257,7 +257,7 @@ vi.mock('three', () => {
     },
     SRGBColorSpace: 'srgb',
     ACESFilmicToneMapping: 4,
-    PCFSoftShadowMap: 2,
+    PCFShadowMap: 1,
     HemisphereLight: class {
       public constructor(
         public readonly sky = 0,
@@ -380,7 +380,7 @@ describe('ThreeDRoomCanvas', () => {
     );
     expect(capturedThreeCanvasProps.current?.showOrientationGizmo).toBe(true);
     expect(capturedRenderer.current?.shadowMap.enabled).toBe(true);
-    expect(capturedRenderer.current?.shadowMap.type).toBe(PCFSoftShadowMap);
+    expect(capturedRenderer.current?.shadowMap.type).toBe(PCFShadowMap);
   });
 
   it('loads the room glTF', () => {

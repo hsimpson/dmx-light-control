@@ -1,6 +1,6 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen } from '@testing-library/react';
-import { ACESFilmicToneMapping, DirectionalLight, PCFSoftShadowMap } from 'three';
+import { ACESFilmicToneMapping, DirectionalLight, PCFShadowMap } from 'three';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ThreeCanvas, { type ThreeCanvasContext } from './three-canvas';
 
@@ -186,7 +186,7 @@ describe('ThreeCanvas', () => {
     expect(context.controls.enableDamping).toBe(true);
     expect(context.renderer.toneMapping).toBe(ACESFilmicToneMapping);
     expect(context.renderer.shadowMap.enabled).toBe(true);
-    expect(context.renderer.shadowMap.type).toBe(PCFSoftShadowMap);
+    expect(context.renderer.shadowMap.type).toBe(PCFShadowMap);
     const directionalLights = context.scene.children.filter(
       (child): child is DirectionalLight => child instanceof DirectionalLight,
     );

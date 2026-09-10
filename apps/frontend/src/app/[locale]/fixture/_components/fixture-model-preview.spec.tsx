@@ -1,6 +1,6 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen } from '@testing-library/react';
-import { BoxGeometry, Group, Mesh, MeshPhysicalMaterial, PCFSoftShadowMap } from 'three';
+import { BoxGeometry, Group, Mesh, MeshPhysicalMaterial, PCFShadowMap } from 'three';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import FixtureModelPreview, { prepareFixtureModelForPreview } from './fixture-model-preview';
 
@@ -167,7 +167,7 @@ describe('FixtureModelPreview', () => {
     renderWithProviders(<FixtureModelPreview url="/assets/fixtures/_defaults/model.glb" />);
 
     expect(capturedRenderer.current?.shadowMap.enabled).toBe(true);
-    expect(capturedRenderer.current?.shadowMap.type).toBe(PCFSoftShadowMap);
+    expect(capturedRenderer.current?.shadowMap.type).toBe(PCFShadowMap);
   });
 
   it('turns off glass transmission so overlapping lenses keep their shape', () => {

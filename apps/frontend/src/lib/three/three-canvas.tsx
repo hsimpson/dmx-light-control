@@ -8,7 +8,7 @@ import {
   DirectionalLight,
   HemisphereLight,
   type Object3D,
-  PCFSoftShadowMap,
+  PCFShadowMap,
   PerspectiveCamera,
   PMREMGenerator,
   Scene,
@@ -65,7 +65,7 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
     renderer.toneMapping = ACESFilmicToneMapping;
     renderer.toneMappingExposure = 0.6;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = PCFSoftShadowMap;
+    renderer.shadowMap.type = PCFShadowMap;
     renderer.setPixelRatio(window.devicePixelRatio);
     host.appendChild(renderer.domElement);
     renderer.domElement.style.display = 'block';
