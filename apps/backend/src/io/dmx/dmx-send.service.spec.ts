@@ -3,6 +3,7 @@ import { UsbDeviceService } from '@/io/usb/usb-device.service';
 import { Logger } from '@nestjs/common';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { DmxSendService } from './dmx-send.service';
+import { DmxUniverseService } from './dmx-universe.service';
 
 const fakeDevice = {
   productName: 'FTDI',
@@ -12,7 +13,6 @@ const fakeDevice = {
 
 type DmxSendServicePrivate = {
   logger: Logger;
-  dmxFrame: Uint8Array;
   device?: USBDevice;
   _isSending: boolean;
   sendDmxFrame: () => void;
@@ -29,11 +29,13 @@ function build() {
     emit: vi.fn<(event: string, payload?: unknown) => boolean>(),
     on: vi.fn<(event: string, listener: (...args: unknown[]) => void) => void>(),
   };
+  const universe = new DmxUniverseService();
   const service = new DmxSendService(
     usbDeviceServiceMock as unknown as UsbDeviceService,
     eventEmitterMock as unknown as AppEventEmitter,
+    universe,
   );
-  return { service, usbDeviceServiceMock, eventEmitterMock };
+  return { service, usbDeviceServiceMock, eventEmitterMock, universe };
 }
 
 describe('DmxSendService', () => {
@@ -71,10 +73,8 @@ describe('DmxSendService', () => {
   });
 
   it('setChannelValues ignores out-of-range channel and value', () => {
-    const { service, eventEmitterMock } = build();
-    const warn = vi
-      .spyOn((service as unknown as DmxSendServicePrivate).logger, 'warn')
-      .mockImplementation(() => undefined);
+    const { service, eventEmitterMock, universe } = build();
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
     service.onModuleInit();
     const listener = eventEmitterMock.on.mock.calls[0]?.[1];
     listener?.([
@@ -84,9 +84,8 @@ describe('DmxSendService', () => {
       { channel: 1, value: 256 },
       { channel: 5, value: 128 },
     ]);
-    // four out-of-range entries are rejected (warn), one valid entry applied
     expect(warn).toHaveBeenCalledTimes(4);
-    expect((service as unknown as DmxSendServicePrivate).dmxFrame[5]).toBe(128);
+    expect(universe.getFrame()[5]).toBe(128);
   });
 
   it('sendDmxFrame does nothing when no device', () => {

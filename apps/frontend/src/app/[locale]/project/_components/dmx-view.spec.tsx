@@ -1,5 +1,6 @@
-import { renderWithProviders } from '@/testhelpers/render-with-providers';
+import { dmxStore } from '@/lib/dmx/dmx-store';
 import { FixtureChannelPreset, GetProjectDocument } from '@/shared/types/graphql/graphql';
+import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import DmxView from './dmx-view';
@@ -113,6 +114,24 @@ describe('DmxView', () => {
     expect(screen.getByTestId('dmx-channel-2')).toHaveTextContent('0');
     expect(screen.getByTestId('dmx-channel-3')).toHaveTextContent('0');
     expect(screen.getByTestId('dmx-channel-1')).toHaveAttribute('aria-label', '1: Generic – PAR 64');
+  });
+
+  it('shows live DMX values from the client store', async () => {
+    dmxStore.getState().applyDelta([{ channel: 1, value: 200 }]);
+
+    renderWithProviders(<DmxView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: projectResult([projectFixture]),
+        },
+      ],
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('dmx-channel-1')).toHaveTextContent('200');
+    });
+    expect(screen.getByTestId('dmx-channel-2')).toHaveTextContent('0');
   });
 
   it('orders fixture boxes by start address and alternates variants', async () => {
