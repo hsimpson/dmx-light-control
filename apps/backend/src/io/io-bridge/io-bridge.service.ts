@@ -10,12 +10,13 @@ const noteDmxMapping: Record<number, number[]> = {
   2: [3], // button 2 maps to DMX channel 3
   3: [4], // button 3 maps to DMX channel 4
 
-  48: [1, 10], // 1st fader maps to DMX channel 1
-  49: [2, 11], // 2nd fader maps to DMX channel 2
-  50: [3, 12], // 3rd fader maps to DMX channel 3
-  51: [4, 13], // 4th fader maps to DMX channel 4
+  48: [1, 10], // 1st fader maps to DMX channel 1, 10
+  49: [2, 11], // 2nd fader maps to DMX channel 2, 11
+  50: [3, 12], // 3rd fader maps to DMX channel 3, 12
+  51: [4, 13], // 4th fader maps to DMX channel 4, 13
+  52: [5, 14], // 5th fader maps to DMX channel 5, 14
 
-  56: [6, 15], // 9th fader maps to DMX channel 6
+  56: [6, 15], // 9th fader maps to DMX channel 6, 15
 };
 
 // format: [behavior, button, color]

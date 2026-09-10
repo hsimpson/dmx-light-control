@@ -35,7 +35,9 @@ export class DmxWebsocketClient {
     this.stopped = true;
     this.clearReconnect();
     this.sawSnapshot = false;
-    this.socket?.close();
+    if (this.socket?.readyState === OPEN) {
+      this.socket.close();
+    }
     this.socket = undefined;
     this.store.getState().setStatus('idle');
   }
@@ -53,6 +55,10 @@ export class DmxWebsocketClient {
     const socket = new this.socketCtor(this.url);
     this.socket = socket;
     socket.addEventListener('open', () => {
+      if (this.stopped) {
+        socket.close();
+        return;
+      }
       this.reconnectAttempt = 0;
       this.store.getState().setStatus('open');
     });

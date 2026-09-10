@@ -59,10 +59,14 @@ interface SerialSendServiceHarness {
 describe('SerialSendService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useFakeTimers();
     vi.spyOn(global, 'setInterval').mockReturnValue(1 as unknown as NodeJS.Timeout);
     vi.spyOn(global, 'clearInterval').mockImplementation(() => undefined);
   });
-  afterEach(() => vi.restoreAllMocks());
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
 
   function build() {
     const eventEmitter = { emit: vi.fn(), on: vi.fn() } as unknown as EventEmitterHarness;
@@ -175,8 +179,20 @@ describe('SerialSendService', () => {
       return;
     });
     callback();
+    vi.advanceTimersByTime(1);
     expect(setSpy).toHaveBeenCalled();
     expect(writeSpy).toHaveBeenCalled();
+  });
+
+  it('holds the serial BREAK before writing the frame', () => {
+    const { service } = build();
+    service.onModuleInit();
+    service.port.isOpen = true;
+    service.sendDmxFrame();
+    expect(fakePort.set).toHaveBeenCalledWith({ brk: true }, expect.any(Function));
+    expect(fakePort.write).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(fakePort.write).toHaveBeenCalled();
   });
 
   it('sendDmxFrame performs break/mab/write when open', () => {
@@ -184,6 +200,7 @@ describe('SerialSendService', () => {
     service.onModuleInit();
     service.port.isOpen = true;
     service.sendDmxFrame();
+    vi.advanceTimersByTime(1);
     expect(fakePort.set).toHaveBeenCalled();
     expect(fakePort.write).toHaveBeenCalled();
   });
@@ -204,6 +221,7 @@ describe('SerialSendService', () => {
     expect(() => {
       service.sendDmxFrame();
     }).not.toThrow();
+    vi.advanceTimersByTime(1);
     expect(writeSpy).not.toHaveBeenCalled();
     service.port.set = originalSet;
     writeSpy.mockRestore();
@@ -282,6 +300,7 @@ describe('SerialSendService', () => {
   it('does not start the loop from the listener when the port is closed', () => {
     const { service, eventEmitter } = build();
     service.onModuleInit();
+    (global.setInterval as unknown as Mock).mockClear();
     service.port.isOpen = false;
     const listener = eventEmitter.on.mock.calls[0]?.[1] as (values: DmxValue[]) => void;
     listener([{ channel: 3, value: 200 }]);
@@ -327,6 +346,7 @@ describe('SerialSendService', () => {
     expect(() => {
       service.sendDmxFrame();
     }).not.toThrow();
+    vi.advanceTimersByTime(1);
     expect(fakePort.write).not.toHaveBeenCalled();
   });
 

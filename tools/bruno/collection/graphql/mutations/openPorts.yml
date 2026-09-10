@@ -5,7 +5,7 @@ info:
 
 graphql:
   method: POST
-  url: "{{backendUrl}}/graphql"
+  url: '{{backendUrl}}/graphql'
   auth: inherit
   body:
     query: |
@@ -15,26 +15,8 @@ graphql:
     variables: |
       {
         "openPortsDto": {
-          "inputPort": {
-            "literal": {
-              "kind": "IntValue",
-              "value": "1",
-              "loc": {
-                "start": 0,
-                "end": 1
-              }
-            }
-          },
-          "outputPort": {
-            "literal": {
-              "kind": "IntValue",
-              "value": "1",
-              "loc": {
-                "start": 0,
-                "end": 1
-              }
-            }
-          }
+          "inputPort": 1,
+          "outputPort": 1
         }
       }
 

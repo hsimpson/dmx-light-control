@@ -34,7 +34,8 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run backend:drizzle-generate -- --name <name>` | Generate a migration (required snake_case `--name`; never omit it) |
 | `nx run backend:erd`                               | Write Mermaid ER diagram to `apps/backend/docs/database-schema.md` |
 | `nx run backend:dmx-sniffer`                       | DMX USB sniffer CLI (Linux-only)                                   |
-| `nx run bruno:build`                               | Rebuild Bruno API collection                                       |
+| `nx run bruno:build`                               | Rebuild Bruno API collection (needs backend on `BACKEND_PORT`)     |
+| `nx test bruno`                                    | Bruno collection generator unit tests                              |
 | `nx run backend:drizzle-migrate`                   | Run migrations                                                     |
 | `nx run backend:drizzle-studio`                    | Open Drizzle Studio                                                |
 | `nx run frontend:graphql-codegen`                  | Generate GraphQL types (needs a reachable schema URL)              |
@@ -88,7 +89,7 @@ Harness maintenance is part of **done**, not optional docs.
 ### Backend (`apps/backend/src/`)
 
 - NestJS + Apollo GraphQL on Fastify (`autoSchemaFile: true`)
-- Domain modules: `FixturesModule`, `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` is imported by `DmxModule`. `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
+- Domain modules: `FixturesModule`, `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` exists under `io/usb/` but is not imported (live DMX output is `SerialSendService` on the FTDI UART, not WebUSB). `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
 - Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). Import/export is Resolver → `FixtureImportExportService` / `ProjectImportExportService` (`InjectDb()` + repositories + transactions). IO resolvers may emit events or call services without repositories.
 - Tests: Vitest unit/integration (`src/**/*.spec.ts`); e2e in `src/e2e-tests/` (GraphQL, REST fixture assets, DMX/MIDI IO); Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
 - Repositories use `InjectDb()` for typed Drizzle connection

@@ -10,19 +10,18 @@ export class SerialSendService implements OnModuleInit, OnModuleDestroy {
   private port: SerialPort | null = null;
   private dmxFrame = new Uint8Array(513); // Index 0 = Start Code (0x00), 1-512 = Channels
   private isSending = false;
+  private frameInFlight = false;
   private intervalId: NodeJS.Timeout | null = null;
 
   // Configuration constants
   private readonly REFRESH_RATE_MS = 33; // ~30 Hz refresh rate
+  /** DMX break must be ≥88µs; back-to-back termios ioctls are far shorter. */
+  private readonly BREAK_DURATION_MS = 1;
   // REVIEW: hardcoded for now, consider making this user-configurable or auto-detectable in the future
   private readonly SERIAL_PATH = '/dev/ttyUSB0'; // Default FTDI location on Ubuntu
 
   public constructor(private readonly eventEmitter: AppEventEmitter) {
     this.dmxFrame.fill(0); // Initialize everything to 0, including the start code at index 0
-
-    // REVIEW: hardcoded for ADJ Mega TriPar Profile Plus to set the shutter/strob channel 5 to 32 (full open) for testing
-    this.dmxFrame[5] = 32;
-    this.dmxFrame[14] = 32;
   }
 
   public onModuleInit(): void {
@@ -95,6 +94,7 @@ export class SerialSendService implements OnModuleInit, OnModuleDestroy {
       }
 
       this.logger.log(`Successfully claimed FTDI Serial Port on ${this.SERIAL_PATH}!`);
+      this.startSendingLoop();
     });
 
     this.port.on('error', err => {
@@ -129,18 +129,22 @@ export class SerialSendService implements OnModuleInit, OnModuleDestroy {
    * Orchestrates the strict DMX framing sequence: BREAK -> MAB -> DATA
    */
   private sendDmxFrame(): void {
-    if (!this.port?.isOpen) return;
+    if (!this.port?.isOpen || this.frameInFlight) return;
 
-    // 1. Drop the line into a BREAK state (pull low)
+    this.frameInFlight = true;
+
+    // 1. Drop the line into a BREAK state (pull low) for at least 88µs
     this.port.set({ brk: true }, err => {
-      if (err) return;
+      if (err) {
+        this.frameInFlight = false;
+        return;
+      }
 
-      // 2. Instantly lift the BREAK state (pull high)
-      // The physical latency of executing these two commands back-to-back
-      // at the system level typically yields an excellent ~100-200 microsecond break.
-      this.port?.set({ brk: false }, err1 => {
-        this.flushFrame(err1);
-      });
+      setTimeout(() => {
+        this.port?.set({ brk: false }, err1 => {
+          this.flushFrame(err1);
+        });
+      }, this.BREAK_DURATION_MS);
     });
   }
 
@@ -150,12 +154,18 @@ export class SerialSendService implements OnModuleInit, OnModuleDestroy {
    */
   private flushFrame(err1: Error | null): void {
     if (err1) {
+      this.frameInFlight = false;
       this.logger.error(`Error releasing BREAK state: ${err1.message}`);
       return;
     }
 
-    // 3. Immediately dump the entire buffer
-    this.port?.write(Buffer.from(this.dmxFrame.buffer), err2 => {
+    if (!this.port) {
+      this.frameInFlight = false;
+      return;
+    }
+
+    this.port.write(Buffer.from(this.dmxFrame), err2 => {
+      this.frameInFlight = false;
       if (err2) {
         this.logger.error(`Error flushing payload: ${err2.message}`);
       }

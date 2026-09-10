@@ -79,7 +79,7 @@ export class DmxSnifferService {
             const frame = dmxBuffer.subarray(0, 513);
             dmxBuffer = dmxBuffer.subarray(513);
 
-            let message = '';
+            let message = '\n';
             message += `Ch 001-064: ${[...frame.subarray(1, 65)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
             message += `Ch 065-128: ${[...frame.subarray(65, 129)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
             message += `Ch 129-192: ${[...frame.subarray(129, 193)].map(b => b.toString(16).padStart(2, '0')).join(' ')}\n`;
