@@ -3,6 +3,17 @@ const { join } = require('node:path');
 
 const isDevMode = process.env.NODE_ENV !== 'production';
 
+// In watch mode, CopyRspackPlugin watches `assets`. Writing uploaded fixture files
+// under src/assets/fixtures/<vendor>/<fixture>/ would otherwise rebuild and kill Nest,
+// so GraphQL (e.g. updateFixture) fails with "Failed to fetch". Fastify already serves
+// src/assets directly during `nx serve`. Production still copies the full tree into dist.
+const assetCopyPatterns = isDevMode
+  ? [
+      { glob: '3d/**/*', input: './src/assets', output: 'assets' },
+      { glob: 'fixtures/_defaults/**/*', input: './src/assets', output: 'assets' },
+    ]
+  : ['./src/assets'];
+
 /** @type {import('@rspack/core').Configuration} */
 module.exports = {
   output: {
@@ -19,7 +30,7 @@ module.exports = {
       compiler: 'tsc',
       main: './src/main.ts',
       tsConfig: './tsconfig.app.json',
-      assets: ['./src/assets'],
+      assets: assetCopyPatterns,
       optimization: false,
       outputHashing: 'none',
       generatePackageJson: true,
