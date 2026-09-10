@@ -11,7 +11,9 @@ test.describe('fixture detail', () => {
     await page.getByRole('cell', { name: mockedFixture.name }).click();
 
     await expect(page).toHaveURL(new RegExp(`/de/fixture/${mockedFixture.publicId}/general$`));
-    await expect(page.getByRole('heading', { name: 'Fixture bearbeiten' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: `${mockedFixture.fixtureVendor.name} / ${mockedFixture.name}` }),
+    ).toBeVisible();
     await expect(page.getByRole('tab', { name: 'Allgemein' })).toHaveAttribute('aria-selected', 'true');
   });
 
@@ -46,7 +48,19 @@ test.describe('fixture detail', () => {
     await page.goto(`/de/fixture/${mockedFixture.publicId}/properties`);
 
     await expect(page.getByRole('tab', { name: 'Eigenschaften' })).toHaveAttribute('aria-selected', 'true');
+    await expect(
+      page.getByRole('heading', { name: `${mockedFixture.fixtureVendor.name} / ${mockedFixture.name}` }),
+    ).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Abmessungen' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Assets' })).toBeVisible();
+  });
+
+  test('shows the general tab when adding a fixture', async ({ page }) => {
+    await page.goto('/de/fixture/new');
+
+    await expect(page).toHaveURL(/\/de\/fixture\/new\/general$/);
+    await expect(page.getByRole('heading', { name: 'Fixture hinzufügen' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Allgemein' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tab', { name: 'Eigenschaften' })).toBeVisible();
   });
 });

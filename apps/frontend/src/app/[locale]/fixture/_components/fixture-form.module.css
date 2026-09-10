@@ -1,11 +1,20 @@
-.root {
+.form {
   display: flex;
   flex: 1 1 0%;
   flex-direction: column;
   min-height: 0;
 }
 
-.propertiesPanel {
+.body {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  gap: var(--mantine-spacing-lg);
+  margin-top: var(--mantine-spacing-lg);
+  min-height: 0;
+}
+
+.tabsHost {
   display: flex;
   flex: 1 1 0%;
   flex-direction: column;
@@ -13,10 +22,6 @@
   overflow: hidden;
 }
 
-.root :global(.mantine-Tabs-panel[data-active]) {
-  display: flex !important;
-  flex: 1 1 0%;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
+.saveButton {
+  flex-shrink: 0;
 }

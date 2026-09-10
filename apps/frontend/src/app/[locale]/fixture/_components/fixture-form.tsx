@@ -9,7 +9,7 @@ import {
   UpdateFixtureDocument,
 } from '@/shared/types/graphql/graphql';
 import { useMutation } from '@apollo/client/react';
-import { Button, Combobox, Flex, InputBase, TextInput, useCombobox } from '@mantine/core';
+import { Button, Combobox, Flex, InputBase, TextInput, Title, useCombobox } from '@mantine/core';
 import { schemaResolver, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { useRouter } from 'next/navigation';
@@ -26,14 +26,32 @@ import FixtureChannelModes, {
   toEditorChannelModes,
 } from './fixture-channel-modes';
 import FixtureDetailTabs from './fixture-detail-tabs';
+import { NEW_FIXTURE_PATH_ID } from './fixture-detail-tabs.constants';
 import FixtureProperties, { type FixturePropertiesValues } from './fixture-properties';
+import formClasses from './fixture-form.module.css';
 
 type Fixture = GetFixturesQuery['fixtures'][number];
 
 type FixtureFormProps = {
   fixture?: Fixture;
   vendors: GetFixtureVendorsQuery['fixtureVendors'];
-  showTabs?: boolean;
+};
+
+const formatFixtureHeaderTitle = (vendor: string, fixtureName: string): string | null => {
+  const vendorLabel = vendor.trim();
+  const fixtureNameLabel = fixtureName.trim();
+
+  if (vendorLabel && fixtureNameLabel) {
+    return `${vendorLabel} / ${fixtureNameLabel}`;
+  }
+  if (vendorLabel) {
+    return vendorLabel;
+  }
+  if (fixtureNameLabel) {
+    return fixtureNameLabel;
+  }
+
+  return null;
 };
 
 const syncChannelModesWithDefinitions = (
@@ -58,7 +76,7 @@ const syncChannelModesWithDefinitions = (
     }),
   }));
 
-const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) => {
+const FixtureForm = ({ fixture, vendors }: FixtureFormProps) => {
   const { t } = useTranslation();
   const router = useRouter();
   const [updateFixture, { loading: isUpdating }] = useMutation(UpdateFixtureDocument);
@@ -317,12 +335,19 @@ const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) =
     />
   );
 
+  const headerTitle =
+    formatFixtureHeaderTitle(comboBoxValue ?? comboBoxSearch, form.values.fixtureName) ??
+    (fixture
+      ? t({ id: 'EditFixturePage.title', defaultMessage: 'Edit Fixture' })
+      : t({ id: 'AddFixturePage.title', defaultMessage: 'Add Fixture' }));
+
   return (
-    <form onSubmit={form.onSubmit(onSubmit)}>
-      <Flex direction="column" gap="lg" mt="lg">
-        {showTabs && fixture ? (
+    <form onSubmit={form.onSubmit(onSubmit)} className={formClasses.form}>
+      <div className={formClasses.body}>
+        <Title order={1}>{headerTitle}</Title>
+        <div className={formClasses.tabsHost}>
           <FixtureDetailTabs
-            fixturePublicId={fixture.publicId}
+            fixturePublicId={fixture?.publicId ?? NEW_FIXTURE_PATH_ID}
             general={
               <Flex direction="column" gap="lg">
                 {generalFields}
@@ -330,7 +355,7 @@ const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) =
             }
             properties={
               <FixtureProperties
-                fixturePublicId={fixture.publicId}
+                fixturePublicId={fixture?.publicId}
                 values={properties}
                 onDimensionsChange={next => {
                   setProperties(current => ({ ...current, ...next }));
@@ -351,24 +376,19 @@ const FixtureForm = ({ fixture, vendors, showTabs = false }: FixtureFormProps) =
             channels={channelDefinitionsFields}
             channelModes={channelModesFields}
           />
-        ) : (
-          <>
-            {generalFields}
-            {channelDefinitionsFields}
-            {channelModesFields}
-          </>
-        )}
+        </div>
 
         <Button
           type="submit"
           mt="sm"
           w="fit-content"
+          className={formClasses.saveButton}
           style={{ alignSelf: 'flex-end' }}
           disabled={isUpdating || isCreating}
         >
           {t(globalMessages.save)}
         </Button>
-      </Flex>
+      </div>
     </form>
   );
 };

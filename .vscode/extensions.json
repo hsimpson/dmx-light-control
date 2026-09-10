@@ -1,11 +1,13 @@
 {
   "recommendations": [
     "bruno-api-client.bruno",
+    "cesium.gltf-vscode",
     "davidanson.vscode-markdownlint",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "irongeek.vscode-env",
     "lokalise.i18n-ally",
+    "ohziinteractivestudio.ohzi-vscode-glb-viewer",
     "vunguyentuan.vscode-css-variables",
     "vunguyentuan.vscode-postcss"
   ]

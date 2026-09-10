@@ -1,0 +1,50 @@
+.root {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  gap: var(--mantine-spacing-lg);
+  min-height: 0;
+}
+
+.dimensions {
+  flex-shrink: 0;
+}
+
+.assets {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  gap: var(--mantine-spacing-md);
+  min-height: 0;
+}
+
+.imageRow {
+  flex-shrink: 0;
+}
+
+.modelRow {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-height: 240px;
+  min-width: 0;
+}
+
+.modelPreview {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.assetRowFill {
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+.assetRowBodyFill {
+  align-items: stretch;
+  flex: 1 1 0%;
+  min-height: 0;
+}

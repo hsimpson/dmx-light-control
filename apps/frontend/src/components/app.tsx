@@ -16,6 +16,7 @@ const App = ({ children }: AppProperties) => {
   return (
     <AppShell
       padding="md"
+      styles={{ root: { minHeight: '100dvh' } }}
       header={{ height: 60 }}
       navbar={{
         width: 250,
@@ -33,7 +34,7 @@ const App = ({ children }: AppProperties) => {
         <NavBar />
       </AppShell.Navbar>
 
-      <AppShell.Main display="flex" style={{ flexDirection: 'column' }}>
+      <AppShell.Main display="flex" style={{ flex: 1, flexDirection: 'column', minHeight: 0 }}>
         {children}
       </AppShell.Main>
     </AppShell>

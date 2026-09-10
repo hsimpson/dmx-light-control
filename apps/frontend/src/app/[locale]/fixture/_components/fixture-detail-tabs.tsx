@@ -63,7 +63,7 @@ const FixtureDetailTabs = ({
         {general}
       </Tabs.Panel>
 
-      <Tabs.Panel value="properties" pt="md">
+      <Tabs.Panel value="properties" pt="md" className={classes.propertiesPanel}>
         {properties}
       </Tabs.Panel>
 
