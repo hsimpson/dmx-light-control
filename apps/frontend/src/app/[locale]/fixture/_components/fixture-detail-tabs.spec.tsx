@@ -80,4 +80,51 @@ describe('FixtureDetailTabs', () => {
 
     expect(screen.getByTestId('channels-panel')).toBeInTheDocument();
   });
+
+  it('shows the properties panel when the route tab is properties', () => {
+    mockUseParams.mockReturnValue({ tab: 'properties' });
+
+    renderWithProviders(
+      <FixtureDetailTabs
+        fixturePublicId="fix-1"
+        general={<div data-testid="general-panel" />}
+        properties={<div data-testid="properties-panel" />}
+        channels={<div data-testid="channels-panel" />}
+        channelModes={<div data-testid="channel-modes-panel" />}
+      />,
+    );
+
+    expect(screen.getByTestId('properties-panel')).toBeInTheDocument();
+  });
+
+  it('shows the channel modes panel when the route tab is channel-modes', () => {
+    mockUseParams.mockReturnValue({ tab: 'channel-modes' });
+
+    renderWithProviders(
+      <FixtureDetailTabs
+        fixturePublicId="fix-1"
+        general={<div data-testid="general-panel" />}
+        properties={<div data-testid="properties-panel" />}
+        channels={<div data-testid="channels-panel" />}
+        channelModes={<div data-testid="channel-modes-panel" />}
+      />,
+    );
+
+    expect(screen.getByTestId('channel-modes-panel')).toBeInTheDocument();
+  });
+
+  it('navigates to channel modes when that tab is selected', async () => {
+    const { user } = renderWithProviders(
+      <FixtureDetailTabs
+        fixturePublicId="fix-1"
+        general={<div data-testid="general-panel" />}
+        properties={<div data-testid="properties-panel" />}
+        channels={<div data-testid="channels-panel" />}
+        channelModes={<div data-testid="channel-modes-panel" />}
+      />,
+    );
+
+    await user.click(screen.getByRole('tab', { name: 'Channel modes' }));
+    expect(push).toHaveBeenCalledWith('/fixture/fix-1/channel-modes');
+  });
 });

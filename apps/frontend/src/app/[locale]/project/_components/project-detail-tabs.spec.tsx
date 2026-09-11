@@ -44,6 +44,9 @@ describe('ProjectDetailTabs', () => {
   it('navigates via URL when a different tab is selected', async () => {
     const { user } = renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
 
+    await user.click(screen.getByRole('tab', { name: 'Universe View' }));
+    expect(push).toHaveBeenCalledWith('/project/proj-1/universe');
+
     await user.click(screen.getByRole('tab', { name: '3D View' }));
 
     expect(push).toHaveBeenCalledWith('/project/proj-1/3d');
@@ -63,5 +66,29 @@ describe('ProjectDetailTabs', () => {
     renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
 
     expect(screen.getByTestId('dmx-view')).toBeInTheDocument();
+  });
+
+  it('shows the universe view panel when the route tab is universe', () => {
+    mockUseParams.mockReturnValue({ tab: 'universe' });
+
+    renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
+
+    expect(screen.getByTestId('universe-view')).toBeInTheDocument();
+  });
+
+  it('shows the 2D view panel when the route tab is 2d', () => {
+    mockUseParams.mockReturnValue({ tab: '2d' });
+
+    renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
+
+    expect(screen.getByText('This view is not available yet.')).toBeInTheDocument();
+  });
+
+  it('falls back to fixtures for an unknown route tab', () => {
+    mockUseParams.mockReturnValue({ tab: 'unknown' });
+
+    renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
+
+    expect(screen.getByTestId('project-fixture-table')).toBeInTheDocument();
   });
 });

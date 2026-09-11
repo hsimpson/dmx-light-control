@@ -10,9 +10,16 @@ describe('channelCountFromAssignments', () => {
   it('uses the highest channel number as footprint', () => {
     expect(channelCountFromAssignments([{ channelNumber: 1 }, { channelNumber: 6 }])).toBe(6);
   });
+  it('returns zero for an empty assignment list', () => {
+    expect(channelCountFromAssignments([])).toBe(0);
+  });
 });
 
 describe('dmxRangesOverlap', () => {
+  it('returns false when either footprint is empty', () => {
+    expect(dmxRangesOverlap(1, 0, 1, 3)).toBe(false);
+    expect(dmxRangesOverlap(1, 3, 1, 0)).toBe(false);
+  });
   it('allows adjacent footprints', () => {
     expect(dmxRangesOverlap(1, 3, 4, 3)).toBe(false);
   });
@@ -63,5 +70,11 @@ describe('buildFixtureLabelPlacements', () => {
         columnSpan: 3,
       },
     ]);
+  });
+
+  it('skips fixtures that produce no grid segment', () => {
+    expect(
+      buildFixtureLabelPlacements([{ publicId: 'pf-1', startAddress: 1, fixture: { name: 'Empty' } }], () => 0),
+    ).toEqual([]);
   });
 });

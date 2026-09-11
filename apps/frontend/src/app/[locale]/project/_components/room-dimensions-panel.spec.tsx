@@ -56,4 +56,33 @@ describe('RoomDimensionsPanel', () => {
     await user.click(await screen.findByText('Room'));
     expect(onEnvironmentTypeChange).toHaveBeenCalledWith(ProjectEnvironmentType.Room);
   });
+
+  it('updates length and height', async () => {
+    const onLengthChange = vi.fn();
+    const onHeightChange = vi.fn();
+    const { user } = renderWithProviders(
+      <RoomDimensionsPanel
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        width={10}
+        length={8}
+        height={5}
+        saving={false}
+        onEnvironmentTypeChange={vi.fn()}
+        onWidthChange={vi.fn()}
+        onLengthChange={onLengthChange}
+        onHeightChange={onHeightChange}
+        onSave={vi.fn()}
+      />,
+    );
+
+    const lengthInput = screen.getByLabelText('Length');
+    await user.clear(lengthInput);
+    await user.type(lengthInput, '9');
+    expect(onLengthChange).toHaveBeenCalled();
+
+    const heightInput = screen.getByLabelText('Height');
+    await user.clear(heightInput);
+    await user.type(heightInput, '6');
+    expect(onHeightChange).toHaveBeenCalled();
+  });
 });

@@ -183,4 +183,347 @@ describe('SceneObjectsPanel', () => {
     await user.click(screen.getByLabelText('Clear selection', { selector: 'button', hidden: true }));
     expect(onSelectObject).toHaveBeenCalledWith(null);
   });
+
+  it('renames the selected object on blur', async () => {
+    const onNameChange = vi.fn();
+    const { user } = renderWithProviders(
+      <SceneObjectsPanel
+        types={[{ publicId: 'type-1', name: 'Box', isScalable: true }]}
+        objects={[
+          {
+            publicId: 'obj-1',
+            name: 'Box 1',
+            transform: identityTransform,
+            sizeX: 1,
+            sizeY: 1,
+            sizeZ: 1,
+            sceneObjectType: {
+              publicId: 'type-1',
+              name: 'Box',
+              geometryKind: SceneObjectGeometryKind.Box,
+              isScalable: true,
+            },
+          },
+        ]}
+        selectedTypePublicId="type-1"
+        selectedObjectPublicId="obj-1"
+        scaleGizmoEnabled={false}
+        adding={false}
+        onTypeChange={vi.fn()}
+        onAdd={vi.fn()}
+        onSelectObject={vi.fn()}
+        onDeleteObject={vi.fn()}
+        onScaleGizmoChange={vi.fn()}
+        onNameChange={onNameChange}
+        onPoseChange={vi.fn()}
+        onSizeChange={vi.fn()}
+      />,
+    );
+
+    const nameInput = screen.getByLabelText('Name');
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Stage Left');
+    await user.tab();
+
+    expect(onNameChange).toHaveBeenCalledWith('Stage Left');
+  });
+
+  it('updates rotation and deletes the selected object', async () => {
+    const onPoseChange = vi.fn();
+    const onDeleteObject = vi.fn();
+    const { user } = renderWithProviders(
+      <SceneObjectsPanel
+        types={[{ publicId: 'type-1', name: 'Box', isScalable: true }]}
+        objects={[
+          {
+            publicId: 'obj-1',
+            name: 'Box 1',
+            transform: identityTransform,
+            sizeX: 1,
+            sizeY: 1,
+            sizeZ: 1,
+            sceneObjectType: {
+              publicId: 'type-1',
+              name: 'Box',
+              geometryKind: SceneObjectGeometryKind.Box,
+              isScalable: true,
+            },
+          },
+        ]}
+        selectedTypePublicId="type-1"
+        selectedObjectPublicId="obj-1"
+        scaleGizmoEnabled={false}
+        adding={false}
+        onTypeChange={vi.fn()}
+        onAdd={vi.fn()}
+        onSelectObject={vi.fn()}
+        onDeleteObject={onDeleteObject}
+        onScaleGizmoChange={vi.fn()}
+        onNameChange={vi.fn()}
+        onPoseChange={onPoseChange}
+        onSizeChange={vi.fn()}
+      />,
+    );
+
+    const rotationY = screen.getByLabelText('Rotation Y');
+    await user.clear(rotationY);
+    await user.type(rotationY, '45');
+    expect(onPoseChange).toHaveBeenCalledWith(expect.objectContaining({ rotationY: 45 }));
+
+    const positionX = screen.getByLabelText('Position X');
+    await user.clear(positionX);
+    await user.type(positionX, '1.5');
+    expect(onPoseChange).toHaveBeenCalledWith(expect.objectContaining({ positionX: 1.5 }));
+
+    await user.click(screen.getByRole('button', { name: 'Delete' }));
+    expect(onDeleteObject).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows fixed-size hint for non-scalable objects', () => {
+    renderWithProviders(
+      <SceneObjectsPanel
+        types={[{ publicId: 'type-1', name: 'Light Stand', isScalable: false }]}
+        objects={[
+          {
+            publicId: 'obj-1',
+            name: 'Stand 1',
+            transform: identityTransform,
+            sizeX: null,
+            sizeY: null,
+            sizeZ: null,
+            sceneObjectType: {
+              publicId: 'type-1',
+              name: 'Light Stand',
+              geometryKind: SceneObjectGeometryKind.Gltf,
+              isScalable: false,
+            },
+          },
+        ]}
+        selectedTypePublicId="type-1"
+        selectedObjectPublicId="obj-1"
+        scaleGizmoEnabled={false}
+        adding={false}
+        onTypeChange={vi.fn()}
+        onAdd={vi.fn()}
+        onSelectObject={vi.fn()}
+        onDeleteObject={vi.fn()}
+        onScaleGizmoChange={vi.fn()}
+        onNameChange={vi.fn()}
+        onPoseChange={vi.fn()}
+        onSizeChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('This object has a fixed size.')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Width')).not.toBeInTheDocument();
+  });
+
+  it('does not rename when the name is unchanged', async () => {
+    const onNameChange = vi.fn();
+    const { user } = renderWithProviders(
+      <SceneObjectsPanel
+        types={[{ publicId: 'type-1', name: 'Box', isScalable: true }]}
+        objects={[
+          {
+            publicId: 'obj-1',
+            name: 'Box 1',
+            transform: identityTransform,
+            sizeX: 1,
+            sizeY: 1,
+            sizeZ: 1,
+            sceneObjectType: {
+              publicId: 'type-1',
+              name: 'Box',
+              geometryKind: SceneObjectGeometryKind.Box,
+              isScalable: true,
+            },
+          },
+        ]}
+        selectedTypePublicId="type-1"
+        selectedObjectPublicId="obj-1"
+        scaleGizmoEnabled={false}
+        adding={false}
+        onTypeChange={vi.fn()}
+        onAdd={vi.fn()}
+        onSelectObject={vi.fn()}
+        onDeleteObject={vi.fn()}
+        onScaleGizmoChange={vi.fn()}
+        onNameChange={onNameChange}
+        onPoseChange={vi.fn()}
+        onSizeChange={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByLabelText('Name'));
+    await user.keyboard('{Enter}');
+    expect(onNameChange).not.toHaveBeenCalled();
+  });
+
+  it('updates every pose axis for the selected object', async () => {
+    const onPoseChange = vi.fn();
+    const { user } = renderWithProviders(
+      <SceneObjectsPanel
+        types={[{ publicId: 'type-1', name: 'Box', isScalable: true }]}
+        objects={[
+          {
+            publicId: 'obj-1',
+            name: 'Box 1',
+            transform: identityTransform,
+            sizeX: 1,
+            sizeY: 1,
+            sizeZ: 1,
+            sceneObjectType: {
+              publicId: 'type-1',
+              name: 'Box',
+              geometryKind: SceneObjectGeometryKind.Box,
+              isScalable: true,
+            },
+          },
+        ]}
+        selectedTypePublicId="type-1"
+        selectedObjectPublicId="obj-1"
+        scaleGizmoEnabled={false}
+        adding={false}
+        onTypeChange={vi.fn()}
+        onAdd={vi.fn()}
+        onSelectObject={vi.fn()}
+        onDeleteObject={vi.fn()}
+        onScaleGizmoChange={vi.fn()}
+        onNameChange={vi.fn()}
+        onPoseChange={onPoseChange}
+        onSizeChange={vi.fn()}
+      />,
+    );
+
+    const axes: { label: string; axis: string; value: string }[] = [
+      { label: 'Position Y', axis: 'positionY', value: '2' },
+      { label: 'Position Z', axis: 'positionZ', value: '3' },
+      { label: 'Rotation X', axis: 'rotationX', value: '15' },
+      { label: 'Rotation Z', axis: 'rotationZ', value: '30' },
+    ];
+
+    for (const { label, axis, value } of axes) {
+      onPoseChange.mockClear();
+      const input = screen.getByLabelText(label);
+      await user.clear(input);
+      await user.type(input, value);
+      expect(onPoseChange).toHaveBeenCalledWith(expect.objectContaining({ [axis]: Number(value) }));
+    }
+  });
+
+  it('changes object type from the dropdown', async () => {
+    const onTypeChange = vi.fn();
+    const { user } = renderWithProviders(
+      <SceneObjectsPanel
+        types={[
+          { publicId: 'type-1', name: 'Box', isScalable: true },
+          { publicId: 'type-2', name: 'Stand', isScalable: false },
+        ]}
+        objects={[]}
+        selectedTypePublicId="type-1"
+        selectedObjectPublicId={null}
+        scaleGizmoEnabled={false}
+        adding={false}
+        onTypeChange={onTypeChange}
+        onAdd={vi.fn()}
+        onSelectObject={vi.fn()}
+        onDeleteObject={vi.fn()}
+        onScaleGizmoChange={vi.fn()}
+        onNameChange={vi.fn()}
+        onPoseChange={vi.fn()}
+        onSizeChange={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('combobox', { name: 'Object type' }));
+    await user.click(await screen.findByRole('option', { name: 'Stand', hidden: true }));
+    expect(onTypeChange).toHaveBeenCalledWith('type-2');
+  });
+
+  it('toggles the scale gizmo switch', async () => {
+    const onScaleGizmoChange = vi.fn();
+    const { user } = renderWithProviders(
+      <SceneObjectsPanel
+        types={[{ publicId: 'type-1', name: 'Box', isScalable: true }]}
+        objects={[
+          {
+            publicId: 'obj-1',
+            name: 'Box 1',
+            transform: identityTransform,
+            sizeX: 1,
+            sizeY: 1,
+            sizeZ: 1,
+            sceneObjectType: {
+              publicId: 'type-1',
+              name: 'Box',
+              geometryKind: SceneObjectGeometryKind.Box,
+              isScalable: true,
+            },
+          },
+        ]}
+        selectedTypePublicId="type-1"
+        selectedObjectPublicId="obj-1"
+        scaleGizmoEnabled={false}
+        adding={false}
+        onTypeChange={vi.fn()}
+        onAdd={vi.fn()}
+        onSelectObject={vi.fn()}
+        onDeleteObject={vi.fn()}
+        onScaleGizmoChange={onScaleGizmoChange}
+        onNameChange={vi.fn()}
+        onPoseChange={vi.fn()}
+        onSizeChange={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole('switch', { name: 'Scale' }));
+    expect(onScaleGizmoChange).toHaveBeenCalledWith(true);
+  });
+
+  it('updates length and height for a scalable object', async () => {
+    const onSizeChange = vi.fn();
+    const { user } = renderWithProviders(
+      <SceneObjectsPanel
+        types={[{ publicId: 'type-1', name: 'Box', isScalable: true }]}
+        objects={[
+          {
+            publicId: 'obj-1',
+            name: 'Box 1',
+            transform: identityTransform,
+            sizeX: 2,
+            sizeY: 1,
+            sizeZ: 3,
+            sceneObjectType: {
+              publicId: 'type-1',
+              name: 'Box',
+              geometryKind: SceneObjectGeometryKind.Box,
+              isScalable: true,
+            },
+          },
+        ]}
+        selectedTypePublicId="type-1"
+        selectedObjectPublicId="obj-1"
+        scaleGizmoEnabled={false}
+        adding={false}
+        onTypeChange={vi.fn()}
+        onAdd={vi.fn()}
+        onSelectObject={vi.fn()}
+        onDeleteObject={vi.fn()}
+        onScaleGizmoChange={vi.fn()}
+        onNameChange={vi.fn()}
+        onPoseChange={vi.fn()}
+        onSizeChange={onSizeChange}
+      />,
+    );
+
+    const lengthInput = screen.getByLabelText('Length');
+    await user.clear(lengthInput);
+    await user.type(lengthInput, '4');
+    expect(onSizeChange).toHaveBeenCalledWith('sizeZ', expect.any(Number));
+
+    const heightInput = screen.getByLabelText('Height');
+    await user.clear(heightInput);
+    await user.type(heightInput, '2');
+    expect(onSizeChange).toHaveBeenCalledWith('sizeY', expect.any(Number));
+  });
 });

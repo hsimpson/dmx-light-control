@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { DmxSocketConnector, resetDmxSocketConnector } from './dmx-socket-connector';
+import { DmxSocketConnector, getDmxWebsocketClient, resetDmxSocketConnector } from './dmx-socket-connector';
 
 class FakeWebSocket extends EventTarget {
   public static instances: FakeWebSocket[] = [];
@@ -39,6 +39,12 @@ describe('DmxSocketConnector', () => {
     vi.unstubAllEnvs();
   });
 
+  it('does not open a socket when the DMX URL is empty', () => {
+    vi.stubEnv('NEXT_PUBLIC_GRAPHQL_API_URL', '');
+    render(<DmxSocketConnector />);
+    expect(FakeWebSocket.instances).toHaveLength(0);
+  });
+
   it('does not abort the handshake on React Strict Mode remount', () => {
     const { unmount } = render(
       <StrictMode>
@@ -51,5 +57,28 @@ describe('DmxSocketConnector', () => {
     expect(FakeWebSocket.instances[0]?.url).toBe('ws://localhost:3000/dmx');
 
     unmount();
+  });
+
+  it('shares one socket across multiple connectors', () => {
+    const first = render(<DmxSocketConnector />);
+    const second = render(<DmxSocketConnector />);
+    expect(FakeWebSocket.instances).toHaveLength(1);
+    first.unmount();
+    second.unmount();
+  });
+
+  it('exposes the shared client while mounted', () => {
+    render(<DmxSocketConnector />);
+    expect(getDmxWebsocketClient()).toBeDefined();
+  });
+
+  it('disconnects after the last connector unmounts', () => {
+    vi.useFakeTimers();
+    const { unmount } = render(<DmxSocketConnector />);
+    expect(getDmxWebsocketClient()).toBeDefined();
+    unmount();
+    vi.advanceTimersByTime(100);
+    expect(getDmxWebsocketClient()).toBeUndefined();
+    vi.useRealTimers();
   });
 });

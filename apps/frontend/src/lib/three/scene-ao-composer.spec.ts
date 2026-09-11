@@ -138,4 +138,26 @@ describe('createSceneAoComposer', () => {
     const renderTarget = composerCtor.mock.calls[0]?.[1] as { samples: number; type: number } | undefined;
     expect(renderTarget?.samples).toBe(SCENE_COMPOSER_MSAA_SAMPLES);
   });
+
+  it('uses maxSamples from the renderer when available', () => {
+    const renderer = { capabilities: { maxSamples: 4 } } as WebGLRenderer;
+    const scene = new Scene();
+    const camera = new PerspectiveCamera();
+
+    createSceneAoComposer(renderer, scene, camera);
+
+    const renderTarget = composerCtor.mock.calls[0]?.[1] as { samples: number } | undefined;
+    expect(renderTarget?.samples).toBe(4);
+  });
+
+  it('falls back when maxSamples is missing', () => {
+    const renderer = { capabilities: { maxSamples: 0 } } as WebGLRenderer;
+    const scene = new Scene();
+    const camera = new PerspectiveCamera();
+
+    createSceneAoComposer(renderer, scene, camera);
+
+    const renderTarget = composerCtor.mock.calls[0]?.[1] as { samples: number } | undefined;
+    expect(renderTarget?.samples).toBe(SCENE_COMPOSER_MSAA_SAMPLES);
+  });
 });

@@ -89,4 +89,12 @@ describe('createAxisOrientationGizmo', () => {
       gizmo.dispose();
     }).not.toThrow();
   });
+
+  it('still builds when canvas text rendering is unavailable', () => {
+    const getContextSpy = vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+    expect(() => {
+      createAxisOrientationGizmo().dispose();
+    }).not.toThrow();
+    getContextSpy.mockRestore();
+  });
 });

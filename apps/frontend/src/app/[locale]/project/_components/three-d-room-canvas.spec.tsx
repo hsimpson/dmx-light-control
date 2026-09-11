@@ -642,4 +642,80 @@ describe('ThreeDRoomCanvas', () => {
     fireEvent.pointerUp(canvas, { clientX: 80, clientY: 60 });
     expect(onSelectObject).not.toHaveBeenCalled();
   });
+
+  it('attaches rotate and scale gizmos for the selected scalable object', () => {
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        objects={[
+          {
+            publicId: 'obj-1',
+            sizeX: 1,
+            sizeY: 1,
+            sizeZ: 1,
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            sceneObjectType: {
+              geometryKind: SceneObjectGeometryKind.Box,
+              modelPath: null,
+              isScalable: true,
+            },
+          },
+        ]}
+        selectedObjectPublicId="obj-1"
+        scaleGizmoEnabled
+        poseGizmoMode="rotate"
+      />,
+    );
+    expect(transformControlsConstruct).toHaveBeenCalled();
+  });
+
+  it('attaches translate gizmos when no object is selected', () => {
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        objects={[]}
+        selectedObjectPublicId={null}
+        poseGizmoMode="translate"
+      />,
+    );
+    expect(transformControlsConstruct).toHaveBeenCalled();
+  });
+
+  it('uses translate controls for the selected object by default', () => {
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        objects={[
+          {
+            publicId: 'obj-1',
+            sizeX: 1,
+            sizeY: 1,
+            sizeZ: 1,
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            sceneObjectType: {
+              geometryKind: SceneObjectGeometryKind.Box,
+              modelPath: null,
+              isScalable: true,
+            },
+          },
+        ]}
+        selectedObjectPublicId="obj-1"
+        scaleGizmoEnabled={false}
+        poseGizmoMode="translate"
+      />,
+    );
+    expect(transformControlsConstruct).toHaveBeenCalled();
+  });
 });

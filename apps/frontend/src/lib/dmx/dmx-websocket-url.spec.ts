@@ -6,4 +6,8 @@ describe('dmxWebSocketUrl', () => {
     expect(dmxWebSocketUrl('http://localhost:3000/graphql')).toBe('ws://localhost:3000/dmx');
     expect(dmxWebSocketUrl('https://example.test/graphql')).toBe('wss://example.test/dmx');
   });
+
+  it('returns an empty string when the GraphQL URL is missing', () => {
+    expect(dmxWebSocketUrl('')).toBe('');
+  });
 });

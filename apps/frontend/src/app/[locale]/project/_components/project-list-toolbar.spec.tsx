@@ -53,6 +53,25 @@ describe('ProjectListToolbar', () => {
     );
   });
 
+  it('shows an error notification when export returns no data', async () => {
+    const { user } = renderWithProviders(<ProjectListToolbar />, {
+      apolloMocks: [
+        {
+          request: { query: ExportProjectsDocument },
+          result: { data: null },
+        },
+      ],
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Export projects' }));
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({ color: 'red', message: 'Failed to export projects' }),
+      );
+    });
+  });
+
   it('shows an error notification when export fails', async () => {
     const { user } = renderWithProviders(<ProjectListToolbar />, {
       apolloMocks: [
@@ -119,6 +138,48 @@ describe('ProjectListToolbar', () => {
           color: 'red',
           message: 'Scene object type publicId missing for project "Test-001"',
         }),
+      );
+    });
+  });
+
+  it('shows an error notification when import fails with a generic error', async () => {
+    const importDocument = { schemaVersion: 1, projects: [] };
+    const { user } = renderWithProviders(<ProjectListToolbar />, {
+      apolloMocks: [
+        {
+          request: { query: ImportProjectsDocument, variables: { document: importDocument } },
+          error: new Error('network'),
+        },
+      ],
+    });
+
+    const file = new File([JSON.stringify(importDocument)], 'projects.json', { type: 'application/json' });
+    await user.upload(fileInput(), file);
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({ color: 'red', message: 'Failed to import projects' }),
+      );
+    });
+  });
+
+  it('falls back when a GraphQL import error has no message', async () => {
+    const importDocument = { schemaVersion: 1, projects: [] };
+    const { user } = renderWithProviders(<ProjectListToolbar />, {
+      apolloMocks: [
+        {
+          request: { query: ImportProjectsDocument, variables: { document: importDocument } },
+          error: new CombinedGraphQLErrors({ errors: [{}] }),
+        },
+      ],
+    });
+
+    const file = new File([JSON.stringify(importDocument)], 'projects.json', { type: 'application/json' });
+    await user.upload(fileInput(), file);
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({ color: 'red', message: 'Failed to import projects' }),
       );
     });
   });

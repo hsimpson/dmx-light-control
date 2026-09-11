@@ -21,15 +21,41 @@ vi.mock('mantine-datatable', () => ({
     records,
     columns,
     onRowClick,
+    sortStatus,
+    onSortStatusChange,
   }: {
     records: Record<string, unknown>[];
     columns: {
       accessor: string;
+      title?: string;
       render?: (record: Record<string, unknown>) => ReactNode;
     }[];
     onRowClick?: (payload: { record: Record<string, unknown> }) => void;
+    sortStatus?: { columnAccessor: string; direction: 'asc' | 'desc' };
+    onSortStatusChange?: (status: { columnAccessor: string; direction: 'asc' | 'desc' }) => void;
   }) => (
     <table>
+      <thead>
+        <tr>
+          {columns.map(column => (
+            <th key={column.accessor}>
+              {column.title ? (
+                <button
+                  type="button"
+                  aria-label={`Sort ${column.title}`}
+                  onClick={() => {
+                    const direction =
+                      sortStatus?.columnAccessor === column.accessor && sortStatus.direction === 'asc' ? 'desc' : 'asc';
+                    onSortStatusChange?.({ columnAccessor: column.accessor, direction });
+                  }}
+                >
+                  {column.title}
+                </button>
+              ) : null}
+            </th>
+          ))}
+        </tr>
+      </thead>
       <tbody>
         {records.map(record => (
           <tr
@@ -158,7 +184,7 @@ describe('FixtureTable', () => {
       ],
     });
 
-    const rows = await screen.findAllByRole('row');
+    const rows = (await screen.findAllByRole('row')).slice(1);
     const rowTexts = rows.map(row => row.textContent);
 
     expect(rowTexts[0]).toContain('Alpha Lights');
@@ -239,5 +265,80 @@ describe('FixtureTable', () => {
         }),
       );
     });
+  });
+
+  it('sorts fixtures by name and channel modes when those columns are selected', async () => {
+    const modeHeavy = {
+      ...fixture,
+      publicId: 'fix-mode',
+      name: 'Mode Heavy',
+      fixtureChannelModes: [
+        {
+          __typename: 'FixtureChannelModeDto',
+          publicId: 'mode-z',
+          name: 'Z Mode',
+          order: 1,
+          createdAt: now,
+          updatedAt: now,
+          fixtureChannelAssignments: [],
+        },
+        {
+          __typename: 'FixtureChannelModeDto',
+          publicId: 'mode-a',
+          name: 'A Mode',
+          order: 0,
+          createdAt: now,
+          updatedAt: now,
+          fixtureChannelAssignments: [],
+        },
+      ],
+    };
+    const older = {
+      ...fixture,
+      publicId: 'fix-old',
+      name: 'Alpha Fixture',
+      createdAt: new Date('2025-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2025-01-02T00:00:00.000Z'),
+    };
+    const newer = {
+      ...fixture,
+      publicId: 'fix-new',
+      name: 'Zulu Fixture',
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-02T00:00:00.000Z'),
+    };
+
+    const { user } = renderWithProviders(<FixtureTable />, {
+      apolloMocks: [
+        {
+          request: { query: GetFixturesDocument },
+          result: { data: { fixtures: [modeHeavy, newer, older] } },
+        },
+      ],
+    });
+
+    await screen.findByText('Mode Heavy');
+
+    await user.click(screen.getByRole('button', { name: 'Sort Name' }));
+    let rows = screen.getAllByRole('row').slice(1);
+    expect(rows[0]).toHaveTextContent('Alpha Fixture');
+    expect(rows[2]).toHaveTextContent('Zulu Fixture');
+
+    await user.click(screen.getByRole('button', { name: 'Sort Channel modes' }));
+    rows = screen.getAllByRole('row').slice(1);
+    expect(
+      rows.some(row => {
+        const text = row.textContent;
+        return text !== null && text.includes('A Mode, Z Mode');
+      }),
+    ).toBe(true);
+
+    await user.click(screen.getByRole('button', { name: 'Sort Created at' }));
+    rows = screen.getAllByRole('row').slice(1);
+    expect(rows[0]).toHaveTextContent('Alpha Fixture');
+
+    await user.click(screen.getByRole('button', { name: 'Sort Updated at' }));
+    rows = screen.getAllByRole('row').slice(1);
+    expect(rows[0]).toHaveTextContent('Alpha Fixture');
   });
 });
