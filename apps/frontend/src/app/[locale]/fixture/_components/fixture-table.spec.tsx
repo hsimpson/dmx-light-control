@@ -326,12 +326,7 @@ describe('FixtureTable', () => {
 
     await user.click(screen.getByRole('button', { name: 'Sort Channel modes' }));
     rows = screen.getAllByRole('row').slice(1);
-    expect(
-      rows.some(row => {
-        const text = row.textContent;
-        return text !== null && text.includes('A Mode, Z Mode');
-      }),
-    ).toBe(true);
+    expect(rows.some(row => row.textContent.includes('A Mode, Z Mode'))).toBe(true);
 
     await user.click(screen.getByRole('button', { name: 'Sort Created at' }));
     rows = screen.getAllByRole('row').slice(1);

@@ -1,5 +1,5 @@
 import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { FixturePresetIcon } from './fixture-preset-icon';
 
