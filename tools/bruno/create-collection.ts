@@ -2,7 +2,6 @@ import { loadSchema } from '@graphql-tools/load';
 import { UrlLoader } from '@graphql-tools/url-loader';
 import 'dotenv/config';
 import {
-  isInputObjectType,
   isListType,
   isNonNullType,
   isObjectType,
@@ -15,6 +14,7 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import waitOn from 'wait-on';
+import { buildVariables } from './graphql-default-variables';
 
 const port = process.env.BACKEND_PORT ?? '3000';
 const url = `http://localhost:${port}/graphql`;
@@ -89,34 +89,6 @@ function buildOperation(
     return `${operationType}${opArgs} {\n  ${fieldName}${fieldArgs} {\n${selectionSet}\n  }\n}`;
   }
   return `${operationType}${opArgs} {\n  ${fieldName}${fieldArgs}\n}`;
-}
-
-/**
- * Recursively build a default value for an input type by collecting the
- * default values declared on each of its fields.
- */
-function buildDefaultValue(type: GraphQLType): unknown {
-  if (isNonNullType(type)) {
-    return buildDefaultValue((type as { ofType: GraphQLType }).ofType);
-  }
-  if (isListType(type)) return [];
-  if (!isInputObjectType(type)) return null;
-
-  const obj: Record<string, unknown> = {};
-  for (const field of Object.values(type.getFields())) {
-    obj[field.name] = field.default ?? buildDefaultValue(field.type);
-  }
-  return obj;
-}
-
-/** Build a JSON variables object for all arguments, using defaults or null. */
-function buildVariables(field: GraphQLField<unknown, unknown>): string {
-  if (!field.args.length) return '{}';
-  const vars: Record<string, unknown> = {};
-  for (const arg of field.args) {
-    vars[arg.name] = arg.default ?? buildDefaultValue(arg.type);
-  }
-  return JSON.stringify(vars, null, 2);
 }
 
 /** Produce the full Bruno YAML content for a single request. */

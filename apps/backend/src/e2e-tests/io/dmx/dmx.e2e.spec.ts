@@ -1,3 +1,4 @@
+import { DmxUniverseService } from '@/io/dmx/dmx-universe.service';
 import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -40,5 +41,7 @@ describe('DMX E2E Tests', () => {
     });
 
     expect(body.data?.setChannelValues).toBe('DMX channel values set successfully');
+    expect(app.get(DmxUniverseService).getFrame()[1]).toBe(127);
+    expect(app.get(DmxUniverseService).getFrame()[5]).toBe(32);
   });
 });

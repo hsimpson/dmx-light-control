@@ -1,79 +1,22 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
-import { UsbDeviceService } from '@/io/usb/usb-device.service';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { DmxValue } from './types/dmx.types';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { DmxUniverseService } from './dmx-universe.service';
 
+/**
+ * Applies inbound channel updates (MIDI bridge) to the in-memory universe.
+ * Wire output is SerialSendService: FTDI Open DMX clones need UART 250k 8N2 + BREAK,
+ * not WebUSB bulk transfers.
+ */
 @Injectable()
 export class DmxSendService implements OnModuleInit {
-  // This service will handle the logic for sending DMX data frames to USB devices.
-  // It will be used by the DmxSendCommand to start the sender and process the data.
-
-  private readonly logger = new Logger(DmxSendService.name);
-  private dmxFrame = new Uint8Array(513); // DMX frame: start byte + 512 channel values
-  private _isSending = false;
-  private device?: USBDevice;
-
   public constructor(
-    private readonly usbDeviceService: UsbDeviceService,
     private readonly eventEmitter: AppEventEmitter,
-  ) {
-    this.dmxFrame.fill(0); // Initialize DMX frame with zeros
-  }
+    private readonly universe: DmxUniverseService,
+  ) {}
 
   public onModuleInit() {
     this.eventEmitter.on('dmx.channelValues', values => {
-      this.setChannelValues(values);
-
-      // If not already sending, start the sender
-      if (!this.isSending()) {
-        void this.startSending();
-      }
+      this.universe.apply(values);
     });
-  }
-
-  public isSending(): boolean {
-    return this._isSending;
-  }
-
-  public async startSending(): Promise<void> {
-    // REVIEW: device selection
-    this.device = await this.usbDeviceService.getDeviceBySerial('A50285BI');
-    this.logger.log(`Found device: ${this.device ? this.device.productName : 'None'}`);
-    this.sendDmxFrame();
-  }
-
-  public stopSending(): void {
-    this._isSending = false;
-  }
-
-  private setChannelValues(channelValues: DmxValue[]): void {
-    // Update the DMX frame with the provided channel values
-    this.logger.debug(`Setting DMX channel values: ${JSON.stringify(channelValues)}`);
-    for (const { channel, value } of channelValues) {
-      if (channel < 1 || channel > 512) {
-        this.logger.warn(`Invalid DMX channel: ${channel}. Must be between 1 and 512.`);
-        continue;
-      }
-      if (value < 0 || value > 255) {
-        this.logger.warn(`Invalid DMX value: ${value}. Must be between 0 and 255.`);
-        continue;
-      }
-      this.dmxFrame[channel] = value; // Channel numbers are 1-based, array is 0-based
-    }
-  }
-
-  private sendDmxFrame() {
-    if (!this.device) {
-      this.logger.error('No device found to send DMX data');
-      this._isSending = false;
-      return;
-    }
-    this._isSending = true;
-
-    setInterval(() => {
-      if (this._isSending && this.device) {
-        void this.usbDeviceService.send(this.device, this.dmxFrame.buffer);
-      }
-    }, 33); // ~30 Hz refresh rate (max)
   }
 }

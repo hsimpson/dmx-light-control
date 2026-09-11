@@ -1,5 +1,6 @@
 'use client';
 
+import { DmxSocketConnector } from '@/lib/dmx/dmx-socket-connector';
 import { AppShell, Burger } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { ReactNode } from 'react';
@@ -32,6 +33,7 @@ const App = ({ children }: AppProperties) => {
         collapsed: { mobile: !opened },
       }}
     >
+      <DmxSocketConnector />
       <AppShell.Header>
         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
 

@@ -1,5 +1,6 @@
 import { AppModule } from '@/app.module';
 import { registerHttpPlugins } from '@/http-plugins';
+import { DmxSendService } from '@/io/dmx/dmx-send.service';
 import { MidiService } from '@/io/midi/midi.service';
 import { SerialSendService } from '@/io/serial/serial-send.service';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -19,6 +20,10 @@ export async function createE2eApp(options: CreateE2eAppOptions = {}): Promise<N
     .useValue({
       onModuleInit: () => undefined,
       onModuleDestroy: () => undefined,
+    })
+    .overrideProvider(DmxSendService)
+    .useValue({
+      onModuleInit: () => undefined,
     })
     .overrideProvider(MidiService)
     .useValue(

@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest';
+import { resetDmxStore } from '@/lib/dmx/dmx-store';
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 
@@ -42,4 +43,5 @@ Object.defineProperty(window, 'matchMedia', {
 
 afterEach(() => {
   cleanup();
+  resetDmxStore();
 });

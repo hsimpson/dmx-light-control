@@ -57,6 +57,33 @@ describe('UsbDeviceService', () => {
     expect(await svc.getDeviceBySerial('A')).toBeUndefined();
   });
 
+  it('send serializes overlapping calls so opened is not read during a native transfer', async () => {
+    const nativeBusy = new Error('The same native value cannot be borrowed mutably while another borrow is active');
+    let transferInFlight = false;
+    const opened = true;
+    const transferOut = vi.fn().mockImplementation(async () => {
+      transferInFlight = true;
+      await new Promise<void>(resolve => {
+        setTimeout(() => {
+          transferInFlight = false;
+          resolve();
+        }, 30);
+      });
+    });
+    const device = {
+      get opened() {
+        if (transferInFlight) {
+          throw nativeBusy;
+        }
+        return opened;
+      },
+      transferOut,
+    } as unknown as USBDevice;
+    const svc = build();
+    await Promise.all([svc.send(device, new ArrayBuffer(8)), svc.send(device, new ArrayBuffer(8))]);
+    expect(transferOut).toHaveBeenCalledTimes(2);
+  });
+
   it('send transfers out when already opened', async () => {
     const transferOut = vi.fn().mockResolvedValue(undefined);
     const device = {

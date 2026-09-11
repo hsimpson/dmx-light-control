@@ -6,6 +6,7 @@ import { AppEventEmitter } from './events/app-event-emitter';
 import { FixtureImportExportService } from './fixtures/fixture-import-export.service';
 import { FixtureResolver } from './fixtures/fixture.resolver';
 import { FixtureService } from './fixtures/fixture.service';
+import { DmxUniverseService } from './io/dmx/dmx-universe.service';
 import { DmxResolver } from './io/dmx/dmx.resolver';
 import { MidiResolver } from './io/midi/midi.resolver';
 import { MidiService } from './io/midi/midi.service';
@@ -27,6 +28,7 @@ describe('GraphQL schema generation', () => {
         { provide: ProjectService, useValue: {} },
         { provide: ProjectImportExportService, useValue: {} },
         { provide: AppEventEmitter, useValue: {} },
+        { provide: DmxUniverseService, useValue: {} },
         { provide: MidiService, useValue: {} },
       ],
     }).compile();

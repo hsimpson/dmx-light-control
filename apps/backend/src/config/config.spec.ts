@@ -28,6 +28,16 @@ describe('config', () => {
     });
   });
 
+  it('omits serialPath when DMX_SERIAL_PATH is unset', () => {
+    delete process.env.DMX_SERIAL_PATH;
+    expect(loadConfig().serialPath).toBeUndefined();
+  });
+
+  it('trims DMX_SERIAL_PATH into serialPath', () => {
+    process.env.DMX_SERIAL_PATH = ' /dev/cu.usbserial-A ';
+    expect(loadConfig().serialPath).toBe('/dev/cu.usbserial-A');
+  });
+
   it('throws when an env variable is missing', () => {
     delete process.env.BACKEND_PORT;
     expect(() => loadConfig()).toThrow('Environment variable BACKEND_PORT is not defined');

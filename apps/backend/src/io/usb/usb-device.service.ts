@@ -6,6 +6,8 @@ export class UsbDeviceService {
   private readonly logger = new Logger(UsbDeviceService.name);
 
   private readonly customWebUSB: WebUSB;
+  /** node-usb napi wrappers panic if `.opened` / transfer overlap; serialize per device. */
+  private readonly sendChains = new WeakMap<USBDevice, Promise<void>>();
 
   public constructor() {
     this.customWebUSB = new WebUSB({
@@ -36,7 +38,19 @@ export class UsbDeviceService {
   }
 
   public async send(device: USBDevice, data: ArrayBuffer): Promise<void> {
-    // This method should implement the logic to send data to the USB device.
+    const previous = this.sendChains.get(device) ?? Promise.resolve();
+    const run = previous.then(async () => this.transfer(device, data));
+    this.sendChains.set(
+      device,
+      run.then(
+        () => undefined,
+        () => undefined,
+      ),
+    );
+    return run;
+  }
+
+  private async transfer(device: USBDevice, data: ArrayBuffer): Promise<void> {
     if (!device.opened) {
       await this.openDevice(device);
     }

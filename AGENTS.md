@@ -34,7 +34,8 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run backend:drizzle-generate -- --name <name>` | Generate a migration (required snake_case `--name`; never omit it) |
 | `nx run backend:erd`                               | Write Mermaid ER diagram to `apps/backend/docs/database-schema.md` |
 | `nx run backend:dmx-sniffer`                       | DMX USB sniffer CLI (Linux-only)                                   |
-| `nx run bruno:build`                               | Rebuild Bruno API collection                                       |
+| `nx run bruno:build`                               | Rebuild Bruno API collection (needs backend on `BACKEND_PORT`)     |
+| `nx test bruno`                                    | Bruno collection generator unit tests                              |
 | `nx run backend:drizzle-migrate`                   | Run migrations                                                     |
 | `nx run backend:drizzle-studio`                    | Open Drizzle Studio                                                |
 | `nx run frontend:graphql-codegen`                  | Generate GraphQL types (needs a reachable schema URL)              |
@@ -43,7 +44,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 
 **Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.21.0. **pnpm:** ^12.4.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
-**Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; GraphQL stack-trace stripping and Rspack asset-copy mode), `BACKEND_PORT` (required; HTTP; GraphQL at `/graphql`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Optional `FIXTURE_ASSETS_ROOT` overrides the fixture-asset disk root (used in tests; not in `.env.example`). Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL`. Nest `ConfigModule` loads workspace-root `.env`. Drizzle-kit targets run with cwd `apps/backend` and `dotenv/config` (so `apps/backend/.env` or already-exported vars). Infra compose uses `--env-file ../.env`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (`postgres:18.4`, same image as `infra/docker-compose.yml`).
+**Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; GraphQL stack-trace stripping and Rspack asset-copy mode), `BACKEND_PORT` (required; HTTP; GraphQL at `/graphql`; live DMX WebSocket at `/dmx`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Optional `DMX_SERIAL_PATH` (FTDI UART device; when unset, SerialSendService auto-detects FT232R, else Linux `/dev/ttyUSB0`). Optional `FIXTURE_ASSETS_ROOT` overrides the fixture-asset disk root (used in tests; not in `.env.example`). Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL` (the DMX socket URL is derived: HTTP GraphQL origin → `ws`/`wss` + `/dmx`). Nest `ConfigModule` loads workspace-root `.env`. Drizzle-kit targets run with cwd `apps/backend` and `dotenv/config` (so `apps/backend/.env` or already-exported vars). Infra compose uses `--env-file ../.env`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (`postgres:18.4`, same image as `infra/docker-compose.yml`).
 
 ## Done means
 
@@ -88,7 +89,7 @@ Harness maintenance is part of **done**, not optional docs.
 ### Backend (`apps/backend/src/`)
 
 - NestJS + Apollo GraphQL on Fastify (`autoSchemaFile: true`)
-- Domain modules: `FixturesModule`, `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` is imported by `DmxModule`. `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
+- Domain modules: `FixturesModule`, `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` exists under `io/usb/` but is not imported (live DMX output is `SerialSendService` on the FTDI UART, not WebUSB). `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
 - Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). Import/export is Resolver → `FixtureImportExportService` / `ProjectImportExportService` (`InjectDb()` + repositories + transactions). IO resolvers may emit events or call services without repositories.
 - Tests: Vitest unit/integration (`src/**/*.spec.ts`); e2e in `src/e2e-tests/` (GraphQL, REST fixture assets, DMX/MIDI IO); Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
 - Repositories use `InjectDb()` for typed Drizzle connection
@@ -99,7 +100,7 @@ Harness maintenance is part of **done**, not optional docs.
 - Static files: Fastify serves `apps/backend/src/assets` at `/assets/` when that directory exists (`nx serve`), otherwise Rspack-copied `dist/.../assets`. 3D models live under `apps/backend/src/assets/3d/` (e.g. `room.gltf`, `light_stand.glb`). Fixture catalog assets live under `apps/backend/src/assets/fixtures/$VENDOR/$FIXTURE_NAME` with generic defaults in `_defaults/` (`model.glb`, `picture.webp`, `picture-2d.svg`).
 - Fixture asset uploads: REST multipart `POST/DELETE /fixtures/:publicId/assets/:kind` (`picture` \| `picture2d` \| `model3d`); GraphQL stores relative `/assets/...` paths and dimensions (`weight` kg, `width`/`length`/`height` in meters).
 - Blender sources (`blender/`) are the authoring files; runtime GLB/GLTF under `apps/backend/src/assets/` is what the app serves. After editing a `.blend`, re-export the matching runtime file (do not leave the GLB stale). Mapping: `blender/fixtures/_defaults/led_par_can.blend` → `apps/backend/src/assets/fixtures/_defaults/model.glb`; `blender/rig/light_stand.blend` → `apps/backend/src/assets/3d/light_stand.glb`. Fixture models must face **+X**: the beam / throw axis and the front (lenses) point along world +X in Blender (identity in the app; do not compensate in loaders). Export with the Cursor Blender MCP (`uvx blender-mcp` in `.cursor/mcp.json`): open the source `.blend` if needed (`bpy.ops.wm.open_mainfile`), then `bpy.ops.export_scene.gltf(filepath=<runtime glb>, export_format='GLB', use_visible=True, export_cameras=False, export_lights=False, export_apply=True)`.
-- IO layer: `io/dmx/`, `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
+- IO layer: `io/dmx/` (GraphQL `setChannelValues` plus Fastify WebSocket `/dmx` for the live 512-channel universe), `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
 
 ### Domain module structure (e.g. `fixtures/`, `projects/`)
 
@@ -184,7 +185,7 @@ fixtures/
 
 - Frontend: Vitest colocated `*.spec.ts` / `*.spec.tsx`; Playwright e2e in `apps/frontend/e2e/*.e2e.spec.ts` (mocked GraphQL). Install Chromium once with `pnpm exec playwright install chromium`. Backend Vitest e2e lives in `src/e2e-tests/`
 - `nx dev frontend` runs `next dev` (Next 16 default Turbopack) on port 3001.
-- `REVIEW` comments mark incomplete implementations (hardcoded serial path in `SerialSendService`, ValidationPipe `disableErrorMessages` in `main.ts`)
+- `REVIEW` comments mark incomplete implementations (ValidationPipe `disableErrorMessages` in `main.ts`)
 - IO layer is Linux-focused (`/dev/usbmon`, serial ports)
 - Production hides stack traces from GraphQL errors
 - `BaseDomainError` → `GlobalGqlExceptionFilter` maps to GraphQL errors with `code` + `http.status` extension

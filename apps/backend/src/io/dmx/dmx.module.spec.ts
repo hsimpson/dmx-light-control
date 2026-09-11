@@ -5,6 +5,9 @@ import { DmxSnifferCommand } from './dmx-sniffer.command';
 import { DmxSnifferService } from './dmx-sniffer.service';
 import { DmxModule } from './dmx.module';
 import { DmxResolver } from './dmx.resolver';
+import { DmxSendService } from './dmx-send.service';
+import { DmxUniverseService } from './dmx-universe.service';
+import { DmxWebsocketService } from './dmx-websocket.service';
 
 describe('DmxModule', () => {
   it('is an NgModule providing the dmx domain classes', () => {
@@ -15,6 +18,9 @@ describe('DmxModule', () => {
     expect(providers).toContain(DmxSnifferCommand);
     expect(providers).toContain(DmxSnifferService);
     expect(providers).toContain(DmxResolver);
+    expect(providers).toContain(DmxSendService);
+    expect(providers).toContain(DmxUniverseService);
+    expect(providers).toContain(DmxWebsocketService);
     expect(providers).toContain(SerialSendService);
     expect(exports).toContain(DmxSnifferCommand);
   });
