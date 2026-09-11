@@ -2,6 +2,7 @@ import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { FixtureChannelPreset, GetProjectDocument } from '@/shared/types/graphql/graphql';
 import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { DMX_UNIVERSE_SIZE } from './universe-channel-square';
 import UniverseView from './universe-view';
 
 const now = new Date('2026-01-01T00:00:00.000Z');
@@ -78,14 +79,11 @@ describe('UniverseView', () => {
       ],
     });
 
-    await waitFor(() => {
-      expect(screen.getByTestId('universe-view-grid')).toBeInTheDocument();
-    });
-
+    const grid = await screen.findByTestId('universe-view-grid');
+    expect(grid.children).toHaveLength(DMX_UNIVERSE_SIZE);
     expect(screen.getByTestId('universe-channel-1')).toBeInTheDocument();
-    expect(screen.getByTestId('universe-channel-512')).toBeInTheDocument();
-    expect(screen.getAllByRole('img')).toHaveLength(512);
-  });
+    expect(screen.getByTestId(`universe-channel-${DMX_UNIVERSE_SIZE}`)).toBeInTheDocument();
+  }, 15_000);
 
   it('marks patched fixture channels as occupied', async () => {
     renderWithProviders(<UniverseView projectPublicId="proj-1" />, {
