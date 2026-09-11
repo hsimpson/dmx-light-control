@@ -14,6 +14,7 @@ export class SerialSendService implements OnModuleInit, OnModuleDestroy {
   private isSending = false;
   private frameInFlight = false;
   private intervalId: NodeJS.Timeout | null = null;
+  private breakTimerId: NodeJS.Timeout | null = null;
 
   // Configuration constants
   private readonly REFRESH_RATE_MS = 33; // ~30 Hz refresh rate
@@ -58,6 +59,7 @@ export class SerialSendService implements OnModuleInit, OnModuleDestroy {
    */
   public stopSendingLoop(): void {
     this.isSending = false;
+    this.cancelBreakTimer();
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
@@ -167,8 +169,14 @@ export class SerialSendService implements OnModuleInit, OnModuleDestroy {
         return;
       }
 
-      setTimeout(() => {
-        this.port?.set({ brk: false }, err1 => {
+      this.breakTimerId = setTimeout(() => {
+        this.breakTimerId = null;
+        if (!this.isSending || !this.port?.isOpen) {
+          this.frameInFlight = false;
+          return;
+        }
+
+        this.port.set({ brk: false }, err1 => {
           this.flushFrame(err1);
         });
       }, this.BREAK_DURATION_MS);
@@ -197,6 +205,14 @@ export class SerialSendService implements OnModuleInit, OnModuleDestroy {
         this.logger.error(`Error flushing payload: ${err2.message}`);
       }
     });
+  }
+
+  private cancelBreakTimer(): void {
+    if (this.breakTimerId) {
+      clearTimeout(this.breakTimerId);
+      this.breakTimerId = null;
+    }
+    this.frameInFlight = false;
   }
 
   private closePort(): void {
