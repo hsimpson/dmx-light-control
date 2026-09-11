@@ -73,4 +73,33 @@ describe('DmxWebsocketService', () => {
 
     service.onModuleDestroy();
   });
+
+  it('ignores invalid websocket payloads and skips empty delta broadcasts', () => {
+    const universe = new DmxUniverseService();
+    const listeners = new Map<string, (payload: unknown) => void>();
+    const eventEmitter = {
+      on: (event: string, listener: (payload: unknown) => void) => {
+        listeners.set(event, listener);
+      },
+      emit: (event: string, payload: unknown) => {
+        listeners.get(event)?.(payload);
+        return true;
+      },
+    };
+    const service = new DmxWebsocketService(universe, eventEmitter as unknown as AppEventEmitter);
+    service.onModuleInit();
+
+    const client = new FakeSocket();
+    handleDmxWebsocketConnection(client);
+    client.sent.length = 0;
+
+    client.emit('message', 'not-json');
+    expect(universe.getFrame().every(value => value === 0)).toBe(true);
+    expect(client.sent).toEqual([]);
+
+    listeners.get('dmx.channelValues')?.([]);
+    expect(client.sent).toEqual([]);
+
+    service.onModuleDestroy();
+  });
 });

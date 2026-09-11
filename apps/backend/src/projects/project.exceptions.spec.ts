@@ -2,14 +2,23 @@ import { HttpStatus } from '@nestjs/common';
 import { describe, expect, it } from 'vitest';
 import { BaseDomainError } from '@/fixtures/fixture.exceptions';
 import {
+  ChannelModeFixtureMismatchException,
+  DmxAddressOutOfRangeException,
+  EmptyChannelModeException,
   InvalidProject3dObjectNameException,
+  InvalidProject3dObjectSizeException,
+  InvalidProject3dObjectTransformException,
   Project3dObjectNameExistsException,
+  Project3dObjectNotFoundException,
   ProjectAlreadyExistsException,
   ProjectFixtureAddressOverlapException,
+  ProjectFixtureNotFoundException,
   ProjectImportConflictException,
   ProjectImportInvalidException,
   ProjectNotFoundException,
   SceneObjectNotScalableException,
+  SceneObjectSizeRequiredException,
+  SceneObjectTypeNotFoundException,
 } from './project.exceptions';
 
 describe('project exceptions', () => {
@@ -79,5 +88,61 @@ describe('project exceptions', () => {
     expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
     expect(err.message).toBe('Scene object name must be between 1 and 255 characters.');
     expect(err.name).toBe('InvalidProject3dObjectNameError');
+  });
+
+  it('ProjectFixtureNotFoundException maps to NOT_FOUND', () => {
+    const err = new ProjectFixtureNotFoundException('pf-1');
+    expect(err.code).toBe('PROJECT_FIXTURE_NOT_FOUND');
+    expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
+    expect(err.message).toContain('pf-1');
+  });
+
+  it('SceneObjectTypeNotFoundException maps to NOT_FOUND', () => {
+    const err = new SceneObjectTypeNotFoundException('type-1');
+    expect(err.code).toBe('SCENE_OBJECT_TYPE_NOT_FOUND');
+    expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
+  });
+
+  it('Project3dObjectNotFoundException maps to NOT_FOUND', () => {
+    const err = new Project3dObjectNotFoundException('obj-1');
+    expect(err.code).toBe('PROJECT_3D_OBJECT_NOT_FOUND');
+    expect(err.statusCode).toBe(HttpStatus.NOT_FOUND);
+  });
+
+  it('InvalidProject3dObjectTransformException maps to BAD_REQUEST', () => {
+    const err = new InvalidProject3dObjectTransformException();
+    expect(err.code).toBe('INVALID_PROJECT_3D_OBJECT_TRANSFORM');
+    expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+  });
+
+  it('InvalidProject3dObjectSizeException maps to BAD_REQUEST', () => {
+    const err = new InvalidProject3dObjectSizeException();
+    expect(err.code).toBe('INVALID_PROJECT_3D_OBJECT_SIZE');
+    expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+  });
+
+  it('SceneObjectSizeRequiredException maps to BAD_REQUEST', () => {
+    const err = new SceneObjectSizeRequiredException();
+    expect(err.code).toBe('SCENE_OBJECT_SIZE_REQUIRED');
+    expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+  });
+
+  it('ChannelModeFixtureMismatchException maps to BAD_REQUEST', () => {
+    const err = new ChannelModeFixtureMismatchException();
+    expect(err.code).toBe('CHANNEL_MODE_FIXTURE_MISMATCH');
+    expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+  });
+
+  it('EmptyChannelModeException maps to BAD_REQUEST', () => {
+    const err = new EmptyChannelModeException();
+    expect(err.code).toBe('EMPTY_CHANNEL_MODE');
+    expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+  });
+
+  it('DmxAddressOutOfRangeException maps to BAD_REQUEST', () => {
+    const err = new DmxAddressOutOfRangeException(510, 5);
+    expect(err.code).toBe('DMX_ADDRESS_OUT_OF_RANGE');
+    expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(err.message).toContain('510');
   });
 });
