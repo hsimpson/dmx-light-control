@@ -38,8 +38,13 @@ export default defineConfig({
   plugins: [nestDecoratorCoverageIgnorePlugin()],
   test: {
     environment: 'node',
+    reporters: ['default', 'junit'],
+    outputFile: {
+      junit: './test.report.xml',
+    },
     coverage: {
       provider: 'v8',
+      reportOnFailure: true,
       reporter: [['text', { skipFull: false }], 'html', 'json', 'clover'],
       include: ['src/**/*.{ts,tsx}'],
       exclude: [

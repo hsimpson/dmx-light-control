@@ -14,8 +14,8 @@ blob-report/
 .DS_Store
 .env
 _tmp_*
-
 vite.config.*.timestamp*
+**/test.report.xml
 
 # Next.js
 .next
@@ -23,3 +23,8 @@ out
 *.tsbuildinfo
 
 *.blend1
+
+# act
+act/.cache-server
+act/.secrets
+act/payload.json

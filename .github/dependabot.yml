@@ -1,0 +1,35 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: sunday
+    open-pull-requests-limit: 10
+    groups:
+      nx:
+        patterns:
+          - '@nx/*'
+          - 'nx'
+      nestjs:
+        patterns:
+          - '@nestjs/*'
+      frontend:
+        patterns:
+          - '@mantine/*'
+          - '@next/*'
+          - 'next'
+          - 'react'
+          - 'react-*'
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: sunday
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: sunday

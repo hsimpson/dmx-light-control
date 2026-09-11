@@ -1,0 +1,65 @@
+name: run checks on pull request
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# ensure that only one workflow runs at a time for a given pull request
+concurrency:
+  group: pull-request-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  types-lint-and-test:
+    name: typecheck, lint and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v7
+
+      - name: install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev
+
+      - name: setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+
+      - name: setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
+
+      - name: install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: set nx SHAs for nx affected commands
+        uses: nrwl/nx-set-shas@v5
+
+      - name: typecheck and lint
+        run: pnpm nx affected --target=typecheck --target=lint
+
+      - name: test with coverage
+        run: pnpm nx affected --target=test --coverage
+
+      - name: test report
+        uses: dorny/test-reporter@v3
+        if: ${{ !cancelled() }}
+        with:
+          name: Vitest
+          path: '**/test.report.xml'
+          reporter: java-junit
+
+      - name: merge coverage reports
+        id: merge-coverage
+        if: ${{ !cancelled() }}
+        run: node scripts/merge-vitest-coverage.mjs
+
+      - name: coverage report
+        uses: davelosert/vitest-coverage-report-action@v2
+        if: ${{ !cancelled() && steps.merge-coverage.outcome == 'success' }}
