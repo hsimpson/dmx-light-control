@@ -48,4 +48,16 @@ describe('pickClosestObjectByBoundingBox', () => {
     const ray = new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, -1));
     expect(pickClosestObjectByBoundingBox(ray, [object])).toBeUndefined();
   });
+
+  it('skips objects with an empty bounding box', () => {
+    const empty = new Group();
+    empty.updateMatrixWorld(true);
+    const mesh = new Group();
+    mesh.add(new Mesh(new BoxGeometry(1, 1, 1)));
+    mesh.position.set(0, 0, -2);
+    mesh.updateMatrixWorld(true);
+
+    const ray = new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, -1));
+    expect(pickClosestObjectByBoundingBox(ray, [empty, mesh])).toBe(mesh);
+  });
 });

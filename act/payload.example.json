@@ -1,0 +1,14 @@
+{
+  "action": "opened",
+  "pull_request": {
+    "number": 42,
+    "head": {
+      "ref": "SOME_BRANCH",
+      "sha": "SOME_SHA"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "SOME_SHA"
+    }
+  }
+}

@@ -201,4 +201,59 @@ describe('FixtureModelPreview', () => {
     expect(mesh.castShadow).toBe(true);
     expect(mesh.receiveShadow).toBe(true);
   });
+
+  it('loads the model into the preview scene', () => {
+    load.mockImplementation((_url: string, onLoad: (gltf: { scene: Group }) => void) => {
+      onLoad({ scene: new Group() });
+    });
+
+    renderWithProviders(<FixtureModelPreview url="/assets/fixtures/_defaults/model.glb" />);
+
+    expect(load).toHaveBeenCalled();
+  });
+
+  it('ignores late loader callbacks after unmount', () => {
+    let onLoad: ((gltf: { scene: Group }) => void) | undefined;
+    load.mockImplementation((_url: string, callback: (gltf: { scene: Group }) => void) => {
+      onLoad = callback;
+    });
+
+    const { unmount } = renderWithProviders(<FixtureModelPreview url="/assets/fixtures/_defaults/model.glb" />);
+    unmount();
+    onLoad?.({ scene: new Group() });
+  });
+
+  it('skips non-mesh nodes and materials without transmission', () => {
+    const material = { transmission: 0, transparent: true, depthWrite: false };
+    const mesh = { isMesh: true, material, castShadow: false, receiveShadow: false };
+    const root = {
+      traverse(callback: (object: typeof mesh | { isMesh: false }) => void) {
+        callback({ isMesh: false });
+        callback(mesh);
+      },
+    };
+
+    prepareFixtureModelForPreview(root as never);
+
+    expect(material.transmission).toBe(0);
+    expect(mesh.castShadow).toBe(true);
+  });
+
+  it('handles mesh objects with multiple materials', () => {
+    const materials = [
+      { transmission: 0.2, transparent: true, depthWrite: false },
+      { transmission: 0, transparent: false, depthWrite: true },
+    ];
+    const mesh = { isMesh: true, material: materials, castShadow: false, receiveShadow: false };
+    const root = {
+      traverse(callback: (object: typeof mesh) => void) {
+        callback(mesh);
+      },
+    };
+
+    prepareFixtureModelForPreview(root as never);
+
+    expect(materials[0]?.transmission).toBe(0);
+    expect(materials[1]?.transmission).toBe(0);
+  });
 });

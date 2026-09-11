@@ -27,17 +27,24 @@ vi.mock('mantine-datatable', () => ({
   DataTable: ({
     records,
     columns,
+    onRowClick,
   }: {
     records: Record<string, unknown>[];
     columns: {
       accessor: string;
       render?: (record: Record<string, unknown>) => ReactNode;
     }[];
+    onRowClick?: (payload: { record: Record<string, unknown> }) => void;
   }) => (
     <table>
       <tbody>
         {records.map(record => (
-          <tr key={String(record.publicId)}>
+          <tr
+            key={String(record.publicId)}
+            onClick={() => {
+              onRowClick?.({ record });
+            }}
+          >
             {columns.map(column => {
               const cell = column.render
                 ? column.render(record)
@@ -167,6 +174,42 @@ describe('ProjectTable', () => {
     });
   });
 
+  it('creates a project when Enter is pressed in the create modal', async () => {
+    const { user } = renderWithProviders(<ProjectTableHarness />, {
+      apolloMocks: [
+        projectsQueryMock,
+        {
+          request: { query: CreateProjectDocument, variables: { name: 'Club Night' } },
+          result: {
+            data: {
+              createProject: {
+                __typename: 'ProjectDto',
+                publicId: 'proj-2',
+                name: 'Club Night',
+                environmentType: 'SimpleGround',
+                roomWidth: 10,
+                roomLength: 8,
+                roomHeight: 5,
+                createdAt: now,
+                updatedAt: now,
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    await user.click(await screen.findByRole('button', { name: 'Add project' }));
+    const dialog = await screen.findByRole('dialog');
+    await user.type(within(dialog).getByLabelText('Name'), 'Club Night{Enter}');
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({ color: 'green', title: 'Project created' }),
+      );
+    });
+  });
+
   it('does not create a project when the name is whitespace', async () => {
     const { user } = renderWithProviders(<ProjectTableHarness />, {
       apolloMocks: [projectsQueryMock],
@@ -288,5 +331,106 @@ describe('ProjectTable', () => {
         }),
       );
     });
+  });
+
+  it('shows an error when create fails', async () => {
+    const { user } = renderWithProviders(<ProjectTableHarness />, {
+      apolloMocks: [
+        projectsQueryMock,
+        {
+          request: { query: CreateProjectDocument, variables: { name: 'Club Night' } },
+          error: new Error('network'),
+        },
+      ],
+    });
+
+    await user.click(await screen.findByRole('button', { name: 'Add project' }));
+    const dialog = await screen.findByRole('dialog');
+    await user.type(within(dialog).getByLabelText('Name'), 'Club Night');
+    await user.click(within(dialog).getByRole('button', { name: 'Add project' }));
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({ color: 'red', message: 'Failed to create project' }),
+      );
+    });
+  });
+
+  it('shows an error when rename fails', async () => {
+    const { user } = renderWithProviders(<ProjectTable createOpened={false} onCloseCreate={() => undefined} />, {
+      apolloMocks: [
+        projectsQueryMock,
+        {
+          request: {
+            query: UpdateProjectDocument,
+            variables: { input: { publicId: 'proj-1', name: 'Club Night' } },
+          },
+          error: new Error('network'),
+        },
+      ],
+    });
+
+    await user.click(await screen.findByRole('button', { name: 'Rename project' }));
+    const dialog = await screen.findByRole('dialog');
+    const input = within(dialog).getByLabelText('Name');
+    await user.clear(input);
+    await user.type(input, 'Club Night');
+    await user.click(within(dialog).getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({ color: 'red', message: 'Failed to rename project' }),
+      );
+    });
+  });
+
+  it('submits rename on Enter', async () => {
+    const { user } = renderWithProviders(<ProjectTable createOpened={false} onCloseCreate={() => undefined} />, {
+      apolloMocks: [
+        projectsQueryMock,
+        {
+          request: {
+            query: UpdateProjectDocument,
+            variables: { input: { publicId: 'proj-1', name: 'Club Night' } },
+          },
+          result: {
+            data: {
+              updateProject: {
+                __typename: 'ProjectDto',
+                publicId: 'proj-1',
+                name: 'Club Night',
+                environmentType: 'SimpleGround',
+                roomWidth: 10,
+                roomLength: 8,
+                roomHeight: 5,
+                createdAt: now,
+                updatedAt: now,
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    await user.click(await screen.findByRole('button', { name: 'Rename project' }));
+    const dialog = await screen.findByRole('dialog');
+    const input = within(dialog).getByLabelText('Name');
+    await user.clear(input);
+    await user.type(input, 'Club Night{Enter}');
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({ color: 'green', title: 'Project renamed' }),
+      );
+    });
+  });
+
+  it('navigates to the project when a row is clicked', async () => {
+    const { user } = renderWithProviders(<ProjectTable createOpened={false} onCloseCreate={() => undefined} />, {
+      apolloMocks: [projectsQueryMock],
+    });
+
+    await user.click(await screen.findByText('Main Show'));
+    expect(push).toHaveBeenCalledWith('/project/proj-1/fixtures');
   });
 });

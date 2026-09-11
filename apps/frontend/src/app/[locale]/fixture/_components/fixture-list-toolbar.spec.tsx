@@ -59,6 +59,25 @@ describe('FixtureListToolbar', () => {
     );
   });
 
+  it('shows an error notification when export returns no data', async () => {
+    const { user } = renderWithProviders(<FixtureListToolbar />, {
+      apolloMocks: [
+        {
+          request: { query: ExportFixturesDocument },
+          result: { data: null },
+        },
+      ],
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Export fixtures' }));
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({ color: 'red', message: 'Failed to export fixtures' }),
+      );
+    });
+  });
+
   it('shows an error notification when export fails', async () => {
     const { user } = renderWithProviders(<FixtureListToolbar />, {
       apolloMocks: [
@@ -129,6 +148,48 @@ describe('FixtureListToolbar', () => {
           color: 'red',
           message: 'Fixture vendor publicId missing for fixture "Test-001"',
         }),
+      );
+    });
+  });
+
+  it('falls back when a GraphQL import error has no message', async () => {
+    const importDocument = { schemaVersion: 1, fixtures: [] };
+    const { user } = renderWithProviders(<FixtureListToolbar />, {
+      apolloMocks: [
+        {
+          request: { query: ImportFixturesDocument, variables: { document: importDocument } },
+          error: new CombinedGraphQLErrors({ errors: [{}] }),
+        },
+      ],
+    });
+
+    const file = new File([JSON.stringify(importDocument)], 'fixtures.json', { type: 'application/json' });
+    await user.upload(fileInput(), file);
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({ color: 'red', message: 'Failed to import fixtures' }),
+      );
+    });
+  });
+
+  it('shows an error notification when import fails with a generic error', async () => {
+    const importDocument = { schemaVersion: 1, fixtures: [] };
+    const { user } = renderWithProviders(<FixtureListToolbar />, {
+      apolloMocks: [
+        {
+          request: { query: ImportFixturesDocument, variables: { document: importDocument } },
+          error: new Error('network'),
+        },
+      ],
+    });
+
+    const file = new File([JSON.stringify(importDocument)], 'fixtures.json', { type: 'application/json' });
+    await user.upload(fileInput(), file);
+
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(
+        expect.objectContaining({ color: 'red', message: 'Failed to import fixtures' }),
       );
     });
   });

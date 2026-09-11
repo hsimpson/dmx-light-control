@@ -1,0 +1,5 @@
+--platform ubuntu-latest=catthehacker/ubuntu:gh-latest
+--action-offline-mode
+--cache-server-path ./act/.cache-server
+--secret-file ./act/.secrets
+--eventpath ./act/payload.json

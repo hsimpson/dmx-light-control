@@ -73,6 +73,20 @@ function projectResult(projectFixtures: (typeof projectFixture)[]) {
 }
 
 describe('DmxView', () => {
+  it('shows loading while the project query is in flight', () => {
+    renderWithProviders(<DmxView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          delay: Number.POSITIVE_INFINITY,
+          result: projectResult([]),
+        },
+      ],
+    });
+
+    expect(document.querySelector('.mantine-Loader-root')).not.toBeNull();
+  });
+
   it('shows an empty state when no fixtures are patched', async () => {
     renderWithProviders(<DmxView projectPublicId="proj-1" />, {
       apolloMocks: [

@@ -6,6 +6,10 @@ describe('graphqlApiOrigin', () => {
     expect(graphqlApiOrigin('http://localhost:3000/graphql')).toBe('http://localhost:3000');
     expect(graphqlApiOrigin('http://localhost:3000/graphql/')).toBe('http://localhost:3000');
   });
+
+  it('returns an empty string when the GraphQL URL is missing', () => {
+    expect(graphqlApiOrigin('')).toBe('');
+  });
 });
 
 describe('sceneAssetUrl', () => {

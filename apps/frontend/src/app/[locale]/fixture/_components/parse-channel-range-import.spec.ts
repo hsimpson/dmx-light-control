@@ -58,4 +58,11 @@ describe('parseChannelRangeImport', () => {
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0]?.message).toBe('invalidFormat');
   });
+
+  it('reports whitespace-only descriptions', () => {
+    const result = parseChannelRangeImport('0 - 1    ');
+
+    expect(result.ranges).toEqual([]);
+    expect(result.errors).toEqual([{ line: 1, content: '0 - 1    ', message: 'invalidFormat' }]);
+  });
 });
