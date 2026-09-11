@@ -21,6 +21,10 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v7
+        with:
+          # Nx affected needs the PR base commit in the local git history.
+          fetch-depth: 0
+          filter: tree:0
 
       - name: install system dependencies
         run: sudo apt-get update && sudo apt-get install -y libasound2-dev
