@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vite
 import { DmxValue } from '../dmx/types/dmx.types';
 import { SerialSendService } from './serial-send.service';
 
-const { fakePort } = vi.hoisted(() => ({
+const { fakePort, listMock, serialPortCtor } = vi.hoisted(() => ({
   fakePort: {
     isOpen: false,
     open: vi.fn((cb: (err?: Error) => void) => {
@@ -20,17 +20,21 @@ const { fakePort } = vi.hoisted(() => ({
       cb(undefined);
     }),
   },
+  listMock: vi.fn(),
+  serialPortCtor: vi.fn(),
 }));
 
 vi.mock('serialport', () => ({
   SerialPort: class {
+    public static list = listMock;
     public isOpen = false;
     public open = fakePort.open;
     public close = fakePort.close;
     public on = fakePort.on;
     public set = fakePort.set;
     public write = fakePort.write;
-    public constructor() {
+    public constructor(opts: { path: string }) {
+      serialPortCtor(opts);
       this.isOpen = true;
     }
   },
@@ -42,7 +46,7 @@ interface EventEmitterHarness extends AppEventEmitter {
 }
 
 interface SerialSendServiceHarness {
-  onModuleInit: () => void;
+  onModuleInit: () => Promise<void>;
   onModuleDestroy: () => void;
   port: { isOpen: boolean; set: Mock };
   dmxFrame: Uint8Array;
@@ -59,6 +63,7 @@ interface SerialSendServiceHarness {
 describe('SerialSendService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    listMock.mockResolvedValue([{ path: '/dev/cu.usbserial-TEST', vendorId: '0403', productId: '6001' }]);
     vi.useFakeTimers();
     vi.spyOn(global, 'setInterval').mockReturnValue(1 as unknown as NodeJS.Timeout);
     vi.spyOn(global, 'clearInterval').mockImplementation(() => undefined);
@@ -68,51 +73,52 @@ describe('SerialSendService', () => {
     vi.restoreAllMocks();
   });
 
-  function build() {
+  function build(serialPath?: string) {
     const eventEmitter = { emit: vi.fn(), on: vi.fn() } as unknown as EventEmitterHarness;
-    const service = new SerialSendService(eventEmitter) as unknown as SerialSendServiceHarness;
+    const configService = { get: vi.fn(() => serialPath) };
+    const service = new SerialSendService(eventEmitter, configService as never) as unknown as SerialSendServiceHarness;
     return { service, eventEmitter };
   }
 
-  it('initializes port and registers dmx.channelValues listener on init', () => {
+  it('initializes port and registers dmx.channelValues listener on init', async () => {
     const { service, eventEmitter } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     expect(eventEmitter.on).toHaveBeenCalledWith('dmx.channelValues', expect.any(Function));
   });
 
-  it('onModuleDestroy stops loop and closes port', () => {
+  it('onModuleDestroy stops loop and closes port', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.onModuleDestroy();
     expect(fakePort.close).toHaveBeenCalled();
   });
 
-  it('startSendingLoop sets isSending and schedules interval', () => {
+  it('startSendingLoop sets isSending and schedules interval', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.startSendingLoop();
     expect(global.setInterval).toHaveBeenCalled();
   });
 
-  it('startSendingLoop is idempotent', () => {
+  it('startSendingLoop is idempotent', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.startSendingLoop();
     service.startSendingLoop();
     expect(global.setInterval).toHaveBeenCalledTimes(1);
   });
 
-  it('stopSendingLoop clears interval', () => {
+  it('stopSendingLoop clears interval', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.startSendingLoop();
     service.stopSendingLoop();
     expect(global.clearInterval).toHaveBeenCalled();
   });
 
-  it('setChannelValues ignores invalid channel/value and applies valid ones', () => {
+  it('setChannelValues ignores invalid channel/value and applies valid ones', async () => {
     const { service, eventEmitter } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     const listener = eventEmitter.on.mock.calls[0]?.[1] as (values: DmxValue[]) => void;
     const warnSpy = vi.spyOn(service.logger, 'warn').mockImplementation(() => undefined);
     listener([
@@ -143,18 +149,18 @@ describe('SerialSendService', () => {
     expect(service.dmxFrame[0]).toBe(0);
   });
 
-  it('sendDmxFrame returns early when port not open', () => {
+  it('sendDmxFrame returns early when port not open', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.port.isOpen = false;
     expect(() => {
       service.sendDmxFrame();
     }).not.toThrow();
   });
 
-  it('interval callback skips sending when the loop was stopped', () => {
+  it('interval callback skips sending when the loop was stopped', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.port.isOpen = true;
     service.startSendingLoop();
     // capture the interval callback registered via setInterval
@@ -166,9 +172,9 @@ describe('SerialSendService', () => {
     expect(writeSpy).not.toHaveBeenCalled();
   });
 
-  it('interval callback sends a frame while the loop is running', () => {
+  it('interval callback sends a frame while the loop is running', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.port.isOpen = true;
     service.startSendingLoop();
     const callback = (global.setInterval as unknown as Mock).mock.calls[0]?.[0] as () => void;
@@ -184,9 +190,9 @@ describe('SerialSendService', () => {
     expect(writeSpy).toHaveBeenCalled();
   });
 
-  it('holds the serial BREAK before writing the frame', () => {
+  it('holds the serial BREAK before writing the frame', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.port.isOpen = true;
     service.sendDmxFrame();
     expect(fakePort.set).toHaveBeenCalledWith({ brk: true }, expect.any(Function));
@@ -195,9 +201,9 @@ describe('SerialSendService', () => {
     expect(fakePort.write).toHaveBeenCalled();
   });
 
-  it('sendDmxFrame performs break/mab/write when open', () => {
+  it('sendDmxFrame performs break/mab/write when open', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.port.isOpen = true;
     service.sendDmxFrame();
     vi.advanceTimersByTime(1);
@@ -205,9 +211,9 @@ describe('SerialSendService', () => {
     expect(fakePort.write).toHaveBeenCalled();
   });
 
-  it('sendDmxFrame returns early when the break-release set() fails', () => {
+  it('sendDmxFrame returns early when the break-release set() fails', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.port.isOpen = true;
     // First set() (break) succeeds, second set() (break release) fails →
     // exercises the `if (err1) return;` early-exit branch.
@@ -227,32 +233,32 @@ describe('SerialSendService', () => {
     writeSpy.mockRestore();
   });
 
-  it('closePort handles closed port gracefully', () => {
+  it('closePort handles closed port gracefully', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.port.isOpen = false;
     expect(() => {
       service.closePort();
     }).not.toThrow();
   });
 
-  it('logs and warns when port fails to open', () => {
+  it('logs and warns when port fails to open', async () => {
     const { service } = build();
     fakePort.open.mockImplementationOnce((cb: (err?: Error) => void) => {
       cb(new Error('boom'));
     });
     const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
     const warnSpy = vi.spyOn(service.logger, 'warn').mockImplementation(() => undefined);
-    service.onModuleInit();
+    await service.onModuleInit();
     expect(errorSpy).toHaveBeenCalled();
     expect(warnSpy).toHaveBeenCalled();
     errorSpy.mockRestore();
     warnSpy.mockRestore();
   });
 
-  it('handles serial port errors by stopping the loop', () => {
+  it('handles serial port errors by stopping the loop', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     const errorCallback = fakePort.on.mock.calls.find((c: unknown[]) => c[0] === 'error')?.[1] as
       ((err: Error) => void) | undefined;
     expect(typeof errorCallback).toBe('function');
@@ -274,9 +280,9 @@ describe('SerialSendService', () => {
     errorSpy.mockRestore();
   });
 
-  it('flushFrame writes the dmx buffer when break release succeeds', () => {
+  it('flushFrame writes the dmx buffer when break release succeeds', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.port.isOpen = true;
     fakePort.write.mockImplementationOnce((_buf: unknown, cb: (err?: Error) => void) => {
       cb(undefined);
@@ -285,9 +291,9 @@ describe('SerialSendService', () => {
     expect(fakePort.write).toHaveBeenCalled();
   });
 
-  it('flushFrame logs when payload write fails', () => {
+  it('flushFrame logs when payload write fails', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     fakePort.write.mockImplementationOnce((_buf: unknown, cb: (err?: Error) => void) => {
       cb(new Error('write boom'));
     });
@@ -297,9 +303,9 @@ describe('SerialSendService', () => {
     errorSpy.mockRestore();
   });
 
-  it('does not start the loop from the listener when the port is closed', () => {
+  it('does not start the loop from the listener when the port is closed', async () => {
     const { service, eventEmitter } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     (global.setInterval as unknown as Mock).mockClear();
     service.port.isOpen = false;
     const listener = eventEmitter.on.mock.calls[0]?.[1] as (values: DmxValue[]) => void;
@@ -307,9 +313,9 @@ describe('SerialSendService', () => {
     expect(global.setInterval).not.toHaveBeenCalled();
   });
 
-  it('interval callback is a no-op when the port is closed or not sending', () => {
+  it('interval callback is a no-op when the port is closed or not sending', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.startSendingLoop();
     const callback = (global.setInterval as unknown as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as () => void;
     service.port.isOpen = false;
@@ -321,9 +327,9 @@ describe('SerialSendService', () => {
     expect(fakePort.set).not.toHaveBeenCalled();
   });
 
-  it('sendDmxFrame returns early when the break set reports an error', () => {
+  it('sendDmxFrame returns early when the break set reports an error', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.port.isOpen = true;
     fakePort.set.mockImplementationOnce((_opts: unknown, cb: (err?: Error) => void) => {
       cb(new Error('brk boom'));
@@ -334,9 +340,9 @@ describe('SerialSendService', () => {
     expect(fakePort.write).not.toHaveBeenCalled();
   });
 
-  it('sendDmxFrame returns early when the unbreak set reports an error', () => {
+  it('sendDmxFrame returns early when the unbreak set reports an error', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.port.isOpen = true;
     let call = 0;
     fakePort.set.mockImplementation((_opts: unknown, cb: (err?: Error) => void) => {
@@ -350,9 +356,9 @@ describe('SerialSendService', () => {
     expect(fakePort.write).not.toHaveBeenCalled();
   });
 
-  it('closePort logs an error when closing fails', () => {
+  it('closePort logs an error when closing fails', async () => {
     const { service } = build();
-    service.onModuleInit();
+    await service.onModuleInit();
     service.port.isOpen = true;
     fakePort.close.mockImplementationOnce((cb: (err?: Error) => void) => {
       cb(new Error('close boom'));
@@ -361,5 +367,31 @@ describe('SerialSendService', () => {
     service.closePort();
     expect(errorSpy).toHaveBeenCalled();
     errorSpy.mockRestore();
+  });
+
+  it('opens the configured override path instead of listed ports', async () => {
+    const { service } = build('/dev/custom-uart');
+    await service.onModuleInit();
+    expect(serialPortCtor).toHaveBeenCalledWith(expect.objectContaining({ path: '/dev/custom-uart' }));
+  });
+
+  it('does not open /dev/ttyUSB0 on Darwin when no adapter is listed', async () => {
+    listMock.mockResolvedValue([]);
+    vi.spyOn(process, 'platform', 'get').mockReturnValue('darwin');
+    const { service } = build();
+    const errorSpy = vi.spyOn(service.logger, 'error').mockImplementation(() => undefined);
+    await service.onModuleInit();
+    expect(serialPortCtor).not.toHaveBeenCalled();
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('No FTDI DMX serial adapter found'));
+  });
+
+  it('treats SerialPort.list failures as an empty list', async () => {
+    listMock.mockRejectedValue(new Error('usb enumeration failed'));
+    vi.spyOn(process, 'platform', 'get').mockReturnValue('darwin');
+    const { service } = build();
+    const warnSpy = vi.spyOn(service.logger, 'warn').mockImplementation(() => undefined);
+    await service.onModuleInit();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('SerialPort.list() failed'));
+    expect(serialPortCtor).not.toHaveBeenCalled();
   });
 });

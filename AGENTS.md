@@ -44,7 +44,7 @@ NestJS backend + Next.js frontend in Nx monorepo.
 
 **Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.21.0. **pnpm:** ^12.4.0.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
-**Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; GraphQL stack-trace stripping and Rspack asset-copy mode), `BACKEND_PORT` (required; HTTP; GraphQL at `/graphql`; live DMX WebSocket at `/dmx`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Optional `FIXTURE_ASSETS_ROOT` overrides the fixture-asset disk root (used in tests; not in `.env.example`). Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL` (the DMX socket URL is derived: HTTP GraphQL origin → `ws`/`wss` + `/dmx`). Nest `ConfigModule` loads workspace-root `.env`. Drizzle-kit targets run with cwd `apps/backend` and `dotenv/config` (so `apps/backend/.env` or already-exported vars). Infra compose uses `--env-file ../.env`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (`postgres:18.4`, same image as `infra/docker-compose.yml`).
+**Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; GraphQL stack-trace stripping and Rspack asset-copy mode), `BACKEND_PORT` (required; HTTP; GraphQL at `/graphql`; live DMX WebSocket at `/dmx`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Optional `DMX_SERIAL_PATH` (FTDI UART device; when unset, SerialSendService auto-detects FT232R, else Linux `/dev/ttyUSB0`). Optional `FIXTURE_ASSETS_ROOT` overrides the fixture-asset disk root (used in tests; not in `.env.example`). Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL` (the DMX socket URL is derived: HTTP GraphQL origin → `ws`/`wss` + `/dmx`). Nest `ConfigModule` loads workspace-root `.env`. Drizzle-kit targets run with cwd `apps/backend` and `dotenv/config` (so `apps/backend/.env` or already-exported vars). Infra compose uses `--env-file ../.env`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (`postgres:18.4`, same image as `infra/docker-compose.yml`).
 
 ## Done means
 
@@ -185,7 +185,7 @@ fixtures/
 
 - Frontend: Vitest colocated `*.spec.ts` / `*.spec.tsx`; Playwright e2e in `apps/frontend/e2e/*.e2e.spec.ts` (mocked GraphQL). Install Chromium once with `pnpm exec playwright install chromium`. Backend Vitest e2e lives in `src/e2e-tests/`
 - `nx dev frontend` runs `next dev` (Next 16 default Turbopack) on port 3001.
-- `REVIEW` comments mark incomplete implementations (hardcoded serial path in `SerialSendService`, ValidationPipe `disableErrorMessages` in `main.ts`)
+- `REVIEW` comments mark incomplete implementations (ValidationPipe `disableErrorMessages` in `main.ts`)
 - IO layer is Linux-focused (`/dev/usbmon`, serial ports)
 - Production hides stack traces from GraphQL errors
 - `BaseDomainError` → `GlobalGqlExceptionFilter` maps to GraphQL errors with `code` + `http.status` extension

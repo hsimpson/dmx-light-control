@@ -9,6 +9,7 @@ function getEnvVariable(name: string): string {
 }
 
 export function loadConfig(): Config {
+  const serialPath = process.env.DMX_SERIAL_PATH?.trim();
   return {
     port: parseInt(getEnvVariable('BACKEND_PORT'), 10),
     database: {
@@ -18,5 +19,6 @@ export function loadConfig(): Config {
       port: parseInt(getEnvVariable('POSTGRES_PORT'), 10),
       name: getEnvVariable('POSTGRES_DB'),
     },
+    ...(serialPath ? { serialPath } : {}),
   };
 }
