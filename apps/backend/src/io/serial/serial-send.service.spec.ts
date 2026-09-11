@@ -190,6 +190,28 @@ describe('SerialSendService', () => {
     expect(writeSpy).toHaveBeenCalled();
   });
 
+  it('cancels pending BREAK timer when the sending loop stops', async () => {
+    const { service } = build();
+    await service.onModuleInit();
+    service.port.isOpen = true;
+    service.sendDmxFrame();
+    expect(fakePort.write).not.toHaveBeenCalled();
+    service.stopSendingLoop();
+    vi.advanceTimersByTime(1);
+    expect(fakePort.set).toHaveBeenCalledTimes(1);
+    expect(fakePort.write).not.toHaveBeenCalled();
+  });
+
+  it('cancels pending BREAK timer on module destroy', async () => {
+    const { service } = build();
+    await service.onModuleInit();
+    service.port.isOpen = true;
+    service.sendDmxFrame();
+    service.onModuleDestroy();
+    vi.advanceTimersByTime(1);
+    expect(fakePort.write).not.toHaveBeenCalled();
+  });
+
   it('holds the serial BREAK before writing the frame', async () => {
     const { service } = build();
     await service.onModuleInit();
