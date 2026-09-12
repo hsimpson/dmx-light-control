@@ -1,8 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
 import classes from './slider-control.module.css';
+
+const HANDLE_SIZE_PX = 18;
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+const valueFromPointer = (clientX: number, clientY: number, rect: DOMRect, isVertical: boolean, max: number) => {
+  const ratio = isVertical
+    ? 1 - (clientY - rect.top) / Math.max(rect.height, 1)
+    : (clientX - rect.left) / Math.max(rect.width, 1);
+  return clamp(Math.round(ratio * max), 0, max);
+};
 
 const SliderControl = ({ control, mode, selected = false }: VirtualConsoleControlProperties) => {
   const orientation = control.orientation ?? 'vertical';
@@ -10,48 +21,134 @@ const SliderControl = ({ control, mode, selected = false }: VirtualConsoleContro
   const [value, setValue] = useState(0);
   const ratio = value / max;
   const isVertical = orientation === 'vertical';
+  const displayValue = control.valueType === 'percentage' ? `${value}%` : String(value);
+  const handleOffset = `clamp(0px, calc(${ratio} * (100% - ${HANDLE_SIZE_PX}px)), calc(100% - ${HANDLE_SIZE_PX}px))`;
+  const fillColor = control.foregroundColor ?? '#4dabf7';
+  const railRef = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
+
+  const applyPointer = useCallback(
+    (clientX: number, clientY: number) => {
+      const rail = railRef.current;
+      if (!rail) {
+        return;
+      }
+      setValue(valueFromPointer(clientX, clientY, rail.getBoundingClientRect(), isVertical, max));
+    },
+    [isVertical, max],
+  );
+
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (mode !== 'play') {
+      return;
+    }
+    event.preventDefault();
+    draggingRef.current = true;
+    if (typeof event.currentTarget.setPointerCapture === 'function') {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    applyPointer(event.clientX, event.clientY);
+
+    const onWindowMove = (moveEvent: PointerEvent) => {
+      applyPointer(moveEvent.clientX, moveEvent.clientY);
+    };
+    const onWindowUp = () => {
+      draggingRef.current = false;
+      window.removeEventListener('pointermove', onWindowMove);
+      window.removeEventListener('pointerup', onWindowUp);
+    };
+    window.addEventListener('pointermove', onWindowMove);
+    window.addEventListener('pointerup', onWindowUp);
+  };
+
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) {
+      return;
+    }
+    applyPointer(event.clientX, event.clientY);
+  };
+
+  const endPointer = (event: ReactPointerEvent<HTMLDivElement>) => {
+    draggingRef.current = false;
+    if (typeof event.currentTarget.releasePointerCapture === 'function') {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (mode !== 'play') {
+      return;
+    }
+    const delta =
+      event.key === 'ArrowUp' || event.key === 'ArrowRight'
+        ? 1
+        : event.key === 'ArrowDown' || event.key === 'ArrowLeft'
+          ? -1
+          : 0;
+    if (delta === 0) {
+      return;
+    }
+    event.preventDefault();
+    setValue(current => clamp(current + delta, 0, max));
+  };
 
   return (
     <div
-      className={`${classes.slider} ${isVertical ? classes.vertical : classes.horizontal}${selected ? ` ${classes.selected}` : ''}`}
+      aria-label={mode === 'play' ? control.label : undefined}
+      aria-orientation={mode === 'play' ? orientation : undefined}
+      aria-valuemax={mode === 'play' ? max : undefined}
+      aria-valuemin={mode === 'play' ? 0 : undefined}
+      aria-valuenow={mode === 'play' ? value : undefined}
+      className={`${classes.slider} ${isVertical ? classes.vertical : classes.horizontal}${mode === 'play' ? ` ${classes.play}` : ''}${selected ? ` ${classes.selected}` : ''}`}
       data-testid="virtual-console-slider"
+      onKeyDown={onKeyDown}
+      role={mode === 'play' ? 'slider' : undefined}
       style={{ backgroundColor: control.backgroundColor }}
+      tabIndex={mode === 'play' ? 0 : undefined}
     >
-      <div className={classes.track} style={{ backgroundColor: control.backgroundColor }}>
+      {isVertical ? (
+        <div className={classes.value} data-testid="virtual-console-slider-value">
+          {displayValue}
+        </div>
+      ) : (
+        <div className={classes.label}>{control.label}</div>
+      )}
+      <div
+        className={classes.rail}
+        data-testid="virtual-console-slider-rail"
+        onPointerCancel={endPointer}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endPointer}
+        ref={railRef}
+      >
+        <div className={classes.groove}>
+          <div
+            className={classes.fill}
+            style={
+              isVertical
+                ? { backgroundColor: fillColor, height: `${ratio * 100}%` }
+                : { backgroundColor: fillColor, width: `${ratio * 100}%` }
+            }
+          />
+        </div>
         <div
-          className={classes.thumb}
+          className={classes.handle}
+          data-testid="virtual-console-slider-handle"
           style={
             isVertical
-              ? {
-                  backgroundColor: control.foregroundColor,
-                  bottom: `calc(${ratio * 100}% - 6px)`,
-                  height: 12,
-                  left: 0,
-                  right: 0,
-                }
-              : {
-                  backgroundColor: control.foregroundColor,
-                  left: `calc(${ratio * 100}% - 6px)`,
-                  top: 0,
-                  bottom: 0,
-                  width: 12,
-                }
+              ? { bottom: handleOffset, height: HANDLE_SIZE_PX }
+              : { left: handleOffset, width: HANDLE_SIZE_PX }
           }
         />
       </div>
-      {mode === 'play' ? (
-        <input
-          aria-label={control.label}
-          className={classes.range}
-          max={max}
-          min={0}
-          onChange={event => {
-            setValue(Number(event.target.value));
-          }}
-          type="range"
-          value={value}
-        />
-      ) : null}
+      {isVertical ? (
+        <div className={classes.label}>{control.label}</div>
+      ) : (
+        <div className={classes.value} data-testid="virtual-console-slider-value">
+          {displayValue}
+        </div>
+      )}
     </div>
   );
 };
