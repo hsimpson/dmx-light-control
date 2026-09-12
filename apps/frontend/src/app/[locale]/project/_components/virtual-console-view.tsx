@@ -21,10 +21,14 @@ import {
   createControl,
   createDefaultVirtualConsoleDocument,
   findControl,
+  findControlAbsolutePosition,
+  findControlParentId,
   findDropTarget,
+  findFrameOrigin,
   insertControlInTree,
-  updateControlInTree,
+  reparentControl,
   resizedControlBounds,
+  updateControlInTree,
   VIRTUAL_CONSOLE_PALETTE_MIME,
   type VirtualConsoleDocument,
   type VirtualConsoleResizeHandle,
@@ -36,7 +40,7 @@ type VirtualConsoleViewProperties = {
   mode?: 'edit' | 'play';
 };
 
-const PAGES_FR = 3;
+const PAGES_FR = 4;
 const SIDEBAR_FR = 1;
 const SPLIT_TOTAL_FR = PAGES_FR + SIDEBAR_FR;
 const SPLITTER_PX = 6;
@@ -80,6 +84,11 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
   const [saving, setSaving] = useState(false);
   const [pageOverride, setPageOverride] = useState<string | null>(null);
   const activePageId = pageOverride ?? draft.pages[0]?.id ?? null;
+  const [dropTargetControlId, setDropTargetControlId] = useState<string | null>(null);
+  const [draggingControlId, setDraggingControlId] = useState<string | null>(null);
+  const [dropHighlightActive, setDropHighlightActive] = useState(false);
+  const canvasIsDropTarget = dropHighlightActive && dropTargetControlId === null;
+  const draftRef = useRef(draft);
   const dragRef = useRef<{
     id: string;
     pageId: string;
@@ -88,6 +97,9 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     originY: number;
     startX: number;
     startY: number;
+    startAbsX: number;
+    startAbsY: number;
+    startParentId: string | null;
     startWidth: number;
     startHeight: number;
     handle: VirtualConsoleResizeHandle | null;
@@ -96,6 +108,10 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
   const setDraft = (updater: (current: VirtualConsoleDocument) => VirtualConsoleDocument) => {
     setEdits(current => updater(current ?? saved));
   };
+
+  useEffect(() => {
+    draftRef.current = draft;
+  }, [draft]);
 
   useEffect(() => {
     if (mode !== 'play') {
@@ -130,6 +146,9 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
+    setDropTargetControlId(null);
+    setDropHighlightActive(false);
+    setDraggingControlId(null);
     if (mode !== 'edit' || !activePage || !canvasRef.current) {
       return;
     }
@@ -156,6 +175,19 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       return;
     }
     setEdits(current => current ?? saved);
+    setDraggingControlId(controlId);
+    setDropHighlightActive(true);
+    if (canvasRef.current) {
+      const bounds = canvasRef.current.getBoundingClientRect();
+      const target = findDropTarget(
+        activePage.controls,
+        event.clientX - bounds.left,
+        event.clientY - bounds.top,
+        controlId,
+      );
+      setDropTargetControlId(target.parentId);
+    }
+    const absolute = findControlAbsolutePosition(activePage.controls, controlId) ?? { x: control.x, y: control.y };
     dragRef.current = {
       id: controlId,
       pageId: activePage.id,
@@ -164,6 +196,9 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       originY: event.clientY,
       startX: control.x,
       startY: control.y,
+      startAbsX: absolute.x,
+      startAbsY: absolute.y,
+      startParentId: findControlParentId(activePage.controls, controlId) ?? null,
       startWidth: control.width,
       startHeight: control.height,
       handle: null,
@@ -187,6 +222,10 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       return;
     }
     setEdits(current => current ?? saved);
+    setDraggingControlId(controlId);
+    setDropHighlightActive(false);
+    setDropTargetControlId(null);
+    const absolute = findControlAbsolutePosition(activePage.controls, controlId) ?? { x: control.x, y: control.y };
     dragRef.current = {
       id: controlId,
       pageId: activePage.id,
@@ -195,6 +234,9 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       originY: event.clientY,
       startX: control.x,
       startY: control.y,
+      startAbsX: absolute.x,
+      startAbsY: absolute.y,
+      startParentId: findControlParentId(activePage.controls, controlId) ?? null,
       startWidth: control.width,
       startHeight: control.height,
       handle,
@@ -233,11 +275,67 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
           ),
         };
       });
+      if (drag.handle) {
+        setDropTargetControlId(null);
+        return;
+      }
+      const bounds = canvasRef.current?.getBoundingClientRect();
+      const page = draftRef.current.pages.find(candidate => candidate.id === drag.pageId);
+      if (!bounds || !page) {
+        return;
+      }
+      const target = findDropTarget(page.controls, event.clientX - bounds.left, event.clientY - bounds.top, drag.id);
+      setDropTargetControlId(target.parentId);
+      setDropHighlightActive(true);
     };
     const onUp = (event: globalThis.PointerEvent) => {
-      if (dragRef.current?.pointerId === event.pointerId) {
-        dragRef.current = null;
+      const drag = dragRef.current;
+      if (event.pointerId !== drag?.pointerId) {
+        return;
       }
+      if (!drag.handle) {
+        const bounds = canvasRef.current?.getBoundingClientRect();
+        const page = draftRef.current.pages.find(candidate => candidate.id === drag.pageId);
+        if (bounds && page) {
+          const target = findDropTarget(
+            page.controls,
+            event.clientX - bounds.left,
+            event.clientY - bounds.top,
+            drag.id,
+          );
+          if (target.parentId !== drag.startParentId) {
+            const origin = findFrameOrigin(page.controls, target.parentId);
+            const dx = event.clientX - drag.originX;
+            const dy = event.clientY - drag.originY;
+            setEdits(current => {
+              if (!current) {
+                return current;
+              }
+              return {
+                ...current,
+                pages: current.pages.map(candidate =>
+                  candidate.id === drag.pageId
+                    ? {
+                        ...candidate,
+                        controls: reparentControl(
+                          candidate.controls,
+                          drag.id,
+                          target.parentId,
+                          drag.startAbsX + dx - origin.x,
+                          drag.startAbsY + dy - origin.y,
+                        ),
+                      }
+                    : candidate,
+                ),
+              };
+            });
+          }
+        }
+      }
+      dragRef.current = null;
+      setDropTargetControlId(null);
+      setDropHighlightActive(false);
+      setDraggingControlId(null);
     };
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
@@ -422,22 +520,40 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       <div className={classes.workspace} data-testid="virtual-console-workspace">
         <div
           ref={canvasRef}
-          className={classes.canvas}
+          className={`${classes.canvas}${canvasIsDropTarget ? ` ${classes.canvasDropTarget ?? ''}` : ''}`}
+          data-drop-target={canvasIsDropTarget ? 'true' : undefined}
           data-testid="virtual-console-canvas"
-          style={{ height: draft.height, width: draft.width }}
+          style={{ height: draft.height, minHeight: '100%', minWidth: '100%', width: draft.width }}
           onClick={() => {
             if (mode === 'edit') {
               setSelection({ kind: 'canvas' });
             }
           }}
+          onDragLeave={event => {
+            const related = event.relatedTarget;
+            if (related instanceof Node && canvasRef.current?.contains(related)) {
+              return;
+            }
+            setDropTargetControlId(null);
+            setDropHighlightActive(false);
+          }}
           onDragOver={event => {
             event.preventDefault();
+            if (mode !== 'edit' || !activePage || !canvasRef.current) {
+              return;
+            }
+            const bounds = canvasRef.current.getBoundingClientRect();
+            const target = findDropTarget(activePage.controls, event.clientX - bounds.left, event.clientY - bounds.top);
+            setDropTargetControlId(target.parentId);
+            setDropHighlightActive(true);
           }}
           onDrop={handleDrop}
         >
           {activePage ? (
             <VirtualConsoleControlTree
               controls={activePage.controls}
+              draggingControlId={draggingControlId}
+              dropTargetControlId={dropTargetControlId}
               mode={mode}
               selectedControlId={selection.kind === 'control' ? selection.controlId : null}
               onSelectControl={id => {
@@ -456,6 +572,8 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     <Box
       className={mode === 'play' ? classes.popoutRoot : classes.root}
       display="flex"
+      flex={1}
+      h="100%"
       mih={0}
       style={{ flexDirection: 'column' }}
     >

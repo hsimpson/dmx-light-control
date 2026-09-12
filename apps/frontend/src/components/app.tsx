@@ -1,8 +1,11 @@
 'use client';
 
+import { ICON_SIZE } from '@/lib/constants';
 import { DmxSocketConnector } from '@/lib/dmx/dmx-socket-connector';
-import { AppShell, Burger } from '@mantine/core';
+import { useTranslation } from '@/lib/i18n/use-translation';
+import { ActionIcon, AppShell, Burger } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { SidebarSimpleIcon } from '@phosphor-icons/react';
 import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
 import Header from './header';
@@ -13,9 +16,12 @@ type AppProperties = {
 };
 
 const App = ({ children }: AppProperties) => {
-  const [opened, { toggle }] = useDisclosure();
+  const { t } = useTranslation();
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const pathname = usePathname();
   const isConsolePopout = /\/project\/[^/]+\/console\/popout\/?$/.test(pathname);
+  const isVirtualConsole = /\/project\/[^/]+\/console\/?$/.test(pathname);
 
   if (isConsolePopout) {
     return (
@@ -34,23 +40,47 @@ const App = ({ children }: AppProperties) => {
         main: {
           display: 'flex',
           flexDirection: 'column',
-          height: 'calc(100dvh - var(--app-shell-header-height, 60px))',
+          height: '100dvh',
           minHeight: 0,
-          overflow: 'auto',
+          overflow: isVirtualConsole ? 'hidden' : 'auto',
+          ...(isVirtualConsole ? { paddingBottom: 0 } : {}),
         },
       }}
       header={{ height: 60 }}
       navbar={{
         width: 250,
         breakpoint: 'sm',
-        collapsed: { mobile: !opened },
+        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
     >
       <DmxSocketConnector />
       <AppShell.Header>
-        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-
-        <Header />
+        <Header
+          leading={
+            <>
+              <Burger
+                hiddenFrom="sm"
+                opened={mobileOpened}
+                size="sm"
+                aria-label={t({ id: 'NavBar.menu', defaultMessage: 'Menu' })}
+                onClick={toggleMobile}
+              />
+              <ActionIcon
+                aria-expanded={desktopOpened}
+                aria-label={
+                  desktopOpened
+                    ? t({ id: 'NavBar.collapseNavigation', defaultMessage: 'Collapse navigation' })
+                    : t({ id: 'NavBar.expandNavigation', defaultMessage: 'Expand navigation' })
+                }
+                variant="subtle"
+                visibleFrom="sm"
+                onClick={toggleDesktop}
+              >
+                <SidebarSimpleIcon size={ICON_SIZE} weight="duotone" />
+              </ActionIcon>
+            </>
+          }
+        />
       </AppShell.Header>
 
       <AppShell.Navbar>

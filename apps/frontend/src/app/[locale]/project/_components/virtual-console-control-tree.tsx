@@ -5,9 +5,10 @@ import FrameControl from '@/app/[locale]/project/_components/virtual-console-con
 import ResizeHandles from '@/app/[locale]/project/_components/virtual-console-controls/resize-handles';
 import SliderControl from '@/app/[locale]/project/_components/virtual-console-controls/slider-control';
 import type { VirtualConsoleControlMode } from '@/app/[locale]/project/_components/virtual-console-controls/virtual-console-control-properties';
-import type {
-  VirtualConsoleControl,
-  VirtualConsoleResizeHandle,
+import {
+  findControl,
+  type VirtualConsoleControl,
+  type VirtualConsoleResizeHandle,
 } from '@/app/[locale]/project/_components/virtual-console-document';
 import type { PointerEvent } from 'react';
 
@@ -15,6 +16,8 @@ type VirtualConsoleControlTreeProperties = {
   controls: VirtualConsoleControl[];
   mode: VirtualConsoleControlMode;
   selectedControlId: string | null;
+  draggingControlId?: string | null;
+  dropTargetControlId?: string | null;
   onSelectControl: (id: string) => void;
   onMovePointerDown: (controlId: string, event: PointerEvent<HTMLDivElement>) => void;
   onResizePointerDown: (
@@ -28,6 +31,8 @@ const VirtualConsoleControlTree = ({
   controls,
   mode,
   selectedControlId,
+  draggingControlId = null,
+  dropTargetControlId = null,
   onSelectControl,
   onMovePointerDown,
   onResizePointerDown,
@@ -36,6 +41,9 @@ const VirtualConsoleControlTree = ({
     <>
       {controls.map(control => {
         const selected = selectedControlId === control.id;
+        const dragging = draggingControlId === control.id;
+        const draggingInside = Boolean(draggingControlId && findControl(control.children ?? [], draggingControlId));
+        const raised = dragging || draggingInside;
         return (
           <div
             key={control.id}
@@ -47,7 +55,7 @@ const VirtualConsoleControlTree = ({
               position: 'absolute',
               top: control.y,
               width: control.width,
-              zIndex: selected ? 1 : undefined,
+              zIndex: raised ? 2 : selected ? 1 : undefined,
             }}
             onClick={event => {
               event.stopPropagation();
@@ -62,9 +70,17 @@ const VirtualConsoleControlTree = ({
             }}
           >
             {control.type === 'frame' ? (
-              <FrameControl control={control} mode={mode} selected={selected}>
+              <FrameControl
+                control={control}
+                dropTarget={dropTargetControlId === control.id}
+                liftOverflow={draggingInside}
+                mode={mode}
+                selected={selected}
+              >
                 <VirtualConsoleControlTree
                   controls={control.children ?? []}
+                  draggingControlId={draggingControlId}
+                  dropTargetControlId={dropTargetControlId}
                   mode={mode}
                   selectedControlId={selectedControlId}
                   onSelectControl={onSelectControl}

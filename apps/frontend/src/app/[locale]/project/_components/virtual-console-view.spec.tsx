@@ -138,7 +138,7 @@ describe('VirtualConsoleView', () => {
     expect(screen.queryByTestId('virtual-console-split')).not.toBeInTheDocument();
   });
 
-  it('starts with a 3/1 split and resizes when the splitter is dragged', async () => {
+  it('starts with a 4/1 split and resizes when the splitter is dragged', async () => {
     renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
       apolloMocks: [
         {
@@ -149,7 +149,8 @@ describe('VirtualConsoleView', () => {
     });
 
     const split = await screen.findByTestId('virtual-console-split');
-    expect(split).toHaveStyle({ gridTemplateColumns: '3fr 6px 1fr' });
+    expect(split).toHaveStyle({ gridTemplateColumns: '4fr 6px 1fr' });
+    expect(screen.getByTestId('virtual-console-canvas')).toHaveStyle({ minHeight: '100%' });
 
     const splitter = screen.getByRole('separator', { name: 'Resize panels' });
     vi.spyOn(split, 'getBoundingClientRect').mockReturnValue({
@@ -168,7 +169,7 @@ describe('VirtualConsoleView', () => {
     fireEvent.pointerMove(splitter, { clientX: 120, pointerId: 1 });
     fireEvent.pointerUp(splitter, { pointerId: 1 });
 
-    expect(split).toHaveStyle({ gridTemplateColumns: '1.2fr 6px 2.8fr' });
+    expect(split).toHaveStyle({ gridTemplateColumns: '1.5fr 6px 3.5fr' });
   });
 
   it('resizes a selected control from every handle', async () => {
@@ -221,5 +222,159 @@ describe('VirtualConsoleView', () => {
 
     expect(screen.getByLabelText('Width')).toHaveValue('120');
     expect(screen.getByLabelText('Height')).toHaveValue('60');
+  });
+
+  it('highlights a frame while a control is dragged over it and reparents on drop', async () => {
+    const frameId = '33333333-3333-4333-8333-333333333333';
+    const buttonId = '22222222-2222-4222-8222-222222222222';
+    const graphqlControl = {
+      __typename: 'VirtualConsoleControlDto' as const,
+      borderWidth: null,
+      borderColor: null,
+      orientation: null,
+      foregroundColor: null,
+      valueType: null,
+      children: [] as unknown[],
+    };
+    const projectWithControls = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                ...graphqlControl,
+                id: frameId,
+                type: 'frame',
+                x: 10,
+                y: 10,
+                width: 200,
+                height: 180,
+                label: 'Frame',
+                backgroundColor: '#1a1b1e',
+              },
+              {
+                ...graphqlControl,
+                id: buttonId,
+                type: 'button',
+                x: 300,
+                y: 40,
+                width: 80,
+                height: 40,
+                label: 'Go',
+                backgroundColor: '#111111',
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithControls } },
+        },
+      ],
+    });
+
+    const canvas = await screen.findByTestId('virtual-console-canvas');
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      bottom: 720,
+      right: 1280,
+      width: 1280,
+      height: 720,
+      toJSON: () => ({}),
+    });
+
+    fireEvent.pointerDown(screen.getByTestId(`virtual-console-control-${buttonId}`), {
+      clientX: 320,
+      clientY: 50,
+      pointerId: 3,
+    });
+    fireEvent.pointerMove(window, { clientX: 80, clientY: 60, pointerId: 3 });
+
+    expect(screen.getByTestId('virtual-console-frame')).toHaveAttribute('data-drop-target', 'true');
+    expect(canvas).not.toHaveAttribute('data-drop-target');
+
+    fireEvent.pointerUp(window, { clientX: 80, clientY: 60, pointerId: 3 });
+
+    expect(
+      screen.getByTestId('virtual-console-frame').querySelector(`[data-testid="virtual-console-control-${buttonId}"]`),
+    ).not.toBeNull();
+    expect(screen.getByTestId('virtual-console-frame')).not.toHaveAttribute('data-drop-target');
+  });
+
+  it('highlights the canvas while a control is dragged over empty space', async () => {
+    const buttonId = '22222222-2222-4222-8222-222222222222';
+    const projectWithButton = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto',
+                id: buttonId,
+                type: 'button',
+                x: 40,
+                y: 50,
+                width: 80,
+                height: 40,
+                label: 'Go',
+                backgroundColor: '#111111',
+                borderWidth: null,
+                borderColor: null,
+                orientation: null,
+                foregroundColor: null,
+                valueType: null,
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithButton } },
+        },
+      ],
+    });
+
+    const canvas = await screen.findByTestId('virtual-console-canvas');
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      bottom: 720,
+      right: 1280,
+      width: 1280,
+      height: 720,
+      toJSON: () => ({}),
+    });
+
+    const button = screen.getByTestId(`virtual-console-control-${buttonId}`);
+    fireEvent.pointerDown(button, { clientX: 60, clientY: 60, pointerId: 4 });
+    fireEvent.pointerMove(window, { clientX: 400, clientY: 80, pointerId: 4 });
+
+    expect(canvas).toHaveAttribute('data-drop-target', 'true');
+    expect(button).toHaveStyle({ zIndex: '2' });
+
+    fireEvent.pointerUp(window, { clientX: 400, clientY: 80, pointerId: 4 });
+    expect(canvas).not.toHaveAttribute('data-drop-target');
   });
 });

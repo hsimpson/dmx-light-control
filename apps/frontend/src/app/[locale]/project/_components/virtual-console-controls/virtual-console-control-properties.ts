@@ -7,5 +7,7 @@ export type VirtualConsoleControlProperties = {
   control: VirtualConsoleControl;
   mode: VirtualConsoleControlMode;
   selected?: boolean;
+  dropTarget?: boolean;
+  liftOverflow?: boolean;
   children?: ReactNode;
 };

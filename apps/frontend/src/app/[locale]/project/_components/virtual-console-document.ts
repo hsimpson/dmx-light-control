@@ -185,6 +185,76 @@ export const updateControlInTree = (
     return control;
   });
 
+export const extractControl = (
+  controls: VirtualConsoleControl[],
+  id: string,
+): { controls: VirtualConsoleControl[]; control: VirtualConsoleControl | undefined } => {
+  let extracted: VirtualConsoleControl | undefined;
+  const next: VirtualConsoleControl[] = [];
+  for (const candidate of controls) {
+    if (candidate.id === id) {
+      extracted = candidate;
+      continue;
+    }
+    if (candidate.children) {
+      const nested = extractControl(candidate.children, id);
+      if (nested.control) {
+        extracted = nested.control;
+        next.push({ ...candidate, children: nested.controls });
+        continue;
+      }
+    }
+    next.push(candidate);
+  }
+  return { controls: next, control: extracted };
+};
+
+export const findControlAbsolutePosition = (
+  controls: VirtualConsoleControl[],
+  id: string,
+  originX = 0,
+  originY = 0,
+): { x: number; y: number } | undefined => {
+  for (const candidate of controls) {
+    const x = originX + candidate.x;
+    const y = originY + candidate.y;
+    if (candidate.id === id) {
+      return { x, y };
+    }
+    if (candidate.children) {
+      const nested = findControlAbsolutePosition(candidate.children, id, x, y);
+      if (nested) {
+        return nested;
+      }
+    }
+  }
+  return undefined;
+};
+
+export const findFrameOrigin = (
+  controls: VirtualConsoleControl[],
+  parentId: string | null,
+): { x: number; y: number } => {
+  if (parentId === null) {
+    return { x: 0, y: 0 };
+  }
+  return findControlAbsolutePosition(controls, parentId) ?? { x: 0, y: 0 };
+};
+
+export const reparentControl = (
+  controls: VirtualConsoleControl[],
+  id: string,
+  parentId: string | null,
+  x: number,
+  y: number,
+): VirtualConsoleControl[] => {
+  const extracted = extractControl(controls, id);
+  if (!extracted.control) {
+    return controls;
+  }
+  return insertControlInTree(extracted.controls, parentId, { ...extracted.control, x, y });
+};
+
 export const insertControlInTree = (
   controls: VirtualConsoleControl[],
   parentId: string | null,
@@ -202,6 +272,25 @@ export const insertControlInTree = (
     }
     return candidate;
   });
+};
+
+export const findControlParentId = (
+  controls: VirtualConsoleControl[],
+  id: string,
+  parentId: string | null = null,
+): string | null | undefined => {
+  for (const candidate of controls) {
+    if (candidate.id === id) {
+      return parentId;
+    }
+    if (candidate.children) {
+      const nested = findControlParentId(candidate.children, id, candidate.id);
+      if (nested !== undefined) {
+        return nested;
+      }
+    }
+  }
+  return undefined;
 };
 
 export const findDropTarget = (

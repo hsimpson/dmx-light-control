@@ -5,6 +5,7 @@ import {
   createDefaultVirtualConsoleDocument,
   findDropTarget,
   insertControlInTree,
+  reparentControl,
   resizedControlBounds,
   type VirtualConsoleDocument,
 } from './virtual-console-document';
@@ -52,6 +53,19 @@ describe('virtual-console-document', () => {
     expect(target.parentId).toBe('frame-2');
     const next = insertControlInTree([frame], target.parentId, createControl('button', target.localX, target.localY));
     expect(next[0]?.children?.[0]?.children).toHaveLength(1);
+  });
+
+  it('reparents a control into another frame and keeps canvas position', () => {
+    const button = { ...createControl('button', 30, 40), id: 'btn-1', width: 40, height: 20 };
+    const frame = { ...createControl('frame', 10, 10), id: 'frame-1', width: 200, height: 200, children: [] };
+    const tree = [frame, button];
+    const next = reparentControl(tree, 'btn-1', 'frame-1', 20, 30);
+    expect(next).toHaveLength(1);
+    expect(next[0]?.children?.[0]?.id).toBe('btn-1');
+    expect(next[0]?.children?.[0]?.x).toBe(20);
+    expect(next[0]?.children?.[0]?.y).toBe(30);
+    const backOnCanvas = reparentControl(next, 'btn-1', null, 400, 50);
+    expect(backOnCanvas.map(control => control.id)).toEqual(['frame-1', 'btn-1']);
   });
 
   it('resizes from edges and corners and clamps to the minimum size', () => {
