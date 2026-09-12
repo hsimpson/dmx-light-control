@@ -683,6 +683,9 @@ input ImportProjectInput {
 
   """The date and time when the entity was last updated"""
   updatedAt: DateTime
+
+  """The virtual console layout stored with this project"""
+  virtualConsole: VirtualConsoleInput
 }
 
 input ImportProjectsInput {
@@ -778,6 +781,9 @@ type Mutation {
 
   """update a project fixture instance"""
   updateProjectFixture(input: UpdateProjectFixtureInput!): ProjectFixtureDto!
+
+  """replace the virtual console layout for a project"""
+  updateProjectVirtualConsole(input: UpdateProjectVirtualConsoleInput!): ProjectDto!
 }
 
 input OpenPortsInput {
@@ -847,6 +853,9 @@ type ProjectDto {
 
   """The date and time when the entity was last updated"""
   updatedAt: DateTime!
+
+  """The virtual console layout for this project"""
+  virtualConsole: VirtualConsoleDto!
 }
 
 """The 3D environment used by a project"""
@@ -945,6 +954,9 @@ type ProjectExportProjectDto {
 
   """The date and time when the entity was last updated"""
   updatedAt: DateTime!
+
+  """The virtual console layout stored with this project"""
+  virtualConsole: VirtualConsoleDto
 }
 
 type ProjectFixtureChannelAssignmentDto {
@@ -1231,4 +1243,169 @@ input UpdateProjectInput {
 
   """Room width in meters"""
   roomWidth: Float
+}
+
+input UpdateProjectVirtualConsoleInput {
+  """The public ID of the project"""
+  publicId: UUID!
+
+  """The virtual console document to persist"""
+  virtualConsole: VirtualConsoleInput!
+}
+
+type VirtualConsoleControlDto {
+  """Background color as hex"""
+  backgroundColor: String!
+
+  """Frame border color as hex"""
+  borderColor: String
+
+  """Frame border width in pixels"""
+  borderWidth: Float
+
+  """Nested controls when this is a frame"""
+  children: [VirtualConsoleControlDto!]
+
+  """Foreground color as hex"""
+  foregroundColor: String
+
+  """Height in pixels"""
+  height: Float!
+
+  """Stable id of this control"""
+  id: UUID!
+
+  """Display label"""
+  label: String!
+
+  """Slider orientation"""
+  orientation: VirtualConsoleSliderOrientation
+
+  """Control kind"""
+  type: VirtualConsoleControlType!
+
+  """Slider value interpretation"""
+  valueType: VirtualConsoleSliderValueType
+
+  """Width in pixels"""
+  width: Float!
+
+  """X position relative to the parent"""
+  x: Float!
+
+  """Y position relative to the parent"""
+  y: Float!
+}
+
+input VirtualConsoleControlInput {
+  """Background color as hex"""
+  backgroundColor: String!
+
+  """Frame border color as hex"""
+  borderColor: String
+
+  """Frame border width in pixels"""
+  borderWidth: Float
+
+  """Nested controls when this is a frame"""
+  children: [VirtualConsoleControlInput!]
+
+  """Foreground color as hex"""
+  foregroundColor: String
+
+  """Height in pixels"""
+  height: Float!
+
+  """Stable id of this control"""
+  id: UUID!
+
+  """Display label"""
+  label: String!
+
+  """Slider orientation"""
+  orientation: VirtualConsoleSliderOrientation
+
+  """Control kind"""
+  type: VirtualConsoleControlType!
+
+  """Slider value interpretation"""
+  valueType: VirtualConsoleSliderValueType
+
+  """Width in pixels"""
+  width: Float!
+
+  """X position relative to the parent"""
+  x: Float!
+
+  """Y position relative to the parent"""
+  y: Float!
+}
+
+"""Kind of virtual console control"""
+enum VirtualConsoleControlType {
+  button
+  frame
+  slider
+}
+
+type VirtualConsoleDto {
+  """Canvas height in pixels"""
+  height: Float!
+
+  """Console pages"""
+  pages: [VirtualConsolePageDto!]!
+
+  """Virtual console document schema version"""
+  schemaVersion: Int!
+
+  """Canvas width in pixels"""
+  width: Float!
+}
+
+input VirtualConsoleInput {
+  """Canvas height in pixels"""
+  height: Float!
+
+  """Console pages"""
+  pages: [VirtualConsolePageInput!]!
+
+  """Virtual console document schema version"""
+  schemaVersion: Int!
+
+  """Canvas width in pixels"""
+  width: Float!
+}
+
+type VirtualConsolePageDto {
+  """Top-level controls on this page"""
+  controls: [VirtualConsoleControlDto!]!
+
+  """Stable id of this page"""
+  id: UUID!
+
+  """Page tab label"""
+  name: String!
+}
+
+input VirtualConsolePageInput {
+  """Top-level controls on this page"""
+  controls: [VirtualConsoleControlInput!]!
+
+  """Stable id of this page"""
+  id: UUID!
+
+  """Page tab label"""
+  name: String!
+}
+
+"""Slider orientation on the virtual console"""
+enum VirtualConsoleSliderOrientation {
+  horizontal
+  vertical
+}
+
+"""How a slider value is interpreted"""
+enum VirtualConsoleSliderValueType {
+  dmx
+  percentage
 }

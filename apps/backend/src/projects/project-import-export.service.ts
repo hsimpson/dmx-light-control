@@ -9,6 +9,7 @@ import { nextUniqueSceneObjectName, normalizeSceneObjectName } from '@/projects/
 import { environmentTypeForImport, optionalEnvironmentType } from '@/projects/project-environment';
 import { mapProjectsToExportDocument, ProjectExportDocument } from '@/projects/project-export.mapper';
 import { assertImportDocument } from '@/projects/project-import.validator';
+import { assertValidVirtualConsole } from '@/projects/virtual-console.validation';
 import {
   assertChannelModeBelongsToFixture,
   assertNoPatchOverlap,
@@ -47,6 +48,30 @@ function isPostgresUniqueViolation(error: unknown): boolean {
 
 function optionalPublicId(publicId?: string): { publicId: string } | Record<string, never> {
   return publicId ? { publicId } : {};
+}
+
+function validatedVirtualConsole(
+  virtualConsole: NonNullable<ImportProjectsInput['projects'][number]['virtualConsole']>,
+) {
+  assertValidVirtualConsole(virtualConsole);
+  return virtualConsole;
+}
+
+function virtualConsolePatchForUpdate(virtualConsole: ImportProjectsInput['projects'][number]['virtualConsole']) {
+  if (virtualConsole === null || virtualConsole === undefined) {
+    return { virtualConsole: null };
+  }
+  return { virtualConsole: validatedVirtualConsole(virtualConsole) };
+}
+
+function virtualConsolePatchForInsert(virtualConsole: ImportProjectsInput['projects'][number]['virtualConsole']) {
+  if (virtualConsole === undefined) {
+    return {};
+  }
+  if (virtualConsole === null) {
+    return { virtualConsole: null };
+  }
+  return { virtualConsole: validatedVirtualConsole(virtualConsole) };
 }
 
 @Injectable()
@@ -110,6 +135,7 @@ export class ProjectImportExportService {
           ...optionalEnvironmentType(incoming),
           ...optionalRoomDimensions(incoming),
           ...optionalImportTimestamps(incoming),
+          ...virtualConsolePatchForUpdate(incoming.virtualConsole),
         })
         .where(eq(project.id, existingId))
         .returning();
@@ -129,6 +155,7 @@ export class ProjectImportExportService {
           ...optionalPublicId(incoming.publicId),
           ...optionalRoomDimensions(incoming),
           ...optionalImportTimestamps(incoming),
+          ...virtualConsolePatchForInsert(incoming.virtualConsole),
         })
         .returning();
       const row = inserted[0];

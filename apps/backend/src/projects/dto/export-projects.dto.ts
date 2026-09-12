@@ -1,4 +1,5 @@
 import { ExportTimestampsDto } from '@/db/export-timestamps.dto';
+import { VirtualConsoleDto } from '@/projects/dto/virtual-console.dto';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
@@ -65,6 +66,13 @@ export class ProjectExportProjectDto extends ExportTimestampsDto {
 
   @Field(() => Float, { description: 'Room height in meters' })
   public roomHeight: number;
+
+  @Field(() => VirtualConsoleDto, {
+    nullable: true,
+    description: 'The virtual console layout stored with this project',
+  })
+  @Type(() => VirtualConsoleDto)
+  public virtualConsole: VirtualConsoleDto | null;
 
   @Field(() => [ProjectExportFixtureDto], {
     description: 'The fixture instances patched into this project',

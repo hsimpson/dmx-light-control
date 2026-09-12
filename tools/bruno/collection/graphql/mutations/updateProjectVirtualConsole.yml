@@ -1,0 +1,116 @@
+info:
+  name: updateProjectVirtualConsole
+  type: graphql
+  seq: 20
+
+graphql:
+  method: POST
+  url: '{{backendUrl}}/graphql'
+  auth: inherit
+  body:
+    query: |
+      mutation($input: UpdateProjectVirtualConsoleInput!) {
+        updateProjectVirtualConsole(input: $input) {
+          createdAt
+          environmentType
+          name
+          project3dObjects {
+            createdAt
+            name
+            publicId
+            sceneObjectType {
+              createdAt
+              defaultSizeX
+              defaultSizeY
+              defaultSizeZ
+              geometryKind
+              isScalable
+              modelPath
+              name
+              publicId
+              updatedAt
+            }
+            sizeX
+            sizeY
+            sizeZ
+            transform
+            updatedAt
+          }
+          projectFixtures {
+            channelMode {
+              createdAt
+              fixtureChannelAssignments {
+                channelNumber
+                fixtureChannelDefinition
+              }
+              name
+              publicId
+              updatedAt
+            }
+            createdAt
+            fixture {
+              createdAt
+              fixtureVendor {
+                createdAt
+                name
+                publicId
+                updatedAt
+              }
+              name
+              publicId
+              updatedAt
+            }
+            publicId
+            startAddress
+            updatedAt
+          }
+          publicId
+          roomHeight
+          roomLength
+          roomWidth
+          updatedAt
+          virtualConsole {
+            height
+            pages {
+              controls {
+                backgroundColor
+                borderColor
+                borderWidth
+                children
+                foregroundColor
+                height
+                id
+                label
+                orientation
+                type
+                valueType
+                width
+                x
+                y
+              }
+              id
+              name
+            }
+            schemaVersion
+            width
+          }
+        }
+      }
+    variables: |
+      {
+        "input": {
+          "publicId": null,
+          "virtualConsole": {
+            "height": null,
+            "pages": [],
+            "schemaVersion": null,
+            "width": null
+          }
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

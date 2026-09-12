@@ -8,6 +8,7 @@ import {
   InvalidProject3dObjectNameException,
   InvalidProject3dObjectSizeException,
   InvalidProject3dObjectTransformException,
+  InvalidVirtualConsoleException,
   Project3dObjectNameExistsException,
   Project3dObjectNotFoundException,
   ProjectAlreadyExistsException,
@@ -144,5 +145,14 @@ describe('project exceptions', () => {
     expect(err.code).toBe('DMX_ADDRESS_OUT_OF_RANGE');
     expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
     expect(err.message).toContain('510');
+  });
+
+  it('InvalidVirtualConsoleException maps to BAD_REQUEST', () => {
+    const err = new InvalidVirtualConsoleException('bad console');
+    expect(err).toBeInstanceOf(BaseDomainError);
+    expect(err.code).toBe('INVALID_VIRTUAL_CONSOLE');
+    expect(err.statusCode).toBe(HttpStatus.BAD_REQUEST);
+    expect(err.message).toBe('bad console');
+    expect(err.name).toBe('InvalidVirtualConsoleError');
   });
 });

@@ -7,7 +7,7 @@ import { useQuery } from '@apollo/client/react';
 import { Box, Text, Title } from '@mantine/core';
 import { useParams } from 'next/navigation';
 import type { ReactNode } from 'react';
-import ProjectDetailTabs from '../_components/project-detail-tabs';
+import ProjectDetailTabs from '../../_components/project-detail-tabs';
 
 type ProjectDetailLayoutProperties = {
   children: ReactNode;

@@ -1,5 +1,6 @@
 import { ImportTimestampsInput } from '@/db/import-timestamps.input';
 import { ProjectDto } from '@/projects/dto/project.dto';
+import { VirtualConsoleInput } from '@/projects/dto/virtual-console.dto';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { ROOM_DIMENSION_MAX, ROOM_DIMENSION_MIN } from '@/projects/project-room-dimensions';
 import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
@@ -139,6 +140,15 @@ export class ImportProjectInput extends ImportTimestampsInput {
   @Min(ROOM_DIMENSION_MIN)
   @Max(ROOM_DIMENSION_MAX)
   public roomHeight?: number;
+
+  @Field(() => VirtualConsoleInput, {
+    nullable: true,
+    description: 'The virtual console layout stored with this project',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => VirtualConsoleInput)
+  public virtualConsole?: VirtualConsoleInput | null;
 
   @Field(() => [ImportProjectFixtureInput], {
     nullable: true,

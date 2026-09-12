@@ -15,6 +15,7 @@ import ProjectFixtureTable from './project-fixture-table';
 import ProjectTabEmptyState from './project-tab-empty-state';
 import ThreeDView from './three-d-view';
 import UniverseView from './universe-view';
+import VirtualConsoleView from './virtual-console-view';
 
 type ProjectDetailTabsProperties = {
   projectPublicId: string;
@@ -42,6 +43,7 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
     dmx: t({ id: 'ProjectDetail.tabs.dmxView', defaultMessage: 'DMX View' }),
     '2d': t({ id: 'ProjectDetail.tabs.twoDView', defaultMessage: '2D View' }),
     '3d': t({ id: 'ProjectDetail.tabs.threeDView', defaultMessage: '3D View' }),
+    console: t({ id: 'ProjectDetail.tabs.virtualConsole', defaultMessage: 'Virtual Console' }),
   };
 
   return (
@@ -74,6 +76,10 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
 
       <Tabs.Panel value="3d" pt="md" keepMounted={false} className={classes.threeDPanel}>
         <ThreeDView projectPublicId={projectPublicId} />
+      </Tabs.Panel>
+
+      <Tabs.Panel value="console" pt="md" keepMounted={false} className={classes.threeDPanel}>
+        <VirtualConsoleView projectPublicId={projectPublicId} />
       </Tabs.Panel>
     </Tabs>
   );

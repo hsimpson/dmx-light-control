@@ -172,3 +172,13 @@ export class ProjectFixtureAddressOverlapException extends BaseDomainError {
     this.name = 'ProjectFixtureAddressOverlapError';
   }
 }
+
+export class InvalidVirtualConsoleException extends BaseDomainError {
+  public readonly code = 'INVALID_VIRTUAL_CONSOLE';
+  public override readonly statusCode = HttpStatus.BAD_REQUEST;
+
+  public constructor(message: string) {
+    super(message);
+    this.name = 'InvalidVirtualConsoleError';
+  }
+}

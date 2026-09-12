@@ -1,0 +1,50 @@
+.slider {
+  box-sizing: border-box;
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.vertical {
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0.35rem 0;
+}
+
+.horizontal {
+  align-items: center;
+  flex-direction: row;
+  padding: 0 0.35rem;
+}
+
+.track {
+  border-radius: 999px;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+}
+
+.thumb {
+  border-radius: 999px;
+  position: absolute;
+}
+
+.selected {
+  outline: 2px solid var(--mantine-color-blue-5);
+  outline-offset: 1px;
+}
+
+.range {
+  cursor: pointer;
+  height: 100%;
+  left: 0;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}

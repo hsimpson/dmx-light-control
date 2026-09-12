@@ -62,6 +62,20 @@ export const mockedProject = {
   roomWidth: 10,
   roomLength: 8,
   roomHeight: 5,
+  virtualConsole: {
+    __typename: 'VirtualConsoleDto',
+    schemaVersion: 1,
+    width: 1280,
+    height: 720,
+    pages: [
+      {
+        __typename: 'VirtualConsolePageDto',
+        id: '11111111-1111-4111-8111-111111111111',
+        name: 'Page 1',
+        controls: [],
+      },
+    ],
+  },
   createdAt: now,
   updatedAt: now,
 };
@@ -95,7 +109,7 @@ type MockedProjectFixture = {
 
 export const mockGraphql = async (page: Page) => {
   const fixtures = [mockedFixture];
-  const projects = [{ ...mockedProject }];
+  const projects: (typeof mockedProject)[] = [{ ...mockedProject }];
   const projectFixtures: Record<string, MockedProjectFixture[]> = {
     [mockedProject.publicId]: [],
   };
@@ -200,20 +214,24 @@ export const mockGraphql = async (page: Page) => {
       };
     } else if (postData.operationName === 'CreateProject' || postData.query?.includes('createProject')) {
       const name = postData.variables?.name ?? 'New Project';
-      const created = {
-        __typename: 'ProjectDto',
+      const created: typeof mockedProject = {
+        ...mockedProject,
         publicId: `proj-${projects.length + 1}`,
         name,
-        environmentType: 'SimpleGround',
-        roomWidth: 10,
-        roomLength: 8,
-        roomHeight: 5,
-        createdAt: now,
-        updatedAt: now,
       };
       projects.push(created);
       projectFixtures[created.publicId] = [];
       body = { data: { createProject: created } };
+    } else if (
+      postData.operationName === 'UpdateProjectVirtualConsole' ||
+      postData.query?.includes('updateProjectVirtualConsole')
+    ) {
+      const publicId = postData.variables?.input?.publicId;
+      const existing = projects.find(project => project.publicId === publicId);
+      if (existing && postData.variables?.input?.virtualConsole) {
+        existing.virtualConsole = postData.variables.input.virtualConsole as typeof mockedProject.virtualConsole;
+      }
+      body = { data: { updateProjectVirtualConsole: existing ?? null } };
     } else if (postData.operationName === 'UpdateProject' || postData.query?.includes('updateProject')) {
       const publicId = postData.variables?.input?.publicId;
       const name = postData.variables?.input?.name;

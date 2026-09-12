@@ -1,0 +1,43 @@
+.root {
+  align-items: stretch;
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+.workspace {
+  display: flex;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+}
+
+.canvas {
+  background:
+    linear-gradient(45deg, rgb(255 255 255 / 4%) 25%, transparent 25%) 0 0 / 16px 16px,
+    linear-gradient(-45deg, rgb(255 255 255 / 4%) 25%, transparent 25%) 0 0 / 16px 16px,
+    var(--mantine-color-dark-7);
+  box-shadow: 0 0 0 1px var(--mantine-color-default-border);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.control {
+  position: absolute;
+}
+
+.panel {
+  flex-shrink: 0;
+  overflow: auto;
+}
+
+.paletteItem {
+  cursor: grab;
+}
+
+.popoutRoot {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 100dvh;
+}

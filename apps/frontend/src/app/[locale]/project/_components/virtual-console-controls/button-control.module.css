@@ -1,0 +1,27 @@
+.button {
+  align-items: center;
+  border: none;
+  box-sizing: border-box;
+  cursor: default;
+  display: flex;
+  font-size: 0.8rem;
+  font-weight: 600;
+  height: 100%;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 0.5rem;
+  width: 100%;
+}
+
+.play {
+  cursor: pointer;
+}
+
+.play:active {
+  filter: brightness(1.15);
+}
+
+.selected {
+  outline: 2px solid var(--mantine-color-blue-filled);
+  outline-offset: 1px;
+}

@@ -9,6 +9,56 @@ fragment ProjectFields on ProjectDto {
   updatedAt
 }
 
+fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
+  id
+  type
+  x
+  y
+  width
+  height
+  label
+  backgroundColor
+  borderWidth
+  borderColor
+  orientation
+  foregroundColor
+  valueType
+}
+
+fragment VirtualConsoleFields on VirtualConsoleDto {
+  schemaVersion
+  width
+  height
+  pages {
+    id
+    name
+    controls {
+      ...VirtualConsoleControlFields
+      children {
+        ...VirtualConsoleControlFields
+        children {
+          ...VirtualConsoleControlFields
+          children {
+            ...VirtualConsoleControlFields
+            children {
+              ...VirtualConsoleControlFields
+              children {
+                ...VirtualConsoleControlFields
+                children {
+                  ...VirtualConsoleControlFields
+                  children {
+                    ...VirtualConsoleControlFields
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 fragment ProjectFixtureFields on ProjectFixtureDto {
   publicId
   startAddress
@@ -81,6 +131,9 @@ query GetProjects {
 query GetProject($publicId: UUID!) {
   project(publicId: $publicId) {
     ...ProjectFields
+    virtualConsole {
+      ...VirtualConsoleFields
+    }
     projectFixtures {
       ...ProjectFixtureFields
     }
@@ -98,6 +151,12 @@ mutation CreateProject($name: String!) {
 
 mutation UpdateProject($input: UpdateProjectInput!) {
   updateProject(input: $input) {
+    ...ProjectFields
+  }
+}
+
+mutation UpdateProjectVirtualConsole($input: UpdateProjectVirtualConsoleInput!) {
+  updateProjectVirtualConsole(input: $input) {
     ...ProjectFields
   }
 }
@@ -178,6 +237,9 @@ query ExportProjects {
         transform
         createdAt
         updatedAt
+      }
+      virtualConsole {
+        ...VirtualConsoleFields
       }
     }
   }

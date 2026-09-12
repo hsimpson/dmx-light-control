@@ -1,8 +1,9 @@
 import { pk, timestamps } from '@/db/columns.helpers';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { DEFAULT_ROOM_HEIGHT, DEFAULT_ROOM_LENGTH, DEFAULT_ROOM_WIDTH } from '@/projects/project-room-dimensions';
+import { VirtualConsoleDocument } from '@/projects/virtual-console';
 import * as d from 'drizzle-orm/pg-core';
-import { doublePrecision, varchar } from 'drizzle-orm/pg-core';
+import { doublePrecision, jsonb, varchar } from 'drizzle-orm/pg-core';
 
 type EnvironmentTypeValue = (typeof ProjectEnvironmentType)[keyof typeof ProjectEnvironmentType];
 const environmentTypeValues = Object.values(ProjectEnvironmentType) as [
@@ -18,6 +19,7 @@ const project = d.snakeCase.table('projects', {
   roomWidth: doublePrecision().notNull().default(DEFAULT_ROOM_WIDTH),
   roomLength: doublePrecision().notNull().default(DEFAULT_ROOM_LENGTH),
   roomHeight: doublePrecision().notNull().default(DEFAULT_ROOM_HEIGHT),
+  virtualConsole: jsonb().$type<VirtualConsoleDocument>(),
 
   ...timestamps,
 });

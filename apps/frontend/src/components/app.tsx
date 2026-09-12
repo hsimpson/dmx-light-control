@@ -3,6 +3,7 @@
 import { DmxSocketConnector } from '@/lib/dmx/dmx-socket-connector';
 import { AppShell, Burger } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
 import Header from './header';
 import NavBar from './navbar';
@@ -13,6 +14,17 @@ type AppProperties = {
 
 const App = ({ children }: AppProperties) => {
   const [opened, { toggle }] = useDisclosure();
+  const pathname = usePathname();
+  const isConsolePopout = /\/project\/[^/]+\/console\/popout\/?$/.test(pathname);
+
+  if (isConsolePopout) {
+    return (
+      <>
+        <DmxSocketConnector />
+        {children}
+      </>
+    );
+  }
 
   return (
     <AppShell

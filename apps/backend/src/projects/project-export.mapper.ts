@@ -1,7 +1,8 @@
 import { ExportTimestamps, ExportTimestampSource, mapExportTimestamps } from '@/db/export-timestamps';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
+import { VirtualConsoleDocument } from '@/projects/virtual-console';
 
-export const PROJECT_EXPORT_SCHEMA_VERSION = 7;
+export const PROJECT_EXPORT_SCHEMA_VERSION = 8;
 
 export type ProjectExportFixture = {
   publicId: string;
@@ -28,6 +29,7 @@ export type ProjectExportProject = {
   roomWidth: number;
   roomLength: number;
   roomHeight: number;
+  virtualConsole: VirtualConsoleDocument | null;
   projectFixtures: ProjectExportFixture[];
   project3dObjects: ProjectExport3dObject[];
 } & ExportTimestamps;
@@ -61,6 +63,7 @@ export type ProjectExportSource = {
   roomWidth: number;
   roomLength: number;
   roomHeight: number;
+  virtualConsole?: VirtualConsoleDocument | null;
   projectFixtures?: ProjectExportFixtureSource[];
   project3dObjects?: ProjectExport3dObjectSource[];
 } & ExportTimestampSource;
@@ -100,6 +103,7 @@ export function mapProjectsToExportDocument(projects: ProjectExportSource[]): Pr
         roomWidth: project.roomWidth,
         roomLength: project.roomLength,
         roomHeight: project.roomHeight,
+        virtualConsole: project.virtualConsole ?? null,
         projectFixtures: [...(project.projectFixtures ?? [])]
           .map(mapProjectFixtureToExport)
           .sort((left, right) => left.startAddress - right.startAddress || left.publicId.localeCompare(right.publicId)),

@@ -69,6 +69,31 @@ graphql:
           roomLength
           roomWidth
           updatedAt
+          virtualConsole {
+            height
+            pages {
+              controls {
+                backgroundColor
+                borderColor
+                borderWidth
+                children
+                foregroundColor
+                height
+                id
+                label
+                orientation
+                type
+                valueType
+                width
+                x
+                y
+              }
+              id
+              name
+            }
+            schemaVersion
+            width
+          }
         }
       }
     variables: |

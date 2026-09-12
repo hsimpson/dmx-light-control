@@ -64,8 +64,8 @@ export const enum FixtureChannelPreset {
   IntensityUv = 'IntensityUV',
   IntensityWhite = 'IntensityWhite',
   ShutterStrobeFastSlow = 'ShutterStrobeFastSlow',
-  ShutterStrobeSlowFast = 'ShutterStrobeSlowFast'
-};
+  ShutterStrobeSlowFast = 'ShutterStrobeSlowFast',
+}
 
 export type ImportFixtureAssignmentInput = {
   /** The name of the assigned channel definition when publicId is omitted */
@@ -237,6 +237,8 @@ export type ImportProjectInput = {
   roomWidth?: number | null | undefined;
   /** The date and time when the entity was last updated */
   updatedAt?: Date | null | undefined;
+  /** The virtual console layout stored with this project */
+  virtualConsole?: VirtualConsoleInput | null | undefined;
 };
 
 export type ImportProjectsInput = {
@@ -249,14 +251,14 @@ export type ImportProjectsInput = {
 /** The 3D environment used by a project */
 export const enum ProjectEnvironmentType {
   Room = 'Room',
-  SimpleGround = 'SimpleGround'
-};
+  SimpleGround = 'SimpleGround',
+}
 
 /** How a scene object type is rendered in the 3D view */
 export const enum SceneObjectGeometryKind {
   Box = 'Box',
-  Gltf = 'Gltf'
-};
+  Gltf = 'Gltf',
+}
 
 export type UpdateFixtureChannelAssignmentInput = {
   /** The public ID of the channel definition to assign */
@@ -363,210 +365,4790 @@ export type UpdateProjectInput = {
   roomWidth?: number | null | undefined;
 };
 
-export type FixtureChannelAssignmentFieldsFragment = { publicId: string, channelNumber: number, createdAt: Date, updatedAt: Date, fixtureChannelDefinition: { publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> } };
+export type UpdateProjectVirtualConsoleInput = {
+  /** The public ID of the project */
+  publicId: string;
+  /** The virtual console document to persist */
+  virtualConsole: VirtualConsoleInput;
+};
 
-export type FixtureChannelRangeFieldsFragment = { publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date };
+export type VirtualConsoleControlInput = {
+  /** Background color as hex */
+  backgroundColor: string;
+  /** Frame border color as hex */
+  borderColor?: string | null | undefined;
+  /** Frame border width in pixels */
+  borderWidth?: number | null | undefined;
+  /** Nested controls when this is a frame */
+  children?: Array<VirtualConsoleControlInput> | null | undefined;
+  /** Foreground color as hex */
+  foregroundColor?: string | null | undefined;
+  /** Height in pixels */
+  height: number;
+  /** Stable id of this control */
+  id: string;
+  /** Display label */
+  label: string;
+  /** Slider orientation */
+  orientation?: VirtualConsoleSliderOrientation | null | undefined;
+  /** Control kind */
+  type: VirtualConsoleControlType;
+  /** Slider value interpretation */
+  valueType?: VirtualConsoleSliderValueType | null | undefined;
+  /** Width in pixels */
+  width: number;
+  /** X position relative to the parent */
+  x: number;
+  /** Y position relative to the parent */
+  y: number;
+};
 
-export type FixtureChannelDefinitionFieldsFragment = { publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> };
+/** Kind of virtual console control */
+export const enum VirtualConsoleControlType {
+  Button = 'button',
+  Frame = 'frame',
+  Slider = 'slider',
+}
 
-export type FixtureChannelModeFieldsFragment = { publicId: string, name: string, order: number, createdAt: Date, updatedAt: Date, fixtureChannelAssignments: Array<{ publicId: string, channelNumber: number, createdAt: Date, updatedAt: Date, fixtureChannelDefinition: { publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> } }> };
+export type VirtualConsoleInput = {
+  /** Canvas height in pixels */
+  height: number;
+  /** Console pages */
+  pages: Array<VirtualConsolePageInput>;
+  /** Virtual console document schema version */
+  schemaVersion: number;
+  /** Canvas width in pixels */
+  width: number;
+};
 
-export type FixtureFieldsFragment = { publicId: string, name: string, weight: number | null, width: number | null, length: number | null, height: number | null, picturePath: string | null, picture2dPath: string | null, model3dPath: string | null, createdAt: Date, updatedAt: Date, fixtureChannelDefinitions: Array<{ publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> }>, fixtureChannelModes: Array<{ publicId: string, name: string, order: number, createdAt: Date, updatedAt: Date, fixtureChannelAssignments: Array<{ publicId: string, channelNumber: number, createdAt: Date, updatedAt: Date, fixtureChannelDefinition: { publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> } }> }>, fixtureVendor: { publicId: string, name: string, createdAt: Date, updatedAt: Date } };
+export type VirtualConsolePageInput = {
+  /** Top-level controls on this page */
+  controls: Array<VirtualConsoleControlInput>;
+  /** Stable id of this page */
+  id: string;
+  /** Page tab label */
+  name: string;
+};
 
-export type GetFixturesQueryVariables = Exact<{ [key: string]: never; }>;
+/** Slider orientation on the virtual console */
+export const enum VirtualConsoleSliderOrientation {
+  Horizontal = 'horizontal',
+  Vertical = 'vertical',
+}
 
+/** How a slider value is interpreted */
+export const enum VirtualConsoleSliderValueType {
+  Dmx = 'dmx',
+  Percentage = 'percentage',
+}
 
-export type GetFixturesQuery = { fixtures: Array<{ publicId: string, name: string, weight: number | null, width: number | null, length: number | null, height: number | null, picturePath: string | null, picture2dPath: string | null, model3dPath: string | null, createdAt: Date, updatedAt: Date, fixtureChannelDefinitions: Array<{ publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> }>, fixtureChannelModes: Array<{ publicId: string, name: string, order: number, createdAt: Date, updatedAt: Date, fixtureChannelAssignments: Array<{ publicId: string, channelNumber: number, createdAt: Date, updatedAt: Date, fixtureChannelDefinition: { publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> } }> }>, fixtureVendor: { publicId: string, name: string, createdAt: Date, updatedAt: Date } }> };
+export type FixtureChannelAssignmentFieldsFragment = {
+  publicId: string;
+  channelNumber: number;
+  createdAt: Date;
+  updatedAt: Date;
+  fixtureChannelDefinition: {
+    publicId: string;
+    name: string;
+    order: number;
+    preset: FixtureChannelPreset;
+    createdAt: Date;
+    updatedAt: Date;
+    fixtureChannelRanges: Array<{
+      publicId: string;
+      dmxStart: number;
+      dmxEnd: number;
+      description: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }>;
+  };
+};
+
+export type FixtureChannelRangeFieldsFragment = {
+  publicId: string;
+  dmxStart: number;
+  dmxEnd: number;
+  description: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type FixtureChannelDefinitionFieldsFragment = {
+  publicId: string;
+  name: string;
+  order: number;
+  preset: FixtureChannelPreset;
+  createdAt: Date;
+  updatedAt: Date;
+  fixtureChannelRanges: Array<{
+    publicId: string;
+    dmxStart: number;
+    dmxEnd: number;
+    description: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
+};
+
+export type FixtureChannelModeFieldsFragment = {
+  publicId: string;
+  name: string;
+  order: number;
+  createdAt: Date;
+  updatedAt: Date;
+  fixtureChannelAssignments: Array<{
+    publicId: string;
+    channelNumber: number;
+    createdAt: Date;
+    updatedAt: Date;
+    fixtureChannelDefinition: {
+      publicId: string;
+      name: string;
+      order: number;
+      preset: FixtureChannelPreset;
+      createdAt: Date;
+      updatedAt: Date;
+      fixtureChannelRanges: Array<{
+        publicId: string;
+        dmxStart: number;
+        dmxEnd: number;
+        description: string;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+    };
+  }>;
+};
+
+export type FixtureFieldsFragment = {
+  publicId: string;
+  name: string;
+  weight: number | null;
+  width: number | null;
+  length: number | null;
+  height: number | null;
+  picturePath: string | null;
+  picture2dPath: string | null;
+  model3dPath: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  fixtureChannelDefinitions: Array<{
+    publicId: string;
+    name: string;
+    order: number;
+    preset: FixtureChannelPreset;
+    createdAt: Date;
+    updatedAt: Date;
+    fixtureChannelRanges: Array<{
+      publicId: string;
+      dmxStart: number;
+      dmxEnd: number;
+      description: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }>;
+  }>;
+  fixtureChannelModes: Array<{
+    publicId: string;
+    name: string;
+    order: number;
+    createdAt: Date;
+    updatedAt: Date;
+    fixtureChannelAssignments: Array<{
+      publicId: string;
+      channelNumber: number;
+      createdAt: Date;
+      updatedAt: Date;
+      fixtureChannelDefinition: {
+        publicId: string;
+        name: string;
+        order: number;
+        preset: FixtureChannelPreset;
+        createdAt: Date;
+        updatedAt: Date;
+        fixtureChannelRanges: Array<{
+          publicId: string;
+          dmxStart: number;
+          dmxEnd: number;
+          description: string;
+          createdAt: Date;
+          updatedAt: Date;
+        }>;
+      };
+    }>;
+  }>;
+  fixtureVendor: { publicId: string; name: string; createdAt: Date; updatedAt: Date };
+};
+
+export type GetFixturesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetFixturesQuery = {
+  fixtures: Array<{
+    publicId: string;
+    name: string;
+    weight: number | null;
+    width: number | null;
+    length: number | null;
+    height: number | null;
+    picturePath: string | null;
+    picture2dPath: string | null;
+    model3dPath: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    fixtureChannelDefinitions: Array<{
+      publicId: string;
+      name: string;
+      order: number;
+      preset: FixtureChannelPreset;
+      createdAt: Date;
+      updatedAt: Date;
+      fixtureChannelRanges: Array<{
+        publicId: string;
+        dmxStart: number;
+        dmxEnd: number;
+        description: string;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+    }>;
+    fixtureChannelModes: Array<{
+      publicId: string;
+      name: string;
+      order: number;
+      createdAt: Date;
+      updatedAt: Date;
+      fixtureChannelAssignments: Array<{
+        publicId: string;
+        channelNumber: number;
+        createdAt: Date;
+        updatedAt: Date;
+        fixtureChannelDefinition: {
+          publicId: string;
+          name: string;
+          order: number;
+          preset: FixtureChannelPreset;
+          createdAt: Date;
+          updatedAt: Date;
+          fixtureChannelRanges: Array<{
+            publicId: string;
+            dmxStart: number;
+            dmxEnd: number;
+            description: string;
+            createdAt: Date;
+            updatedAt: Date;
+          }>;
+        };
+      }>;
+    }>;
+    fixtureVendor: { publicId: string; name: string; createdAt: Date; updatedAt: Date };
+  }>;
+};
 
 export type GetFixtureQueryVariables = Exact<{
   publicId: string;
 }>;
 
-
-export type GetFixtureQuery = { fixture: { publicId: string, name: string, weight: number | null, width: number | null, length: number | null, height: number | null, picturePath: string | null, picture2dPath: string | null, model3dPath: string | null, createdAt: Date, updatedAt: Date, fixtureChannelDefinitions: Array<{ publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> }>, fixtureChannelModes: Array<{ publicId: string, name: string, order: number, createdAt: Date, updatedAt: Date, fixtureChannelAssignments: Array<{ publicId: string, channelNumber: number, createdAt: Date, updatedAt: Date, fixtureChannelDefinition: { publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> } }> }>, fixtureVendor: { publicId: string, name: string, createdAt: Date, updatedAt: Date } } | null };
+export type GetFixtureQuery = {
+  fixture: {
+    publicId: string;
+    name: string;
+    weight: number | null;
+    width: number | null;
+    length: number | null;
+    height: number | null;
+    picturePath: string | null;
+    picture2dPath: string | null;
+    model3dPath: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    fixtureChannelDefinitions: Array<{
+      publicId: string;
+      name: string;
+      order: number;
+      preset: FixtureChannelPreset;
+      createdAt: Date;
+      updatedAt: Date;
+      fixtureChannelRanges: Array<{
+        publicId: string;
+        dmxStart: number;
+        dmxEnd: number;
+        description: string;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+    }>;
+    fixtureChannelModes: Array<{
+      publicId: string;
+      name: string;
+      order: number;
+      createdAt: Date;
+      updatedAt: Date;
+      fixtureChannelAssignments: Array<{
+        publicId: string;
+        channelNumber: number;
+        createdAt: Date;
+        updatedAt: Date;
+        fixtureChannelDefinition: {
+          publicId: string;
+          name: string;
+          order: number;
+          preset: FixtureChannelPreset;
+          createdAt: Date;
+          updatedAt: Date;
+          fixtureChannelRanges: Array<{
+            publicId: string;
+            dmxStart: number;
+            dmxEnd: number;
+            description: string;
+            createdAt: Date;
+            updatedAt: Date;
+          }>;
+        };
+      }>;
+    }>;
+    fixtureVendor: { publicId: string; name: string; createdAt: Date; updatedAt: Date };
+  } | null;
+};
 
 export type UpdateFixtureMutationVariables = Exact<{
   input: UpdateFixtureInput;
 }>;
 
-
-export type UpdateFixtureMutation = { updateFixture: { publicId: string, name: string, weight: number | null, width: number | null, length: number | null, height: number | null, picturePath: string | null, picture2dPath: string | null, model3dPath: string | null, createdAt: Date, updatedAt: Date, fixtureChannelDefinitions: Array<{ publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> }>, fixtureChannelModes: Array<{ publicId: string, name: string, order: number, createdAt: Date, updatedAt: Date, fixtureChannelAssignments: Array<{ publicId: string, channelNumber: number, createdAt: Date, updatedAt: Date, fixtureChannelDefinition: { publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> } }> }>, fixtureVendor: { publicId: string, name: string, createdAt: Date, updatedAt: Date } } };
+export type UpdateFixtureMutation = {
+  updateFixture: {
+    publicId: string;
+    name: string;
+    weight: number | null;
+    width: number | null;
+    length: number | null;
+    height: number | null;
+    picturePath: string | null;
+    picture2dPath: string | null;
+    model3dPath: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    fixtureChannelDefinitions: Array<{
+      publicId: string;
+      name: string;
+      order: number;
+      preset: FixtureChannelPreset;
+      createdAt: Date;
+      updatedAt: Date;
+      fixtureChannelRanges: Array<{
+        publicId: string;
+        dmxStart: number;
+        dmxEnd: number;
+        description: string;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+    }>;
+    fixtureChannelModes: Array<{
+      publicId: string;
+      name: string;
+      order: number;
+      createdAt: Date;
+      updatedAt: Date;
+      fixtureChannelAssignments: Array<{
+        publicId: string;
+        channelNumber: number;
+        createdAt: Date;
+        updatedAt: Date;
+        fixtureChannelDefinition: {
+          publicId: string;
+          name: string;
+          order: number;
+          preset: FixtureChannelPreset;
+          createdAt: Date;
+          updatedAt: Date;
+          fixtureChannelRanges: Array<{
+            publicId: string;
+            dmxStart: number;
+            dmxEnd: number;
+            description: string;
+            createdAt: Date;
+            updatedAt: Date;
+          }>;
+        };
+      }>;
+    }>;
+    fixtureVendor: { publicId: string; name: string; createdAt: Date; updatedAt: Date };
+  };
+};
 
 export type CreateFixtureMutationVariables = Exact<{
   input: CreateFixtureInput;
 }>;
 
-
-export type CreateFixtureMutation = { createFixture: { publicId: string, name: string, weight: number | null, width: number | null, length: number | null, height: number | null, picturePath: string | null, picture2dPath: string | null, model3dPath: string | null, createdAt: Date, updatedAt: Date, fixtureChannelDefinitions: Array<{ publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> }>, fixtureChannelModes: Array<{ publicId: string, name: string, order: number, createdAt: Date, updatedAt: Date, fixtureChannelAssignments: Array<{ publicId: string, channelNumber: number, createdAt: Date, updatedAt: Date, fixtureChannelDefinition: { publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> } }> }>, fixtureVendor: { publicId: string, name: string, createdAt: Date, updatedAt: Date } } };
+export type CreateFixtureMutation = {
+  createFixture: {
+    publicId: string;
+    name: string;
+    weight: number | null;
+    width: number | null;
+    length: number | null;
+    height: number | null;
+    picturePath: string | null;
+    picture2dPath: string | null;
+    model3dPath: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    fixtureChannelDefinitions: Array<{
+      publicId: string;
+      name: string;
+      order: number;
+      preset: FixtureChannelPreset;
+      createdAt: Date;
+      updatedAt: Date;
+      fixtureChannelRanges: Array<{
+        publicId: string;
+        dmxStart: number;
+        dmxEnd: number;
+        description: string;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+    }>;
+    fixtureChannelModes: Array<{
+      publicId: string;
+      name: string;
+      order: number;
+      createdAt: Date;
+      updatedAt: Date;
+      fixtureChannelAssignments: Array<{
+        publicId: string;
+        channelNumber: number;
+        createdAt: Date;
+        updatedAt: Date;
+        fixtureChannelDefinition: {
+          publicId: string;
+          name: string;
+          order: number;
+          preset: FixtureChannelPreset;
+          createdAt: Date;
+          updatedAt: Date;
+          fixtureChannelRanges: Array<{
+            publicId: string;
+            dmxStart: number;
+            dmxEnd: number;
+            description: string;
+            createdAt: Date;
+            updatedAt: Date;
+          }>;
+        };
+      }>;
+    }>;
+    fixtureVendor: { publicId: string; name: string; createdAt: Date; updatedAt: Date };
+  };
+};
 
 export type DeleteFixtureMutationVariables = Exact<{
   publicId: string;
 }>;
 
+export type DeleteFixtureMutation = { deleteFixture: { publicId: string; deleted: boolean } };
 
-export type DeleteFixtureMutation = { deleteFixture: { publicId: string, deleted: boolean } };
+export type ExportFixturesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type ExportFixturesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ExportFixturesQuery = { exportFixtures: { schemaVersion: number, vendors: Array<{ publicId: string, name: string, createdAt: Date, updatedAt: Date }>, fixtures: Array<{ publicId: string, name: string, weight: number | null, width: number | null, length: number | null, height: number | null, picturePath: string | null, picture2dPath: string | null, model3dPath: string | null, createdAt: Date, updatedAt: Date, vendor: { publicId: string, name: string, createdAt: Date, updatedAt: Date }, channelDefinitions: Array<{ publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, ranges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> }>, channelModes: Array<{ publicId: string, name: string, order: number, createdAt: Date, updatedAt: Date, assignments: Array<{ channelNumber: number, channelDefinitionPublicId: string, createdAt: Date, updatedAt: Date }> }> }> } };
+export type ExportFixturesQuery = {
+  exportFixtures: {
+    schemaVersion: number;
+    vendors: Array<{ publicId: string; name: string; createdAt: Date; updatedAt: Date }>;
+    fixtures: Array<{
+      publicId: string;
+      name: string;
+      weight: number | null;
+      width: number | null;
+      length: number | null;
+      height: number | null;
+      picturePath: string | null;
+      picture2dPath: string | null;
+      model3dPath: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+      vendor: { publicId: string; name: string; createdAt: Date; updatedAt: Date };
+      channelDefinitions: Array<{
+        publicId: string;
+        name: string;
+        order: number;
+        preset: FixtureChannelPreset;
+        createdAt: Date;
+        updatedAt: Date;
+        ranges: Array<{
+          publicId: string;
+          dmxStart: number;
+          dmxEnd: number;
+          description: string;
+          createdAt: Date;
+          updatedAt: Date;
+        }>;
+      }>;
+      channelModes: Array<{
+        publicId: string;
+        name: string;
+        order: number;
+        createdAt: Date;
+        updatedAt: Date;
+        assignments: Array<{
+          channelNumber: number;
+          channelDefinitionPublicId: string;
+          createdAt: Date;
+          updatedAt: Date;
+        }>;
+      }>;
+    }>;
+  };
+};
 
 export type ImportFixturesMutationVariables = Exact<{
   document: ImportFixturesInput;
 }>;
 
+export type ImportFixturesMutation = {
+  importFixtures: {
+    importedCount: number;
+    fixtures: Array<{
+      publicId: string;
+      name: string;
+      weight: number | null;
+      width: number | null;
+      length: number | null;
+      height: number | null;
+      picturePath: string | null;
+      picture2dPath: string | null;
+      model3dPath: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+      fixtureChannelDefinitions: Array<{
+        publicId: string;
+        name: string;
+        order: number;
+        preset: FixtureChannelPreset;
+        createdAt: Date;
+        updatedAt: Date;
+        fixtureChannelRanges: Array<{
+          publicId: string;
+          dmxStart: number;
+          dmxEnd: number;
+          description: string;
+          createdAt: Date;
+          updatedAt: Date;
+        }>;
+      }>;
+      fixtureChannelModes: Array<{
+        publicId: string;
+        name: string;
+        order: number;
+        createdAt: Date;
+        updatedAt: Date;
+        fixtureChannelAssignments: Array<{
+          publicId: string;
+          channelNumber: number;
+          createdAt: Date;
+          updatedAt: Date;
+          fixtureChannelDefinition: {
+            publicId: string;
+            name: string;
+            order: number;
+            preset: FixtureChannelPreset;
+            createdAt: Date;
+            updatedAt: Date;
+            fixtureChannelRanges: Array<{
+              publicId: string;
+              dmxStart: number;
+              dmxEnd: number;
+              description: string;
+              createdAt: Date;
+              updatedAt: Date;
+            }>;
+          };
+        }>;
+      }>;
+      fixtureVendor: { publicId: string; name: string; createdAt: Date; updatedAt: Date };
+    }>;
+  };
+};
 
-export type ImportFixturesMutation = { importFixtures: { importedCount: number, fixtures: Array<{ publicId: string, name: string, weight: number | null, width: number | null, length: number | null, height: number | null, picturePath: string | null, picture2dPath: string | null, model3dPath: string | null, createdAt: Date, updatedAt: Date, fixtureChannelDefinitions: Array<{ publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> }>, fixtureChannelModes: Array<{ publicId: string, name: string, order: number, createdAt: Date, updatedAt: Date, fixtureChannelAssignments: Array<{ publicId: string, channelNumber: number, createdAt: Date, updatedAt: Date, fixtureChannelDefinition: { publicId: string, name: string, order: number, preset: FixtureChannelPreset, createdAt: Date, updatedAt: Date, fixtureChannelRanges: Array<{ publicId: string, dmxStart: number, dmxEnd: number, description: string, createdAt: Date, updatedAt: Date }> } }> }>, fixtureVendor: { publicId: string, name: string, createdAt: Date, updatedAt: Date } }> } };
+export type VendorFieldsFragment = { publicId: string; name: string; createdAt: Date; updatedAt: Date };
 
-export type VendorFieldsFragment = { publicId: string, name: string, createdAt: Date, updatedAt: Date };
+export type GetFixtureVendorsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetFixtureVendorsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetFixtureVendorsQuery = { fixtureVendors: Array<{ publicId: string, name: string, createdAt: Date, updatedAt: Date }> };
+export type GetFixtureVendorsQuery = {
+  fixtureVendors: Array<{ publicId: string; name: string; createdAt: Date; updatedAt: Date }>;
+};
 
 export type DeleteFixtureVendorMutationVariables = Exact<{
   publicId: string;
 }>;
 
-
-export type DeleteFixtureVendorMutation = { deleteFixtureVendor: { publicId: string, deleted: boolean } };
+export type DeleteFixtureVendorMutation = { deleteFixtureVendor: { publicId: string; deleted: boolean } };
 
 export type CreateFixtureVendorMutationVariables = Exact<{
   name: string;
 }>;
 
+export type CreateFixtureVendorMutation = {
+  createFixtureVendor: { publicId: string; name: string; createdAt: Date; updatedAt: Date };
+};
 
-export type CreateFixtureVendorMutation = { createFixtureVendor: { publicId: string, name: string, createdAt: Date, updatedAt: Date } };
+export type ProjectFieldsFragment = {
+  publicId: string;
+  name: string;
+  environmentType: ProjectEnvironmentType;
+  roomWidth: number;
+  roomLength: number;
+  roomHeight: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
-export type ProjectFieldsFragment = { publicId: string, name: string, environmentType: ProjectEnvironmentType, roomWidth: number, roomLength: number, roomHeight: number, createdAt: Date, updatedAt: Date };
+export type VirtualConsoleControlFieldsFragment = {
+  id: string;
+  type: VirtualConsoleControlType;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  label: string;
+  backgroundColor: string;
+  borderWidth: number | null;
+  borderColor: string | null;
+  orientation: VirtualConsoleSliderOrientation | null;
+  foregroundColor: string | null;
+  valueType: VirtualConsoleSliderValueType | null;
+};
 
-export type ProjectFixtureFieldsFragment = { publicId: string, startAddress: number, createdAt: Date, updatedAt: Date, fixture: { publicId: string, name: string, fixtureVendor: { publicId: string, name: string } }, channelMode: { publicId: string, name: string, fixtureChannelAssignments: Array<{ channelNumber: number, fixtureChannelDefinition: { preset: FixtureChannelPreset } }> } };
+export type VirtualConsoleFieldsFragment = {
+  schemaVersion: number;
+  width: number;
+  height: number;
+  pages: Array<{
+    id: string;
+    name: string;
+    controls: Array<{
+      id: string;
+      type: VirtualConsoleControlType;
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      label: string;
+      backgroundColor: string;
+      borderWidth: number | null;
+      borderColor: string | null;
+      orientation: VirtualConsoleSliderOrientation | null;
+      foregroundColor: string | null;
+      valueType: VirtualConsoleSliderValueType | null;
+      children: Array<{
+        id: string;
+        type: VirtualConsoleControlType;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        label: string;
+        backgroundColor: string;
+        borderWidth: number | null;
+        borderColor: string | null;
+        orientation: VirtualConsoleSliderOrientation | null;
+        foregroundColor: string | null;
+        valueType: VirtualConsoleSliderValueType | null;
+        children: Array<{
+          id: string;
+          type: VirtualConsoleControlType;
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+          label: string;
+          backgroundColor: string;
+          borderWidth: number | null;
+          borderColor: string | null;
+          orientation: VirtualConsoleSliderOrientation | null;
+          foregroundColor: string | null;
+          valueType: VirtualConsoleSliderValueType | null;
+          children: Array<{
+            id: string;
+            type: VirtualConsoleControlType;
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+            label: string;
+            backgroundColor: string;
+            borderWidth: number | null;
+            borderColor: string | null;
+            orientation: VirtualConsoleSliderOrientation | null;
+            foregroundColor: string | null;
+            valueType: VirtualConsoleSliderValueType | null;
+            children: Array<{
+              id: string;
+              type: VirtualConsoleControlType;
+              x: number;
+              y: number;
+              width: number;
+              height: number;
+              label: string;
+              backgroundColor: string;
+              borderWidth: number | null;
+              borderColor: string | null;
+              orientation: VirtualConsoleSliderOrientation | null;
+              foregroundColor: string | null;
+              valueType: VirtualConsoleSliderValueType | null;
+              children: Array<{
+                id: string;
+                type: VirtualConsoleControlType;
+                x: number;
+                y: number;
+                width: number;
+                height: number;
+                label: string;
+                backgroundColor: string;
+                borderWidth: number | null;
+                borderColor: string | null;
+                orientation: VirtualConsoleSliderOrientation | null;
+                foregroundColor: string | null;
+                valueType: VirtualConsoleSliderValueType | null;
+                children: Array<{
+                  id: string;
+                  type: VirtualConsoleControlType;
+                  x: number;
+                  y: number;
+                  width: number;
+                  height: number;
+                  label: string;
+                  backgroundColor: string;
+                  borderWidth: number | null;
+                  borderColor: string | null;
+                  orientation: VirtualConsoleSliderOrientation | null;
+                  foregroundColor: string | null;
+                  valueType: VirtualConsoleSliderValueType | null;
+                  children: Array<{
+                    id: string;
+                    type: VirtualConsoleControlType;
+                    x: number;
+                    y: number;
+                    width: number;
+                    height: number;
+                    label: string;
+                    backgroundColor: string;
+                    borderWidth: number | null;
+                    borderColor: string | null;
+                    orientation: VirtualConsoleSliderOrientation | null;
+                    foregroundColor: string | null;
+                    valueType: VirtualConsoleSliderValueType | null;
+                  }> | null;
+                }> | null;
+              }> | null;
+            }> | null;
+          }> | null;
+        }> | null;
+      }> | null;
+    }>;
+  }>;
+};
 
-export type Project3dObjectFieldsFragment = { publicId: string, name: string, sizeX: number | null, sizeY: number | null, sizeZ: number | null, transform: Array<number>, createdAt: Date, updatedAt: Date, sceneObjectType: { publicId: string, name: string, geometryKind: SceneObjectGeometryKind, modelPath: string | null, isScalable: boolean, defaultSizeX: number, defaultSizeY: number, defaultSizeZ: number, createdAt: Date, updatedAt: Date } };
+export type ProjectFixtureFieldsFragment = {
+  publicId: string;
+  startAddress: number;
+  createdAt: Date;
+  updatedAt: Date;
+  fixture: { publicId: string; name: string; fixtureVendor: { publicId: string; name: string } };
+  channelMode: {
+    publicId: string;
+    name: string;
+    fixtureChannelAssignments: Array<{
+      channelNumber: number;
+      fixtureChannelDefinition: { preset: FixtureChannelPreset };
+    }>;
+  };
+};
 
-export type GetSceneObjectTypesQueryVariables = Exact<{ [key: string]: never; }>;
+export type Project3dObjectFieldsFragment = {
+  publicId: string;
+  name: string;
+  sizeX: number | null;
+  sizeY: number | null;
+  sizeZ: number | null;
+  transform: Array<number>;
+  createdAt: Date;
+  updatedAt: Date;
+  sceneObjectType: {
+    publicId: string;
+    name: string;
+    geometryKind: SceneObjectGeometryKind;
+    modelPath: string | null;
+    isScalable: boolean;
+    defaultSizeX: number;
+    defaultSizeY: number;
+    defaultSizeZ: number;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+};
 
+export type GetSceneObjectTypesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetSceneObjectTypesQuery = { sceneObjectTypes: Array<{ publicId: string, name: string, geometryKind: SceneObjectGeometryKind, modelPath: string | null, isScalable: boolean, defaultSizeX: number, defaultSizeY: number, defaultSizeZ: number, createdAt: Date, updatedAt: Date }> };
+export type GetSceneObjectTypesQuery = {
+  sceneObjectTypes: Array<{
+    publicId: string;
+    name: string;
+    geometryKind: SceneObjectGeometryKind;
+    modelPath: string | null;
+    isScalable: boolean;
+    defaultSizeX: number;
+    defaultSizeY: number;
+    defaultSizeZ: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
+};
 
-export type GetProjectsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetProjectsQueryVariables = Exact<{ [key: string]: never }>;
 
-
-export type GetProjectsQuery = { projects: Array<{ publicId: string, name: string, environmentType: ProjectEnvironmentType, roomWidth: number, roomLength: number, roomHeight: number, createdAt: Date, updatedAt: Date }> };
+export type GetProjectsQuery = {
+  projects: Array<{
+    publicId: string;
+    name: string;
+    environmentType: ProjectEnvironmentType;
+    roomWidth: number;
+    roomLength: number;
+    roomHeight: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
+};
 
 export type GetProjectQueryVariables = Exact<{
   publicId: string;
 }>;
 
-
-export type GetProjectQuery = { project: { publicId: string, name: string, environmentType: ProjectEnvironmentType, roomWidth: number, roomLength: number, roomHeight: number, createdAt: Date, updatedAt: Date, projectFixtures: Array<{ publicId: string, startAddress: number, createdAt: Date, updatedAt: Date, fixture: { publicId: string, name: string, fixtureVendor: { publicId: string, name: string } }, channelMode: { publicId: string, name: string, fixtureChannelAssignments: Array<{ channelNumber: number, fixtureChannelDefinition: { preset: FixtureChannelPreset } }> } }>, project3dObjects: Array<{ publicId: string, name: string, sizeX: number | null, sizeY: number | null, sizeZ: number | null, transform: Array<number>, createdAt: Date, updatedAt: Date, sceneObjectType: { publicId: string, name: string, geometryKind: SceneObjectGeometryKind, modelPath: string | null, isScalable: boolean, defaultSizeX: number, defaultSizeY: number, defaultSizeZ: number, createdAt: Date, updatedAt: Date } }> } | null };
+export type GetProjectQuery = {
+  project: {
+    publicId: string;
+    name: string;
+    environmentType: ProjectEnvironmentType;
+    roomWidth: number;
+    roomLength: number;
+    roomHeight: number;
+    createdAt: Date;
+    updatedAt: Date;
+    virtualConsole: {
+      schemaVersion: number;
+      width: number;
+      height: number;
+      pages: Array<{
+        id: string;
+        name: string;
+        controls: Array<{
+          id: string;
+          type: VirtualConsoleControlType;
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+          label: string;
+          backgroundColor: string;
+          borderWidth: number | null;
+          borderColor: string | null;
+          orientation: VirtualConsoleSliderOrientation | null;
+          foregroundColor: string | null;
+          valueType: VirtualConsoleSliderValueType | null;
+          children: Array<{
+            id: string;
+            type: VirtualConsoleControlType;
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+            label: string;
+            backgroundColor: string;
+            borderWidth: number | null;
+            borderColor: string | null;
+            orientation: VirtualConsoleSliderOrientation | null;
+            foregroundColor: string | null;
+            valueType: VirtualConsoleSliderValueType | null;
+            children: Array<{
+              id: string;
+              type: VirtualConsoleControlType;
+              x: number;
+              y: number;
+              width: number;
+              height: number;
+              label: string;
+              backgroundColor: string;
+              borderWidth: number | null;
+              borderColor: string | null;
+              orientation: VirtualConsoleSliderOrientation | null;
+              foregroundColor: string | null;
+              valueType: VirtualConsoleSliderValueType | null;
+              children: Array<{
+                id: string;
+                type: VirtualConsoleControlType;
+                x: number;
+                y: number;
+                width: number;
+                height: number;
+                label: string;
+                backgroundColor: string;
+                borderWidth: number | null;
+                borderColor: string | null;
+                orientation: VirtualConsoleSliderOrientation | null;
+                foregroundColor: string | null;
+                valueType: VirtualConsoleSliderValueType | null;
+                children: Array<{
+                  id: string;
+                  type: VirtualConsoleControlType;
+                  x: number;
+                  y: number;
+                  width: number;
+                  height: number;
+                  label: string;
+                  backgroundColor: string;
+                  borderWidth: number | null;
+                  borderColor: string | null;
+                  orientation: VirtualConsoleSliderOrientation | null;
+                  foregroundColor: string | null;
+                  valueType: VirtualConsoleSliderValueType | null;
+                  children: Array<{
+                    id: string;
+                    type: VirtualConsoleControlType;
+                    x: number;
+                    y: number;
+                    width: number;
+                    height: number;
+                    label: string;
+                    backgroundColor: string;
+                    borderWidth: number | null;
+                    borderColor: string | null;
+                    orientation: VirtualConsoleSliderOrientation | null;
+                    foregroundColor: string | null;
+                    valueType: VirtualConsoleSliderValueType | null;
+                    children: Array<{
+                      id: string;
+                      type: VirtualConsoleControlType;
+                      x: number;
+                      y: number;
+                      width: number;
+                      height: number;
+                      label: string;
+                      backgroundColor: string;
+                      borderWidth: number | null;
+                      borderColor: string | null;
+                      orientation: VirtualConsoleSliderOrientation | null;
+                      foregroundColor: string | null;
+                      valueType: VirtualConsoleSliderValueType | null;
+                      children: Array<{
+                        id: string;
+                        type: VirtualConsoleControlType;
+                        x: number;
+                        y: number;
+                        width: number;
+                        height: number;
+                        label: string;
+                        backgroundColor: string;
+                        borderWidth: number | null;
+                        borderColor: string | null;
+                        orientation: VirtualConsoleSliderOrientation | null;
+                        foregroundColor: string | null;
+                        valueType: VirtualConsoleSliderValueType | null;
+                      }> | null;
+                    }> | null;
+                  }> | null;
+                }> | null;
+              }> | null;
+            }> | null;
+          }> | null;
+        }>;
+      }>;
+    };
+    projectFixtures: Array<{
+      publicId: string;
+      startAddress: number;
+      createdAt: Date;
+      updatedAt: Date;
+      fixture: { publicId: string; name: string; fixtureVendor: { publicId: string; name: string } };
+      channelMode: {
+        publicId: string;
+        name: string;
+        fixtureChannelAssignments: Array<{
+          channelNumber: number;
+          fixtureChannelDefinition: { preset: FixtureChannelPreset };
+        }>;
+      };
+    }>;
+    project3dObjects: Array<{
+      publicId: string;
+      name: string;
+      sizeX: number | null;
+      sizeY: number | null;
+      sizeZ: number | null;
+      transform: Array<number>;
+      createdAt: Date;
+      updatedAt: Date;
+      sceneObjectType: {
+        publicId: string;
+        name: string;
+        geometryKind: SceneObjectGeometryKind;
+        modelPath: string | null;
+        isScalable: boolean;
+        defaultSizeX: number;
+        defaultSizeY: number;
+        defaultSizeZ: number;
+        createdAt: Date;
+        updatedAt: Date;
+      };
+    }>;
+  } | null;
+};
 
 export type CreateProjectMutationVariables = Exact<{
   name: string;
 }>;
 
-
-export type CreateProjectMutation = { createProject: { publicId: string, name: string, environmentType: ProjectEnvironmentType, roomWidth: number, roomLength: number, roomHeight: number, createdAt: Date, updatedAt: Date } };
+export type CreateProjectMutation = {
+  createProject: {
+    publicId: string;
+    name: string;
+    environmentType: ProjectEnvironmentType;
+    roomWidth: number;
+    roomLength: number;
+    roomHeight: number;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+};
 
 export type UpdateProjectMutationVariables = Exact<{
   input: UpdateProjectInput;
 }>;
 
+export type UpdateProjectMutation = {
+  updateProject: {
+    publicId: string;
+    name: string;
+    environmentType: ProjectEnvironmentType;
+    roomWidth: number;
+    roomLength: number;
+    roomHeight: number;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+};
 
-export type UpdateProjectMutation = { updateProject: { publicId: string, name: string, environmentType: ProjectEnvironmentType, roomWidth: number, roomLength: number, roomHeight: number, createdAt: Date, updatedAt: Date } };
+export type UpdateProjectVirtualConsoleMutationVariables = Exact<{
+  input: UpdateProjectVirtualConsoleInput;
+}>;
+
+export type UpdateProjectVirtualConsoleMutation = {
+  updateProjectVirtualConsole: {
+    publicId: string;
+    name: string;
+    environmentType: ProjectEnvironmentType;
+    roomWidth: number;
+    roomLength: number;
+    roomHeight: number;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+};
 
 export type DeleteProjectMutationVariables = Exact<{
   publicId: string;
 }>;
 
-
-export type DeleteProjectMutation = { deleteProject: { publicId: string, deleted: boolean } };
+export type DeleteProjectMutation = { deleteProject: { publicId: string; deleted: boolean } };
 
 export type AddProjectFixtureMutationVariables = Exact<{
   input: AddProjectFixtureInput;
 }>;
 
-
-export type AddProjectFixtureMutation = { addProjectFixture: { publicId: string, startAddress: number, createdAt: Date, updatedAt: Date, fixture: { publicId: string, name: string, fixtureVendor: { publicId: string, name: string } }, channelMode: { publicId: string, name: string, fixtureChannelAssignments: Array<{ channelNumber: number, fixtureChannelDefinition: { preset: FixtureChannelPreset } }> } } };
+export type AddProjectFixtureMutation = {
+  addProjectFixture: {
+    publicId: string;
+    startAddress: number;
+    createdAt: Date;
+    updatedAt: Date;
+    fixture: { publicId: string; name: string; fixtureVendor: { publicId: string; name: string } };
+    channelMode: {
+      publicId: string;
+      name: string;
+      fixtureChannelAssignments: Array<{
+        channelNumber: number;
+        fixtureChannelDefinition: { preset: FixtureChannelPreset };
+      }>;
+    };
+  };
+};
 
 export type UpdateProjectFixtureMutationVariables = Exact<{
   input: UpdateProjectFixtureInput;
 }>;
 
-
-export type UpdateProjectFixtureMutation = { updateProjectFixture: { publicId: string, startAddress: number, createdAt: Date, updatedAt: Date, fixture: { publicId: string, name: string, fixtureVendor: { publicId: string, name: string } }, channelMode: { publicId: string, name: string, fixtureChannelAssignments: Array<{ channelNumber: number, fixtureChannelDefinition: { preset: FixtureChannelPreset } }> } } };
+export type UpdateProjectFixtureMutation = {
+  updateProjectFixture: {
+    publicId: string;
+    startAddress: number;
+    createdAt: Date;
+    updatedAt: Date;
+    fixture: { publicId: string; name: string; fixtureVendor: { publicId: string; name: string } };
+    channelMode: {
+      publicId: string;
+      name: string;
+      fixtureChannelAssignments: Array<{
+        channelNumber: number;
+        fixtureChannelDefinition: { preset: FixtureChannelPreset };
+      }>;
+    };
+  };
+};
 
 export type DeleteProjectFixtureMutationVariables = Exact<{
   publicId: string;
 }>;
 
-
-export type DeleteProjectFixtureMutation = { deleteProjectFixture: { publicId: string, deleted: boolean } };
+export type DeleteProjectFixtureMutation = { deleteProjectFixture: { publicId: string; deleted: boolean } };
 
 export type AddProject3dObjectMutationVariables = Exact<{
   input: AddProject3dObjectInput;
 }>;
 
-
-export type AddProject3dObjectMutation = { addProject3dObject: { publicId: string, name: string, sizeX: number | null, sizeY: number | null, sizeZ: number | null, transform: Array<number>, createdAt: Date, updatedAt: Date, sceneObjectType: { publicId: string, name: string, geometryKind: SceneObjectGeometryKind, modelPath: string | null, isScalable: boolean, defaultSizeX: number, defaultSizeY: number, defaultSizeZ: number, createdAt: Date, updatedAt: Date } } };
+export type AddProject3dObjectMutation = {
+  addProject3dObject: {
+    publicId: string;
+    name: string;
+    sizeX: number | null;
+    sizeY: number | null;
+    sizeZ: number | null;
+    transform: Array<number>;
+    createdAt: Date;
+    updatedAt: Date;
+    sceneObjectType: {
+      publicId: string;
+      name: string;
+      geometryKind: SceneObjectGeometryKind;
+      modelPath: string | null;
+      isScalable: boolean;
+      defaultSizeX: number;
+      defaultSizeY: number;
+      defaultSizeZ: number;
+      createdAt: Date;
+      updatedAt: Date;
+    };
+  };
+};
 
 export type UpdateProject3dObjectMutationVariables = Exact<{
   input: UpdateProject3dObjectInput;
 }>;
 
-
-export type UpdateProject3dObjectMutation = { updateProject3dObject: { publicId: string, name: string, sizeX: number | null, sizeY: number | null, sizeZ: number | null, transform: Array<number>, createdAt: Date, updatedAt: Date, sceneObjectType: { publicId: string, name: string, geometryKind: SceneObjectGeometryKind, modelPath: string | null, isScalable: boolean, defaultSizeX: number, defaultSizeY: number, defaultSizeZ: number, createdAt: Date, updatedAt: Date } } };
+export type UpdateProject3dObjectMutation = {
+  updateProject3dObject: {
+    publicId: string;
+    name: string;
+    sizeX: number | null;
+    sizeY: number | null;
+    sizeZ: number | null;
+    transform: Array<number>;
+    createdAt: Date;
+    updatedAt: Date;
+    sceneObjectType: {
+      publicId: string;
+      name: string;
+      geometryKind: SceneObjectGeometryKind;
+      modelPath: string | null;
+      isScalable: boolean;
+      defaultSizeX: number;
+      defaultSizeY: number;
+      defaultSizeZ: number;
+      createdAt: Date;
+      updatedAt: Date;
+    };
+  };
+};
 
 export type DeleteProject3dObjectMutationVariables = Exact<{
   publicId: string;
 }>;
 
+export type DeleteProject3dObjectMutation = { deleteProject3dObject: { publicId: string; deleted: boolean } };
 
-export type DeleteProject3dObjectMutation = { deleteProject3dObject: { publicId: string, deleted: boolean } };
+export type ExportProjectsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type ExportProjectsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ExportProjectsQuery = { exportProjects: { schemaVersion: number, projects: Array<{ publicId: string, name: string, environmentType: ProjectEnvironmentType, roomWidth: number, roomLength: number, roomHeight: number, createdAt: Date, updatedAt: Date, projectFixtures: Array<{ publicId: string, startAddress: number, fixturePublicId: string, channelModePublicId: string, createdAt: Date, updatedAt: Date }>, project3dObjects: Array<{ publicId: string, name: string, sceneObjectTypePublicId: string, sceneObjectTypeName: string, sizeX: number | null, sizeY: number | null, sizeZ: number | null, transform: Array<number>, createdAt: Date, updatedAt: Date }> }> } };
+export type ExportProjectsQuery = {
+  exportProjects: {
+    schemaVersion: number;
+    projects: Array<{
+      publicId: string;
+      name: string;
+      environmentType: ProjectEnvironmentType;
+      roomWidth: number;
+      roomLength: number;
+      roomHeight: number;
+      createdAt: Date;
+      updatedAt: Date;
+      projectFixtures: Array<{
+        publicId: string;
+        startAddress: number;
+        fixturePublicId: string;
+        channelModePublicId: string;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      project3dObjects: Array<{
+        publicId: string;
+        name: string;
+        sceneObjectTypePublicId: string;
+        sceneObjectTypeName: string;
+        sizeX: number | null;
+        sizeY: number | null;
+        sizeZ: number | null;
+        transform: Array<number>;
+        createdAt: Date;
+        updatedAt: Date;
+      }>;
+      virtualConsole: {
+        schemaVersion: number;
+        width: number;
+        height: number;
+        pages: Array<{
+          id: string;
+          name: string;
+          controls: Array<{
+            id: string;
+            type: VirtualConsoleControlType;
+            x: number;
+            y: number;
+            width: number;
+            height: number;
+            label: string;
+            backgroundColor: string;
+            borderWidth: number | null;
+            borderColor: string | null;
+            orientation: VirtualConsoleSliderOrientation | null;
+            foregroundColor: string | null;
+            valueType: VirtualConsoleSliderValueType | null;
+            children: Array<{
+              id: string;
+              type: VirtualConsoleControlType;
+              x: number;
+              y: number;
+              width: number;
+              height: number;
+              label: string;
+              backgroundColor: string;
+              borderWidth: number | null;
+              borderColor: string | null;
+              orientation: VirtualConsoleSliderOrientation | null;
+              foregroundColor: string | null;
+              valueType: VirtualConsoleSliderValueType | null;
+              children: Array<{
+                id: string;
+                type: VirtualConsoleControlType;
+                x: number;
+                y: number;
+                width: number;
+                height: number;
+                label: string;
+                backgroundColor: string;
+                borderWidth: number | null;
+                borderColor: string | null;
+                orientation: VirtualConsoleSliderOrientation | null;
+                foregroundColor: string | null;
+                valueType: VirtualConsoleSliderValueType | null;
+                children: Array<{
+                  id: string;
+                  type: VirtualConsoleControlType;
+                  x: number;
+                  y: number;
+                  width: number;
+                  height: number;
+                  label: string;
+                  backgroundColor: string;
+                  borderWidth: number | null;
+                  borderColor: string | null;
+                  orientation: VirtualConsoleSliderOrientation | null;
+                  foregroundColor: string | null;
+                  valueType: VirtualConsoleSliderValueType | null;
+                  children: Array<{
+                    id: string;
+                    type: VirtualConsoleControlType;
+                    x: number;
+                    y: number;
+                    width: number;
+                    height: number;
+                    label: string;
+                    backgroundColor: string;
+                    borderWidth: number | null;
+                    borderColor: string | null;
+                    orientation: VirtualConsoleSliderOrientation | null;
+                    foregroundColor: string | null;
+                    valueType: VirtualConsoleSliderValueType | null;
+                    children: Array<{
+                      id: string;
+                      type: VirtualConsoleControlType;
+                      x: number;
+                      y: number;
+                      width: number;
+                      height: number;
+                      label: string;
+                      backgroundColor: string;
+                      borderWidth: number | null;
+                      borderColor: string | null;
+                      orientation: VirtualConsoleSliderOrientation | null;
+                      foregroundColor: string | null;
+                      valueType: VirtualConsoleSliderValueType | null;
+                      children: Array<{
+                        id: string;
+                        type: VirtualConsoleControlType;
+                        x: number;
+                        y: number;
+                        width: number;
+                        height: number;
+                        label: string;
+                        backgroundColor: string;
+                        borderWidth: number | null;
+                        borderColor: string | null;
+                        orientation: VirtualConsoleSliderOrientation | null;
+                        foregroundColor: string | null;
+                        valueType: VirtualConsoleSliderValueType | null;
+                        children: Array<{
+                          id: string;
+                          type: VirtualConsoleControlType;
+                          x: number;
+                          y: number;
+                          width: number;
+                          height: number;
+                          label: string;
+                          backgroundColor: string;
+                          borderWidth: number | null;
+                          borderColor: string | null;
+                          orientation: VirtualConsoleSliderOrientation | null;
+                          foregroundColor: string | null;
+                          valueType: VirtualConsoleSliderValueType | null;
+                        }> | null;
+                      }> | null;
+                    }> | null;
+                  }> | null;
+                }> | null;
+              }> | null;
+            }> | null;
+          }>;
+        }>;
+      } | null;
+    }>;
+  };
+};
 
 export type ImportProjectsMutationVariables = Exact<{
   document: ImportProjectsInput;
 }>;
 
+export type ImportProjectsMutation = {
+  importProjects: {
+    importedCount: number;
+    projects: Array<{
+      publicId: string;
+      name: string;
+      environmentType: ProjectEnvironmentType;
+      roomWidth: number;
+      roomLength: number;
+      roomHeight: number;
+      createdAt: Date;
+      updatedAt: Date;
+    }>;
+  };
+};
 
-export type ImportProjectsMutation = { importProjects: { importedCount: number, projects: Array<{ publicId: string, name: string, environmentType: ProjectEnvironmentType, roomWidth: number, roomLength: number, roomHeight: number, createdAt: Date, updatedAt: Date }> } };
-
-export const FixtureChannelRangeFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelRangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelRangeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"dmxStart"}},{"kind":"Field","name":{"kind":"Name","value":"dmxEnd"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<FixtureChannelRangeFieldsFragment, unknown>;
-export const FixtureChannelDefinitionFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelDefinitionDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelRangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelRangeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"dmxStart"}},{"kind":"Field","name":{"kind":"Name","value":"dmxEnd"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<FixtureChannelDefinitionFieldsFragment, unknown>;
-export const FixtureChannelAssignmentFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelAssignmentDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelRangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelRangeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"dmxStart"}},{"kind":"Field","name":{"kind":"Name","value":"dmxEnd"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<FixtureChannelAssignmentFieldsFragment, unknown>;
-export const FixtureChannelModeFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelModeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelModeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelRangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelRangeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"dmxStart"}},{"kind":"Field","name":{"kind":"Name","value":"dmxEnd"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelAssignmentDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<FixtureChannelModeFieldsFragment, unknown>;
-export const VendorFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"VendorFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureVendorDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<VendorFieldsFragment, unknown>;
-export const FixtureFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"length"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"picturePath"}},{"kind":"Field","name":{"kind":"Name","value":"picture2dPath"}},{"kind":"Field","name":{"kind":"Name","value":"model3dPath"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinitions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelModes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelModeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureVendor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"VendorFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelRangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelRangeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"dmxStart"}},{"kind":"Field","name":{"kind":"Name","value":"dmxEnd"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelAssignmentDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelDefinitionDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelModeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelModeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"VendorFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureVendorDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<FixtureFieldsFragment, unknown>;
-export const ProjectFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"environmentType"}},{"kind":"Field","name":{"kind":"Name","value":"roomWidth"}},{"kind":"Field","name":{"kind":"Name","value":"roomLength"}},{"kind":"Field","name":{"kind":"Name","value":"roomHeight"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ProjectFieldsFragment, unknown>;
-export const ProjectFixtureFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectFixtureFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectFixtureDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"startAddress"}},{"kind":"Field","name":{"kind":"Name","value":"fixture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureVendor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"channelMode"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"preset"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ProjectFixtureFieldsFragment, unknown>;
-export const Project3dObjectFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Project3dObjectFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Project3dObjectDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sizeX"}},{"kind":"Field","name":{"kind":"Name","value":"sizeY"}},{"kind":"Field","name":{"kind":"Name","value":"sizeZ"}},{"kind":"Field","name":{"kind":"Name","value":"transform"}},{"kind":"Field","name":{"kind":"Name","value":"sceneObjectType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"geometryKind"}},{"kind":"Field","name":{"kind":"Name","value":"modelPath"}},{"kind":"Field","name":{"kind":"Name","value":"isScalable"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeX"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeY"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeZ"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<Project3dObjectFieldsFragment, unknown>;
-export const GetFixturesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFixtures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fixtures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelRangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelRangeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"dmxStart"}},{"kind":"Field","name":{"kind":"Name","value":"dmxEnd"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelDefinitionDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelAssignmentDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelModeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelModeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"VendorFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureVendorDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"length"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"picturePath"}},{"kind":"Field","name":{"kind":"Name","value":"picture2dPath"}},{"kind":"Field","name":{"kind":"Name","value":"model3dPath"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinitions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelModes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelModeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureVendor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"VendorFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetFixturesQuery, GetFixturesQueryVariables>;
-export const GetFixtureDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFixture"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fixture"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"publicId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelRangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelRangeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"dmxStart"}},{"kind":"Field","name":{"kind":"Name","value":"dmxEnd"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelDefinitionDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelAssignmentDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelModeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelModeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"VendorFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureVendorDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"length"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"picturePath"}},{"kind":"Field","name":{"kind":"Name","value":"picture2dPath"}},{"kind":"Field","name":{"kind":"Name","value":"model3dPath"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinitions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelModes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelModeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureVendor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"VendorFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetFixtureQuery, GetFixtureQueryVariables>;
-export const UpdateFixtureDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateFixture"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateFixtureInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFixture"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelRangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelRangeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"dmxStart"}},{"kind":"Field","name":{"kind":"Name","value":"dmxEnd"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelDefinitionDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelAssignmentDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelModeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelModeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"VendorFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureVendorDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"length"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"picturePath"}},{"kind":"Field","name":{"kind":"Name","value":"picture2dPath"}},{"kind":"Field","name":{"kind":"Name","value":"model3dPath"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinitions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelModes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelModeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureVendor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"VendorFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UpdateFixtureMutation, UpdateFixtureMutationVariables>;
-export const CreateFixtureDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateFixture"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateFixtureInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFixture"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelRangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelRangeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"dmxStart"}},{"kind":"Field","name":{"kind":"Name","value":"dmxEnd"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelDefinitionDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelAssignmentDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelModeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelModeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"VendorFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureVendorDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"length"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"picturePath"}},{"kind":"Field","name":{"kind":"Name","value":"picture2dPath"}},{"kind":"Field","name":{"kind":"Name","value":"model3dPath"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinitions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelModes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelModeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureVendor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"VendorFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<CreateFixtureMutation, CreateFixtureMutationVariables>;
-export const DeleteFixtureDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteFixture"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFixture"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"publicId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"deleted"}}]}}]}}]} as unknown as DocumentNode<DeleteFixtureMutation, DeleteFixtureMutationVariables>;
-export const ExportFixturesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ExportFixtures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"exportFixtures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"schemaVersion"}},{"kind":"Field","name":{"kind":"Name","value":"vendors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"length"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"picturePath"}},{"kind":"Field","name":{"kind":"Name","value":"picture2dPath"}},{"kind":"Field","name":{"kind":"Name","value":"model3dPath"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"vendor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"channelDefinitions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"ranges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"dmxStart"}},{"kind":"Field","name":{"kind":"Name","value":"dmxEnd"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"channelModes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"assignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"channelDefinitionPublicId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ExportFixturesQuery, ExportFixturesQueryVariables>;
-export const ImportFixturesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ImportFixtures"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"document"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ImportFixturesInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"importFixtures"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"document"},"value":{"kind":"Variable","name":{"kind":"Name","value":"document"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"importedCount"}},{"kind":"Field","name":{"kind":"Name","value":"fixtures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelRangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelRangeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"dmxStart"}},{"kind":"Field","name":{"kind":"Name","value":"dmxEnd"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelDefinitionDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelAssignmentDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"preset"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelRanges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelRangeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureChannelModeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureChannelModeDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"order"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelAssignmentFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"VendorFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureVendorDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FixtureFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"weight"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"length"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"picturePath"}},{"kind":"Field","name":{"kind":"Name","value":"picture2dPath"}},{"kind":"Field","name":{"kind":"Name","value":"model3dPath"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinitions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelDefinitionFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelModes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FixtureChannelModeFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"fixtureVendor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"VendorFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ImportFixturesMutation, ImportFixturesMutationVariables>;
-export const GetFixtureVendorsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFixtureVendors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fixtureVendors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"VendorFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"VendorFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureVendorDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetFixtureVendorsQuery, GetFixtureVendorsQueryVariables>;
-export const DeleteFixtureVendorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteFixtureVendor"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFixtureVendor"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"publicId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"deleted"}}]}}]}}]} as unknown as DocumentNode<DeleteFixtureVendorMutation, DeleteFixtureVendorMutationVariables>;
-export const CreateFixtureVendorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateFixtureVendor"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createFixtureVendor"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"VendorFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"VendorFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FixtureVendorDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<CreateFixtureVendorMutation, CreateFixtureVendorMutationVariables>;
-export const GetSceneObjectTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSceneObjectTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sceneObjectTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"geometryKind"}},{"kind":"Field","name":{"kind":"Name","value":"modelPath"}},{"kind":"Field","name":{"kind":"Name","value":"isScalable"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeX"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeY"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeZ"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetSceneObjectTypesQuery, GetSceneObjectTypesQueryVariables>;
-export const GetProjectsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProjectFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"environmentType"}},{"kind":"Field","name":{"kind":"Name","value":"roomWidth"}},{"kind":"Field","name":{"kind":"Name","value":"roomLength"}},{"kind":"Field","name":{"kind":"Name","value":"roomHeight"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetProjectsQuery, GetProjectsQueryVariables>;
-export const GetProjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"project"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"publicId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProjectFields"}},{"kind":"Field","name":{"kind":"Name","value":"projectFixtures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProjectFixtureFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"project3dObjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"Project3dObjectFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"environmentType"}},{"kind":"Field","name":{"kind":"Name","value":"roomWidth"}},{"kind":"Field","name":{"kind":"Name","value":"roomLength"}},{"kind":"Field","name":{"kind":"Name","value":"roomHeight"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectFixtureFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectFixtureDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"startAddress"}},{"kind":"Field","name":{"kind":"Name","value":"fixture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureVendor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"channelMode"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"preset"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Project3dObjectFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Project3dObjectDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sizeX"}},{"kind":"Field","name":{"kind":"Name","value":"sizeY"}},{"kind":"Field","name":{"kind":"Name","value":"sizeZ"}},{"kind":"Field","name":{"kind":"Name","value":"transform"}},{"kind":"Field","name":{"kind":"Name","value":"sceneObjectType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"geometryKind"}},{"kind":"Field","name":{"kind":"Name","value":"modelPath"}},{"kind":"Field","name":{"kind":"Name","value":"isScalable"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeX"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeY"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeZ"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetProjectQuery, GetProjectQueryVariables>;
-export const CreateProjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateProject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProjectFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"environmentType"}},{"kind":"Field","name":{"kind":"Name","value":"roomWidth"}},{"kind":"Field","name":{"kind":"Name","value":"roomLength"}},{"kind":"Field","name":{"kind":"Name","value":"roomHeight"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<CreateProjectMutation, CreateProjectMutationVariables>;
-export const UpdateProjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateProject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateProjectInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProjectFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"environmentType"}},{"kind":"Field","name":{"kind":"Name","value":"roomWidth"}},{"kind":"Field","name":{"kind":"Name","value":"roomLength"}},{"kind":"Field","name":{"kind":"Name","value":"roomHeight"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UpdateProjectMutation, UpdateProjectMutationVariables>;
-export const DeleteProjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteProject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteProject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"publicId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"deleted"}}]}}]}}]} as unknown as DocumentNode<DeleteProjectMutation, DeleteProjectMutationVariables>;
-export const AddProjectFixtureDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddProjectFixture"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AddProjectFixtureInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addProjectFixture"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProjectFixtureFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectFixtureFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectFixtureDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"startAddress"}},{"kind":"Field","name":{"kind":"Name","value":"fixture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureVendor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"channelMode"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"preset"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<AddProjectFixtureMutation, AddProjectFixtureMutationVariables>;
-export const UpdateProjectFixtureDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateProjectFixture"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateProjectFixtureInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateProjectFixture"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProjectFixtureFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectFixtureFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectFixtureDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"startAddress"}},{"kind":"Field","name":{"kind":"Name","value":"fixture"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureVendor"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"channelMode"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelAssignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"channelNumber"}},{"kind":"Field","name":{"kind":"Name","value":"fixtureChannelDefinition"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"preset"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UpdateProjectFixtureMutation, UpdateProjectFixtureMutationVariables>;
-export const DeleteProjectFixtureDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteProjectFixture"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteProjectFixture"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"publicId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"deleted"}}]}}]}}]} as unknown as DocumentNode<DeleteProjectFixtureMutation, DeleteProjectFixtureMutationVariables>;
-export const AddProject3dObjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddProject3dObject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AddProject3dObjectInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addProject3dObject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"Project3dObjectFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Project3dObjectFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Project3dObjectDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sizeX"}},{"kind":"Field","name":{"kind":"Name","value":"sizeY"}},{"kind":"Field","name":{"kind":"Name","value":"sizeZ"}},{"kind":"Field","name":{"kind":"Name","value":"transform"}},{"kind":"Field","name":{"kind":"Name","value":"sceneObjectType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"geometryKind"}},{"kind":"Field","name":{"kind":"Name","value":"modelPath"}},{"kind":"Field","name":{"kind":"Name","value":"isScalable"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeX"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeY"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeZ"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<AddProject3dObjectMutation, AddProject3dObjectMutationVariables>;
-export const UpdateProject3dObjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateProject3dObject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateProject3dObjectInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateProject3dObject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"Project3dObjectFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Project3dObjectFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Project3dObjectDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sizeX"}},{"kind":"Field","name":{"kind":"Name","value":"sizeY"}},{"kind":"Field","name":{"kind":"Name","value":"sizeZ"}},{"kind":"Field","name":{"kind":"Name","value":"transform"}},{"kind":"Field","name":{"kind":"Name","value":"sceneObjectType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"geometryKind"}},{"kind":"Field","name":{"kind":"Name","value":"modelPath"}},{"kind":"Field","name":{"kind":"Name","value":"isScalable"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeX"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeY"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSizeZ"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UpdateProject3dObjectMutation, UpdateProject3dObjectMutationVariables>;
-export const DeleteProject3dObjectDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteProject3dObject"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UUID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteProject3dObject"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"publicId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"publicId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"deleted"}}]}}]}}]} as unknown as DocumentNode<DeleteProject3dObjectMutation, DeleteProject3dObjectMutationVariables>;
-export const ExportProjectsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ExportProjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"exportProjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"schemaVersion"}},{"kind":"Field","name":{"kind":"Name","value":"projects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"environmentType"}},{"kind":"Field","name":{"kind":"Name","value":"roomWidth"}},{"kind":"Field","name":{"kind":"Name","value":"roomLength"}},{"kind":"Field","name":{"kind":"Name","value":"roomHeight"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"projectFixtures"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"startAddress"}},{"kind":"Field","name":{"kind":"Name","value":"fixturePublicId"}},{"kind":"Field","name":{"kind":"Name","value":"channelModePublicId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"project3dObjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sceneObjectTypePublicId"}},{"kind":"Field","name":{"kind":"Name","value":"sceneObjectTypeName"}},{"kind":"Field","name":{"kind":"Name","value":"sizeX"}},{"kind":"Field","name":{"kind":"Name","value":"sizeY"}},{"kind":"Field","name":{"kind":"Name","value":"sizeZ"}},{"kind":"Field","name":{"kind":"Name","value":"transform"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ExportProjectsQuery, ExportProjectsQueryVariables>;
-export const ImportProjectsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ImportProjects"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"document"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ImportProjectsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"importProjects"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"document"},"value":{"kind":"Variable","name":{"kind":"Name","value":"document"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"importedCount"}},{"kind":"Field","name":{"kind":"Name","value":"projects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProjectFields"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProjectFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProjectDto"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"publicId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"environmentType"}},{"kind":"Field","name":{"kind":"Name","value":"roomWidth"}},{"kind":"Field","name":{"kind":"Name","value":"roomLength"}},{"kind":"Field","name":{"kind":"Name","value":"roomHeight"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ImportProjectsMutation, ImportProjectsMutationVariables>;
+export const FixtureChannelRangeFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelRangeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelRangeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<FixtureChannelRangeFieldsFragment, unknown>;
+export const FixtureChannelDefinitionFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelDefinitionDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelRanges' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelRangeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelRangeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<FixtureChannelDefinitionFieldsFragment, unknown>;
+export const FixtureChannelAssignmentFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelAssignmentDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelRangeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelRangeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<FixtureChannelAssignmentFieldsFragment, unknown>;
+export const FixtureChannelModeFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelModeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelModeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelAssignments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelRangeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelRangeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelAssignmentDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<FixtureChannelModeFieldsFragment, unknown>;
+export const VendorFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VendorFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureVendorDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<VendorFieldsFragment, unknown>;
+export const FixtureFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'weight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'length' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinitions' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelModes' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelModeFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureVendor' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'VendorFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelRangeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelRangeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelAssignmentDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelDefinitionDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelRanges' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelModeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelModeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelAssignments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VendorFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureVendorDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<FixtureFieldsFragment, unknown>;
+export const ProjectFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'environmentType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomWidth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomLength' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomHeight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ProjectFieldsFragment, unknown>;
+export const VirtualConsoleControlFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VirtualConsoleControlDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'x' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'y' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'label' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'backgroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'borderWidth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'borderColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'orientation' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'foregroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<VirtualConsoleControlFieldsFragment, unknown>;
+export const VirtualConsoleFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VirtualConsoleFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VirtualConsoleDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'schemaVersion' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'pages' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'controls' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'FragmentSpread', name: { kind: 'Name', value: 'VirtualConsoleControlFields' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'children' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'FragmentSpread', name: { kind: 'Name', value: 'VirtualConsoleControlFields' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'children' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'children' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'FragmentSpread',
+                                          name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'children' },
+                                          selectionSet: {
+                                            kind: 'SelectionSet',
+                                            selections: [
+                                              {
+                                                kind: 'FragmentSpread',
+                                                name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                              },
+                                              {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'children' },
+                                                selectionSet: {
+                                                  kind: 'SelectionSet',
+                                                  selections: [
+                                                    {
+                                                      kind: 'FragmentSpread',
+                                                      name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                                    },
+                                                    {
+                                                      kind: 'Field',
+                                                      name: { kind: 'Name', value: 'children' },
+                                                      selectionSet: {
+                                                        kind: 'SelectionSet',
+                                                        selections: [
+                                                          {
+                                                            kind: 'FragmentSpread',
+                                                            name: {
+                                                              kind: 'Name',
+                                                              value: 'VirtualConsoleControlFields',
+                                                            },
+                                                          },
+                                                          {
+                                                            kind: 'Field',
+                                                            name: { kind: 'Name', value: 'children' },
+                                                            selectionSet: {
+                                                              kind: 'SelectionSet',
+                                                              selections: [
+                                                                {
+                                                                  kind: 'FragmentSpread',
+                                                                  name: {
+                                                                    kind: 'Name',
+                                                                    value: 'VirtualConsoleControlFields',
+                                                                  },
+                                                                },
+                                                              ],
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                  ],
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VirtualConsoleControlDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'x' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'y' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'label' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'backgroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'borderWidth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'borderColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'orientation' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'foregroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<VirtualConsoleFieldsFragment, unknown>;
+export const ProjectFixtureFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFixtureFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectFixtureDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startAddress' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixture' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureVendor' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelMode' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelAssignments' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ProjectFixtureFieldsFragment, unknown>;
+export const Project3dObjectFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'Project3dObjectFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Project3dObjectDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeX' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeY' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeZ' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sceneObjectType' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'geometryKind' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'modelPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isScalable' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeX' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeY' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeZ' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<Project3dObjectFieldsFragment, unknown>;
+export const GetFixturesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetFixtures' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtures' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelRangeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelRangeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelDefinitionDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelRanges' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelAssignmentDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelModeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelModeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelAssignments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VendorFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureVendorDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'weight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'length' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinitions' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelModes' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelModeFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureVendor' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'VendorFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetFixturesQuery, GetFixturesQueryVariables>;
+export const GetFixtureDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetFixture' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'UUID' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixture' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'publicId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelRangeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelRangeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelDefinitionDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelRanges' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelAssignmentDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelModeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelModeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelAssignments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VendorFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureVendorDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'weight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'length' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinitions' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelModes' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelModeFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureVendor' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'VendorFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetFixtureQuery, GetFixtureQueryVariables>;
+export const UpdateFixtureDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateFixture' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'UpdateFixtureInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateFixture' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelRangeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelRangeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelDefinitionDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelRanges' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelAssignmentDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelModeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelModeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelAssignments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VendorFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureVendorDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'weight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'length' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinitions' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelModes' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelModeFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureVendor' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'VendorFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UpdateFixtureMutation, UpdateFixtureMutationVariables>;
+export const CreateFixtureDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateFixture' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'CreateFixtureInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createFixture' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelRangeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelRangeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelDefinitionDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelRanges' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelAssignmentDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelModeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelModeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelAssignments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VendorFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureVendorDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'weight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'length' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinitions' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelModes' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelModeFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureVendor' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'VendorFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CreateFixtureMutation, CreateFixtureMutationVariables>;
+export const DeleteFixtureDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteFixture' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'UUID' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteFixture' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'publicId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'deleted' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DeleteFixtureMutation, DeleteFixtureMutationVariables>;
+export const ExportFixturesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'ExportFixtures' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'exportFixtures' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'schemaVersion' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'vendors' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtures' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'weight' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'length' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'vendor' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'channelDefinitions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'ranges' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'channelModes' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'assignments' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'channelDefinitionPublicId' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ExportFixturesQuery, ExportFixturesQueryVariables>;
+export const ImportFixturesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'ImportFixtures' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'document' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ImportFixturesInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'importFixtures' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'document' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'document' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'importedCount' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtures' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureFields' } }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelRangeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelRangeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelDefinitionDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelRanges' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelAssignmentDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelRangeFields' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureChannelModeFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureChannelModeDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'order' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelAssignments' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelAssignmentFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VendorFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureVendorDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'FixtureFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'weight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'length' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelDefinitions' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelDefinitionFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureChannelModes' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'FixtureChannelModeFields' } }],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureVendor' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'VendorFields' } }],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ImportFixturesMutation, ImportFixturesMutationVariables>;
+export const GetFixtureVendorsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetFixtureVendors' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixtureVendors' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'VendorFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VendorFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureVendorDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetFixtureVendorsQuery, GetFixtureVendorsQueryVariables>;
+export const DeleteFixtureVendorDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteFixtureVendor' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'UUID' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteFixtureVendor' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'publicId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'deleted' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DeleteFixtureVendorMutation, DeleteFixtureVendorMutationVariables>;
+export const CreateFixtureVendorDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateFixtureVendor' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'name' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createFixtureVendor' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'name' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'name' } },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'VendorFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VendorFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'FixtureVendorDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CreateFixtureVendorMutation, CreateFixtureVendorMutationVariables>;
+export const GetSceneObjectTypesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetSceneObjectTypes' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sceneObjectTypes' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'geometryKind' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'modelPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isScalable' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeX' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeY' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeZ' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetSceneObjectTypesQuery, GetSceneObjectTypesQueryVariables>;
+export const GetProjectsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetProjects' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'projects' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'environmentType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomWidth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomLength' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomHeight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetProjectsQuery, GetProjectsQueryVariables>;
+export const GetProjectDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetProject' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'UUID' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'project' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'publicId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFields' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'virtualConsole' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'VirtualConsoleFields' } }],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'projectFixtures' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFixtureFields' } }],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'project3dObjects' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'Project3dObjectFields' } }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VirtualConsoleControlDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'x' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'y' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'label' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'backgroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'borderWidth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'borderColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'orientation' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'foregroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'environmentType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomWidth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomLength' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomHeight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VirtualConsoleFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VirtualConsoleDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'schemaVersion' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'pages' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'controls' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'FragmentSpread', name: { kind: 'Name', value: 'VirtualConsoleControlFields' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'children' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'FragmentSpread', name: { kind: 'Name', value: 'VirtualConsoleControlFields' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'children' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'children' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'FragmentSpread',
+                                          name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'children' },
+                                          selectionSet: {
+                                            kind: 'SelectionSet',
+                                            selections: [
+                                              {
+                                                kind: 'FragmentSpread',
+                                                name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                              },
+                                              {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'children' },
+                                                selectionSet: {
+                                                  kind: 'SelectionSet',
+                                                  selections: [
+                                                    {
+                                                      kind: 'FragmentSpread',
+                                                      name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                                    },
+                                                    {
+                                                      kind: 'Field',
+                                                      name: { kind: 'Name', value: 'children' },
+                                                      selectionSet: {
+                                                        kind: 'SelectionSet',
+                                                        selections: [
+                                                          {
+                                                            kind: 'FragmentSpread',
+                                                            name: {
+                                                              kind: 'Name',
+                                                              value: 'VirtualConsoleControlFields',
+                                                            },
+                                                          },
+                                                          {
+                                                            kind: 'Field',
+                                                            name: { kind: 'Name', value: 'children' },
+                                                            selectionSet: {
+                                                              kind: 'SelectionSet',
+                                                              selections: [
+                                                                {
+                                                                  kind: 'FragmentSpread',
+                                                                  name: {
+                                                                    kind: 'Name',
+                                                                    value: 'VirtualConsoleControlFields',
+                                                                  },
+                                                                },
+                                                              ],
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                  ],
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFixtureFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectFixtureDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startAddress' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixture' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureVendor' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelMode' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelAssignments' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'Project3dObjectFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Project3dObjectDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeX' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeY' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeZ' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sceneObjectType' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'geometryKind' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'modelPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isScalable' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeX' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeY' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeZ' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetProjectQuery, GetProjectQueryVariables>;
+export const CreateProjectDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateProject' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'name' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createProject' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'name' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'name' } },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'environmentType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomWidth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomLength' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomHeight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CreateProjectMutation, CreateProjectMutationVariables>;
+export const UpdateProjectDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateProject' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'UpdateProjectInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateProject' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'environmentType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomWidth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomLength' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomHeight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UpdateProjectMutation, UpdateProjectMutationVariables>;
+export const UpdateProjectVirtualConsoleDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateProjectVirtualConsole' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'UpdateProjectVirtualConsoleInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateProjectVirtualConsole' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'environmentType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomWidth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomLength' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomHeight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UpdateProjectVirtualConsoleMutation, UpdateProjectVirtualConsoleMutationVariables>;
+export const DeleteProjectDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteProject' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'UUID' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteProject' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'publicId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'deleted' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DeleteProjectMutation, DeleteProjectMutationVariables>;
+export const AddProjectFixtureDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AddProjectFixture' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'AddProjectFixtureInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'addProjectFixture' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFixtureFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFixtureFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectFixtureDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startAddress' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixture' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureVendor' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelMode' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelAssignments' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<AddProjectFixtureMutation, AddProjectFixtureMutationVariables>;
+export const UpdateProjectFixtureDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateProjectFixture' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'UpdateProjectFixtureInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateProjectFixture' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFixtureFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFixtureFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectFixtureDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'startAddress' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'fixture' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureVendor' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelMode' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'fixtureChannelAssignments' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'fixtureChannelDefinition' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UpdateProjectFixtureMutation, UpdateProjectFixtureMutationVariables>;
+export const DeleteProjectFixtureDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteProjectFixture' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'UUID' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteProjectFixture' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'publicId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'deleted' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DeleteProjectFixtureMutation, DeleteProjectFixtureMutationVariables>;
+export const AddProject3dObjectDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AddProject3dObject' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'AddProject3dObjectInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'addProject3dObject' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'Project3dObjectFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'Project3dObjectFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Project3dObjectDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeX' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeY' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeZ' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sceneObjectType' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'geometryKind' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'modelPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isScalable' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeX' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeY' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeZ' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<AddProject3dObjectMutation, AddProject3dObjectMutationVariables>;
+export const UpdateProject3dObjectDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateProject3dObject' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'UpdateProject3dObjectInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateProject3dObject' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'Project3dObjectFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'Project3dObjectFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Project3dObjectDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeX' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeY' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'sizeZ' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sceneObjectType' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'geometryKind' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'modelPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'isScalable' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeX' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeY' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'defaultSizeZ' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UpdateProject3dObjectMutation, UpdateProject3dObjectMutationVariables>;
+export const DeleteProject3dObjectDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteProject3dObject' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'UUID' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteProject3dObject' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'publicId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'deleted' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DeleteProject3dObjectMutation, DeleteProject3dObjectMutationVariables>;
+export const ExportProjectsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'ExportProjects' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'exportProjects' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'schemaVersion' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'projects' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'environmentType' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'roomWidth' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'roomLength' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'roomHeight' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'projectFixtures' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'startAddress' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'channelModePublicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'project3dObjects' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'sceneObjectTypePublicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'sceneObjectTypeName' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'sizeX' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'sizeY' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'sizeZ' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'virtualConsole' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'FragmentSpread', name: { kind: 'Name', value: 'VirtualConsoleFields' } },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VirtualConsoleControlDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'x' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'y' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'label' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'backgroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'borderWidth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'borderColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'orientation' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'foregroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'VirtualConsoleFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VirtualConsoleDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'schemaVersion' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'width' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'pages' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'controls' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'FragmentSpread', name: { kind: 'Name', value: 'VirtualConsoleControlFields' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'children' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'FragmentSpread', name: { kind: 'Name', value: 'VirtualConsoleControlFields' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'children' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'children' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        {
+                                          kind: 'FragmentSpread',
+                                          name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'children' },
+                                          selectionSet: {
+                                            kind: 'SelectionSet',
+                                            selections: [
+                                              {
+                                                kind: 'FragmentSpread',
+                                                name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                              },
+                                              {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'children' },
+                                                selectionSet: {
+                                                  kind: 'SelectionSet',
+                                                  selections: [
+                                                    {
+                                                      kind: 'FragmentSpread',
+                                                      name: { kind: 'Name', value: 'VirtualConsoleControlFields' },
+                                                    },
+                                                    {
+                                                      kind: 'Field',
+                                                      name: { kind: 'Name', value: 'children' },
+                                                      selectionSet: {
+                                                        kind: 'SelectionSet',
+                                                        selections: [
+                                                          {
+                                                            kind: 'FragmentSpread',
+                                                            name: {
+                                                              kind: 'Name',
+                                                              value: 'VirtualConsoleControlFields',
+                                                            },
+                                                          },
+                                                          {
+                                                            kind: 'Field',
+                                                            name: { kind: 'Name', value: 'children' },
+                                                            selectionSet: {
+                                                              kind: 'SelectionSet',
+                                                              selections: [
+                                                                {
+                                                                  kind: 'FragmentSpread',
+                                                                  name: {
+                                                                    kind: 'Name',
+                                                                    value: 'VirtualConsoleControlFields',
+                                                                  },
+                                                                },
+                                                              ],
+                                                            },
+                                                          },
+                                                        ],
+                                                      },
+                                                    },
+                                                  ],
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ExportProjectsQuery, ExportProjectsQueryVariables>;
+export const ImportProjectsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'ImportProjects' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'document' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ImportProjectsInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'importProjects' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'document' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'document' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'importedCount' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'projects' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFields' } }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'environmentType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomWidth' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomLength' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'roomHeight' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ImportProjectsMutation, ImportProjectsMutationVariables>;

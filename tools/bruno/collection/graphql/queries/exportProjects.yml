@@ -40,6 +40,16 @@ graphql:
             roomLength
             roomWidth
             updatedAt
+            virtualConsole {
+              height
+              pages {
+                controls
+                id
+                name
+              }
+              schemaVersion
+              width
+            }
           }
           schemaVersion
         }

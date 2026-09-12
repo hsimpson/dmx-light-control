@@ -16,6 +16,7 @@ import { SceneObjectTypeDto } from './dto/scene-object-type.dto';
 import { UpdateProject3dObjectInput } from './dto/update-project-3d-object.dto';
 import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
+import { UpdateProjectVirtualConsoleInput } from './dto/virtual-console.dto';
 import { ProjectImportExportService } from './project-import-export.service';
 import { ProjectService } from './project.service';
 
@@ -83,6 +84,17 @@ export class ProjectResolver {
   })
   public async updateProject(@Args('input') input: UpdateProjectInput): Promise<ProjectDto> {
     const project = await this.projectService.updateProject(input);
+    return plainToInstance(ProjectDto, project);
+  }
+
+  @Mutation(() => ProjectDto, {
+    name: 'updateProjectVirtualConsole',
+    description: 'replace the virtual console layout for a project',
+  })
+  public async updateProjectVirtualConsole(
+    @Args('input') input: UpdateProjectVirtualConsoleInput,
+  ): Promise<ProjectDto> {
+    const project = await this.projectService.updateProjectVirtualConsole(input);
     return plainToInstance(ProjectDto, project);
   }
 

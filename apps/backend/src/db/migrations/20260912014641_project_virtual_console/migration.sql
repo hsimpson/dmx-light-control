@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ADD COLUMN "virtual_console" jsonb;

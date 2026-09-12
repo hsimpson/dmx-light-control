@@ -8,6 +8,7 @@ import { CreateProjectInput } from './dto/create-project.dto';
 import { UpdateProject3dObjectInput } from './dto/update-project-3d-object.dto';
 import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
+import { UpdateProjectVirtualConsoleInput } from './dto/virtual-console.dto';
 import { defaultTransformForObject } from './project-3d-object.transform';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from './project-3d-object-name';
 import { assertValidTransform, resolveSizesForType } from './project-3d-object.validation';
@@ -20,6 +21,8 @@ import {
   OccupiedPatch,
 } from './project-fixture.validation';
 import { optionalRoomDimensions } from './project-room-dimensions';
+import { VirtualConsoleDocument } from './virtual-console';
+import { assertValidVirtualConsole, normalizeVirtualConsole } from './virtual-console.validation';
 import {
   Project3dObjectNameExistsException,
   Project3dObjectNotFoundException,
@@ -138,6 +141,13 @@ function mapProject3dObjectToDto(object: LoadedProject3dObject) {
   };
 }
 
+function withVirtualConsole<T extends { virtualConsole?: VirtualConsoleDocument | null }>(project: T) {
+  return {
+    ...project,
+    virtualConsole: normalizeVirtualConsole(project.virtualConsole),
+  };
+}
+
 function emptyProjectExtras() {
   return { projectFixtures: [], project3dObjects: [] };
 }
@@ -146,11 +156,11 @@ function mapProjectToDto(project: LoadedProject | undefined) {
   if (!project) {
     return undefined;
   }
-  return {
+  return withVirtualConsole({
     ...project,
     projectFixtures: sortProjectFixtures(project.projectFixtures).map(mapProjectFixtureToDto),
     project3dObjects: sortProject3dObjects(project.project3dObjects).map(mapProject3dObjectToDto),
-  };
+  });
 }
 
 @Injectable()
@@ -166,7 +176,7 @@ export class ProjectService {
 
   public async getAllProjects() {
     const projects = await this.projectRepository.findMany();
-    return projects.map(project => ({ ...project, ...emptyProjectExtras() }));
+    return projects.map(project => withVirtualConsole({ ...project, ...emptyProjectExtras() }));
   }
 
   public async getSceneObjectTypes() {
@@ -182,7 +192,7 @@ export class ProjectService {
   public async createProject(input: CreateProjectInput) {
     try {
       const created = await this.projectRepository.createOne(input);
-      return created ? { ...created, ...emptyProjectExtras() } : created;
+      return created ? withVirtualConsole({ ...created, ...emptyProjectExtras() }) : created;
     } catch (error) {
       if (isPostgresUniqueViolation(error)) {
         throw new ProjectAlreadyExistsException(input.name);
@@ -201,7 +211,7 @@ export class ProjectService {
       if (!updated) {
         throw new ProjectNotFoundException(input.publicId);
       }
-      return { ...updated, ...emptyProjectExtras() };
+      return withVirtualConsole({ ...updated, ...emptyProjectExtras() });
     } catch (error) {
       if (error instanceof ProjectNotFoundException) {
         throw error;
@@ -211,6 +221,17 @@ export class ProjectService {
       }
       throw error;
     }
+  }
+
+  public async updateProjectVirtualConsole(input: UpdateProjectVirtualConsoleInput) {
+    assertValidVirtualConsole(input.virtualConsole);
+    const updated = await this.projectRepository.updateOneByPublicId(input.publicId, {
+      virtualConsole: input.virtualConsole,
+    });
+    if (!updated) {
+      throw new ProjectNotFoundException(input.publicId);
+    }
+    return withVirtualConsole({ ...updated, ...emptyProjectExtras() });
   }
 
   public async deleteProjectByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {

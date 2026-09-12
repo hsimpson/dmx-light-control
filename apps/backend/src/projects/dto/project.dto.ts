@@ -1,6 +1,7 @@
 import { BaseDto } from '@/db/base.dto';
 import { Project3dObjectDto } from '@/projects/dto/project-3d-object.dto';
 import { ProjectFixtureDto } from '@/projects/dto/project-fixture.dto';
+import { VirtualConsoleDto } from '@/projects/dto/virtual-console.dto';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { Field, Float, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
@@ -21,6 +22,10 @@ export class ProjectDto extends BaseDto {
 
   @Field(() => Float, { description: 'Room height in meters' })
   public roomHeight: number;
+
+  @Field(() => VirtualConsoleDto, { description: 'The virtual console layout for this project' })
+  @Type(() => VirtualConsoleDto)
+  public virtualConsole: VirtualConsoleDto;
 
   @Field(() => [ProjectFixtureDto], {
     description: 'The fixture instances patched into this project',

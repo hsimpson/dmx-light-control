@@ -19,6 +19,7 @@ type ExportProjectsQuery = {
       roomWidth: number;
       roomLength: number;
       roomHeight: number;
+      virtualConsole: { schemaVersion: number; pages: { name: string }[] } | null;
       createdAt: string;
       updatedAt: string;
     }[];
@@ -50,6 +51,12 @@ const EXPORT_PROJECTS = gql`
         roomWidth
         roomLength
         roomHeight
+        virtualConsole {
+          schemaVersion
+          pages {
+            name
+          }
+        }
         createdAt
         updatedAt
       }
@@ -95,9 +102,10 @@ describe('Project import/export', () => {
     });
 
     const body = await graphqlQuery<ExportProjectsQuery>(app.getHttpAdapter().getInstance().server, EXPORT_PROJECTS);
-    expect(body.data?.exportProjects.schemaVersion).toBe(7);
+    expect(body.data?.exportProjects.schemaVersion).toBe(8);
     const exported = body.data?.exportProjects.projects.find(project => project.name === 'Export List Project');
     expect(exported?.environmentType).toBe('SimpleGround');
+    expect(exported?.virtualConsole).toBeNull();
     expect(exported?.createdAt).toBeTruthy();
     expect(exported?.updatedAt).toBeTruthy();
   });
@@ -269,5 +277,62 @@ describe('Project import/export', () => {
       project: { project3dObjects: { name: string; sceneObjectType: { name: string } }[] } | null;
     }>(app.getHttpAdapter().getInstance().server, query, { variables: { publicId } });
     expect(body.data?.project?.project3dObjects).toEqual([{ name: 'Stage', sceneObjectType: { name: 'Box' } }]);
+  });
+
+  it('imports a virtual console with schemaVersion 8', async () => {
+    const publicId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+    const imported = await graphqlQuery<ImportProjectsMutation>(
+      app.getHttpAdapter().getInstance().server,
+      IMPORT_PROJECTS,
+      {
+        variables: {
+          document: {
+            schemaVersion: 8,
+            projects: [
+              {
+                publicId,
+                name: 'Imported Console Show',
+                virtualConsole: {
+                  schemaVersion: 1,
+                  width: 800,
+                  height: 600,
+                  pages: [
+                    {
+                      id: '11111111-1111-4111-8111-111111111111',
+                      name: 'Page 1',
+                      controls: [],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      },
+    );
+
+    expect(imported.errors).toBeUndefined();
+
+    const query = gql`
+      query ($publicId: UUID!) {
+        project(publicId: $publicId) {
+          virtualConsole {
+            width
+            height
+            pages {
+              name
+            }
+          }
+        }
+      }
+    `;
+    const body = await graphqlQuery<{
+      project: { virtualConsole: { width: number; height: number; pages: { name: string }[] } } | null;
+    }>(app.getHttpAdapter().getInstance().server, query, { variables: { publicId } });
+    expect(body.data?.project?.virtualConsole).toEqual({
+      width: 800,
+      height: 600,
+      pages: [{ name: 'Page 1' }],
+    });
   });
 });
