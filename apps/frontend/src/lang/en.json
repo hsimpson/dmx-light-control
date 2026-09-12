@@ -153,6 +153,7 @@
   "ProjectDetail.virtualConsole.palette": "Add control",
   "ProjectDetail.virtualConsole.panelTitle": "Console",
   "ProjectDetail.virtualConsole.popOut": "Pop out",
+  "ProjectDetail.virtualConsole.resizePanels": "Resize panels",
   "ProjectDetail.virtualConsole.saveError": "Failed to save virtual console",
   "ProjectDetail.virtualConsole.saveSuccess": "Virtual console saved",
   "ProjectDetail.virtualConsole.valueType": "Value type",

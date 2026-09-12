@@ -1,12 +1,42 @@
 import { describe, expect, it } from 'vitest';
 import {
+  cloneVirtualConsoleDocument,
   createControl,
   createDefaultVirtualConsoleDocument,
   findDropTarget,
   insertControlInTree,
+  type VirtualConsoleDocument,
 } from './virtual-console-document';
 
 describe('virtual-console-document', () => {
+  it('drops GraphQL __typename when cloning', () => {
+    const cloned = cloneVirtualConsoleDocument({
+      schemaVersion: 1,
+      width: 1280,
+      height: 720,
+      __typename: 'VirtualConsoleDto',
+      pages: [
+        {
+          __typename: 'VirtualConsolePageDto',
+          id: '11111111-1111-4111-8111-111111111111',
+          name: 'Page 1',
+          controls: [
+            {
+              __typename: 'VirtualConsoleControlDto',
+              ...createControl('button', 0, 0),
+              children: null,
+              borderWidth: null,
+            },
+          ],
+        },
+      ],
+    } as VirtualConsoleDocument);
+
+    expect(JSON.stringify(cloned)).not.toContain('__typename');
+    expect(cloned.pages[0]?.controls[0]?.type).toBe('button');
+    expect(cloned.pages[0]?.controls[0]?.children).toBeUndefined();
+  });
+
   it('creates a single Page 1', () => {
     const document = createDefaultVirtualConsoleDocument();
     expect(document.pages).toHaveLength(1);

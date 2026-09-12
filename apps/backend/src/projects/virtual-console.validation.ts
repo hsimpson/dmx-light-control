@@ -177,7 +177,7 @@ function assertButton(control: VirtualConsoleControl): void {
 }
 
 function assertNoChildren(control: VirtualConsoleControl): void {
-  if (control.children !== undefined && control.children.length > 0) {
+  if (Array.isArray(control.children) && control.children.length > 0) {
     throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have children.`);
   }
 }

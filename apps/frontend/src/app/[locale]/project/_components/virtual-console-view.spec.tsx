@@ -1,7 +1,7 @@
 import { GetProjectDocument, UpdateProjectVirtualConsoleDocument } from '@/shared/types/graphql/graphql';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { notifications } from '@mantine/notifications';
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import VirtualConsoleView from './virtual-console-view';
 
@@ -17,10 +17,11 @@ const now = new Date('2026-01-01T00:00:00.000Z');
 const pageId = '11111111-1111-4111-8111-111111111111';
 
 const virtualConsole = {
+  __typename: 'VirtualConsoleDto',
   schemaVersion: 1,
   width: 1280,
   height: 720,
-  pages: [{ id: pageId, name: 'Page 1', controls: [] }],
+  pages: [{ __typename: 'VirtualConsolePageDto', id: pageId, name: 'Page 1', controls: [] }],
 };
 
 const project = {
@@ -81,13 +82,22 @@ describe('VirtualConsoleView', () => {
             variables: {
               input: {
                 publicId: 'proj-1',
-                virtualConsole: { ...virtualConsole, width: 1024 },
+                virtualConsole: {
+                  schemaVersion: 1,
+                  width: 1024,
+                  height: 720,
+                  pages: [{ id: pageId, name: 'Page 1', controls: [] }],
+                },
               },
             },
           },
           result: {
             data: { updateProjectVirtualConsole: { ...project, virtualConsole: { ...virtualConsole, width: 1024 } } },
           },
+        },
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: { ...project, virtualConsole: { ...virtualConsole, width: 1024 } } } },
         },
       ],
     });
@@ -101,9 +111,13 @@ describe('VirtualConsoleView', () => {
     await user.clear(width);
     await user.type(width, '1024');
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(expect.objectContaining({ color: 'green' }));
+    });
   });
 
-  it('hides the palette in play mode', async () => {
+  it('hides the sidebar in play mode and puts fullscreen in the page header', async () => {
     renderWithProviders(<VirtualConsoleView mode="play" projectPublicId="proj-1" />, {
       apolloMocks: [
         {
@@ -116,7 +130,44 @@ describe('VirtualConsoleView', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Fullscreen' })).toBeInTheDocument();
     });
+    expect(screen.getByRole('tab', { name: 'Page 1' })).toBeInTheDocument();
     expect(screen.queryByText('Add control')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Console' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('separator', { name: 'Resize panels' })).not.toBeInTheDocument();
+    expect(screen.queryByTestId('virtual-console-split')).not.toBeInTheDocument();
+  });
+
+  it('starts with a 3/1 split and resizes when the splitter is dragged', async () => {
+    renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project } },
+        },
+      ],
+    });
+
+    const split = await screen.findByTestId('virtual-console-split');
+    expect(split).toHaveStyle({ gridTemplateColumns: '3fr 6px 1fr' });
+
+    const splitter = screen.getByRole('separator', { name: 'Resize panels' });
+    vi.spyOn(split, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      bottom: 400,
+      right: 400,
+      width: 400,
+      height: 400,
+      toJSON: () => ({}),
+    });
+
+    fireEvent.pointerDown(splitter, { clientX: 300, pointerId: 1 });
+    fireEvent.pointerMove(splitter, { clientX: 120, pointerId: 1 });
+    fireEvent.pointerUp(splitter, { pointerId: 1 });
+
+    expect(split).toHaveStyle({ gridTemplateColumns: '1.2fr 6px 2.8fr' });
   });
 });

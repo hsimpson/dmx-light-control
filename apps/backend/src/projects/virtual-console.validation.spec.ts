@@ -152,6 +152,55 @@ describe('assertValidVirtualConsole', () => {
     }).toThrow(InvalidVirtualConsoleException);
   });
 
+  it('accepts GraphQL null optional fields on sliders, buttons, and a second page', () => {
+    const document = validDocument({
+      pages: [
+        {
+          id: PAGE_ID,
+          name: 'Page 1',
+          controls: [
+            {
+              id: SLIDER_ID,
+              type: VIRTUAL_CONSOLE_CONTROL_TYPE.Slider,
+              x: 0,
+              y: 0,
+              width: 40,
+              height: 120,
+              label: 'Dimmer',
+              backgroundColor: '#111111',
+              foregroundColor: '#88ff88',
+              orientation: 'vertical',
+              valueType: 'dmx',
+              children: null as unknown as undefined,
+              borderWidth: null as unknown as undefined,
+              borderColor: null as unknown as undefined,
+            },
+            {
+              id: BUTTON_ID,
+              type: VIRTUAL_CONSOLE_CONTROL_TYPE.Button,
+              x: 50,
+              y: 0,
+              width: 80,
+              height: 40,
+              label: 'Go',
+              backgroundColor: '#444444',
+              foregroundColor: '#ffffff',
+              children: null as unknown as undefined,
+            },
+          ],
+        },
+        {
+          id: '55555555-5555-4555-8555-555555555555',
+          name: 'Page 2',
+          controls: [],
+        },
+      ],
+    });
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).not.toThrow();
+  });
+
   it('rejects children on a slider', () => {
     const document = validDocument({
       pages: [

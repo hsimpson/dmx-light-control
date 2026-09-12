@@ -16,7 +16,7 @@ import {
   Title,
   UnstyledButton,
 } from '@mantine/core';
-import { ArrowsOutIcon, ExportIcon } from '@phosphor-icons/react';
+import { ExportIcon } from '@phosphor-icons/react';
 import type {
   VirtualConsoleControl,
   VirtualConsoleControlType,
@@ -34,7 +34,6 @@ export type VirtualConsoleSelection =
 
 type VirtualConsoleSidebarProperties = {
   document: VirtualConsoleDocument;
-  mode: 'edit' | 'play';
   selection: VirtualConsoleSelection;
   selectedPage: VirtualConsolePage | undefined;
   selectedControl: VirtualConsoleControl | undefined;
@@ -46,7 +45,6 @@ type VirtualConsoleSidebarProperties = {
   onControlPatch: (patch: Partial<VirtualConsoleControl>) => void;
   onSave: () => void;
   onPopOut?: () => void;
-  onFullscreen?: () => void;
 };
 
 function toFiniteNumber(value: string | number): number | undefined {
@@ -76,7 +74,6 @@ const PaletteItem = ({ type, label }: { type: VirtualConsoleControlType; label: 
 
 const VirtualConsoleSidebar = ({
   document,
-  mode,
   selection,
   selectedPage,
   selectedControl,
@@ -88,26 +85,11 @@ const VirtualConsoleSidebar = ({
   onControlPatch,
   onSave,
   onPopOut,
-  onFullscreen,
 }: VirtualConsoleSidebarProperties) => {
   const { t } = useTranslation();
 
-  if (mode === 'play') {
-    return (
-      <Paper className={classes.panel} p="md" w={260} withBorder>
-        <Stack>
-          {onFullscreen ? (
-            <Button leftSection={<ArrowsOutIcon weight="duotone" />} onClick={onFullscreen} variant="light">
-              {t({ id: 'ProjectDetail.virtualConsole.fullscreen', defaultMessage: 'Fullscreen' })}
-            </Button>
-          ) : null}
-        </Stack>
-      </Paper>
-    );
-  }
-
   return (
-    <Paper className={classes.panel} p="md" w={280} withBorder>
+    <Paper className={classes.panel} p="md" withBorder>
       <Stack gap="md">
         <Group justify="space-between">
           <Title order={3}>{t({ id: 'ProjectDetail.virtualConsole.panelTitle', defaultMessage: 'Console' })}</Title>

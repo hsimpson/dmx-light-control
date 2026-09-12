@@ -96,8 +96,22 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
   }
 };
 
+const omitGraphqlArtifacts = (value: unknown): unknown => {
+  if (Array.isArray(value)) {
+    return value.map(omitGraphqlArtifacts);
+  }
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([key, nested]) => key !== '__typename' && nested !== null)
+      .map(([key, nested]) => [key, omitGraphqlArtifacts(nested)]),
+  );
+};
+
 export const cloneVirtualConsoleDocument = (document: VirtualConsoleDocument): VirtualConsoleDocument =>
-  structuredClone(document);
+  omitGraphqlArtifacts(structuredClone(document)) as VirtualConsoleDocument;
 
 export const findControl = (controls: VirtualConsoleControl[], id: string): VirtualConsoleControl | undefined => {
   for (const control of controls) {

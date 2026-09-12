@@ -30,11 +30,12 @@ const App = ({ children }: AppProperties) => {
     <AppShell
       padding="md"
       styles={{
-        root: { height: '100dvh', minHeight: '100dvh' },
+        root: { height: '100dvh', minHeight: '100dvh', overflow: 'hidden' },
         main: {
           display: 'flex',
           flexDirection: 'column',
-          minHeight: 'calc(100dvh - var(--app-shell-header-height, 60px))',
+          height: 'calc(100dvh - var(--app-shell-header-height, 60px))',
+          minHeight: 0,
           overflow: 'auto',
         },
       }}

@@ -10,11 +10,13 @@ body {
 .mantine-AppShell-root {
   height: 100dvh;
   min-height: 100dvh;
+  overflow: hidden;
 }
 
 .mantine-AppShell-main {
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - var(--app-shell-header-height, 60px));
+  height: calc(100dvh - var(--app-shell-header-height, 60px));
+  min-height: 0;
   overflow: auto;
 }

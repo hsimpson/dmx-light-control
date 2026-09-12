@@ -11,9 +11,9 @@ import {
 import { useMutation, useQuery } from '@apollo/client/react';
 import { ActionIcon, Box, Group, Tabs } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { PlusIcon, XIcon } from '@phosphor-icons/react';
+import { ArrowsOutIcon, PlusIcon, XIcon } from '@phosphor-icons/react';
 import { useParams } from 'next/navigation';
-import { PointerEvent, useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
+import { KeyboardEvent, PointerEvent, useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
 import VirtualConsoleControlTree from './virtual-console-control-tree';
 import VirtualConsoleSidebar, { type VirtualConsoleSelection } from './virtual-console-sidebar';
 import {
@@ -34,8 +34,16 @@ type VirtualConsoleViewProperties = {
   mode?: 'edit' | 'play';
 };
 
+const PAGES_FR = 3;
+const SIDEBAR_FR = 1;
+const SPLIT_TOTAL_FR = PAGES_FR + SIDEBAR_FR;
+const SPLITTER_PX = 6;
+const MIN_PANE_RATIO = 0.2;
+
 const documentsEqual = (left: VirtualConsoleDocument, right: VirtualConsoleDocument) =>
   JSON.stringify(left) === JSON.stringify(right);
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 const toDocument = (value: VirtualConsoleDocument | null | undefined): VirtualConsoleDocument => {
   if (!value || !Array.isArray(value.pages) || value.pages.length < 1) {
@@ -48,6 +56,10 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
   const { t } = useTranslation();
   const params = useParams<{ locale?: string }>();
   const canvasRef = useRef<HTMLDivElement>(null);
+  const splitRef = useRef<HTMLDivElement>(null);
+  const splitDraggingRef = useRef(false);
+  const [pagesFr, setPagesFr] = useState(PAGES_FR);
+  const [sidebarFr, setSidebarFr] = useState(SIDEBAR_FR);
   const { data, loading, refetch } = useQuery(GetProjectDocument, {
     variables: { publicId: projectPublicId },
     skip: !projectPublicId,
@@ -190,7 +202,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
         variables: {
           input: {
             publicId: projectPublicId,
-            virtualConsole: draft as VirtualConsoleInput,
+            virtualConsole: cloneVirtualConsoleDocument(draft) as VirtualConsoleInput,
           },
         },
       });
@@ -216,17 +228,61 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     window.open(`/${locale}/project/${projectPublicId}/console/popout`, 'virtual-console', 'noopener,noreferrer');
   };
 
+  const applySplitFromClientX = (clientX: number) => {
+    const split = splitRef.current;
+    if (!split) {
+      return;
+    }
+    const rect = split.getBoundingClientRect();
+    if (rect.width <= SPLITTER_PX) {
+      return;
+    }
+    const ratio = clamp((clientX - rect.left) / rect.width, MIN_PANE_RATIO, 1 - MIN_PANE_RATIO);
+    setPagesFr(ratio * SPLIT_TOTAL_FR);
+    setSidebarFr((1 - ratio) * SPLIT_TOTAL_FR);
+  };
+
+  const handleSplitterPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    splitDraggingRef.current = true;
+    if (typeof event.currentTarget.setPointerCapture === 'function') {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    applySplitFromClientX(event.clientX);
+  };
+
+  const handleSplitterPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (!splitDraggingRef.current) {
+      return;
+    }
+    applySplitFromClientX(event.clientX);
+  };
+
+  const handleSplitterPointerUp = () => {
+    splitDraggingRef.current = false;
+  };
+
+  const handleSplitterKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+      return;
+    }
+    event.preventDefault();
+    const split = splitRef.current;
+    if (!split) {
+      return;
+    }
+    const rect = split.getBoundingClientRect();
+    const delta = event.key === 'ArrowLeft' ? -16 : 16;
+    applySplitFromClientX(rect.left + (pagesFr / SPLIT_TOTAL_FR) * rect.width + delta);
+  };
+
   if (loading && !data) {
     return <Loading />;
   }
 
-  return (
-    <Box
-      className={mode === 'play' ? classes.popoutRoot : classes.root}
-      display="flex"
-      style={{ flexDirection: 'column' }}
-    >
-      <Group gap="xs" wrap="nowrap">
+  const pagesPane = (
+    <div className={classes.pagesPane}>
+      <Group gap="xs" justify="space-between" px={mode === 'play' ? 'xs' : undefined} wrap="nowrap">
         <Tabs
           style={{ flex: 1, minWidth: 0 }}
           value={activePage?.id}
@@ -245,7 +301,10 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
                   <span aria-hidden>{page.name}</span>
                   {mode === 'edit' && draft.pages.length > 1 ? (
                     <ActionIcon
-                      aria-label={t({ id: 'ProjectDetail.virtualConsole.deletePage', defaultMessage: 'Delete page' })}
+                      aria-label={t({
+                        id: 'ProjectDetail.virtualConsole.deletePage',
+                        defaultMessage: 'Delete page',
+                      })}
                       color="gray"
                       component="span"
                       size="xs"
@@ -274,82 +333,119 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
             ) : null}
           </Tabs.List>
         </Tabs>
+        {mode === 'play' ? (
+          <ActionIcon
+            aria-label={t({ id: 'ProjectDetail.virtualConsole.fullscreen', defaultMessage: 'Fullscreen' })}
+            variant="subtle"
+            onClick={() => {
+              void document.documentElement.requestFullscreen();
+            }}
+          >
+            <ArrowsOutIcon weight="duotone" />
+          </ActionIcon>
+        ) : null}
       </Group>
 
-      <Group align="stretch" className={classes.workspace} gap="md" grow preventGrowOverflow={false} wrap="nowrap">
-        <div className={classes.workspace}>
-          <div
-            ref={canvasRef}
-            className={classes.canvas}
-            data-testid="virtual-console-canvas"
-            style={{ height: draft.height, width: draft.width }}
-            onClick={() => {
-              if (mode === 'edit') {
-                setSelection({ kind: 'canvas' });
-              }
-            }}
-            onDragOver={event => {
-              event.preventDefault();
-            }}
-            onDrop={handleDrop}
-            onPointerMove={handleCanvasPointerMove}
-            onPointerUp={handleCanvasPointerUp}
-          >
-            {activePage ? (
-              <VirtualConsoleControlTree
-                controls={activePage.controls}
-                mode={mode}
-                selectedControlId={selection.kind === 'control' ? selection.controlId : null}
-                onSelectControl={id => {
-                  setSelection({ kind: 'control', controlId: id });
-                }}
-                onMovePointerDown={handleMovePointerDown}
-              />
-            ) : null}
-          </div>
+      <div className={classes.workspace} data-testid="virtual-console-workspace">
+        <div
+          ref={canvasRef}
+          className={classes.canvas}
+          data-testid="virtual-console-canvas"
+          style={{ height: draft.height, width: draft.width }}
+          onClick={() => {
+            if (mode === 'edit') {
+              setSelection({ kind: 'canvas' });
+            }
+          }}
+          onDragOver={event => {
+            event.preventDefault();
+          }}
+          onDrop={handleDrop}
+          onPointerMove={handleCanvasPointerMove}
+          onPointerUp={handleCanvasPointerUp}
+        >
+          {activePage ? (
+            <VirtualConsoleControlTree
+              controls={activePage.controls}
+              mode={mode}
+              selectedControlId={selection.kind === 'control' ? selection.controlId : null}
+              onSelectControl={id => {
+                setSelection({ kind: 'control', controlId: id });
+              }}
+              onMovePointerDown={handleMovePointerDown}
+            />
+          ) : null}
         </div>
-        <VirtualConsoleSidebar
-          dirty={dirty}
-          document={draft}
-          mode={mode}
-          saving={saving}
-          selectedControl={selectedControl}
-          selectedPage={selectedPage}
-          selection={selection}
-          onCanvasSizeChange={(field, value) => {
-            setDraft(current => ({ ...current, [field]: value }));
-          }}
-          onControlPatch={patch => {
-            if (!activePage || selection.kind !== 'control') {
-              return;
-            }
-            patchActivePageControls(updateControlInTree(activePage.controls, selection.controlId, patch));
-          }}
-          onFullscreen={
-            mode === 'play'
-              ? () => {
-                  void document.documentElement.requestFullscreen();
-                }
-              : undefined
-          }
-          onPageNameChange={name => {
-            if (!selectedPage) {
-              return;
-            }
-            setDraft(current => ({
-              ...current,
-              pages: current.pages.map(page => (page.id === selectedPage.id ? { ...page, name } : page)),
-            }));
-          }}
-          onPopOut={mode === 'edit' ? handlePopOut : undefined}
-          onSave={() => {
-            void handleSave();
-          }}
-          onSelectCanvas={() => {
-            setSelection({ kind: 'canvas' });
-          }}
-        />
-      </Group>
+      </div>
+    </div>
+  );
+
+  return (
+    <Box
+      className={mode === 'play' ? classes.popoutRoot : classes.root}
+      display="flex"
+      mih={0}
+      style={{ flexDirection: 'column' }}
+    >
+      {mode === 'play' ? (
+        pagesPane
+      ) : (
+        <div
+          ref={splitRef}
+          className={classes.split}
+          data-testid="virtual-console-split"
+          style={{ gridTemplateColumns: `${pagesFr}fr ${SPLITTER_PX}px ${sidebarFr}fr` }}
+        >
+          {pagesPane}
+          <div
+            aria-label={t({ id: 'ProjectDetail.virtualConsole.resizePanels', defaultMessage: 'Resize panels' })}
+            aria-orientation="vertical"
+            aria-valuemax={80}
+            aria-valuemin={20}
+            aria-valuenow={Math.round((pagesFr / SPLIT_TOTAL_FR) * 100)}
+            className={classes.splitter}
+            role="separator"
+            tabIndex={0}
+            onKeyDown={handleSplitterKeyDown}
+            onPointerDown={handleSplitterPointerDown}
+            onPointerMove={handleSplitterPointerMove}
+            onPointerUp={handleSplitterPointerUp}
+          />
+          <VirtualConsoleSidebar
+            dirty={dirty}
+            document={draft}
+            saving={saving}
+            selectedControl={selectedControl}
+            selectedPage={selectedPage}
+            selection={selection}
+            onCanvasSizeChange={(field, value) => {
+              setDraft(current => ({ ...current, [field]: value }));
+            }}
+            onControlPatch={patch => {
+              if (!activePage || selection.kind !== 'control') {
+                return;
+              }
+              patchActivePageControls(updateControlInTree(activePage.controls, selection.controlId, patch));
+            }}
+            onPageNameChange={name => {
+              if (!selectedPage) {
+                return;
+              }
+              setDraft(current => ({
+                ...current,
+                pages: current.pages.map(page => (page.id === selectedPage.id ? { ...page, name } : page)),
+              }));
+            }}
+            onPopOut={handlePopOut}
+            onSave={() => {
+              void handleSave();
+            }}
+            onSelectCanvas={() => {
+              setSelection({ kind: 'canvas' });
+            }}
+          />
+        </div>
+      )}
     </Box>
   );
 };

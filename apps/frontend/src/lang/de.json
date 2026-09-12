@@ -153,6 +153,7 @@
   "ProjectDetail.virtualConsole.palette": "Steuerelement hinzufügen",
   "ProjectDetail.virtualConsole.panelTitle": "Konsole",
   "ProjectDetail.virtualConsole.popOut": "Auskoppeln",
+  "ProjectDetail.virtualConsole.resizePanels": "Bereiche anpassen",
   "ProjectDetail.virtualConsole.saveError": "Virtuelle Konsole konnte nicht gespeichert werden",
   "ProjectDetail.virtualConsole.saveSuccess": "Virtuelle Konsole gespeichert",
   "ProjectDetail.virtualConsole.valueType": "Werttyp",
