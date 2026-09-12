@@ -5,6 +5,7 @@ import {
   createDefaultVirtualConsoleDocument,
   findDropTarget,
   insertControlInTree,
+  resizedControlBounds,
   type VirtualConsoleDocument,
 } from './virtual-console-document';
 
@@ -51,5 +52,15 @@ describe('virtual-console-document', () => {
     expect(target.parentId).toBe('frame-2');
     const next = insertControlInTree([frame], target.parentId, createControl('button', target.localX, target.localY));
     expect(next[0]?.children?.[0]?.children).toHaveLength(1);
+  });
+
+  it('resizes from edges and corners and clamps to the minimum size', () => {
+    const start = { x: 10, y: 20, width: 100, height: 80 };
+    expect(resizedControlBounds(start, 15, 0, 'e')).toEqual({ x: 10, y: 20, width: 115, height: 80 });
+    expect(resizedControlBounds(start, -12, 0, 'w')).toEqual({ x: -2, y: 20, width: 112, height: 80 });
+    expect(resizedControlBounds(start, 0, -10, 'n')).toEqual({ x: 10, y: 10, width: 100, height: 90 });
+    expect(resizedControlBounds(start, 0, 8, 's')).toEqual({ x: 10, y: 20, width: 100, height: 88 });
+    expect(resizedControlBounds(start, 5, 6, 'se')).toEqual({ x: 10, y: 20, width: 105, height: 86 });
+    expect(resizedControlBounds(start, 200, 200, 'nw')).toEqual({ x: 102, y: 92, width: 8, height: 8 });
   });
 });

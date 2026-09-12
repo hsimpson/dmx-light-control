@@ -24,8 +24,10 @@ import {
   findDropTarget,
   insertControlInTree,
   updateControlInTree,
+  resizedControlBounds,
   VIRTUAL_CONSOLE_PALETTE_MIME,
   type VirtualConsoleDocument,
+  type VirtualConsoleResizeHandle,
 } from './virtual-console-document';
 import classes from './virtual-console-view.module.css';
 
@@ -80,11 +82,15 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
   const activePageId = pageOverride ?? draft.pages[0]?.id ?? null;
   const dragRef = useRef<{
     id: string;
+    pageId: string;
     pointerId: number;
     originX: number;
     originY: number;
     startX: number;
     startY: number;
+    startWidth: number;
+    startHeight: number;
+    handle: VirtualConsoleResizeHandle | null;
   } | null>(null);
 
   const setDraft = (updater: (current: VirtualConsoleDocument) => VirtualConsoleDocument) => {
@@ -149,32 +155,99 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     if (!control) {
       return;
     }
+    setEdits(current => current ?? saved);
     dragRef.current = {
       id: controlId,
+      pageId: activePage.id,
       pointerId: event.pointerId,
       originX: event.clientX,
       originY: event.clientY,
       startX: control.x,
       startY: control.y,
+      startWidth: control.width,
+      startHeight: control.height,
+      handle: null,
     };
-    event.currentTarget.setPointerCapture(event.pointerId);
+    if (typeof event.currentTarget.setPointerCapture === 'function') {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
   };
 
-  const handleCanvasPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    const drag = dragRef.current;
-    if (!drag || !activePage) {
+  const handleResizePointerDown = (
+    controlId: string,
+    handle: VirtualConsoleResizeHandle,
+    event: PointerEvent<HTMLDivElement>,
+  ) => {
+    if (mode !== 'edit' || !activePage) {
       return;
     }
-    const dx = event.clientX - drag.originX;
-    const dy = event.clientY - drag.originY;
-    patchActivePageControls(
-      updateControlInTree(activePage.controls, drag.id, { x: drag.startX + dx, y: drag.startY + dy }),
-    );
+    event.stopPropagation();
+    const control = findControl(activePage.controls, controlId);
+    if (!control) {
+      return;
+    }
+    setEdits(current => current ?? saved);
+    dragRef.current = {
+      id: controlId,
+      pageId: activePage.id,
+      pointerId: event.pointerId,
+      originX: event.clientX,
+      originY: event.clientY,
+      startX: control.x,
+      startY: control.y,
+      startWidth: control.width,
+      startHeight: control.height,
+      handle,
+    };
+    if (typeof event.currentTarget.setPointerCapture === 'function') {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
   };
 
-  const handleCanvasPointerUp = () => {
-    dragRef.current = null;
-  };
+  useEffect(() => {
+    const onMove = (event: globalThis.PointerEvent) => {
+      const drag = dragRef.current;
+      if (event.pointerId !== drag?.pointerId) {
+        return;
+      }
+      const dx = event.clientX - drag.originX;
+      const dy = event.clientY - drag.originY;
+      const patch = drag.handle
+        ? resizedControlBounds(
+            { x: drag.startX, y: drag.startY, width: drag.startWidth, height: drag.startHeight },
+            dx,
+            dy,
+            drag.handle,
+          )
+        : { x: drag.startX + dx, y: drag.startY + dy };
+      setEdits(current => {
+        if (!current) {
+          return current;
+        }
+        return {
+          ...current,
+          pages: current.pages.map(candidate =>
+            candidate.id === drag.pageId
+              ? { ...candidate, controls: updateControlInTree(candidate.controls, drag.id, patch) }
+              : candidate,
+          ),
+        };
+      });
+    };
+    const onUp = (event: globalThis.PointerEvent) => {
+      if (dragRef.current?.pointerId === event.pointerId) {
+        dragRef.current = null;
+      }
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+    };
+  }, []);
 
   const handleAddPage = () => {
     const nextIndex = draft.pages.length + 1;
@@ -361,8 +434,6 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
             event.preventDefault();
           }}
           onDrop={handleDrop}
-          onPointerMove={handleCanvasPointerMove}
-          onPointerUp={handleCanvasPointerUp}
         >
           {activePage ? (
             <VirtualConsoleControlTree
@@ -373,6 +444,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
                 setSelection({ kind: 'control', controlId: id });
               }}
               onMovePointerDown={handleMovePointerDown}
+              onResizePointerDown={handleResizePointerDown}
             />
           ) : null}
         </div>

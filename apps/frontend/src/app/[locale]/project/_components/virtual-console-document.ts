@@ -1,7 +1,12 @@
 export const VIRTUAL_CONSOLE_SCHEMA_VERSION = 1;
 export const VIRTUAL_CONSOLE_DEFAULT_WIDTH = 1280;
 export const VIRTUAL_CONSOLE_DEFAULT_HEIGHT = 720;
+export const VIRTUAL_CONSOLE_CONTROL_SIZE_MIN = 8;
 export const VIRTUAL_CONSOLE_PALETTE_MIME = 'application/x-virtual-console-control';
+
+export const VIRTUAL_CONSOLE_RESIZE_HANDLES = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as const;
+
+export type VirtualConsoleResizeHandle = (typeof VIRTUAL_CONSOLE_RESIZE_HANDLES)[number];
 
 export type VirtualConsoleControlType = 'frame' | 'slider' | 'button';
 export type VirtualConsoleSliderOrientation = 'vertical' | 'horizontal';
@@ -112,6 +117,43 @@ const omitGraphqlArtifacts = (value: unknown): unknown => {
 
 export const cloneVirtualConsoleDocument = (document: VirtualConsoleDocument): VirtualConsoleDocument =>
   omitGraphqlArtifacts(structuredClone(document)) as VirtualConsoleDocument;
+
+export const resizedControlBounds = (
+  start: { x: number; y: number; width: number; height: number },
+  deltaX: number,
+  deltaY: number,
+  handle: VirtualConsoleResizeHandle,
+  minSize = VIRTUAL_CONSOLE_CONTROL_SIZE_MIN,
+): { x: number; y: number; width: number; height: number } => {
+  let { x, y, width, height } = start;
+  if (handle === 'e' || handle === 'ne' || handle === 'se') {
+    width = start.width + deltaX;
+  }
+  if (handle === 'w' || handle === 'nw' || handle === 'sw') {
+    width = start.width - deltaX;
+    x = start.x + deltaX;
+  }
+  if (handle === 's' || handle === 'se' || handle === 'sw') {
+    height = start.height + deltaY;
+  }
+  if (handle === 'n' || handle === 'ne' || handle === 'nw') {
+    height = start.height - deltaY;
+    y = start.y + deltaY;
+  }
+  if (width < minSize) {
+    if (handle === 'w' || handle === 'nw' || handle === 'sw') {
+      x = start.x + start.width - minSize;
+    }
+    width = minSize;
+  }
+  if (height < minSize) {
+    if (handle === 'n' || handle === 'ne' || handle === 'nw') {
+      y = start.y + start.height - minSize;
+    }
+    height = minSize;
+  }
+  return { x, y, width, height };
+};
 
 export const findControl = (controls: VirtualConsoleControl[], id: string): VirtualConsoleControl | undefined => {
   for (const control of controls) {

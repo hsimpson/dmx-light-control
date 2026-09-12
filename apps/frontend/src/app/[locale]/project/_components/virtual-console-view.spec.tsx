@@ -170,4 +170,56 @@ describe('VirtualConsoleView', () => {
 
     expect(split).toHaveStyle({ gridTemplateColumns: '1.2fr 6px 2.8fr' });
   });
+
+  it('resizes a selected control from every handle', async () => {
+    const buttonId = '22222222-2222-4222-8222-222222222222';
+    const projectWithButton = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto',
+                id: buttonId,
+                type: 'button',
+                x: 40,
+                y: 50,
+                width: 80,
+                height: 40,
+                label: 'Go',
+                backgroundColor: '#111111',
+                borderWidth: null,
+                borderColor: null,
+                orientation: null,
+                foregroundColor: null,
+                valueType: null,
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithButton } },
+        },
+      ],
+    });
+
+    await user.click(await screen.findByTestId(`virtual-console-control-${buttonId}`));
+    const handle = screen.getByTestId('virtual-console-resize-se');
+    fireEvent.pointerDown(handle, { clientX: 120, clientY: 90, pointerId: 7 });
+    fireEvent.pointerMove(window, { clientX: 160, clientY: 110, pointerId: 7 });
+    fireEvent.pointerUp(window, { pointerId: 7 });
+
+    expect(screen.getByLabelText('Width')).toHaveValue('120');
+    expect(screen.getByLabelText('Height')).toHaveValue('60');
+  });
 });

@@ -1,0 +1,66 @@
+.handle {
+  background: var(--mantine-color-blue-5);
+  border: 1px solid var(--mantine-color-white);
+  box-sizing: border-box;
+  height: 8px;
+  position: absolute;
+  touch-action: none;
+  width: 8px;
+  z-index: 2;
+}
+
+.n {
+  cursor: ns-resize;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -50%);
+}
+
+.s {
+  cursor: ns-resize;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.e {
+  cursor: ew-resize;
+  right: 0;
+  top: 50%;
+  transform: translate(50%, -50%);
+}
+
+.w {
+  cursor: ew-resize;
+  left: 0;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ne {
+  cursor: nesw-resize;
+  right: 0;
+  top: 0;
+  transform: translate(50%, -50%);
+}
+
+.nw {
+  cursor: nwse-resize;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+}
+
+.se {
+  cursor: nwse-resize;
+  bottom: 0;
+  right: 0;
+  transform: translate(50%, 50%);
+}
+
+.sw {
+  cursor: nesw-resize;
+  bottom: 0;
+  left: 0;
+  transform: translate(-50%, 50%);
+}
