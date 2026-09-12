@@ -9,7 +9,7 @@
       "roomLength": 16,
       "roomHeight": 6,
       "createdAt": "2026-08-28T22:55:51.687Z",
-      "updatedAt": "2026-09-12T17:43:44.754Z",
+      "updatedAt": "2026-09-12T19:20:17.728Z",
       "projectFixtures": [
         {
           "publicId": "3fec16ae-17c5-468b-9ee0-0965de847985",
@@ -336,8 +336,8 @@
                         "children": null,
                         "id": "f3be87ef-c570-4bcd-93d5-abd54c549650",
                         "type": "button",
-                        "x": 39.796875,
-                        "y": 13.27734375,
+                        "x": 31.7109375,
+                        "y": -1.796875,
                         "width": 100,
                         "height": 100,
                         "label": "Red",
@@ -346,6 +346,9 @@
                         "borderColor": null,
                         "orientation": null,
                         "foregroundColor": "#ffffff",
+                        "fontFamily": "system-ui, sans-serif",
+                        "fontSize": 16,
+                        "fontWeight": 600,
                         "valueType": null
                       },
                       {
@@ -362,14 +365,36 @@
                         "borderColor": null,
                         "orientation": "vertical",
                         "foregroundColor": "#4dabf7",
+                        "fontFamily": null,
+                        "fontSize": null,
+                        "fontWeight": null,
+                        "valueType": "dmx"
+                      },
+                      {
+                        "children": null,
+                        "id": "6d5445db-3976-4396-830f-180ed8a76fe5",
+                        "type": "slider",
+                        "x": 447.3046875,
+                        "y": 54.59375,
+                        "width": 340.2890625,
+                        "height": 95.90234375,
+                        "label": "Slider",
+                        "backgroundColor": "#00ff00",
+                        "borderWidth": null,
+                        "borderColor": null,
+                        "orientation": "horizontal",
+                        "foregroundColor": "#ff0000",
+                        "fontFamily": "system-ui, sans-serif",
+                        "fontSize": 16,
+                        "fontWeight": 600,
                         "valueType": "dmx"
                       }
                     ],
                     "id": "fb4f4504-9187-450d-94ab-5c0a8c9a2c1d",
                     "type": "frame",
-                    "x": 44.31640625,
-                    "y": 21.44921875,
-                    "width": 412.26953125,
+                    "x": 73.8515625,
+                    "y": 41.03515625,
+                    "width": 1060.11328125,
                     "height": 318.7265625,
                     "label": "Frame 2",
                     "backgroundColor": "#1a1b1e",
@@ -377,6 +402,9 @@
                     "borderColor": "#51ff00",
                     "orientation": null,
                     "foregroundColor": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 600,
                     "valueType": null
                   }
                 ],
@@ -384,7 +412,7 @@
                 "type": "frame",
                 "x": 111.421875,
                 "y": 66.27734375,
-                "width": 525.71484375,
+                "width": 1203.73046875,
                 "height": 459.85546875,
                 "label": "Frame 1",
                 "backgroundColor": "#1a1b1e",
@@ -392,6 +420,9 @@
                 "borderColor": "#ff0000",
                 "orientation": null,
                 "foregroundColor": null,
+                "fontFamily": "system-ui, sans-serif",
+                "fontSize": 16,
+                "fontWeight": 600,
                 "valueType": null
               }
             ]
@@ -414,6 +445,9 @@
                 "borderColor": null,
                 "orientation": null,
                 "foregroundColor": "#ffffff",
+                "fontFamily": null,
+                "fontSize": null,
+                "fontWeight": null,
                 "valueType": null
               }
             ]

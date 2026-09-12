@@ -5,7 +5,7 @@ import type { VirtualConsoleControlProperties } from './virtual-console-control-
 import { controlFontStyle } from '../virtual-console-fonts';
 import classes from './slider-control.module.css';
 
-const HANDLE_SIZE_PX = 18;
+const HANDLE_SIZE_PX = 24;
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
@@ -23,6 +23,7 @@ const SliderControl = ({ control, mode, selected = false }: VirtualConsoleContro
   const ratio = value / max;
   const isVertical = orientation === 'vertical';
   const displayValue = control.valueType === 'percentage' ? `${value}%` : String(value);
+  const handleSize = isVertical ? control.width / 2 : control.height / 2;
   const handleOffset = `clamp(0px, calc(${ratio} * (100% - ${HANDLE_SIZE_PX}px)), calc(100% - ${HANDLE_SIZE_PX}px))`;
   const fillColor = control.foregroundColor ?? '#4dabf7';
   const fontStyle = controlFontStyle(control);
@@ -142,8 +143,22 @@ const SliderControl = ({ control, mode, selected = false }: VirtualConsoleContro
           data-testid="virtual-console-slider-handle"
           style={
             isVertical
-              ? { backgroundColor: fillColor, bottom: handleOffset, height: HANDLE_SIZE_PX }
-              : { backgroundColor: fillColor, left: handleOffset, width: HANDLE_SIZE_PX }
+              ? {
+                  backgroundColor: fillColor,
+                  bottom: handleOffset,
+                  height: HANDLE_SIZE_PX,
+                  left: '50%',
+                  marginLeft: -handleSize / 2,
+                  width: handleSize,
+                }
+              : {
+                  backgroundColor: fillColor,
+                  height: handleSize,
+                  left: handleOffset,
+                  marginTop: -handleSize / 2,
+                  top: '50%',
+                  width: HANDLE_SIZE_PX,
+                }
           }
         />
       </div>

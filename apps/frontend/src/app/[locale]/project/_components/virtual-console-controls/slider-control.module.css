@@ -70,9 +70,9 @@
 }
 
 .vertical .groove {
-  bottom: 9px;
+  bottom: 12px;
   left: 50%;
-  top: 9px;
+  top: 12px;
   transform: translateX(-50%);
   width: 7px;
 }
@@ -80,8 +80,8 @@
 .horizontal .groove {
   background: linear-gradient(to bottom, rgb(0 0 0 / 70%), rgb(20 20 22 / 85%), rgb(0 0 0 / 70%));
   height: 7px;
-  left: 9px;
-  right: 9px;
+  left: 12px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -131,11 +131,6 @@
   position: absolute;
 }
 
-.vertical .handle {
-  left: 10%;
-  right: 10%;
-}
-
 .vertical .handle::before,
 .vertical .handle::after {
   height: 1px;
@@ -159,8 +154,6 @@
     rgb(0 0 0 / 28%) 50%,
     rgb(255 255 255 / 18%)
   );
-  bottom: 10%;
-  top: 10%;
 }
 
 .horizontal .handle::before,

@@ -119,4 +119,25 @@ describe('virtual console controls', () => {
     fireEvent.pointerDown(rail, { clientX: 100, clientY: 12, pointerId: 1 });
     expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('255');
   });
+
+  it('sizes the handle to half the slider width when vertical and half the height when horizontal', () => {
+    const { unmount } = renderWithProviders(
+      <SliderControl control={{ ...createControl('slider', 0, 0), width: 56, height: 160 }} mode="edit" />,
+    );
+    expect(screen.getByTestId('virtual-console-slider-handle')).toHaveStyle({ height: '24px', width: '28px' });
+    unmount();
+
+    renderWithProviders(
+      <SliderControl
+        control={{
+          ...createControl('slider', 0, 0),
+          orientation: 'horizontal',
+          width: 160,
+          height: 40,
+        }}
+        mode="edit"
+      />,
+    );
+    expect(screen.getByTestId('virtual-console-slider-handle')).toHaveStyle({ height: '20px', width: '24px' });
+  });
 });
