@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
+import { controlFontStyle } from '../virtual-console-fonts';
 import classes from './slider-control.module.css';
 
 const HANDLE_SIZE_PX = 18;
@@ -24,6 +25,7 @@ const SliderControl = ({ control, mode, selected = false }: VirtualConsoleContro
   const displayValue = control.valueType === 'percentage' ? `${value}%` : String(value);
   const handleOffset = `clamp(0px, calc(${ratio} * (100% - ${HANDLE_SIZE_PX}px)), calc(100% - ${HANDLE_SIZE_PX}px))`;
   const fillColor = control.foregroundColor ?? '#4dabf7';
+  const fontStyle = controlFontStyle(control);
   const railRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
 
@@ -103,15 +105,17 @@ const SliderControl = ({ control, mode, selected = false }: VirtualConsoleContro
       data-testid="virtual-console-slider"
       onKeyDown={onKeyDown}
       role={mode === 'play' ? 'slider' : undefined}
-      style={{ backgroundColor: control.backgroundColor }}
+      style={{ backgroundColor: control.backgroundColor, color: fillColor, ...fontStyle }}
       tabIndex={mode === 'play' ? 0 : undefined}
     >
       {isVertical ? (
-        <div className={classes.value} data-testid="virtual-console-slider-value">
+        <div className={classes.value} data-testid="virtual-console-slider-value" style={fontStyle}>
           {displayValue}
         </div>
       ) : (
-        <div className={classes.label}>{control.label}</div>
+        <div className={classes.label} data-testid="virtual-console-slider-label" style={fontStyle}>
+          {control.label}
+        </div>
       )}
       <div
         className={classes.rail}
@@ -125,6 +129,7 @@ const SliderControl = ({ control, mode, selected = false }: VirtualConsoleContro
         <div className={classes.groove}>
           <div
             className={classes.fill}
+            data-testid="virtual-console-slider-fill"
             style={
               isVertical
                 ? { backgroundColor: fillColor, height: `${ratio * 100}%` }
@@ -137,15 +142,17 @@ const SliderControl = ({ control, mode, selected = false }: VirtualConsoleContro
           data-testid="virtual-console-slider-handle"
           style={
             isVertical
-              ? { bottom: handleOffset, height: HANDLE_SIZE_PX }
-              : { left: handleOffset, width: HANDLE_SIZE_PX }
+              ? { backgroundColor: fillColor, bottom: handleOffset, height: HANDLE_SIZE_PX }
+              : { backgroundColor: fillColor, left: handleOffset, width: HANDLE_SIZE_PX }
           }
         />
       </div>
       {isVertical ? (
-        <div className={classes.label}>{control.label}</div>
+        <div className={classes.label} data-testid="virtual-console-slider-label" style={fontStyle}>
+          {control.label}
+        </div>
       ) : (
-        <div className={classes.value} data-testid="virtual-console-slider-value">
+        <div className={classes.value} data-testid="virtual-console-slider-value" style={fontStyle}>
           {displayValue}
         </div>
       )}

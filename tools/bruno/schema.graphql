@@ -1269,6 +1269,15 @@ type VirtualConsoleControlDto {
   """Foreground color as hex"""
   foregroundColor: String
 
+  """CSS font family"""
+  fontFamily: String
+
+  """Font size in pixels"""
+  fontSize: Int
+
+  """CSS font weight"""
+  fontWeight: Int
+
   """Height in pixels"""
   height: Float!
 
@@ -1312,6 +1321,15 @@ input VirtualConsoleControlInput {
 
   """Foreground color as hex"""
   foregroundColor: String
+
+  """CSS font family"""
+  fontFamily: String
+
+  """Font size in pixels"""
+  fontSize: Int
+
+  """CSS font weight"""
+  fontWeight: Int
 
   """Height in pixels"""
   height: Float!

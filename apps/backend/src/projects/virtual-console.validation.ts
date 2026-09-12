@@ -5,6 +5,10 @@ import {
   VIRTUAL_CONSOLE_DEFAULT_HEIGHT,
   VIRTUAL_CONSOLE_DEFAULT_PAGE_NAME,
   VIRTUAL_CONSOLE_DEFAULT_WIDTH,
+  VIRTUAL_CONSOLE_FONT_SIZE_MAX,
+  VIRTUAL_CONSOLE_FONT_SIZE_MIN,
+  VIRTUAL_CONSOLE_FONT_WEIGHT_MAX,
+  VIRTUAL_CONSOLE_FONT_WEIGHT_MIN,
   VIRTUAL_CONSOLE_MAX_NESTING_DEPTH,
   VIRTUAL_CONSOLE_SCHEMA_VERSION,
   VIRTUAL_CONSOLE_SIZE_MAX,
@@ -95,6 +99,7 @@ function assertControl(control: VirtualConsoleControl, ids: Set<string>, depth: 
   if (typeof control.label !== 'string' || control.label.length > 255) {
     throw new InvalidVirtualConsoleException('Control label must be at most 255 characters.');
   }
+  assertTypography(control);
 
   switch (control.type) {
     case VIRTUAL_CONSOLE_CONTROL_TYPE.Frame:
@@ -138,6 +143,37 @@ function assertLayout(control: VirtualConsoleControl): void {
 function assertColor(value: string | undefined, field: string): void {
   if (typeof value !== 'string' || !COLOR_PATTERN.test(value)) {
     throw new InvalidVirtualConsoleException(`Control ${field} must be a hex color.`);
+  }
+}
+
+function assertTypography(control: VirtualConsoleControl): void {
+  if (control.fontFamily !== undefined) {
+    if (typeof control.fontFamily !== 'string' || control.fontFamily.length < 1 || control.fontFamily.length > 128) {
+      throw new InvalidVirtualConsoleException('Control fontFamily must be between 1 and 128 characters.');
+    }
+  }
+  if (control.fontSize !== undefined) {
+    if (
+      !Number.isInteger(control.fontSize) ||
+      control.fontSize < VIRTUAL_CONSOLE_FONT_SIZE_MIN ||
+      control.fontSize > VIRTUAL_CONSOLE_FONT_SIZE_MAX
+    ) {
+      throw new InvalidVirtualConsoleException(
+        `Control fontSize must be an integer between ${VIRTUAL_CONSOLE_FONT_SIZE_MIN} and ${VIRTUAL_CONSOLE_FONT_SIZE_MAX}.`,
+      );
+    }
+  }
+  if (control.fontWeight !== undefined) {
+    if (
+      !Number.isInteger(control.fontWeight) ||
+      control.fontWeight < VIRTUAL_CONSOLE_FONT_WEIGHT_MIN ||
+      control.fontWeight > VIRTUAL_CONSOLE_FONT_WEIGHT_MAX ||
+      control.fontWeight % 100 !== 0
+    ) {
+      throw new InvalidVirtualConsoleException(
+        `Control fontWeight must be a multiple of 100 between ${VIRTUAL_CONSOLE_FONT_WEIGHT_MIN} and ${VIRTUAL_CONSOLE_FONT_WEIGHT_MAX}.`,
+      );
+    }
   }
 }
 

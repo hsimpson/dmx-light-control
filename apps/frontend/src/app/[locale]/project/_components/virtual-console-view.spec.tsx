@@ -196,6 +196,9 @@ describe('VirtualConsoleView', () => {
                 borderColor: null,
                 orientation: null,
                 foregroundColor: null,
+                fontFamily: null,
+                fontSize: null,
+                fontWeight: null,
                 valueType: null,
                 children: [],
               },
@@ -233,6 +236,9 @@ describe('VirtualConsoleView', () => {
       borderColor: null,
       orientation: null,
       foregroundColor: null,
+      fontFamily: null,
+      fontSize: null,
+      fontWeight: null,
       valueType: null,
       children: [] as unknown[],
     };
@@ -336,6 +342,9 @@ describe('VirtualConsoleView', () => {
                 borderColor: null,
                 orientation: null,
                 foregroundColor: null,
+                fontFamily: null,
+                fontSize: null,
+                fontWeight: null,
                 valueType: null,
                 children: [],
               },
@@ -376,5 +385,91 @@ describe('VirtualConsoleView', () => {
 
     fireEvent.pointerUp(window, { clientX: 400, clientY: 80, pointerId: 4 });
     expect(canvas).not.toHaveAttribute('data-drop-target');
+  });
+
+  it('deletes the selected control from the canvas', async () => {
+    const buttonId = '22222222-2222-4222-8222-222222222222';
+    const nestedId = '44444444-4444-4444-8444-444444444444';
+    const frameId = '33333333-3333-4333-8333-333333333333';
+    const graphqlControl = {
+      __typename: 'VirtualConsoleControlDto' as const,
+      borderWidth: null,
+      borderColor: null,
+      orientation: null,
+      foregroundColor: null,
+      fontFamily: null,
+      fontSize: null,
+      fontWeight: null,
+      valueType: null,
+    };
+    const projectWithControls = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                ...graphqlControl,
+                id: buttonId,
+                type: 'button',
+                x: 40,
+                y: 50,
+                width: 80,
+                height: 40,
+                label: 'Go',
+                backgroundColor: '#111111',
+                children: [],
+              },
+              {
+                ...graphqlControl,
+                id: frameId,
+                type: 'frame',
+                x: 200,
+                y: 20,
+                width: 160,
+                height: 120,
+                label: 'Group',
+                backgroundColor: '#1a1b1e',
+                children: [
+                  {
+                    ...graphqlControl,
+                    id: nestedId,
+                    type: 'button',
+                    x: 8,
+                    y: 8,
+                    width: 80,
+                    height: 40,
+                    label: 'Nested',
+                    backgroundColor: '#222222',
+                    children: [],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithControls } },
+        },
+      ],
+    });
+
+    await user.click(await screen.findByTestId(`virtual-console-control-${buttonId}`));
+    await user.click(screen.getByRole('button', { name: 'Delete control' }));
+    expect(screen.queryByTestId(`virtual-console-control-${buttonId}`)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+
+    await user.click(screen.getByTestId(`virtual-console-control-${frameId}`));
+    fireEvent.keyDown(window, { key: 'Delete' });
+    expect(screen.queryByTestId(`virtual-console-control-${frameId}`)).not.toBeInTheDocument();
+    expect(screen.queryByTestId(`virtual-console-control-${nestedId}`)).not.toBeInTheDocument();
   });
 });

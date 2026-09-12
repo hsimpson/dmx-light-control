@@ -7,6 +7,10 @@ export const VIRTUAL_CONSOLE_MAX_NESTING_DEPTH = 8;
 export const VIRTUAL_CONSOLE_SIZE_MIN = 1;
 export const VIRTUAL_CONSOLE_SIZE_MAX = 4096;
 export const VIRTUAL_CONSOLE_CONTROL_SIZE_MIN = 8;
+export const VIRTUAL_CONSOLE_FONT_SIZE_MIN = 8;
+export const VIRTUAL_CONSOLE_FONT_SIZE_MAX = 72;
+export const VIRTUAL_CONSOLE_FONT_WEIGHT_MIN = 100;
+export const VIRTUAL_CONSOLE_FONT_WEIGHT_MAX = 900;
 export const VIRTUAL_CONSOLE_DEFAULT_PAGE_NAME = 'Page 1';
 
 export const VIRTUAL_CONSOLE_CONTROL_TYPE = {
@@ -63,6 +67,9 @@ export type VirtualConsoleControl = {
   children?: VirtualConsoleControl[];
   orientation?: `${VirtualConsoleSliderOrientation}`;
   foregroundColor?: string;
+  fontFamily?: string;
+  fontSize?: number;
+  fontWeight?: number;
   valueType?: `${VirtualConsoleSliderValueType}`;
 };
 

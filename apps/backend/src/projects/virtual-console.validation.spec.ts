@@ -201,6 +201,41 @@ describe('assertValidVirtualConsole', () => {
     }).not.toThrow();
   });
 
+  it('accepts optional typography on every control type', () => {
+    const document = validDocument();
+    const page = document.pages[0];
+    const frame = page?.controls[0];
+    const slider = frame?.children?.[0];
+    const button = page?.controls[1];
+    if (!frame || !slider || !button) {
+      throw new Error('expected controls');
+    }
+    frame.fontFamily = 'Arial, Helvetica, sans-serif';
+    frame.fontSize = 14;
+    frame.fontWeight = 700;
+    slider.fontFamily = 'Georgia, serif';
+    slider.fontSize = 11;
+    slider.fontWeight = 400;
+    button.fontFamily = 'system-ui, sans-serif';
+    button.fontSize = 18;
+    button.fontWeight = 600;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).not.toThrow();
+  });
+
+  it('rejects an invalid font size', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    button.fontSize = 3;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+  });
+
   it('rejects children on a slider', () => {
     const document = validDocument({
       pages: [

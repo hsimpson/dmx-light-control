@@ -17,6 +17,8 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import { ExportIcon } from '@phosphor-icons/react';
+import { useState } from 'react';
+import { VIRTUAL_CONSOLE_COLOR_SWATCHES } from './virtual-console-color-palette';
 import type {
   VirtualConsoleControl,
   VirtualConsoleControlType,
@@ -24,7 +26,20 @@ import type {
   VirtualConsolePage,
 } from './virtual-console-document';
 import { VIRTUAL_CONSOLE_PALETTE_MIME } from './virtual-console-document';
+import VirtualConsoleFontModal from './virtual-console-font-modal';
+import {
+  VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE,
+  findVirtualConsoleFont,
+  findVirtualConsoleFontWeight,
+} from './virtual-console-fonts';
 import classes from './virtual-console-view.module.css';
+
+const COLOR_INPUT_SWATCHES = {
+  closeOnColorSwatchClick: true,
+  format: 'hex',
+  swatches: VIRTUAL_CONSOLE_COLOR_SWATCHES,
+  swatchesPerRow: 5,
+} as const;
 
 const SIZE_MIN = 8;
 const SIZE_MAX = 4096;
@@ -43,6 +58,7 @@ type VirtualConsoleSidebarProperties = {
   onCanvasSizeChange: (field: 'width' | 'height', value: number) => void;
   onPageNameChange: (name: string) => void;
   onControlPatch: (patch: Partial<VirtualConsoleControl>) => void;
+  onDeleteControl: () => void;
   onSave: () => void;
   onPopOut?: () => void;
 };
@@ -83,6 +99,7 @@ const VirtualConsoleSidebar = ({
   onCanvasSizeChange,
   onPageNameChange,
   onControlPatch,
+  onDeleteControl,
   onSave,
   onPopOut,
 }: VirtualConsoleSidebarProperties) => {
@@ -168,7 +185,9 @@ const VirtualConsoleSidebar = ({
           />
         ) : null}
 
-        {selectedControl ? <ControlFields control={selectedControl} onPatch={onControlPatch} /> : null}
+        {selectedControl ? (
+          <ControlFields control={selectedControl} onDelete={onDeleteControl} onPatch={onControlPatch} />
+        ) : null}
 
         <Button disabled={!dirty} loading={saving} onClick={onSave}>
           {t(globalMessages.save)}
@@ -180,11 +199,23 @@ const VirtualConsoleSidebar = ({
 
 type ControlFieldsProperties = {
   control: VirtualConsoleControl;
+  onDelete: () => void;
   onPatch: (patch: Partial<VirtualConsoleControl>) => void;
 };
 
-const ControlFields = ({ control, onPatch }: ControlFieldsProperties) => {
+const ControlFields = ({ control, onDelete, onPatch }: ControlFieldsProperties) => {
   const { t } = useTranslation();
+  const [fontOpened, setFontOpened] = useState(false);
+  const fontLabel =
+    findVirtualConsoleFont(control.fontFamily)?.label ??
+    control.fontFamily ??
+    t({ id: 'ProjectDetail.virtualConsole.fontDefault', defaultMessage: 'Default' });
+  const sizeLabel = `${control.fontSize ?? VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE}px`;
+  const weight = findVirtualConsoleFontWeight(control.fontWeight);
+  const weightLabel = weight
+    ? t({ id: `ProjectDetail.virtualConsole.fontWeight.${weight.id}`, defaultMessage: weight.label })
+    : t({ id: 'ProjectDetail.virtualConsole.fontDefault', defaultMessage: 'Default' });
+
   return (
     <Stack gap="xs">
       <TextInput
@@ -194,6 +225,27 @@ const ControlFields = ({ control, onPatch }: ControlFieldsProperties) => {
           onPatch({ label: event.currentTarget.value });
         }}
       />
+      <TextInput
+        label={t({ id: 'ProjectDetail.virtualConsole.font', defaultMessage: 'Font' })}
+        readOnly
+        styles={{ input: { cursor: 'pointer' } }}
+        value={`${fontLabel} · ${sizeLabel} · ${weightLabel}`}
+        onClick={() => {
+          setFontOpened(true);
+        }}
+      />
+      {fontOpened ? (
+        <VirtualConsoleFontModal
+          control={control}
+          opened
+          onApply={patch => {
+            onPatch(patch);
+          }}
+          onClose={() => {
+            setFontOpened(false);
+          }}
+        />
+      ) : null}
       <Group grow>
         <NumberInput
           hideControls
@@ -247,7 +299,7 @@ const ControlFields = ({ control, onPatch }: ControlFieldsProperties) => {
         />
       </Group>
       <ColorInput
-        format="hex"
+        {...COLOR_INPUT_SWATCHES}
         label={t({ id: 'ProjectDetail.virtualConsole.backgroundColor', defaultMessage: 'Background' })}
         value={control.backgroundColor}
         onChange={value => {
@@ -270,7 +322,7 @@ const ControlFields = ({ control, onPatch }: ControlFieldsProperties) => {
             }}
           />
           <ColorInput
-            format="hex"
+            {...COLOR_INPUT_SWATCHES}
             label={t({ id: 'ProjectDetail.virtualConsole.borderColor', defaultMessage: 'Border color' })}
             value={control.borderColor ?? '#000000'}
             onChange={value => {
@@ -281,9 +333,9 @@ const ControlFields = ({ control, onPatch }: ControlFieldsProperties) => {
       ) : null}
       {control.type === 'slider' || control.type === 'button' ? (
         <ColorInput
-          format="hex"
+          {...COLOR_INPUT_SWATCHES}
           label={t({ id: 'ProjectDetail.virtualConsole.foregroundColor', defaultMessage: 'Foreground' })}
-          value={control.foregroundColor ?? '#ffffff'}
+          value={control.foregroundColor ?? (control.type === 'slider' ? '#4dabf7' : '#ffffff')}
           onChange={value => {
             onPatch({ foregroundColor: value });
           }}
@@ -336,6 +388,9 @@ const ControlFields = ({ control, onPatch }: ControlFieldsProperties) => {
           />
         </>
       ) : null}
+      <Button color="red" variant="light" onClick={onDelete}>
+        {t({ id: 'ProjectDetail.virtualConsole.deleteControl', defaultMessage: 'Delete control' })}
+      </Button>
     </Stack>
   );
 };

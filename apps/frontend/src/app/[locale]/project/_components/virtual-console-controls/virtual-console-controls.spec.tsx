@@ -41,6 +41,41 @@ describe('virtual console controls', () => {
     expect(screen.getByTestId('virtual-console-slider-handle')).toBeInTheDocument();
   });
 
+  it('applies the slider foreground color to the text, fill and handle', () => {
+    const control = { ...createControl('slider', 0, 0), foregroundColor: '#ff00ff' };
+    renderWithProviders(<SliderControl control={control} mode="edit" />);
+    expect(screen.getByTestId('virtual-console-slider')).toHaveStyle({ color: '#ff00ff' });
+    expect(screen.getByTestId('virtual-console-slider-fill')).toHaveStyle({ backgroundColor: '#ff00ff' });
+    expect(screen.getByTestId('virtual-console-slider-handle')).toHaveStyle({ backgroundColor: '#ff00ff' });
+  });
+
+  it('applies font family, size and weight to buttons, frames and sliders', () => {
+    const font = { fontFamily: 'Georgia, serif', fontSize: 20, fontWeight: 700 };
+    renderWithProviders(
+      <>
+        <ButtonControl control={{ ...createControl('button', 0, 0), ...font, label: 'Go' }} mode="edit" />
+        <FrameControl control={{ ...createControl('frame', 0, 0), ...font, label: 'Group' }} mode="edit" />
+        <SliderControl control={{ ...createControl('slider', 0, 0), ...font, label: 'Dimmer' }} mode="edit" />
+      </>,
+    );
+    expect(screen.getByTestId('virtual-console-button')).toHaveStyle({
+      fontFamily: 'Georgia, serif',
+      fontSize: '20px',
+      fontWeight: '700',
+    });
+    expect(screen.getByTestId('virtual-console-frame')).toHaveTextContent('Group');
+    expect(screen.getByTestId('virtual-console-slider-label')).toHaveStyle({
+      fontFamily: 'Georgia, serif',
+      fontSize: '20px',
+      fontWeight: '700',
+    });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveStyle({
+      fontFamily: 'Georgia, serif',
+      fontSize: '20px',
+      fontWeight: '700',
+    });
+  });
+
   it('shows percentage values with a percent sign', () => {
     const control = { ...createControl('slider', 0, 0), label: 'Master', valueType: 'percentage' as const };
     renderWithProviders(<SliderControl control={control} mode="edit" />);

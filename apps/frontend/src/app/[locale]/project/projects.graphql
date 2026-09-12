@@ -22,6 +22,9 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
   borderColor
   orientation
   foregroundColor
+  fontFamily
+  fontSize
+  fontWeight
   valueType
 }
 

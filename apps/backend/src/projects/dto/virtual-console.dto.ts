@@ -1,5 +1,9 @@
 import {
   VIRTUAL_CONSOLE_CONTROL_SIZE_MIN,
+  VIRTUAL_CONSOLE_FONT_SIZE_MAX,
+  VIRTUAL_CONSOLE_FONT_SIZE_MIN,
+  VIRTUAL_CONSOLE_FONT_WEIGHT_MAX,
+  VIRTUAL_CONSOLE_FONT_WEIGHT_MIN,
   VIRTUAL_CONSOLE_SIZE_MAX,
   VIRTUAL_CONSOLE_SIZE_MIN,
   VirtualConsoleControlTypeEnum,
@@ -67,6 +71,15 @@ export class VirtualConsoleControlDto {
 
   @Field({ nullable: true, description: 'Foreground color as hex' })
   public foregroundColor?: string;
+
+  @Field({ nullable: true, description: 'CSS font family' })
+  public fontFamily?: string;
+
+  @Field(() => Int, { nullable: true, description: 'Font size in pixels' })
+  public fontSize?: number;
+
+  @Field(() => Int, { nullable: true, description: 'CSS font weight' })
+  public fontWeight?: number;
 
   @Field(() => VirtualConsoleSliderValueType, { nullable: true, description: 'Slider value interpretation' })
   public valueType?: VirtualConsoleSliderValueType;
@@ -168,6 +181,26 @@ export class VirtualConsoleControlInput {
   @IsOptional()
   @Matches(COLOR_PATTERN)
   public foregroundColor?: string;
+
+  @Field({ nullable: true, description: 'CSS font family' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 128)
+  public fontFamily?: string;
+
+  @Field(() => Int, { nullable: true, description: 'Font size in pixels' })
+  @IsOptional()
+  @IsInt()
+  @Min(VIRTUAL_CONSOLE_FONT_SIZE_MIN)
+  @Max(VIRTUAL_CONSOLE_FONT_SIZE_MAX)
+  public fontSize?: number;
+
+  @Field(() => Int, { nullable: true, description: 'CSS font weight' })
+  @IsOptional()
+  @IsInt()
+  @Min(VIRTUAL_CONSOLE_FONT_WEIGHT_MIN)
+  @Max(VIRTUAL_CONSOLE_FONT_WEIGHT_MAX)
+  public fontWeight?: number;
 
   @Field(() => VirtualConsoleSliderValueType, { nullable: true, description: 'Slider value interpretation' })
   @IsOptional()

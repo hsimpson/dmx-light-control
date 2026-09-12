@@ -383,6 +383,12 @@ export type VirtualConsoleControlInput = {
   children?: Array<VirtualConsoleControlInput> | null | undefined;
   /** Foreground color as hex */
   foregroundColor?: string | null | undefined;
+  /** CSS font family */
+  fontFamily?: string | null | undefined;
+  /** Font size in pixels */
+  fontSize?: number | null | undefined;
+  /** CSS font weight */
+  fontWeight?: number | null | undefined;
   /** Height in pixels */
   height: number;
   /** Stable id of this control */
@@ -1016,6 +1022,9 @@ export type VirtualConsoleControlFieldsFragment = {
   borderColor: string | null;
   orientation: VirtualConsoleSliderOrientation | null;
   foregroundColor: string | null;
+  fontFamily: string | null;
+  fontSize: number | null;
+  fontWeight: number | null;
   valueType: VirtualConsoleSliderValueType | null;
 };
 
@@ -1039,6 +1048,9 @@ export type VirtualConsoleFieldsFragment = {
       borderColor: string | null;
       orientation: VirtualConsoleSliderOrientation | null;
       foregroundColor: string | null;
+      fontFamily: string | null;
+      fontSize: number | null;
+      fontWeight: number | null;
       valueType: VirtualConsoleSliderValueType | null;
       children: Array<{
         id: string;
@@ -1053,6 +1065,9 @@ export type VirtualConsoleFieldsFragment = {
         borderColor: string | null;
         orientation: VirtualConsoleSliderOrientation | null;
         foregroundColor: string | null;
+        fontFamily: string | null;
+        fontSize: number | null;
+        fontWeight: number | null;
         valueType: VirtualConsoleSliderValueType | null;
         children: Array<{
           id: string;
@@ -1067,6 +1082,9 @@ export type VirtualConsoleFieldsFragment = {
           borderColor: string | null;
           orientation: VirtualConsoleSliderOrientation | null;
           foregroundColor: string | null;
+          fontFamily: string | null;
+          fontSize: number | null;
+          fontWeight: number | null;
           valueType: VirtualConsoleSliderValueType | null;
           children: Array<{
             id: string;
@@ -1081,6 +1099,9 @@ export type VirtualConsoleFieldsFragment = {
             borderColor: string | null;
             orientation: VirtualConsoleSliderOrientation | null;
             foregroundColor: string | null;
+            fontFamily: string | null;
+            fontSize: number | null;
+            fontWeight: number | null;
             valueType: VirtualConsoleSliderValueType | null;
             children: Array<{
               id: string;
@@ -1095,6 +1116,9 @@ export type VirtualConsoleFieldsFragment = {
               borderColor: string | null;
               orientation: VirtualConsoleSliderOrientation | null;
               foregroundColor: string | null;
+              fontFamily: string | null;
+              fontSize: number | null;
+              fontWeight: number | null;
               valueType: VirtualConsoleSliderValueType | null;
               children: Array<{
                 id: string;
@@ -1109,6 +1133,9 @@ export type VirtualConsoleFieldsFragment = {
                 borderColor: string | null;
                 orientation: VirtualConsoleSliderOrientation | null;
                 foregroundColor: string | null;
+                fontFamily: string | null;
+                fontSize: number | null;
+                fontWeight: number | null;
                 valueType: VirtualConsoleSliderValueType | null;
                 children: Array<{
                   id: string;
@@ -1123,6 +1150,9 @@ export type VirtualConsoleFieldsFragment = {
                   borderColor: string | null;
                   orientation: VirtualConsoleSliderOrientation | null;
                   foregroundColor: string | null;
+                  fontFamily: string | null;
+                  fontSize: number | null;
+                  fontWeight: number | null;
                   valueType: VirtualConsoleSliderValueType | null;
                   children: Array<{
                     id: string;
@@ -1137,6 +1167,9 @@ export type VirtualConsoleFieldsFragment = {
                     borderColor: string | null;
                     orientation: VirtualConsoleSliderOrientation | null;
                     foregroundColor: string | null;
+                    fontFamily: string | null;
+                    fontSize: number | null;
+                    fontWeight: number | null;
                     valueType: VirtualConsoleSliderValueType | null;
                   }> | null;
                 }> | null;
@@ -1254,6 +1287,9 @@ export type GetProjectQuery = {
           borderColor: string | null;
           orientation: VirtualConsoleSliderOrientation | null;
           foregroundColor: string | null;
+          fontFamily: string | null;
+          fontSize: number | null;
+          fontWeight: number | null;
           valueType: VirtualConsoleSliderValueType | null;
           children: Array<{
             id: string;
@@ -1268,6 +1304,9 @@ export type GetProjectQuery = {
             borderColor: string | null;
             orientation: VirtualConsoleSliderOrientation | null;
             foregroundColor: string | null;
+            fontFamily: string | null;
+            fontSize: number | null;
+            fontWeight: number | null;
             valueType: VirtualConsoleSliderValueType | null;
             children: Array<{
               id: string;
@@ -1282,6 +1321,9 @@ export type GetProjectQuery = {
               borderColor: string | null;
               orientation: VirtualConsoleSliderOrientation | null;
               foregroundColor: string | null;
+              fontFamily: string | null;
+              fontSize: number | null;
+              fontWeight: number | null;
               valueType: VirtualConsoleSliderValueType | null;
               children: Array<{
                 id: string;
@@ -1296,6 +1338,9 @@ export type GetProjectQuery = {
                 borderColor: string | null;
                 orientation: VirtualConsoleSliderOrientation | null;
                 foregroundColor: string | null;
+                fontFamily: string | null;
+                fontSize: number | null;
+                fontWeight: number | null;
                 valueType: VirtualConsoleSliderValueType | null;
                 children: Array<{
                   id: string;
@@ -1310,6 +1355,9 @@ export type GetProjectQuery = {
                   borderColor: string | null;
                   orientation: VirtualConsoleSliderOrientation | null;
                   foregroundColor: string | null;
+                  fontFamily: string | null;
+                  fontSize: number | null;
+                  fontWeight: number | null;
                   valueType: VirtualConsoleSliderValueType | null;
                   children: Array<{
                     id: string;
@@ -1324,6 +1372,9 @@ export type GetProjectQuery = {
                     borderColor: string | null;
                     orientation: VirtualConsoleSliderOrientation | null;
                     foregroundColor: string | null;
+                    fontFamily: string | null;
+                    fontSize: number | null;
+                    fontWeight: number | null;
                     valueType: VirtualConsoleSliderValueType | null;
                     children: Array<{
                       id: string;
@@ -1338,6 +1389,9 @@ export type GetProjectQuery = {
                       borderColor: string | null;
                       orientation: VirtualConsoleSliderOrientation | null;
                       foregroundColor: string | null;
+                      fontFamily: string | null;
+                      fontSize: number | null;
+                      fontWeight: number | null;
                       valueType: VirtualConsoleSliderValueType | null;
                       children: Array<{
                         id: string;
@@ -1352,6 +1406,9 @@ export type GetProjectQuery = {
                         borderColor: string | null;
                         orientation: VirtualConsoleSliderOrientation | null;
                         foregroundColor: string | null;
+                        fontFamily: string | null;
+                        fontSize: number | null;
+                        fontWeight: number | null;
                         valueType: VirtualConsoleSliderValueType | null;
                       }> | null;
                     }> | null;
@@ -1628,6 +1685,9 @@ export type ExportProjectsQuery = {
             borderColor: string | null;
             orientation: VirtualConsoleSliderOrientation | null;
             foregroundColor: string | null;
+            fontFamily: string | null;
+            fontSize: number | null;
+            fontWeight: number | null;
             valueType: VirtualConsoleSliderValueType | null;
             children: Array<{
               id: string;
@@ -1642,6 +1702,9 @@ export type ExportProjectsQuery = {
               borderColor: string | null;
               orientation: VirtualConsoleSliderOrientation | null;
               foregroundColor: string | null;
+              fontFamily: string | null;
+              fontSize: number | null;
+              fontWeight: number | null;
               valueType: VirtualConsoleSliderValueType | null;
               children: Array<{
                 id: string;
@@ -1656,6 +1719,9 @@ export type ExportProjectsQuery = {
                 borderColor: string | null;
                 orientation: VirtualConsoleSliderOrientation | null;
                 foregroundColor: string | null;
+                fontFamily: string | null;
+                fontSize: number | null;
+                fontWeight: number | null;
                 valueType: VirtualConsoleSliderValueType | null;
                 children: Array<{
                   id: string;
@@ -1670,6 +1736,9 @@ export type ExportProjectsQuery = {
                   borderColor: string | null;
                   orientation: VirtualConsoleSliderOrientation | null;
                   foregroundColor: string | null;
+                  fontFamily: string | null;
+                  fontSize: number | null;
+                  fontWeight: number | null;
                   valueType: VirtualConsoleSliderValueType | null;
                   children: Array<{
                     id: string;
@@ -1684,6 +1753,9 @@ export type ExportProjectsQuery = {
                     borderColor: string | null;
                     orientation: VirtualConsoleSliderOrientation | null;
                     foregroundColor: string | null;
+                    fontFamily: string | null;
+                    fontSize: number | null;
+                    fontWeight: number | null;
                     valueType: VirtualConsoleSliderValueType | null;
                     children: Array<{
                       id: string;
@@ -1698,6 +1770,9 @@ export type ExportProjectsQuery = {
                       borderColor: string | null;
                       orientation: VirtualConsoleSliderOrientation | null;
                       foregroundColor: string | null;
+                      fontFamily: string | null;
+                      fontSize: number | null;
+                      fontWeight: number | null;
                       valueType: VirtualConsoleSliderValueType | null;
                       children: Array<{
                         id: string;
@@ -1712,6 +1787,9 @@ export type ExportProjectsQuery = {
                         borderColor: string | null;
                         orientation: VirtualConsoleSliderOrientation | null;
                         foregroundColor: string | null;
+                        fontFamily: string | null;
+                        fontSize: number | null;
+                        fontWeight: number | null;
                         valueType: VirtualConsoleSliderValueType | null;
                         children: Array<{
                           id: string;
@@ -1726,6 +1804,9 @@ export type ExportProjectsQuery = {
                           borderColor: string | null;
                           orientation: VirtualConsoleSliderOrientation | null;
                           foregroundColor: string | null;
+                          fontFamily: string | null;
+                          fontSize: number | null;
+                          fontWeight: number | null;
                           valueType: VirtualConsoleSliderValueType | null;
                         }> | null;
                       }> | null;
@@ -2200,6 +2281,9 @@ export const VirtualConsoleControlFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'borderColor' } },
           { kind: 'Field', name: { kind: 'Name', value: 'orientation' } },
           { kind: 'Field', name: { kind: 'Name', value: 'foregroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontFamily' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
         ],
       },
@@ -2356,6 +2440,9 @@ export const VirtualConsoleFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'borderColor' } },
           { kind: 'Field', name: { kind: 'Name', value: 'orientation' } },
           { kind: 'Field', name: { kind: 'Name', value: 'foregroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontFamily' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
         ],
       },
@@ -3929,6 +4016,9 @@ export const GetProjectDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'borderColor' } },
           { kind: 'Field', name: { kind: 'Name', value: 'orientation' } },
           { kind: 'Field', name: { kind: 'Name', value: 'foregroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontFamily' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
         ],
       },
@@ -4950,6 +5040,9 @@ export const ExportProjectsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'borderColor' } },
           { kind: 'Field', name: { kind: 'Name', value: 'orientation' } },
           { kind: 'Field', name: { kind: 'Name', value: 'foregroundColor' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontFamily' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
         ],
       },

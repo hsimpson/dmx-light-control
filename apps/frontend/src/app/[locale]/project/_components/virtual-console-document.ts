@@ -1,3 +1,9 @@
+import {
+  VIRTUAL_CONSOLE_DEFAULT_FONT_FAMILY,
+  VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE,
+  VIRTUAL_CONSOLE_DEFAULT_FONT_WEIGHT,
+} from './virtual-console-fonts';
+
 export const VIRTUAL_CONSOLE_SCHEMA_VERSION = 1;
 export const VIRTUAL_CONSOLE_DEFAULT_WIDTH = 1280;
 export const VIRTUAL_CONSOLE_DEFAULT_HEIGHT = 720;
@@ -26,6 +32,9 @@ export type VirtualConsoleControl = {
   children?: VirtualConsoleControl[];
   orientation?: VirtualConsoleSliderOrientation;
   foregroundColor?: string;
+  fontFamily?: string;
+  fontSize?: number;
+  fontWeight?: number;
   valueType?: VirtualConsoleSliderValueType;
 };
 
@@ -57,6 +66,11 @@ export const createDefaultVirtualConsoleDocument = (): VirtualConsoleDocument =>
 
 export const createControl = (type: VirtualConsoleControlType, x: number, y: number): VirtualConsoleControl => {
   const id = crypto.randomUUID();
+  const font = {
+    fontFamily: VIRTUAL_CONSOLE_DEFAULT_FONT_FAMILY,
+    fontSize: VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE,
+    fontWeight: VIRTUAL_CONSOLE_DEFAULT_FONT_WEIGHT,
+  };
   switch (type) {
     case 'frame':
       return {
@@ -71,6 +85,7 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         borderWidth: 2,
         borderColor: '#868e96',
         children: [],
+        ...font,
       };
     case 'slider':
       return {
@@ -85,6 +100,7 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         foregroundColor: '#4dabf7',
         orientation: 'vertical',
         valueType: 'dmx',
+        ...font,
       };
     case 'button':
       return {
@@ -97,6 +113,7 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         label: 'Button',
         backgroundColor: '#228be6',
         foregroundColor: '#ffffff',
+        ...font,
       };
   }
 };

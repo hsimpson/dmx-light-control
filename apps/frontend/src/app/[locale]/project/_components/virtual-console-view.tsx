@@ -20,6 +20,7 @@ import {
   cloneVirtualConsoleDocument,
   createControl,
   createDefaultVirtualConsoleDocument,
+  extractControl,
   findControl,
   findControlAbsolutePosition,
   findControlParentId,
@@ -355,6 +356,41 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     setSelection({ kind: 'page', pageId: page.id });
   };
 
+  const handleDeleteControl = () => {
+    if (mode !== 'edit' || !activePage || selection.kind !== 'control') {
+      return;
+    }
+    patchActivePageControls(extractControl(activePage.controls, selection.controlId).controls);
+    setSelection({ kind: 'canvas' });
+  };
+
+  useEffect(() => {
+    if (mode !== 'edit') {
+      return;
+    }
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== 'Delete' && event.key !== 'Backspace') {
+        return;
+      }
+      const target = event.target;
+      if (target instanceof HTMLElement) {
+        const tag = target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) {
+          return;
+        }
+      }
+      if (selection.kind !== 'control') {
+        return;
+      }
+      event.preventDefault();
+      handleDeleteControl();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  });
+
   const handleDeletePage = (pageId: string) => {
     if (draft.pages.length <= 1) {
       return;
@@ -617,6 +653,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
               }
               patchActivePageControls(updateControlInTree(activePage.controls, selection.controlId, patch));
             }}
+            onDeleteControl={handleDeleteControl}
             onPageNameChange={name => {
               if (!selectedPage) {
                 return;

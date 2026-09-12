@@ -1,6 +1,7 @@
 'use client';
 
 import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
+import { controlFontStyle } from '../virtual-console-fonts';
 import classes from './frame-control.module.css';
 
 const FrameControl = ({
@@ -20,7 +21,9 @@ const FrameControl = ({
         border: `${control.borderWidth ?? 0}px solid ${control.borderColor ?? '#000000'}`,
       }}
     >
-      <div className={classes.header}>{control.label}</div>
+      <div className={classes.header} style={controlFontStyle(control)}>
+        {control.label}
+      </div>
       <div className={classes.body}>{children}</div>
     </div>
   );
