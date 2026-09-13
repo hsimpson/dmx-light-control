@@ -211,6 +211,20 @@ describe('assertValidVirtualConsole', () => {
     }).not.toThrow();
   });
 
+  it('treats GraphQL null typography as omitted', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    button.fontFamily = null as unknown as undefined;
+    button.fontSize = null as unknown as undefined;
+    button.fontWeight = null as unknown as undefined;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).not.toThrow();
+  });
+
   it('accepts optional typography on every control type', () => {
     const document = validDocument();
     const page = document.pages[0];

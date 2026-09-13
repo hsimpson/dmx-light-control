@@ -162,12 +162,12 @@ function assertColor(value: string | undefined, field: string): void {
 }
 
 function assertTypography(control: VirtualConsoleControl): void {
-  if (control.fontFamily !== undefined) {
-    if (typeof control.fontFamily !== 'string' || control.fontFamily.length < 1 || control.fontFamily.length > 128) {
+  if (typeof control.fontFamily === 'string') {
+    if (control.fontFamily.length < 1 || control.fontFamily.length > 128) {
       throw new InvalidVirtualConsoleException('Control fontFamily must be between 1 and 128 characters.');
     }
   }
-  if (control.fontSize !== undefined) {
+  if (typeof control.fontSize === 'number') {
     if (
       !Number.isInteger(control.fontSize) ||
       control.fontSize < VIRTUAL_CONSOLE_FONT_SIZE_MIN ||
@@ -178,7 +178,7 @@ function assertTypography(control: VirtualConsoleControl): void {
       );
     }
   }
-  if (control.fontWeight !== undefined) {
+  if (typeof control.fontWeight === 'number') {
     if (
       !Number.isInteger(control.fontWeight) ||
       control.fontWeight < VIRTUAL_CONSOLE_FONT_WEIGHT_MIN ||
