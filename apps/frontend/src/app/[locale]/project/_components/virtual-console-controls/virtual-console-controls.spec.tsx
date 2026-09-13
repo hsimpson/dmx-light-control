@@ -34,6 +34,19 @@ describe('virtual console controls', () => {
     expect(screen.getByRole('button', { name: 'Go' })).toBeDisabled();
   });
 
+  it('marks the button as pressed while the pointer is down in play mode', () => {
+    const control = { ...createControl('button', 0, 0), label: 'Go' };
+    renderWithProviders(<ButtonControl control={control} mode="play" />);
+    const button = screen.getByRole('button', { name: 'Go' });
+    expect(button).not.toHaveAttribute('data-pressed');
+
+    fireEvent.pointerDown(button, { pointerId: 1 });
+    expect(button).toHaveAttribute('data-pressed', 'true');
+
+    fireEvent.pointerUp(button, { pointerId: 1 });
+    expect(button).not.toHaveAttribute('data-pressed');
+  });
+
   it('shows the slider label, value and handle', () => {
     const control = { ...createControl('slider', 0, 0), label: 'Dimmer' };
     renderWithProviders(<SliderControl control={control} mode="edit" />);

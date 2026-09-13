@@ -15,10 +15,17 @@
 
 .play {
   cursor: pointer;
+  transition:
+    box-shadow 80ms ease,
+    filter 80ms ease,
+    transform 80ms ease;
 }
 
-.play:active {
-  filter: brightness(1.15);
+.play:active,
+.play[data-pressed='true'] {
+  box-shadow: inset 0 3px 10px rgb(0 0 0 / 55%);
+  filter: brightness(0.72);
+  transform: translateY(1px);
 }
 
 .selected {
