@@ -24,7 +24,8 @@ describe('virtual console controls', () => {
   it('renders a frame label', () => {
     const control = { ...createControl('frame', 0, 0), label: 'Group' };
     renderWithProviders(<FrameControl control={control} mode="edit" />);
-    expect(screen.getByTestId('virtual-console-frame')).toHaveTextContent('Group');
+    expect(screen.getByTestId('virtual-console-frame-header')).toHaveTextContent('Group');
+    expect(screen.getByTestId('virtual-console-frame-client')).toBeInTheDocument();
   });
 
   it('renders a button label and disables the button in edit mode', () => {
@@ -63,7 +64,12 @@ describe('virtual console controls', () => {
       fontSize: '20px',
       fontWeight: '700',
     });
-    expect(screen.getByTestId('virtual-console-frame')).toHaveTextContent('Group');
+    expect(screen.getByTestId('virtual-console-frame-header')).toHaveStyle({
+      fontFamily: 'Georgia, serif',
+      fontSize: '20px',
+      fontWeight: '700',
+      height: '28px',
+    });
     expect(screen.getByTestId('virtual-console-slider-label')).toHaveStyle({
       fontFamily: 'Georgia, serif',
       fontSize: '20px',

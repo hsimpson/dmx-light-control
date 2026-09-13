@@ -12,6 +12,7 @@ export const VIRTUAL_CONSOLE_DEFAULT_SNAP = 1;
 export const VIRTUAL_CONSOLE_SNAP_MIN = 1;
 export const VIRTUAL_CONSOLE_SNAP_MAX = 128;
 export const VIRTUAL_CONSOLE_PALETTE_MIME = 'application/x-virtual-console-control';
+export const VIRTUAL_CONSOLE_FRAME_HEADER_PADDING_Y = 4;
 
 export const VIRTUAL_CONSOLE_RESIZE_HANDLES = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as const;
 
@@ -54,6 +55,9 @@ export type VirtualConsoleDocument = {
   snap?: number;
   pages: VirtualConsolePage[];
 };
+
+export const frameHeaderHeight = (control: Pick<VirtualConsoleControl, 'fontSize'>) =>
+  (control.fontSize ?? VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE) + VIRTUAL_CONSOLE_FRAME_HEADER_PADDING_Y * 2;
 
 export const createDefaultVirtualConsoleDocument = (): VirtualConsoleDocument => ({
   schemaVersion: VIRTUAL_CONSOLE_SCHEMA_VERSION,
@@ -264,7 +268,12 @@ export const findControlAbsolutePosition = (
       return { x, y };
     }
     if (candidate.children) {
-      const nested = findControlAbsolutePosition(candidate.children, id, x, y);
+      const nested = findControlAbsolutePosition(
+        candidate.children,
+        id,
+        x,
+        y + (candidate.type === 'frame' ? frameHeaderHeight(candidate) : 0),
+      );
       if (nested) {
         return nested;
       }
@@ -280,7 +289,12 @@ export const findFrameOrigin = (
   if (parentId === null) {
     return { x: 0, y: 0 };
   }
-  return findControlAbsolutePosition(controls, parentId) ?? { x: 0, y: 0 };
+  const frame = findControl(controls, parentId);
+  const absolute = findControlAbsolutePosition(controls, parentId) ?? { x: 0, y: 0 };
+  if (frame?.type !== 'frame') {
+    return absolute;
+  }
+  return { x: absolute.x, y: absolute.y + frameHeaderHeight(frame) };
 };
 
 export const reparentControl = (
@@ -346,14 +360,17 @@ export const findDropTarget = (
     if (!control || control.id === ignoreId || control.type !== 'frame') {
       continue;
     }
-    if (x < control.x || y < control.y || x > control.x + control.width || y > control.y + control.height) {
+    const header = frameHeaderHeight(control);
+    if (x < control.x || y < control.y + header || x > control.x + control.width || y > control.y + control.height) {
       continue;
     }
-    const nested = findDropTarget(control.children ?? [], x - control.x, y - control.y, ignoreId);
+    const localX = x - control.x;
+    const localY = y - control.y - header;
+    const nested = findDropTarget(control.children ?? [], localX, localY, ignoreId);
     if (nested.parentId) {
       return nested;
     }
-    return { parentId: control.id, localX: x - control.x, localY: y - control.y };
+    return { parentId: control.id, localX, localY };
   }
   return { parentId: null, localX: x, localY: y };
 };

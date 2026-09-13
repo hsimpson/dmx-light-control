@@ -1,5 +1,5 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import VirtualConsoleControlTree from './virtual-console-control-tree';
 import { createControl, VIRTUAL_CONSOLE_RESIZE_HANDLES } from './virtual-console-document';
@@ -62,6 +62,11 @@ describe('VirtualConsoleControlTree', () => {
     );
 
     expect(screen.getByTestId('virtual-console-control-btn-1')).toHaveStyle({ zIndex: '2' });
+    expect(
+      within(screen.getByTestId('virtual-console-control-frame-1'))
+        .getByTestId('virtual-console-frame-client')
+        .contains(screen.getByTestId('virtual-console-control-btn-1')),
+    ).toBe(true);
     expect(screen.getByTestId('virtual-console-control-frame-1')).toHaveStyle({ zIndex: '2' });
     expect(screen.getByTestId('virtual-console-control-frame-2')).not.toHaveStyle({ zIndex: '2' });
   });

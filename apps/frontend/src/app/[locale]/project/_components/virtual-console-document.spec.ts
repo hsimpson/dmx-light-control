@@ -3,7 +3,10 @@ import {
   cloneVirtualConsoleDocument,
   createControl,
   createDefaultVirtualConsoleDocument,
+  findControlAbsolutePosition,
   findDropTarget,
+  findFrameOrigin,
+  frameHeaderHeight,
   insertControlInTree,
   reparentControl,
   resizedControlBounds,
@@ -48,14 +51,36 @@ describe('virtual-console-document', () => {
     expect(document.snap).toBe(1);
   });
 
-  it('nests a dropped control inside the deepest frame', () => {
+  it('does not nest a drop on the frame header', () => {
+    const frame = { ...createControl('frame', 10, 10), id: 'frame-1', width: 200, height: 200, children: [] };
+    const target = findDropTarget([frame], 40, 10 + frameHeaderHeight(frame) - 1);
+    expect(target.parentId).toBeNull();
+    expect(target.localX).toBe(40);
+    expect(target.localY).toBe(10 + frameHeaderHeight(frame) - 1);
+  });
+
+  it('nests a dropped control inside the deepest frame using the client area', () => {
     const frame = { ...createControl('frame', 10, 10), id: 'frame-1', width: 200, height: 200, children: [] };
     const inner = { ...createControl('frame', 20, 20), id: 'frame-2', width: 80, height: 80, children: [] };
     frame.children = [inner];
-    const target = findDropTarget([frame], 40, 40);
+    const header = frameHeaderHeight(frame);
+    const innerHeader = frameHeaderHeight(inner);
+    const target = findDropTarget([frame], 40, 10 + header + 20 + innerHeader + 10);
     expect(target.parentId).toBe('frame-2');
+    expect(target.localX).toBe(10);
+    expect(target.localY).toBe(10);
     const next = insertControlInTree([frame], target.parentId, createControl('button', target.localX, target.localY));
     expect(next[0]?.children?.[0]?.children).toHaveLength(1);
+  });
+
+  it('places nested controls relative to the frame client origin', () => {
+    const nested = { ...createControl('button', 8, 12), id: 'btn-1' };
+    const frame = { ...createControl('frame', 10, 20), id: 'frame-1', width: 200, height: 160, children: [nested] };
+    expect(findControlAbsolutePosition([frame], 'btn-1')).toEqual({
+      x: 18,
+      y: 20 + frameHeaderHeight(frame) + 12,
+    });
+    expect(findFrameOrigin([frame], 'frame-1')).toEqual({ x: 10, y: 20 + frameHeaderHeight(frame) });
   });
 
   it('reparents a control into another frame and keeps canvas position', () => {
