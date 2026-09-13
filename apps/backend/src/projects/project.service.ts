@@ -9,8 +9,8 @@ import { UpdateProject3dObjectInput } from './dto/update-project-3d-object.dto';
 import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
 import { UpdateProjectVirtualConsoleInput } from './dto/virtual-console.dto';
-import { defaultTransformForObject } from './project-3d-object.transform';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from './project-3d-object-name';
+import { defaultTransformForObject } from './project-3d-object.transform';
 import { assertValidTransform, resolveSizesForType } from './project-3d-object.validation';
 import { optionalEnvironmentType } from './project-environment';
 import {
@@ -21,8 +21,6 @@ import {
   OccupiedPatch,
 } from './project-fixture.validation';
 import { optionalRoomDimensions } from './project-room-dimensions';
-import { VirtualConsoleDocument } from './virtual-console';
-import { assertValidVirtualConsole, normalizeVirtualConsole } from './virtual-console.validation';
 import {
   Project3dObjectNameExistsException,
   Project3dObjectNotFoundException,
@@ -35,6 +33,8 @@ import { Project3dObjectRepository } from './repositories/project-3d-object.repo
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
 import { LoadedProject, ProjectRepository } from './repositories/project.repository';
 import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
+import { VirtualConsoleDocument } from './virtual-console';
+import { assertValidVirtualConsole, normalizeVirtualConsole } from './virtual-console.validation';
 
 function getErrorCode(error: unknown): unknown {
   if (typeof error !== 'object' || error === null || !('code' in error)) {

@@ -1,4 +1,3 @@
-import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import {
   FixtureChannelPreset,
   GetFixturesQuery,
@@ -6,6 +5,7 @@ import {
   UpdateFixtureDocument,
   UpdateFixtureMutationVariables,
 } from '@/shared/types/graphql/graphql';
+import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { notifications } from '@mantine/notifications';
 import { screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

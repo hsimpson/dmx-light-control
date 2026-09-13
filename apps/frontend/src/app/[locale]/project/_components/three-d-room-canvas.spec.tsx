@@ -1,5 +1,5 @@
-import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
+import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { fireEvent, screen } from '@testing-library/react';
 import { PCFShadowMap } from 'three';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

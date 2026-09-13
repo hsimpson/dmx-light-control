@@ -1,7 +1,7 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { ChannelValuesInput } from './dto/dmx-set-channel-values.dto';
 import { DmxUniverseService } from './dmx-universe.service';
+import { ChannelValuesInput } from './dto/dmx-set-channel-values.dto';
 
 @Resolver()
 export class DmxResolver {

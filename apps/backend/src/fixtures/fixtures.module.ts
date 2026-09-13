@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { FixtureAssetController } from './fixture-asset.controller';
 import { FIXTURE_ASSETS_ROOT, resolveAssetsRoot } from './fixture-asset-path';
+import { FixtureAssetController } from './fixture-asset.controller';
 import { FixtureAssetService } from './fixture-asset.service';
 import { FixtureImportExportService } from './fixture-import-export.service';
 import { FixtureResolver } from './fixture.resolver';

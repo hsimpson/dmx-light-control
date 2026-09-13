@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { EventEmitter2 } from 'eventemitter2';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TypedEventEmitter } from './typed-event-emitter';
 
 type Events = { 'a.event': { x: number }; 'b.event': undefined };

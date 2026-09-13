@@ -1,7 +1,7 @@
 'use client';
 
-import { FixturePresetIcon } from '@/lib/fixtures/fixture-preset-icon';
 import { useDmxStore } from '@/lib/dmx/dmx-store';
+import { FixturePresetIcon } from '@/lib/fixtures/fixture-preset-icon';
 import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
 import { Tooltip } from '@mantine/core';
 import classes from './dmx-channel-cell.module.css';

@@ -1,5 +1,5 @@
-import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { FixtureChannelPreset, GetProjectDocument } from '@/shared/types/graphql/graphql';
+import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { DMX_UNIVERSE_SIZE } from './universe-channel-square';

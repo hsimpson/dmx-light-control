@@ -5,8 +5,8 @@ import { useTranslation } from '@/lib/i18n/use-translation';
 import { FixtureChannelMode } from '@/shared/types/fixtures';
 import { Flex, Select, Text } from '@mantine/core';
 import { useState } from 'react';
-import { EditorChannelDefinition } from './fixture-channel-definitions';
 import FixtureChannelDefinitionItem from './fixture-channel-definition-item';
+import { EditorChannelDefinition } from './fixture-channel-definitions';
 
 export type EditorChannelAssignment = {
   clientKey: string;

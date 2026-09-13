@@ -1,5 +1,5 @@
-import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
+import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen, waitFor } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { composeTransformFromPose } from './scene-object-pose';

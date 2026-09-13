@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { EventEmitter2 } from 'eventemitter2';
+import { describe, expect, it } from 'vitest';
 import { AppEventEmitter } from './app-event-emitter';
 
 describe('AppEventEmitter', () => {

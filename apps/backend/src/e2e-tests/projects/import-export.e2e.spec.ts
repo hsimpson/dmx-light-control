@@ -1,6 +1,6 @@
+import { identityTransform } from '@/projects/project-3d-object.transform';
 import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
-import { identityTransform } from '@/projects/project-3d-object.transform';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

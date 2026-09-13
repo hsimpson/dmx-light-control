@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { BoxGeometry, Group, Mesh, Ray, Vector3 } from 'three';
+import { describe, expect, it } from 'vitest';
 import { pickClosestObjectByBoundingBox } from './scene-object-pick';
 
 describe('pickClosestObjectByBoundingBox', () => {

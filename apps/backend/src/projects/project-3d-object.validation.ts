@@ -1,11 +1,11 @@
 import { TRANSFORM_LENGTH } from '@/projects/project-3d-object.transform';
+import { ROOM_DIMENSION_MAX, ROOM_DIMENSION_MIN } from '@/projects/project-room-dimensions';
 import {
   InvalidProject3dObjectSizeException,
   InvalidProject3dObjectTransformException,
   SceneObjectNotScalableException,
   SceneObjectSizeRequiredException,
 } from '@/projects/project.exceptions';
-import { ROOM_DIMENSION_MAX, ROOM_DIMENSION_MIN } from '@/projects/project-room-dimensions';
 
 export type SceneObjectSizeInput = {
   sizeX?: number | null;

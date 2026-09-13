@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { FixtureAssetService } from './fixture-asset.service';
 import {
   ChannelDefinitionAlreadyExistsException,
   ChannelDefinitionNotFoundException,
@@ -10,7 +11,6 @@ import {
   FixtureVendorCreationFailedException,
   FixtureVendorNotFoundException,
 } from './fixture.exceptions';
-import { FixtureAssetService } from './fixture-asset.service';
 import { FixtureService } from './fixture.service';
 import { FixtureChannelDefinitionRepository } from './repositories/fixture-channel-definition.repository';
 import { FixtureChannelModeRepository } from './repositories/fixture-channel-mode.repository';

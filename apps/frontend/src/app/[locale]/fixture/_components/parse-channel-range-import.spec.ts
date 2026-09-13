@@ -1,5 +1,5 @@
-import { CHANNEL_RANGE_DESCRIPTION_MAX_LENGTH, parseChannelRangeImport } from './parse-channel-range-import';
 import { describe, expect, it } from 'vitest';
+import { CHANNEL_RANGE_DESCRIPTION_MAX_LENGTH, parseChannelRangeImport } from './parse-channel-range-import';
 
 describe('parseChannelRangeImport', () => {
   it('parses valid lines', () => {

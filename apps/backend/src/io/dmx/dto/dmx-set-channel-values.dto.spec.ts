@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { ChannelValuesInput, DmxValueInput } from './dmx-set-channel-values.dto';
 
 describe('dmx channel value DTOs', () => {

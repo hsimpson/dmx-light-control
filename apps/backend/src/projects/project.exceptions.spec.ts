@@ -1,6 +1,6 @@
+import { BaseDomainError } from '@/fixtures/fixture.exceptions';
 import { HttpStatus } from '@nestjs/common';
 import { describe, expect, it } from 'vitest';
-import { BaseDomainError } from '@/fixtures/fixture.exceptions';
 import {
   ChannelModeFixtureMismatchException,
   DmxAddressOutOfRangeException,

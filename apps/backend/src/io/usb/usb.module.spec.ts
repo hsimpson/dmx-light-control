@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import 'reflect-metadata';
+import { describe, expect, it } from 'vitest';
 import { UsbDeviceService } from './usb-device.service';
 import { UsbModule } from './usb.module';
 

@@ -15,7 +15,6 @@ import { ArrowsOutIcon, PlusIcon, XIcon } from '@phosphor-icons/react';
 import { useParams } from 'next/navigation';
 import { KeyboardEvent, PointerEvent, useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
 import VirtualConsoleControlTree from './virtual-console-control-tree';
-import VirtualConsoleSidebar, { type VirtualConsoleSelection } from './virtual-console-sidebar';
 import {
   cloneVirtualConsoleDocument,
   createControl,
@@ -37,6 +36,7 @@ import {
   type VirtualConsoleDocument,
   type VirtualConsoleResizeHandle,
 } from './virtual-console-document';
+import VirtualConsoleSidebar, { type VirtualConsoleSelection } from './virtual-console-sidebar';
 import classes from './virtual-console-view.module.css';
 
 type VirtualConsoleViewProperties = {

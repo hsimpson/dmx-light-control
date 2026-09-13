@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { HttpStatus } from '@nestjs/common';
+import { describe, expect, it } from 'vitest';
 import {
   BaseDomainError,
   ChannelDefinitionAlreadyExistsException,

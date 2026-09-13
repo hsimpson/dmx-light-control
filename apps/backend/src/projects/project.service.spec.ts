@@ -1,8 +1,10 @@
+import { FixtureChannelPreset } from '@/fixtures/channel-presets';
+import { ChannelModeNotFoundException, FixtureNotFoundException } from '@/fixtures/fixture.exceptions';
+import { FixtureChannelModeRepository } from '@/fixtures/repositories/fixture-channel-mode.repository';
+import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
 import { describe, expect, it, vi } from 'vitest';
 import { identityTransform } from './project-3d-object.transform';
 import { ProjectEnvironmentType } from './project-environment';
-import { FixtureChannelPreset } from '@/fixtures/channel-presets';
-import { ChannelModeNotFoundException, FixtureNotFoundException } from '@/fixtures/fixture.exceptions';
 import {
   Project3dObjectNameExistsException,
   Project3dObjectNotFoundException,
@@ -17,8 +19,6 @@ import { Project3dObjectRepository } from './repositories/project-3d-object.repo
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
 import { ProjectRepository } from './repositories/project.repository';
 import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
-import { FixtureChannelModeRepository } from '@/fixtures/repositories/fixture-channel-mode.repository';
-import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
 
 function build() {
   const projectRepository = {

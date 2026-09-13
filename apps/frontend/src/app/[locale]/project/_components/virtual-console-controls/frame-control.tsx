@@ -1,8 +1,8 @@
 'use client';
 
-import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
 import { controlFontStyle } from '../virtual-console-fonts';
 import classes from './frame-control.module.css';
+import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
 
 const FrameControl = ({
   control,

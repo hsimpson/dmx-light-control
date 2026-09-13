@@ -1,13 +1,13 @@
-import { describe, it, expect } from 'vitest';
 import 'reflect-metadata';
+import { describe, expect, it } from 'vitest';
 import { SerialSendService } from '../serial/serial-send.service';
+import { DmxSendService } from './dmx-send.service';
 import { DmxSnifferCommand } from './dmx-sniffer.command';
 import { DmxSnifferService } from './dmx-sniffer.service';
-import { DmxModule } from './dmx.module';
-import { DmxResolver } from './dmx.resolver';
-import { DmxSendService } from './dmx-send.service';
 import { DmxUniverseService } from './dmx-universe.service';
 import { DmxWebsocketService } from './dmx-websocket.service';
+import { DmxModule } from './dmx.module';
+import { DmxResolver } from './dmx.resolver';
 
 describe('DmxModule', () => {
   it('is an NgModule providing the dmx domain classes', () => {

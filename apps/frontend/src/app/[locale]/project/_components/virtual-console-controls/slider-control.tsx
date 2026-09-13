@@ -1,9 +1,9 @@
 'use client';
 
 import { useCallback, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
-import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
 import { controlFontStyle } from '../virtual-console-fonts';
 import classes from './slider-control.module.css';
+import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
 
 const HANDLE_SIZE_PX = 24;
 

@@ -2,14 +2,12 @@ import { InjectDb } from '@/db/drizzle-db/drizzle-db.provider';
 import { optionalImportTimestamps } from '@/db/import-timestamps.input';
 import { relations } from '@/db/relations';
 import { fixture, fixtureChannelMode } from '@/fixtures/entities';
-import { ImportProjectsInput, ImportProject3dObjectInput } from '@/projects/dto/import-projects.dto';
+import { ImportProject3dObjectInput, ImportProjectsInput } from '@/projects/dto/import-projects.dto';
 import { project, project3dObject, projectFixture, sceneObjectType } from '@/projects/entities';
-import { assertValidTransform, resolveSizesForType } from '@/projects/project-3d-object.validation';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from '@/projects/project-3d-object-name';
+import { assertValidTransform, resolveSizesForType } from '@/projects/project-3d-object.validation';
 import { environmentTypeForImport, optionalEnvironmentType } from '@/projects/project-environment';
 import { mapProjectsToExportDocument, ProjectExportDocument } from '@/projects/project-export.mapper';
-import { assertImportDocument } from '@/projects/project-import.validator';
-import { assertValidVirtualConsole } from '@/projects/virtual-console.validation';
 import {
   assertChannelModeBelongsToFixture,
   assertNoPatchOverlap,
@@ -17,10 +15,12 @@ import {
   channelCountFromMode,
   OccupiedPatch,
 } from '@/projects/project-fixture.validation';
+import { assertImportDocument } from '@/projects/project-import.validator';
 import { optionalRoomDimensions } from '@/projects/project-room-dimensions';
 import { ProjectImportConflictException } from '@/projects/project.exceptions';
 import { ProjectFixtureRepository } from '@/projects/repositories/project-fixture.repository';
 import { ProjectRepository } from '@/projects/repositories/project.repository';
+import { assertValidVirtualConsole } from '@/projects/virtual-console.validation';
 import { Injectable } from '@nestjs/common';
 import { eq, InferSelectModel } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';

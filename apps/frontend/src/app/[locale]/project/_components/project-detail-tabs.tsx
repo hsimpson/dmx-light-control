@@ -3,6 +3,7 @@
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { Tabs } from '@mantine/core';
 import { useParams, useRouter } from 'next/navigation';
+import DmxView from './dmx-view';
 import {
   DEFAULT_PROJECT_DETAIL_TAB,
   isValidProjectDetailTab,
@@ -10,7 +11,6 @@ import {
   type ProjectDetailTab,
 } from './project-detail-tabs.constants';
 import classes from './project-detail-tabs.module.css';
-import DmxView from './dmx-view';
 import ProjectFixtureTable from './project-fixture-table';
 import ProjectTabEmptyState from './project-tab-empty-state';
 import ThreeDView from './three-d-view';

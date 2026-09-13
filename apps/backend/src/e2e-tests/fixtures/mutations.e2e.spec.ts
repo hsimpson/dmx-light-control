@@ -1,4 +1,3 @@
-import { setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
 import { DRIZZLE_DB_PROVIDER } from '@/db/drizzle-db/drizzle-db.provider';
 import { relations } from '@/db/relations';
 import * as schema from '@/db/schema';
@@ -11,6 +10,7 @@ import { eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
 
 type CreateFixtureVendorMutation = {
   createFixtureVendor: {
