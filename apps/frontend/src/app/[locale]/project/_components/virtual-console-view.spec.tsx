@@ -21,6 +21,7 @@ const virtualConsole = {
   schemaVersion: 1,
   width: 1280,
   height: 720,
+  snap: 1,
   pages: [{ __typename: 'VirtualConsolePageDto', id: pageId, name: 'Page 1', controls: [] }],
 };
 
@@ -86,6 +87,7 @@ describe('VirtualConsoleView', () => {
                   schemaVersion: 1,
                   width: 1024,
                   height: 720,
+                  snap: 1,
                   pages: [{ id: pageId, name: 'Page 1', controls: [] }],
                 },
               },
@@ -471,5 +473,61 @@ describe('VirtualConsoleView', () => {
     fireEvent.keyDown(window, { key: 'Delete' });
     expect(screen.queryByTestId(`virtual-console-control-${frameId}`)).not.toBeInTheDocument();
     expect(screen.queryByTestId(`virtual-console-control-${nestedId}`)).not.toBeInTheDocument();
+  });
+
+  it('snaps a dragged control to the configured grid', async () => {
+    const buttonId = '22222222-2222-4222-8222-222222222222';
+    const projectWithButton = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        snap: 8,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto',
+                id: buttonId,
+                type: 'button',
+                x: 40,
+                y: 50,
+                width: 80,
+                height: 40,
+                label: 'Go',
+                backgroundColor: '#111111',
+                borderWidth: null,
+                borderColor: null,
+                orientation: null,
+                foregroundColor: null,
+                fontFamily: null,
+                fontSize: null,
+                fontWeight: null,
+                valueType: null,
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithButton } },
+        },
+      ],
+    });
+
+    await user.click(await screen.findByTestId(`virtual-console-control-${buttonId}`));
+    const control = screen.getByTestId(`virtual-console-control-${buttonId}`);
+    fireEvent.pointerDown(control, { clientX: 60, clientY: 60, pointerId: 5 });
+    fireEvent.pointerMove(window, { clientX: 70, clientY: 60, pointerId: 5 });
+    fireEvent.pointerUp(window, { pointerId: 5 });
+
+    expect(screen.getByLabelText('X')).toHaveValue('48');
+    expect(screen.getByLabelText('Y')).toHaveValue('48');
   });
 });

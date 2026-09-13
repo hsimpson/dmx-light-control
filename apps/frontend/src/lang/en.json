@@ -180,6 +180,7 @@
   "ProjectDetail.virtualConsole.resizePanels": "Resize panels",
   "ProjectDetail.virtualConsole.saveError": "Failed to save virtual console",
   "ProjectDetail.virtualConsole.saveSuccess": "Virtual console saved",
+  "ProjectDetail.virtualConsole.snap": "Snap",
   "ProjectDetail.virtualConsole.valueType": "Value type",
   "ProjectDetail.virtualConsole.valueTypeDmx": "DMX",
   "ProjectDetail.virtualConsole.valueTypePercentage": "Percentage",

@@ -19,13 +19,16 @@ import {
 import { ExportIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { VIRTUAL_CONSOLE_COLOR_SWATCHES } from './virtual-console-color-palette';
-import type {
-  VirtualConsoleControl,
-  VirtualConsoleControlType,
-  VirtualConsoleDocument,
-  VirtualConsolePage,
+import {
+  VIRTUAL_CONSOLE_DEFAULT_SNAP,
+  VIRTUAL_CONSOLE_PALETTE_MIME,
+  VIRTUAL_CONSOLE_SNAP_MAX,
+  VIRTUAL_CONSOLE_SNAP_MIN,
+  type VirtualConsoleControl,
+  type VirtualConsoleControlType,
+  type VirtualConsoleDocument,
+  type VirtualConsolePage,
 } from './virtual-console-document';
-import { VIRTUAL_CONSOLE_PALETTE_MIME } from './virtual-console-document';
 import VirtualConsoleFontModal from './virtual-console-font-modal';
 import {
   VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE,
@@ -55,7 +58,7 @@ type VirtualConsoleSidebarProperties = {
   dirty: boolean;
   saving: boolean;
   onSelectCanvas: () => void;
-  onCanvasSizeChange: (field: 'width' | 'height', value: number) => void;
+  onCanvasSizeChange: (field: 'width' | 'height' | 'snap', value: number) => void;
   onPageNameChange: (name: string) => void;
   onControlPatch: (patch: Partial<VirtualConsoleControl>) => void;
   onDeleteControl: () => void;
@@ -174,6 +177,19 @@ const VirtualConsoleSidebar = ({
             />
           </Group>
         )}
+        <NumberInput
+          hideControls
+          label={t({ id: 'ProjectDetail.virtualConsole.snap', defaultMessage: 'Snap' })}
+          max={VIRTUAL_CONSOLE_SNAP_MAX}
+          min={VIRTUAL_CONSOLE_SNAP_MIN}
+          value={document.snap ?? VIRTUAL_CONSOLE_DEFAULT_SNAP}
+          onChange={value => {
+            const next = toFiniteNumber(value);
+            if (next !== undefined) {
+              onCanvasSizeChange('snap', next);
+            }
+          }}
+        />
 
         {selectedPage && selection.kind === 'page' ? (
           <TextInput

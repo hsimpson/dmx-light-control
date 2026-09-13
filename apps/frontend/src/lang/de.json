@@ -180,6 +180,7 @@
   "ProjectDetail.virtualConsole.resizePanels": "Bereiche anpassen",
   "ProjectDetail.virtualConsole.saveError": "Virtuelle Konsole konnte nicht gespeichert werden",
   "ProjectDetail.virtualConsole.saveSuccess": "Virtuelle Konsole gespeichert",
+  "ProjectDetail.virtualConsole.snap": "Einrasten",
   "ProjectDetail.virtualConsole.valueType": "Werttyp",
   "ProjectDetail.virtualConsole.valueTypeDmx": "DMX",
   "ProjectDetail.virtualConsole.valueTypePercentage": "Prozent",

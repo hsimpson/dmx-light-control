@@ -67,6 +67,7 @@ export const mockedProject = {
     schemaVersion: 1,
     width: 1280,
     height: 720,
+    snap: 1,
     pages: [
       {
         __typename: 'VirtualConsolePageDto',

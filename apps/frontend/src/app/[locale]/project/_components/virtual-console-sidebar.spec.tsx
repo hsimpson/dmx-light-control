@@ -90,4 +90,31 @@ describe('virtual console sidebar', () => {
     await user.click(screen.getByRole('button', { name: 'Delete control' }));
     expect(onDeleteControl).toHaveBeenCalledTimes(1);
   });
+
+  it('reports snap changes from the default of 1 pixel', async () => {
+    const document = createDefaultVirtualConsoleDocument();
+    const onCanvasSizeChange = vi.fn();
+    const { user } = renderWithProviders(
+      <VirtualConsoleSidebar
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={onCanvasSizeChange}
+        onControlPatch={vi.fn()}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={undefined}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'canvas' }}
+      />,
+    );
+
+    expect(screen.getByLabelText('Snap')).toHaveValue('1');
+    const snap = screen.getByLabelText('Snap');
+    await user.clear(snap);
+    await user.type(snap, '8');
+    expect(onCanvasSizeChange).toHaveBeenCalledWith('snap', 8);
+  });
 });

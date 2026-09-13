@@ -12,6 +12,9 @@ export const VIRTUAL_CONSOLE_FONT_SIZE_MAX = 72;
 export const VIRTUAL_CONSOLE_FONT_WEIGHT_MIN = 100;
 export const VIRTUAL_CONSOLE_FONT_WEIGHT_MAX = 900;
 export const VIRTUAL_CONSOLE_DEFAULT_PAGE_NAME = 'Page 1';
+export const VIRTUAL_CONSOLE_DEFAULT_SNAP = 1;
+export const VIRTUAL_CONSOLE_SNAP_MIN = 1;
+export const VIRTUAL_CONSOLE_SNAP_MAX = 128;
 
 export const VIRTUAL_CONSOLE_CONTROL_TYPE = {
   Frame: 'frame',
@@ -83,5 +86,6 @@ export type VirtualConsoleDocument = {
   schemaVersion: number;
   width: number;
   height: number;
+  snap?: number;
   pages: VirtualConsolePage[];
 };

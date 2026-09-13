@@ -29,7 +29,10 @@ import {
   insertControlInTree,
   reparentControl,
   resizedControlBounds,
+  snapControlBounds,
+  snapToGrid,
   updateControlInTree,
+  VIRTUAL_CONSOLE_DEFAULT_SNAP,
   VIRTUAL_CONSOLE_PALETTE_MIME,
   type VirtualConsoleDocument,
   type VirtualConsoleResizeHandle,
@@ -56,7 +59,8 @@ const toDocument = (value: VirtualConsoleDocument | null | undefined): VirtualCo
   if (!value || !Array.isArray(value.pages) || value.pages.length < 1) {
     return createDefaultVirtualConsoleDocument();
   }
-  return cloneVirtualConsoleDocument(value);
+  const cloned = cloneVirtualConsoleDocument(value);
+  return { ...cloned, snap: cloned.snap ?? VIRTUAL_CONSOLE_DEFAULT_SNAP };
 };
 
 const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleViewProperties) => {
@@ -161,7 +165,8 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     const x = event.clientX - bounds.left;
     const y = event.clientY - bounds.top;
     const target = findDropTarget(activePage.controls, x, y);
-    const control = createControl(type, target.localX, target.localY);
+    const snap = draft.snap ?? VIRTUAL_CONSOLE_DEFAULT_SNAP;
+    const control = createControl(type, snapToGrid(target.localX, snap), snapToGrid(target.localY, snap));
     patchActivePageControls(insertControlInTree(activePage.controls, target.parentId, control));
     setSelection({ kind: 'control', controlId: control.id });
   };
@@ -255,14 +260,18 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       }
       const dx = event.clientX - drag.originX;
       const dy = event.clientY - drag.originY;
+      const snap = draftRef.current.snap ?? VIRTUAL_CONSOLE_DEFAULT_SNAP;
       const patch = drag.handle
-        ? resizedControlBounds(
-            { x: drag.startX, y: drag.startY, width: drag.startWidth, height: drag.startHeight },
-            dx,
-            dy,
-            drag.handle,
+        ? snapControlBounds(
+            resizedControlBounds(
+              { x: drag.startX, y: drag.startY, width: drag.startWidth, height: drag.startHeight },
+              dx,
+              dy,
+              drag.handle,
+            ),
+            snap,
           )
-        : { x: drag.startX + dx, y: drag.startY + dy };
+        : { x: snapToGrid(drag.startX + dx, snap), y: snapToGrid(drag.startY + dy, snap) };
       setEdits(current => {
         if (!current) {
           return current;
@@ -308,6 +317,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
             const origin = findFrameOrigin(page.controls, target.parentId);
             const dx = event.clientX - drag.originX;
             const dy = event.clientY - drag.originY;
+            const snap = draftRef.current.snap ?? VIRTUAL_CONSOLE_DEFAULT_SNAP;
             setEdits(current => {
               if (!current) {
                 return current;
@@ -322,8 +332,8 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
                           candidate.controls,
                           drag.id,
                           target.parentId,
-                          drag.startAbsX + dx - origin.x,
-                          drag.startAbsY + dy - origin.y,
+                          snapToGrid(drag.startAbsX + dx - origin.x, snap),
+                          snapToGrid(drag.startAbsY + dy - origin.y, snap),
                         ),
                       }
                     : candidate,

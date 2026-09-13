@@ -7,6 +7,8 @@ import {
   insertControlInTree,
   reparentControl,
   resizedControlBounds,
+  snapControlBounds,
+  snapToGrid,
   type VirtualConsoleDocument,
 } from './virtual-console-document';
 
@@ -43,6 +45,7 @@ describe('virtual-console-document', () => {
     const document = createDefaultVirtualConsoleDocument();
     expect(document.pages).toHaveLength(1);
     expect(document.pages[0]?.name).toBe('Page 1');
+    expect(document.snap).toBe(1);
   });
 
   it('nests a dropped control inside the deepest frame', () => {
@@ -76,5 +79,19 @@ describe('virtual-console-document', () => {
     expect(resizedControlBounds(start, 0, 8, 's')).toEqual({ x: 10, y: 20, width: 100, height: 88 });
     expect(resizedControlBounds(start, 5, 6, 'se')).toEqual({ x: 10, y: 20, width: 105, height: 86 });
     expect(resizedControlBounds(start, 200, 200, 'nw')).toEqual({ x: 102, y: 92, width: 8, height: 8 });
+  });
+
+  it('snaps coordinates to the given grid', () => {
+    expect(snapToGrid(50, 1)).toBe(50);
+    expect(snapToGrid(50.4, 1)).toBe(50);
+    expect(snapToGrid(50.5, 1)).toBe(51);
+    expect(snapToGrid(50, 8)).toBe(48);
+    expect(snapToGrid(53, 8)).toBe(56);
+    expect(snapControlBounds({ x: 50, y: 11, width: 10, height: 9 }, 8)).toEqual({
+      x: 48,
+      y: 8,
+      width: 8,
+      height: 8,
+    });
   });
 });

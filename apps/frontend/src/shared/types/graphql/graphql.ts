@@ -423,6 +423,8 @@ export type VirtualConsoleInput = {
   pages: Array<VirtualConsolePageInput>;
   /** Virtual console document schema version */
   schemaVersion: number;
+  /** Drag snap grid in pixels */
+  snap?: number | null | undefined;
   /** Canvas width in pixels */
   width: number;
 };
@@ -1032,6 +1034,7 @@ export type VirtualConsoleFieldsFragment = {
   schemaVersion: number;
   width: number;
   height: number;
+  snap: number | null;
   pages: Array<{
     id: string;
     name: string;
@@ -1271,6 +1274,7 @@ export type GetProjectQuery = {
       schemaVersion: number;
       width: number;
       height: number;
+      snap: number | null;
       pages: Array<{
         id: string;
         name: string;
@@ -1669,6 +1673,7 @@ export type ExportProjectsQuery = {
         schemaVersion: number;
         width: number;
         height: number;
+        snap: number | null;
         pages: Array<{
           id: string;
           name: string;
@@ -2303,6 +2308,7 @@ export const VirtualConsoleFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'schemaVersion' } },
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'snap' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'pages' },
@@ -4051,6 +4057,7 @@ export const GetProjectDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'schemaVersion' } },
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'snap' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'pages' },
@@ -5057,6 +5064,7 @@ export const ExportProjectsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'schemaVersion' } },
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'snap' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'pages' },

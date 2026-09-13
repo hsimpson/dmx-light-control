@@ -6,6 +6,8 @@ import {
   VIRTUAL_CONSOLE_FONT_WEIGHT_MIN,
   VIRTUAL_CONSOLE_SIZE_MAX,
   VIRTUAL_CONSOLE_SIZE_MIN,
+  VIRTUAL_CONSOLE_SNAP_MAX,
+  VIRTUAL_CONSOLE_SNAP_MIN,
   VirtualConsoleControlTypeEnum,
   VirtualConsoleSliderOrientation,
   VirtualConsoleSliderValueType,
@@ -108,6 +110,9 @@ export class VirtualConsoleDto {
 
   @Field(() => Float, { description: 'Canvas height in pixels' })
   public height: number;
+
+  @Field(() => Int, { nullable: true, description: 'Drag snap grid in pixels' })
+  public snap?: number;
 
   @Field(() => [VirtualConsolePageDto], { description: 'Console pages' })
   @Type(() => VirtualConsolePageDto)
@@ -243,6 +248,13 @@ export class VirtualConsoleInput {
   @Min(VIRTUAL_CONSOLE_SIZE_MIN)
   @Max(VIRTUAL_CONSOLE_SIZE_MAX)
   public height: number;
+
+  @Field(() => Int, { nullable: true, description: 'Drag snap grid in pixels' })
+  @IsOptional()
+  @IsInt()
+  @Min(VIRTUAL_CONSOLE_SNAP_MIN)
+  @Max(VIRTUAL_CONSOLE_SNAP_MAX)
+  public snap?: number;
 
   @Field(() => [VirtualConsolePageInput], { description: 'Console pages' })
   @IsArray()

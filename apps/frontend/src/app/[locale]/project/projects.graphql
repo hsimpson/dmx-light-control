@@ -32,6 +32,7 @@ fragment VirtualConsoleFields on VirtualConsoleDto {
   schemaVersion
   width
   height
+  snap
   pages {
     id
     name

@@ -8,6 +8,9 @@ export const VIRTUAL_CONSOLE_SCHEMA_VERSION = 1;
 export const VIRTUAL_CONSOLE_DEFAULT_WIDTH = 1280;
 export const VIRTUAL_CONSOLE_DEFAULT_HEIGHT = 720;
 export const VIRTUAL_CONSOLE_CONTROL_SIZE_MIN = 8;
+export const VIRTUAL_CONSOLE_DEFAULT_SNAP = 1;
+export const VIRTUAL_CONSOLE_SNAP_MIN = 1;
+export const VIRTUAL_CONSOLE_SNAP_MAX = 128;
 export const VIRTUAL_CONSOLE_PALETTE_MIME = 'application/x-virtual-console-control';
 
 export const VIRTUAL_CONSOLE_RESIZE_HANDLES = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as const;
@@ -48,6 +51,7 @@ export type VirtualConsoleDocument = {
   schemaVersion: number;
   width: number;
   height: number;
+  snap?: number;
   pages: VirtualConsolePage[];
 };
 
@@ -55,6 +59,7 @@ export const createDefaultVirtualConsoleDocument = (): VirtualConsoleDocument =>
   schemaVersion: VIRTUAL_CONSOLE_SCHEMA_VERSION,
   width: VIRTUAL_CONSOLE_DEFAULT_WIDTH,
   height: VIRTUAL_CONSOLE_DEFAULT_HEIGHT,
+  snap: VIRTUAL_CONSOLE_DEFAULT_SNAP,
   pages: [
     {
       id: crypto.randomUUID(),
@@ -170,6 +175,26 @@ export const resizedControlBounds = (
     height = minSize;
   }
   return { x, y, width, height };
+};
+
+export const snapToGrid = (value: number, snap: number) => {
+  const step = snap >= VIRTUAL_CONSOLE_SNAP_MIN ? snap : VIRTUAL_CONSOLE_DEFAULT_SNAP;
+  return Math.round(value / step) * step;
+};
+
+export const snapControlBounds = (
+  bounds: { x: number; y: number; width: number; height: number },
+  snap: number,
+  minSize = VIRTUAL_CONSOLE_CONTROL_SIZE_MIN,
+): { x: number; y: number; width: number; height: number } => {
+  const width = Math.max(minSize, snapToGrid(bounds.width, snap) || snap);
+  const height = Math.max(minSize, snapToGrid(bounds.height, snap) || snap);
+  return {
+    x: snapToGrid(bounds.x, snap),
+    y: snapToGrid(bounds.y, snap),
+    width,
+    height,
+  };
 };
 
 export const findControl = (controls: VirtualConsoleControl[], id: string): VirtualConsoleControl | undefined => {

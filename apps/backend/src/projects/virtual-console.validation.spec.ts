@@ -75,6 +75,7 @@ describe('defaultVirtualConsoleDocument', () => {
     expect(document.schemaVersion).toBe(1);
     expect(document.width).toBe(VIRTUAL_CONSOLE_DEFAULT_WIDTH);
     expect(document.height).toBe(VIRTUAL_CONSOLE_DEFAULT_HEIGHT);
+    expect(document.snap).toBe(1);
     expect(document.pages).toHaveLength(1);
     expect(document.pages[0]?.name).toBe('Page 1');
     expect(document.pages[0]?.controls).toEqual([]);
@@ -100,6 +101,15 @@ describe('assertValidVirtualConsole', () => {
   it('rejects schemaVersion other than 1', () => {
     expect(() => {
       assertValidVirtualConsole(validDocument({ schemaVersion: 2 }));
+    }).toThrow(InvalidVirtualConsoleException);
+  });
+
+  it('rejects snap outside 1 to 128', () => {
+    expect(() => {
+      assertValidVirtualConsole(validDocument({ snap: 0 }));
+    }).toThrow(InvalidVirtualConsoleException);
+    expect(() => {
+      assertValidVirtualConsole(validDocument({ snap: 129 }));
     }).toThrow(InvalidVirtualConsoleException);
   });
 

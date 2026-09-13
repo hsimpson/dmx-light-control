@@ -4,6 +4,7 @@ import {
   VIRTUAL_CONSOLE_CONTROL_TYPE,
   VIRTUAL_CONSOLE_DEFAULT_HEIGHT,
   VIRTUAL_CONSOLE_DEFAULT_PAGE_NAME,
+  VIRTUAL_CONSOLE_DEFAULT_SNAP,
   VIRTUAL_CONSOLE_DEFAULT_WIDTH,
   VIRTUAL_CONSOLE_FONT_SIZE_MAX,
   VIRTUAL_CONSOLE_FONT_SIZE_MIN,
@@ -13,6 +14,8 @@ import {
   VIRTUAL_CONSOLE_SCHEMA_VERSION,
   VIRTUAL_CONSOLE_SIZE_MAX,
   VIRTUAL_CONSOLE_SIZE_MIN,
+  VIRTUAL_CONSOLE_SNAP_MAX,
+  VIRTUAL_CONSOLE_SNAP_MIN,
   VirtualConsoleControl,
   VirtualConsoleControlType,
   VirtualConsoleDocument,
@@ -28,6 +31,7 @@ export function defaultVirtualConsoleDocument(): VirtualConsoleDocument {
     schemaVersion: VIRTUAL_CONSOLE_SCHEMA_VERSION,
     width: VIRTUAL_CONSOLE_DEFAULT_WIDTH,
     height: VIRTUAL_CONSOLE_DEFAULT_HEIGHT,
+    snap: VIRTUAL_CONSOLE_DEFAULT_SNAP,
     pages: [
       {
         id: randomUUID(),
@@ -53,6 +57,17 @@ export function assertValidVirtualConsole(document: VirtualConsoleDocument): voi
   }
   assertCanvasSize(document.width, 'width');
   assertCanvasSize(document.height, 'height');
+  if (document.snap !== undefined) {
+    if (
+      !Number.isInteger(document.snap) ||
+      document.snap < VIRTUAL_CONSOLE_SNAP_MIN ||
+      document.snap > VIRTUAL_CONSOLE_SNAP_MAX
+    ) {
+      throw new InvalidVirtualConsoleException(
+        `Virtual console snap must be an integer between ${VIRTUAL_CONSOLE_SNAP_MIN} and ${VIRTUAL_CONSOLE_SNAP_MAX}.`,
+      );
+    }
+  }
   if (!Array.isArray(document.pages) || document.pages.length < 1) {
     throw new InvalidVirtualConsoleException('Virtual console must have at least one page.');
   }
