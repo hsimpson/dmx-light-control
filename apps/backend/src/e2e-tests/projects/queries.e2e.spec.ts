@@ -117,6 +117,12 @@ describe('Project queries', () => {
           roomLength
           roomHeight
           environmentType
+          virtualConsole {
+            width
+            pages {
+              name
+            }
+          }
         }
       }
     `;
@@ -128,6 +134,7 @@ describe('Project queries', () => {
           roomLength: number;
           roomHeight: number;
           environmentType: string;
+          virtualConsole: { width: number; pages: { name: string }[] };
         } | null;
       }
     >(app.getHttpAdapter().getInstance().server, query, {
@@ -142,6 +149,8 @@ describe('Project queries', () => {
     expect(body.data?.project?.roomLength).toBe(8);
     expect(body.data?.project?.roomHeight).toBe(5);
     expect(body.data?.project?.environmentType).toBe('SimpleGround');
+    expect(body.data?.project?.virtualConsole.width).toBe(1280);
+    expect(body.data?.project?.virtualConsole.pages[0]?.name).toBe('Page 1');
   });
 
   it('should return null for an unknown project publicId', async () => {

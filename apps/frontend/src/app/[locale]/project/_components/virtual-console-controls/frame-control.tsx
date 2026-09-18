@@ -1,0 +1,39 @@
+'use client';
+
+import { frameHeaderHeight } from '../virtual-console-document';
+import { controlFontStyle } from '../virtual-console-fonts';
+import classes from './frame-control.module.css';
+import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
+
+const FrameControl = ({
+  control,
+  selected = false,
+  dropTarget = false,
+  liftOverflow = false,
+  children,
+}: VirtualConsoleControlProperties) => {
+  return (
+    <div
+      className={`${classes.frame}${selected ? ` ${classes.selected}` : ''}${dropTarget ? ` ${classes.dropTarget}` : ''}${liftOverflow ? ` ${classes.liftOverflow}` : ''}`}
+      data-drop-target={dropTarget ? 'true' : undefined}
+      data-testid="virtual-console-frame"
+      style={{
+        backgroundColor: control.backgroundColor,
+        border: `${control.borderWidth ?? 0}px solid ${control.borderColor ?? '#000000'}`,
+      }}
+    >
+      <div
+        className={classes.header}
+        data-testid="virtual-console-frame-header"
+        style={{ height: frameHeaderHeight(control), ...controlFontStyle(control) }}
+      >
+        {control.label}
+      </div>
+      <div className={classes.body} data-testid="virtual-console-frame-client">
+        {children}
+      </div>
+    </div>
+  );
+};
+
+export default FrameControl;

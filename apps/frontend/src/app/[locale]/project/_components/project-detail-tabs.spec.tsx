@@ -27,6 +27,10 @@ vi.mock('./three-d-view', () => ({
   default: () => <div data-testid="three-d-view" />,
 }));
 
+vi.mock('./virtual-console-view', () => ({
+  default: () => <div data-testid="virtual-console-view" />,
+}));
+
 describe('ProjectDetailTabs', () => {
   beforeEach(() => {
     mockUseParams.mockReturnValue({ tab: 'fixtures' });
@@ -37,7 +41,14 @@ describe('ProjectDetailTabs', () => {
     renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
 
     const tabs = screen.getAllByRole('tab');
-    expect(tabs.map(tab => tab.textContent)).toEqual(['Fixtures', 'Universe View', 'DMX View', '2D View', '3D View']);
+    expect(tabs.map(tab => tab.textContent)).toEqual([
+      'Fixtures',
+      'Universe View',
+      'DMX View',
+      '2D View',
+      '3D View',
+      'Virtual Console',
+    ]);
     expect(screen.getByTestId('project-fixture-table')).toBeInTheDocument();
   });
 
@@ -82,6 +93,14 @@ describe('ProjectDetailTabs', () => {
     renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
 
     expect(screen.getByText('This view is not available yet.')).toBeInTheDocument();
+  });
+
+  it('shows the virtual console panel when the route tab is console', () => {
+    mockUseParams.mockReturnValue({ tab: 'console' });
+
+    renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
+
+    expect(screen.getByTestId('virtual-console-view')).toBeInTheDocument();
   });
 
   it('falls back to fixtures for an unknown route tab', () => {

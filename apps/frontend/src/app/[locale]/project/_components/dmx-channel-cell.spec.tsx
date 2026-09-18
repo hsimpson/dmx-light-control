@@ -34,4 +34,16 @@ describe('DmxChannelCell', () => {
 
     expect(screen.getByTestId('dmx-channel-2')).toHaveTextContent('55');
   });
+
+  it('shows 0 when the live store has no value for the channel', () => {
+    renderWithProviders(
+      <DmxChannelCell
+        absoluteChannelNumber={3}
+        preset={FixtureChannelPreset.IntensityBlue}
+        tooltipLabel="Blue intensity"
+      />,
+    );
+
+    expect(screen.getByTestId('dmx-channel-3')).toHaveTextContent('0');
+  });
 });

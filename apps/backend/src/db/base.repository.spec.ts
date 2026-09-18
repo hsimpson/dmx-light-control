@@ -1,6 +1,6 @@
 import { relations } from '@/db/relations';
-import fixture from '@/fixtures/entities/fixture.entity';
 import fixtureVendor from '@/fixtures/entities/fixture-vendor.entity';
+import fixture from '@/fixtures/entities/fixture.entity';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { describe, expect, it, vi } from 'vitest';
 import { BaseRepository } from './base.repository';

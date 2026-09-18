@@ -8,12 +8,7 @@ export default [
   reactHooks.configs.flat.recommended,
 
   {
-    ignores: [
-      '.next/**/*',
-      'src/shared/types/graphql/**/*',
-      'next-env.d.ts',
-      'postcss.config.cjs',
-    ],
+    ignores: ['.next/**/*', 'src/shared/types/graphql/**/*', 'next-env.d.ts', 'postcss.config.cjs'],
   },
 
   {

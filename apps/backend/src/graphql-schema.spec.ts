@@ -49,6 +49,8 @@ describe('GraphQL schema generation', () => {
     expect(schema.getType('ProjectEnvironmentType')).toBeDefined();
     expect(schema.getMutationType()?.getFields().importProjects).toBeDefined();
     expect(schema.getMutationType()?.getFields().updateProject).toBeDefined();
+    expect(schema.getMutationType()?.getFields().updateProjectVirtualConsole).toBeDefined();
+    expect(schema.getType('VirtualConsoleDto')).toBeDefined();
     expect(schema.getMutationType()?.getFields().deleteProject).toBeDefined();
     expect(schema.getMutationType()?.getFields().addProjectFixture).toBeDefined();
     expect(schema.getMutationType()?.getFields().updateProjectFixture).toBeDefined();

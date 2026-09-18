@@ -6,7 +6,7 @@ import { useTranslation } from '@/lib/i18n/use-translation';
 import { Box, Button, FileButton, Group, Image, NumberInput, Stack, Text, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { TrashIcon, UploadSimpleIcon } from '@phosphor-icons/react';
-import { type ReactNode, useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   FIXTURE_DEFAULT_MODEL_3D_PATH,
   FIXTURE_DEFAULT_PICTURE_2D_PATH,

@@ -1,8 +1,10 @@
+import { FixtureChannelPreset } from '@/fixtures/channel-presets';
+import { ChannelModeNotFoundException, FixtureNotFoundException } from '@/fixtures/fixture.exceptions';
+import { FixtureChannelModeRepository } from '@/fixtures/repositories/fixture-channel-mode.repository';
+import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
 import { describe, expect, it, vi } from 'vitest';
 import { identityTransform } from './project-3d-object.transform';
 import { ProjectEnvironmentType } from './project-environment';
-import { FixtureChannelPreset } from '@/fixtures/channel-presets';
-import { ChannelModeNotFoundException, FixtureNotFoundException } from '@/fixtures/fixture.exceptions';
 import {
   Project3dObjectNameExistsException,
   Project3dObjectNotFoundException,
@@ -17,8 +19,6 @@ import { Project3dObjectRepository } from './repositories/project-3d-object.repo
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
 import { ProjectRepository } from './repositories/project.repository';
 import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
-import { FixtureChannelModeRepository } from '@/fixtures/repositories/fixture-channel-mode.repository';
-import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
 
 function build() {
   const projectRepository = {
@@ -76,9 +76,10 @@ describe('ProjectService', () => {
   it('getAllProjects delegates to repository and returns empty projectFixtures', async () => {
     const { service, projectRepository } = build();
     projectRepository.findMany.mockResolvedValue([{ publicId: 'p', name: 'x' }]);
-    expect(await service.getAllProjects()).toEqual([
-      { publicId: 'p', name: 'x', projectFixtures: [], project3dObjects: [] },
-    ]);
+    const result = await service.getAllProjects();
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({ publicId: 'p', name: 'x', projectFixtures: [], project3dObjects: [] });
+    expect(result[0]?.virtualConsole).toMatchObject({ schemaVersion: 1, width: 1280, height: 720 });
   });
 
   it('getProjectByPublicId delegates', async () => {
@@ -89,22 +90,28 @@ describe('ProjectService', () => {
       projectFixtures: [],
       project3dObjects: [],
     });
-    expect(await service.getProjectByPublicId('id')).toEqual({
+    expect(await service.getProjectByPublicId('id')).toMatchObject({
       publicId: 'p',
       name: 'x',
       projectFixtures: [],
       project3dObjects: [],
+    });
+    expect((await service.getProjectByPublicId('id'))?.virtualConsole).toMatchObject({
+      schemaVersion: 1,
+      width: 1280,
+      height: 720,
     });
   });
 
   it('createProject delegates', async () => {
     const { service, projectRepository } = build();
     projectRepository.createOne.mockResolvedValue({ publicId: 'p', name: 'x' });
-    expect(await service.createProject({ name: 'x' })).toEqual({
-      publicId: 'p',
-      name: 'x',
-      projectFixtures: [],
-      project3dObjects: [],
+    const created = await service.createProject({ name: 'x' });
+    expect(created).toMatchObject({ publicId: 'p', name: 'x', projectFixtures: [], project3dObjects: [] });
+    expect(created && 'virtualConsole' in created ? created.virtualConsole : undefined).toMatchObject({
+      schemaVersion: 1,
+      width: 1280,
+      height: 720,
     });
   });
 
@@ -132,7 +139,43 @@ describe('ProjectService', () => {
     projectRepository.updateOneByPublicId.mockResolvedValue({ name: 'new' });
     const result = await service.updateProject({ publicId: 'p', name: 'new' });
     expect(projectRepository.updateOneByPublicId).toHaveBeenCalledWith('p', { name: 'new' });
-    expect(result).toEqual({ name: 'new', projectFixtures: [], project3dObjects: [] });
+    expect(result).toMatchObject({ name: 'new', projectFixtures: [], project3dObjects: [] });
+    expect(result.virtualConsole).toMatchObject({ schemaVersion: 1, width: 1280, height: 720 });
+  });
+
+  it('updateProjectVirtualConsole persists a valid document', async () => {
+    const { service, projectRepository } = build();
+    const virtualConsole = {
+      schemaVersion: 1 as const,
+      width: 1280,
+      height: 720,
+      pages: [{ id: '11111111-1111-4111-8111-111111111111', name: 'Page 1', controls: [] }],
+    };
+    projectRepository.updateOneByPublicId.mockResolvedValue({ publicId: 'p', virtualConsole });
+    const result = await service.updateProjectVirtualConsole({ publicId: 'p', virtualConsole });
+    expect(projectRepository.updateOneByPublicId).toHaveBeenCalledWith('p', { virtualConsole });
+    expect(result).toEqual({
+      publicId: 'p',
+      virtualConsole,
+      projectFixtures: [],
+      project3dObjects: [],
+    });
+  });
+
+  it('updateProjectVirtualConsole throws PROJECT_NOT_FOUND when missing', async () => {
+    const { service, projectRepository } = build();
+    projectRepository.updateOneByPublicId.mockResolvedValue(undefined);
+    await expect(
+      service.updateProjectVirtualConsole({
+        publicId: 'p',
+        virtualConsole: {
+          schemaVersion: 1,
+          width: 1280,
+          height: 720,
+          pages: [{ id: '11111111-1111-4111-8111-111111111111', name: 'Page 1', controls: [] }],
+        },
+      }),
+    ).rejects.toBeInstanceOf(ProjectNotFoundException);
   });
 
   it('updateProject patches room dimensions when provided', async () => {

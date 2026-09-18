@@ -1,0 +1,34 @@
+.button {
+  align-items: center;
+  border: none;
+  box-sizing: border-box;
+  cursor: default;
+  display: flex;
+  font-size: 0.8rem;
+  font-weight: 600;
+  height: 100%;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 0.5rem;
+  width: 100%;
+}
+
+.play {
+  cursor: pointer;
+  transition:
+    box-shadow 80ms ease,
+    filter 80ms ease,
+    transform 80ms ease;
+}
+
+.play:active,
+.play[data-pressed='true'] {
+  box-shadow: inset 0 3px 10px rgb(0 0 0 / 55%);
+  filter: brightness(0.72);
+  transform: translateY(1px);
+}
+
+.selected {
+  outline: 2px solid var(--mantine-color-blue-filled);
+  outline-offset: 1px;
+}

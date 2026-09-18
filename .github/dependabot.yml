@@ -9,18 +9,18 @@ updates:
     groups:
       nx:
         patterns:
-          - '@nx/*'
-          - 'nx'
+          - "@nx/*"
+          - "nx"
       nestjs:
         patterns:
-          - '@nestjs/*'
+          - "@nestjs/*"
       frontend:
         patterns:
-          - '@mantine/*'
-          - '@next/*'
-          - 'next'
-          - 'react'
-          - 'react-*'
+          - "@mantine/*"
+          - "@next/*"
+          - "next"
+          - "react"
+          - "react-*"
 
   - package-ecosystem: docker
     directory: /

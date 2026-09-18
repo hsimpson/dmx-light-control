@@ -5,6 +5,15 @@ const config: Config = {
   printWidth: 120,
   singleQuote: true,
   trailingComma: 'all',
+
+  overrides: [
+    {
+      files: ['**/*.{yml,yaml}'],
+      options: {
+        singleQuote: false,
+      },
+    },
+  ],
 };
 
 export default config;

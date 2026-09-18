@@ -13,6 +13,7 @@ describe('ProjectResolver', () => {
       getSceneObjectTypes: vi.fn(),
       createProject: vi.fn(),
       updateProject: vi.fn(),
+      updateProjectVirtualConsole: vi.fn(),
       deleteProjectByPublicId: vi.fn(),
       addProjectFixture: vi.fn(),
       updateProjectFixture: vi.fn(),
@@ -58,8 +59,8 @@ describe('ProjectResolver', () => {
 
   it('exportProjects maps the versioned document', async () => {
     const { resolver, projectImportExportService } = build();
-    projectImportExportService.exportProjects.mockResolvedValue({ schemaVersion: 7, projects: [] });
-    await expect(resolver.exportProjects()).resolves.toEqual({ schemaVersion: 7, projects: [] });
+    projectImportExportService.exportProjects.mockResolvedValue({ schemaVersion: 8, projects: [] });
+    await expect(resolver.exportProjects()).resolves.toEqual({ schemaVersion: 8, projects: [] });
   });
 
   it('createProject and updateProject map service rows to DTOs', async () => {
@@ -75,6 +76,21 @@ describe('ProjectResolver', () => {
       publicId: 'p',
       name: 'Updated',
       environmentType: ProjectEnvironmentType.Room,
+    });
+  });
+
+  it('updateProjectVirtualConsole maps service rows to DTOs', async () => {
+    const { resolver, projectService } = build();
+    const virtualConsole = {
+      schemaVersion: 1,
+      width: 1280,
+      height: 720,
+      pages: [{ id: '11111111-1111-4111-8111-111111111111', name: 'Page 1', controls: [] }],
+    };
+    projectService.updateProjectVirtualConsole.mockResolvedValue({ publicId: 'p', virtualConsole });
+    await expect(resolver.updateProjectVirtualConsole({ publicId: 'p', virtualConsole })).resolves.toEqual({
+      publicId: 'p',
+      virtualConsole,
     });
   });
 

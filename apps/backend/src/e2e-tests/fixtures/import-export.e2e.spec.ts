@@ -1,10 +1,10 @@
-import { createEuroliteVendor, setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
 import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { createEuroliteVendor, setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
 
 const NEW_FIXTURE_PUBLIC_ID = '11111111-1111-4111-8111-111111111111';
 const NEW_DEFINITION_PUBLIC_ID = '22222222-2222-4222-8222-222222222222';

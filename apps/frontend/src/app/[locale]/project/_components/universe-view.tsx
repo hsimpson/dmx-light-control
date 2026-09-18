@@ -6,8 +6,8 @@ import { FixtureChannelPreset, GetProjectDocument, GetProjectQuery } from '@/sha
 import { useQuery } from '@apollo/client/react';
 import { useMemo, type CSSProperties } from 'react';
 import UniverseChannelSquare, { DMX_CHANNELS_PER_ROW, DMX_UNIVERSE_SIZE } from './universe-channel-square';
-import { getFixtureRowSegments } from './universe-view.utils';
 import classes from './universe-view.module.css';
+import { getFixtureRowSegments } from './universe-view.utils';
 
 type ProjectFixture = NonNullable<GetProjectQuery['project']>['projectFixtures'][number];
 

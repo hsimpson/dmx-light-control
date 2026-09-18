@@ -328,4 +328,57 @@ describe('Project mutations', () => {
 
     expect(body.data?.deleteProject).toEqual({ publicId: UNKNOWN_PROJECT_PUBLIC_ID, deleted: false });
   });
+
+  it('should replace the virtual console via updateProjectVirtualConsole', async () => {
+    const created = await graphqlQuery<CreateProjectMutation>(
+      app.getHttpAdapter().getInstance().server,
+      CREATE_PROJECT,
+      {
+        variables: { input: { name: 'Console Project' } },
+      },
+    );
+    const publicId = created.data?.createProject.publicId;
+    expect(publicId).toBeDefined();
+
+    const mutation = gql`
+      mutation ($input: UpdateProjectVirtualConsoleInput!) {
+        updateProjectVirtualConsole(input: $input) {
+          publicId
+          virtualConsole {
+            width
+            height
+            pages {
+              name
+            }
+          }
+        }
+      }
+    `;
+
+    const body = await graphqlQuery<{
+      updateProjectVirtualConsole: {
+        publicId: string;
+        virtualConsole: { width: number; height: number; pages: { name: string }[] };
+      };
+    }>(app.getHttpAdapter().getInstance().server, mutation, {
+      variables: {
+        input: {
+          publicId,
+          virtualConsole: {
+            schemaVersion: 1,
+            width: 1024,
+            height: 768,
+            pages: [{ id: '11111111-1111-4111-8111-111111111111', name: 'Page 1', controls: [] }],
+          },
+        },
+      },
+    });
+
+    expect(body.errors).toBeUndefined();
+    expect(body.data?.updateProjectVirtualConsole.virtualConsole).toEqual({
+      width: 1024,
+      height: 768,
+      pages: [{ name: 'Page 1' }],
+    });
+  });
 });

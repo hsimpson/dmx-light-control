@@ -1,5 +1,5 @@
-import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { DeleteFixtureDocument, GetFixturesDocument } from '@/shared/types/graphql/graphql';
+import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { notifications } from '@mantine/notifications';
 import { screen, waitFor, within } from '@testing-library/react';
 import { ReactNode } from 'react';

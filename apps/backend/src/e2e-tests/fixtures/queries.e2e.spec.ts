@@ -1,9 +1,9 @@
-import { createEuroliteVendor, setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
 import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { createEuroliteVendor, setupCatalogFixture, type CatalogFixture } from './catalog-fixture';
 
 type FixtureVendorsQuery = {
   fixtureVendors: {

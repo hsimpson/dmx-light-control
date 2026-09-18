@@ -27,8 +27,8 @@ import FixtureChannelModes, {
 } from './fixture-channel-modes';
 import FixtureDetailTabs from './fixture-detail-tabs';
 import { NEW_FIXTURE_PATH_ID } from './fixture-detail-tabs.constants';
-import FixtureProperties, { type FixturePropertiesValues } from './fixture-properties';
 import formClasses from './fixture-form.module.css';
+import FixtureProperties, { type FixturePropertiesValues } from './fixture-properties';
 
 type Fixture = GetFixturesQuery['fixtures'][number];
 

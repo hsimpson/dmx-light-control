@@ -1,0 +1,45 @@
+.frame {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.header {
+  align-items: center;
+  background: rgb(0 0 0 / 32%);
+  border-bottom: 1px solid rgb(255 255 255 / 14%);
+  box-sizing: border-box;
+  display: flex;
+  flex-shrink: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 0.4rem;
+  white-space: nowrap;
+}
+
+.body {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.selected {
+  outline: 2px solid var(--mantine-color-blue-5);
+  outline-offset: 1px;
+}
+
+.dropTarget {
+  box-shadow: inset 0 0 0 2px var(--mantine-color-blue-4);
+  outline: 2px dashed var(--mantine-color-blue-4);
+  outline-offset: 2px;
+}
+
+.liftOverflow,
+.liftOverflow .body {
+  overflow: visible;
+}

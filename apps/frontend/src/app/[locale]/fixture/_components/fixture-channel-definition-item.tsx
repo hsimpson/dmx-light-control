@@ -1,5 +1,5 @@
-import { FixtureChannelDefinition } from '@/shared/types/fixtures';
 import { FixturePresetIcon } from '@/lib/fixtures/fixture-preset-icon';
+import { FixtureChannelDefinition } from '@/shared/types/fixtures';
 import { Flex } from '@mantine/core';
 
 type FixtureChannelDefinitionItemProps = {

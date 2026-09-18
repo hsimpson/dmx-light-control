@@ -1,10 +1,10 @@
-import { createE2eApp } from '@/testhelpers/e2e-app';
-import { graphqlQuery } from '@/testhelpers/graphql-test-client';
 import { identityTransform } from '@/projects/project-3d-object.transform';
 import {
   SCENE_OBJECT_TYPE_BOX_PUBLIC_ID,
   SCENE_OBJECT_TYPE_LIGHT_STAND_PUBLIC_ID,
 } from '@/projects/scene-object-geometry';
+import { createE2eApp } from '@/testhelpers/e2e-app';
+import { graphqlQuery } from '@/testhelpers/graphql-test-client';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

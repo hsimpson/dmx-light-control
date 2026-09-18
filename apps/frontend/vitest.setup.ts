@@ -1,5 +1,5 @@
-import '@testing-library/jest-dom/vitest';
 import { resetDmxStore } from '@/lib/dmx/dmx-store';
+import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 

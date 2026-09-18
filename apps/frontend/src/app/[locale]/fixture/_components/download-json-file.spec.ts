@@ -1,5 +1,5 @@
-import { downloadJsonFile } from './download-json-file';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { downloadJsonFile } from './download-json-file';
 
 describe('downloadJsonFile', () => {
   afterEach(() => {

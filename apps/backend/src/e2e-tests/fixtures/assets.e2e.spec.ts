@@ -1,10 +1,10 @@
-import { setupCatalogFixture } from './catalog-fixture';
 import { createE2eApp } from '@/testhelpers/e2e-app';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { setupCatalogFixture } from './catalog-fixture';
 
 function pngMultipart(filename: string): { payload: Buffer; headers: Record<string, string> } {
   const boundary = '----fixtureAssetBoundary';

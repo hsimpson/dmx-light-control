@@ -7,20 +7,13 @@
   "scenes": [
     {
       "name": "Scene",
-      "nodes": [
-        0
-      ]
+      "nodes": [0]
     }
   ],
   "nodes": [
     {
       "name": "room",
-      "children": [
-        1,
-        2,
-        3,
-        4
-      ]
+      "children": [1, 2, 3, 4]
     },
     {
       "name": "floor",
@@ -97,12 +90,7 @@
     {
       "name": "room",
       "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          0.16,
-          0.16,
-          0.18,
-          1
-        ],
+        "baseColorFactor": [0.16, 0.16, 0.18, 1],
         "metallicFactor": 0,
         "roughnessFactor": 0.85
       }
@@ -114,16 +102,8 @@
       "componentType": 5126,
       "count": 24,
       "type": "VEC3",
-      "min": [
-        -0.5,
-        -0.4,
-        -0.5
-      ],
-      "max": [
-        0.5,
-        0,
-        0.5
-      ]
+      "min": [-0.5, -0.4, -0.5],
+      "max": [0.5, 0, 0.5]
     },
     {
       "bufferView": 1,
@@ -142,16 +122,8 @@
       "componentType": 5126,
       "count": 24,
       "type": "VEC3",
-      "min": [
-        -0.4,
-        0,
-        -0.5
-      ],
-      "max": [
-        0,
-        1,
-        0.5
-      ]
+      "min": [-0.4, 0, -0.5],
+      "max": [0, 1, 0.5]
     },
     {
       "bufferView": 4,
@@ -170,16 +142,8 @@
       "componentType": 5126,
       "count": 24,
       "type": "VEC3",
-      "min": [
-        0,
-        0,
-        -0.5
-      ],
-      "max": [
-        0.4,
-        1,
-        0.5
-      ]
+      "min": [0, 0, -0.5],
+      "max": [0.4, 1, 0.5]
     },
     {
       "bufferView": 7,
@@ -198,16 +162,8 @@
       "componentType": 5126,
       "count": 24,
       "type": "VEC3",
-      "min": [
-        -0.5,
-        0,
-        -0.4
-      ],
-      "max": [
-        0.5,
-        1,
-        0
-      ]
+      "min": [-0.5, 0, -0.4],
+      "max": [0.5, 1, 0]
     },
     {
       "bufferView": 10,

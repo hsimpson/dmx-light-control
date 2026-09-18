@@ -28,7 +28,11 @@ export const renderWithProviders = (ui: ReactElement, options: RenderWithProvide
       return providers;
     }
 
-    return <MockedProvider mocks={apolloMocks}>{providers}</MockedProvider>;
+    return (
+      <MockedProvider mocks={apolloMocks} mockLinkDefaultOptions={{ delay: 0 }}>
+        {providers}
+      </MockedProvider>
+    );
   };
 
   return {

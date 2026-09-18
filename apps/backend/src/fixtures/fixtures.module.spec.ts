@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import 'reflect-metadata';
+import { describe, expect, it } from 'vitest';
 import { FixtureAssetController } from './fixture-asset.controller';
 import { FixtureAssetService } from './fixture-asset.service';
 import { FixtureImportExportService } from './fixture-import-export.service';
@@ -7,8 +7,8 @@ import { FixtureResolver } from './fixture.resolver';
 import { FixtureService } from './fixture.service';
 import { FixturesModule } from './fixtures.module';
 import { FixtureChannelDefinitionRepository } from './repositories/fixture-channel-definition.repository';
-import { FixtureVendorRepository } from './repositories/fixture-vendor.repository';
 import { FixtureChannelModeRepository } from './repositories/fixture-channel-mode.repository';
+import { FixtureVendorRepository } from './repositories/fixture-vendor.repository';
 import { FixtureRepository } from './repositories/fixture.repository';
 
 describe('FixturesModule', () => {

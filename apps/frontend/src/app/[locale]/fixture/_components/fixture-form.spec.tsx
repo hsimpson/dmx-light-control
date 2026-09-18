@@ -1,4 +1,3 @@
-import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import {
   FixtureChannelPreset,
   GetFixturesQuery,
@@ -6,6 +5,7 @@ import {
   UpdateFixtureDocument,
   UpdateFixtureMutationVariables,
 } from '@/shared/types/graphql/graphql';
+import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { notifications } from '@mantine/notifications';
 import { screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -34,6 +34,7 @@ const vendorPublicId = '44444444-4444-4444-8444-444444444444';
 const modePublicId = '55555555-5555-4555-8555-555555555555';
 
 const redDefinition = {
+  __typename: 'FixtureChannelDefinitionDto' as const,
   publicId: redPublicId,
   name: 'Red',
   order: 0,
@@ -44,6 +45,7 @@ const redDefinition = {
 };
 
 const strobeDefinition = {
+  __typename: 'FixtureChannelDefinitionDto' as const,
   publicId: strobePublicId,
   name: 'Strobe',
   order: 1,
@@ -54,6 +56,7 @@ const strobeDefinition = {
 };
 
 const vendor: GetFixtureVendorsQuery['fixtureVendors'][number] = {
+  __typename: 'FixtureVendorDto',
   publicId: vendorPublicId,
   name: 'Chauvet',
   createdAt: now,
@@ -61,6 +64,7 @@ const vendor: GetFixtureVendorsQuery['fixtureVendors'][number] = {
 };
 
 const existingFixture: GetFixturesQuery['fixtures'][number] = {
+  __typename: 'FixtureDto',
   publicId: fixturePublicId,
   name: 'SlimPAR',
   weight: null,
@@ -76,6 +80,7 @@ const existingFixture: GetFixturesQuery['fixtures'][number] = {
   fixtureChannelDefinitions: [redDefinition],
   fixtureChannelModes: [
     {
+      __typename: 'FixtureChannelModeDto',
       publicId: modePublicId,
       name: '8ch',
       order: 0,
@@ -130,7 +135,14 @@ describe('FixtureForm', () => {
           maxUsageCount: 2,
           result: (variables: UpdateFixtureMutationVariables) => {
             updateInputs.push(variables.input);
-            return { data: { updateFixture: savedFixture } };
+            return {
+              data: {
+                updateFixture: {
+                  __typename: 'FixtureDto',
+                  ...savedFixture,
+                },
+              },
+            };
           },
         },
       ],

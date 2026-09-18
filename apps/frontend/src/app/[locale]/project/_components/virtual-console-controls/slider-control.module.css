@@ -1,0 +1,177 @@
+.slider {
+  box-sizing: border-box;
+  color: var(--mantine-color-text);
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.vertical {
+  align-items: stretch;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.35rem 0.25rem 0.4rem;
+}
+
+.horizontal {
+  align-items: center;
+  flex-direction: row;
+  gap: 0.35rem;
+  padding: 0.25rem 0.35rem;
+}
+
+.label,
+.value {
+  flex-shrink: 0;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  min-width: 0;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 65%);
+  white-space: nowrap;
+}
+
+.value {
+  font-variant-numeric: tabular-nums;
+}
+
+.horizontal .label,
+.horizontal .value {
+  max-width: 4.5rem;
+}
+
+.rail {
+  flex: 1 1 0%;
+  min-height: 24px;
+  min-width: 24px;
+  position: relative;
+  touch-action: none;
+}
+
+.play.vertical .rail {
+  cursor: ns-resize;
+}
+
+.play.horizontal .rail {
+  cursor: ew-resize;
+}
+
+.groove {
+  background: linear-gradient(to right, rgb(0 0 0 / 70%), rgb(20 20 22 / 85%), rgb(0 0 0 / 70%));
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 3px rgb(0 0 0 / 75%),
+    0 0 0 1px rgb(255 255 255 / 8%);
+  position: absolute;
+}
+
+.vertical .groove {
+  bottom: 12px;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
+  width: 7px;
+}
+
+.horizontal .groove {
+  background: linear-gradient(to bottom, rgb(0 0 0 / 70%), rgb(20 20 22 / 85%), rgb(0 0 0 / 70%));
+  height: 7px;
+  left: 12px;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.fill {
+  border-radius: inherit;
+  box-shadow: inset 0 0 4px rgb(255 255 255 / 25%);
+  position: absolute;
+}
+
+.vertical .fill {
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.horizontal .fill {
+  bottom: 0;
+  left: 0;
+  top: 0;
+}
+
+.handle {
+  background-image: linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 55%),
+    rgb(255 255 255 / 8%) 42%,
+    rgb(0 0 0 / 28%) 50%,
+    rgb(255 255 255 / 18%)
+  );
+  border: 1px solid rgb(0 0 0 / 55%);
+  border-radius: 3px;
+  box-shadow:
+    0 2px 4px rgb(0 0 0 / 45%),
+    inset 0 1px 0 rgb(255 255 255 / 80%);
+  box-sizing: border-box;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.handle::before,
+.handle::after {
+  background: rgb(0 0 0 / 28%);
+  content: '';
+  pointer-events: none;
+  position: absolute;
+}
+
+.vertical .handle::before,
+.vertical .handle::after {
+  height: 1px;
+  left: 16%;
+  right: 16%;
+}
+
+.vertical .handle::before {
+  top: calc(50% - 3px);
+}
+
+.vertical .handle::after {
+  top: calc(50% + 2px);
+}
+
+.horizontal .handle {
+  background-image: linear-gradient(
+    to right,
+    rgb(255 255 255 / 55%),
+    rgb(255 255 255 / 8%) 42%,
+    rgb(0 0 0 / 28%) 50%,
+    rgb(255 255 255 / 18%)
+  );
+}
+
+.horizontal .handle::before,
+.horizontal .handle::after {
+  bottom: 16%;
+  top: 16%;
+  width: 1px;
+}
+
+.horizontal .handle::before {
+  left: calc(50% - 3px);
+}
+
+.horizontal .handle::after {
+  left: calc(50% + 2px);
+}
+
+.selected {
+  outline: 2px solid var(--mantine-color-blue-5);
+  outline-offset: 1px;
+}

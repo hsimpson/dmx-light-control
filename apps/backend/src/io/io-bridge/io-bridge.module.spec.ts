@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import { EventsModule } from '@/events/events.module';
 import 'reflect-metadata';
+import { describe, expect, it } from 'vitest';
 import { IoBridgeModule } from './io-bridge.module';
 import { IoBridgeService } from './io-bridge.service';
 

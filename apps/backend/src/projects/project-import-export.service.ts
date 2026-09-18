@@ -2,13 +2,12 @@ import { InjectDb } from '@/db/drizzle-db/drizzle-db.provider';
 import { optionalImportTimestamps } from '@/db/import-timestamps.input';
 import { relations } from '@/db/relations';
 import { fixture, fixtureChannelMode } from '@/fixtures/entities';
-import { ImportProjectsInput, ImportProject3dObjectInput } from '@/projects/dto/import-projects.dto';
+import { ImportProject3dObjectInput, ImportProjectsInput } from '@/projects/dto/import-projects.dto';
 import { project, project3dObject, projectFixture, sceneObjectType } from '@/projects/entities';
-import { assertValidTransform, resolveSizesForType } from '@/projects/project-3d-object.validation';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from '@/projects/project-3d-object-name';
+import { assertValidTransform, resolveSizesForType } from '@/projects/project-3d-object.validation';
 import { environmentTypeForImport, optionalEnvironmentType } from '@/projects/project-environment';
 import { mapProjectsToExportDocument, ProjectExportDocument } from '@/projects/project-export.mapper';
-import { assertImportDocument } from '@/projects/project-import.validator';
 import {
   assertChannelModeBelongsToFixture,
   assertNoPatchOverlap,
@@ -16,10 +15,12 @@ import {
   channelCountFromMode,
   OccupiedPatch,
 } from '@/projects/project-fixture.validation';
+import { assertImportDocument } from '@/projects/project-import.validator';
 import { optionalRoomDimensions } from '@/projects/project-room-dimensions';
 import { ProjectImportConflictException } from '@/projects/project.exceptions';
 import { ProjectFixtureRepository } from '@/projects/repositories/project-fixture.repository';
 import { ProjectRepository } from '@/projects/repositories/project.repository';
+import { assertValidVirtualConsole } from '@/projects/virtual-console.validation';
 import { Injectable } from '@nestjs/common';
 import { eq, InferSelectModel } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
@@ -47,6 +48,30 @@ function isPostgresUniqueViolation(error: unknown): boolean {
 
 function optionalPublicId(publicId?: string): { publicId: string } | Record<string, never> {
   return publicId ? { publicId } : {};
+}
+
+function validatedVirtualConsole(
+  virtualConsole: NonNullable<ImportProjectsInput['projects'][number]['virtualConsole']>,
+) {
+  assertValidVirtualConsole(virtualConsole);
+  return virtualConsole;
+}
+
+function virtualConsolePatchForUpdate(virtualConsole: ImportProjectsInput['projects'][number]['virtualConsole']) {
+  if (virtualConsole === null || virtualConsole === undefined) {
+    return { virtualConsole: null };
+  }
+  return { virtualConsole: validatedVirtualConsole(virtualConsole) };
+}
+
+function virtualConsolePatchForInsert(virtualConsole: ImportProjectsInput['projects'][number]['virtualConsole']) {
+  if (virtualConsole === undefined) {
+    return {};
+  }
+  if (virtualConsole === null) {
+    return { virtualConsole: null };
+  }
+  return { virtualConsole: validatedVirtualConsole(virtualConsole) };
 }
 
 @Injectable()
@@ -110,6 +135,7 @@ export class ProjectImportExportService {
           ...optionalEnvironmentType(incoming),
           ...optionalRoomDimensions(incoming),
           ...optionalImportTimestamps(incoming),
+          ...virtualConsolePatchForUpdate(incoming.virtualConsole),
         })
         .where(eq(project.id, existingId))
         .returning();
@@ -129,6 +155,7 @@ export class ProjectImportExportService {
           ...optionalPublicId(incoming.publicId),
           ...optionalRoomDimensions(incoming),
           ...optionalImportTimestamps(incoming),
+          ...virtualConsolePatchForInsert(incoming.virtualConsole),
         })
         .returning();
       const row = inserted[0];

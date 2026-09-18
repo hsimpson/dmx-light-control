@@ -12,14 +12,14 @@ import {
   fixtureVendor,
 } from '@/fixtures/entities';
 import { FixtureExportDocument, mapFixturesToExportDocument } from '@/fixtures/fixture-export.mapper';
-import { fixturePropertyPatch } from './fixture-property-patch';
 import { assertImportDocument, resolveDefinitionRef } from '@/fixtures/fixture-import.validator';
 import { FixtureImportConflictException, FixtureVendorCreationFailedException } from '@/fixtures/fixture.exceptions';
 import { FixtureVendorRepository } from '@/fixtures/repositories/fixture-vendor.repository';
 import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
 import { Injectable } from '@nestjs/common';
-import { eq, InferSelectModel, inArray } from 'drizzle-orm';
+import { eq, inArray, InferSelectModel } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { fixturePropertyPatch } from './fixture-property-patch';
 
 type Db = NodePgDatabase<typeof relations>;
 type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];

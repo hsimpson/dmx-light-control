@@ -1,5 +1,3 @@
-import { renderWithProviders } from '@/testhelpers/render-with-providers';
-import { CombinedGraphQLErrors } from '@apollo/client';
 import {
   AddProject3dObjectDocument,
   DeleteProject3dObjectDocument,
@@ -10,6 +8,8 @@ import {
   UpdateProject3dObjectDocument,
   UpdateProjectDocument,
 } from '@/shared/types/graphql/graphql';
+import { renderWithProviders } from '@/testhelpers/render-with-providers';
+import { CombinedGraphQLErrors } from '@apollo/client';
 import { notifications } from '@mantine/notifications';
 import { screen, waitFor } from '@testing-library/react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';

@@ -19,6 +19,7 @@ describe('mapProjectsToExportDocument', () => {
           roomWidth: 10,
           roomLength: 8,
           roomHeight: 5,
+          virtualConsole: null,
           projectFixtures: [],
           ...timestamps,
         },
@@ -29,12 +30,13 @@ describe('mapProjectsToExportDocument', () => {
           roomWidth: 10,
           roomLength: 8,
           roomHeight: 5,
+          virtualConsole: null,
           projectFixtures: [],
           ...timestamps,
         },
       ]),
     ).toEqual({
-      schemaVersion: 7,
+      schemaVersion: 8,
       projects: [
         {
           publicId: 'a',
@@ -43,6 +45,7 @@ describe('mapProjectsToExportDocument', () => {
           roomWidth: 10,
           roomLength: 8,
           roomHeight: 5,
+          virtualConsole: null,
           projectFixtures: [],
           project3dObjects: [],
           ...timestamps,
@@ -54,6 +57,7 @@ describe('mapProjectsToExportDocument', () => {
           roomWidth: 10,
           roomLength: 8,
           roomHeight: 5,
+          virtualConsole: null,
           projectFixtures: [],
           project3dObjects: [],
           ...timestamps,
@@ -97,7 +101,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 7,
+      schemaVersion: 8,
       projects: [
         {
           publicId: '',
@@ -106,6 +110,7 @@ describe('mapProjectsToExportDocument', () => {
           roomWidth: 10,
           roomLength: 8,
           roomHeight: 5,
+          virtualConsole: null,
           projectFixtures: [
             {
               publicId: '',
@@ -241,7 +246,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 7,
+      schemaVersion: 8,
       projects: [
         {
           publicId: 'p',
@@ -250,6 +255,7 @@ describe('mapProjectsToExportDocument', () => {
           roomWidth: 12,
           roomLength: 9,
           roomHeight: 4,
+          virtualConsole: null,
           projectFixtures: [
             {
               publicId: 'pf-1',

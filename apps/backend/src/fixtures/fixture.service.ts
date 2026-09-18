@@ -16,11 +16,11 @@ import { CreateFixtureVendorInput } from './dto/create-fixture-vendor.dto';
 import { CreateFixtureInput } from './dto/create-fixture.dto';
 import { UpdateFixtureVendorInput } from './dto/fixture.input';
 import { UpdateFixtureChannelDefinitionInput } from './dto/update-fixture-channel-definition.dto';
-import { UpdateFixtureChannelRangeInput } from './dto/update-fixture-channel-range.dto';
 import { UpdateFixtureChannelModeInput } from './dto/update-fixture-channel-mode.dto';
+import { UpdateFixtureChannelRangeInput } from './dto/update-fixture-channel-range.dto';
 import { UpdateFixtureInput } from './dto/update-fixture.dto';
-import { FixtureAssetService, toFixtureAssetIdentity } from './fixture-asset.service';
 import { fixture } from './entities';
+import { FixtureAssetService, toFixtureAssetIdentity } from './fixture-asset.service';
 import { fixtureDimensionPatch } from './fixture-property-patch';
 import { FixtureChannelDefinitionRepository } from './repositories/fixture-channel-definition.repository';
 import {

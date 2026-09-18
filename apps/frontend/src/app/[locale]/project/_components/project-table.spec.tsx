@@ -1,10 +1,10 @@
-import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import {
   CreateProjectDocument,
   DeleteProjectDocument,
   GetProjectsDocument,
   UpdateProjectDocument,
 } from '@/shared/types/graphql/graphql';
+import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { Button } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';

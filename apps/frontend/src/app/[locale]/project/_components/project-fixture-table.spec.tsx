@@ -1,4 +1,3 @@
-import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import {
   AddProjectFixtureDocument,
   DeleteProjectFixtureDocument,
@@ -7,6 +6,7 @@ import {
   GetProjectDocument,
   UpdateProjectFixtureDocument,
 } from '@/shared/types/graphql/graphql';
+import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { notifications } from '@mantine/notifications';
 import { screen, waitFor, within } from '@testing-library/react';
 import { ReactNode } from 'react';

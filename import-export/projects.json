@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "projects": [
     {
       "publicId": "63208a07-9dc5-4711-93d5-cce441a9390e",
@@ -9,7 +9,7 @@
       "roomLength": 16,
       "roomHeight": 6,
       "createdAt": "2026-08-28T22:55:51.687Z",
-      "updatedAt": "2026-09-08T19:54:30.667Z",
+      "updatedAt": "2026-09-13T10:42:56.947Z",
       "projectFixtures": [
         {
           "publicId": "3fec16ae-17c5-468b-9ee0-0965de847985",
@@ -176,14 +176,28 @@
         {
           "publicId": "050ee45e-8a65-400d-ae2a-8ef0ba23e46b",
           "name": "Bühne",
-          "sceneObjectTypePublicId": "77dceb2b-6341-460f-b4f5-c6ea50ee3b64",
+          "sceneObjectTypePublicId": "6c774032-4989-4e04-800d-89c1de402000",
           "sceneObjectTypeName": "Box",
           "sizeX": 9,
           "sizeY": 1.5,
           "sizeZ": 1,
           "transform": [
-            1, 7.359870936702364e-36, -1.852775203663249e-70, 0, -7.359870936702364e-36, 1, -2.5174017582615335e-35, 0,
-            0, 2.5174017582615335e-35, 1, 0, 0, 0.75, -7.516841165115441, 1
+            1,
+            7.359870936702364e-36,
+            -1.852775203663249e-70,
+            0,
+            -7.359870936702364e-36,
+            1,
+            -2.5174017582615335e-35,
+            0,
+            0,
+            2.5174017582615335e-35,
+            1,
+            0,
+            0,
+            0.75,
+            -7.516841165115441,
+            1
           ],
           "createdAt": "2026-09-08T16:25:38.953Z",
           "updatedAt": "2026-09-08T19:43:24.414Z"
@@ -191,14 +205,28 @@
         {
           "publicId": "8d5b4735-1b96-42d0-8022-bd6323d9e841",
           "name": "Light stand 1",
-          "sceneObjectTypePublicId": "25d1cb7c-e1a6-41c7-b524-e9c7b132ecea",
+          "sceneObjectTypePublicId": "9d0d742c-a6b0-4359-b29b-824ed592066a",
           "sceneObjectTypeName": "Light stand",
           "sizeX": null,
           "sizeY": null,
           "sizeZ": null,
           "transform": [
-            0.0003725034558887952, 0, -0.9999999306205853, 0, 0, 1, 0, 0, 0.9999999306205853, 0, 0.0003725034558887952,
-            0, 4.948139142982703, 0, -4.106896325681704, 1
+            0.0003725034558887952,
+            0,
+            -0.9999999306205853,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0.9999999306205853,
+            0,
+            0.0003725034558887952,
+            0,
+            4.948139142982703,
+            0,
+            -4.106896325681704,
+            1
           ],
           "createdAt": "2026-09-08T16:26:01.619Z",
           "updatedAt": "2026-09-08T19:53:19.141Z"
@@ -206,14 +234,28 @@
         {
           "publicId": "9259fe99-d4ba-480e-90ea-8949564d0060",
           "name": "Light stand 4",
-          "sceneObjectTypePublicId": "25d1cb7c-e1a6-41c7-b524-e9c7b132ecea",
+          "sceneObjectTypePublicId": "9d0d742c-a6b0-4359-b29b-824ed592066a",
           "sceneObjectTypeName": "Light stand",
           "sizeX": null,
           "sizeY": null,
           "sizeZ": null,
           "transform": [
-            2.220446049250313e-16, 0, 1, 0, 0, 1, 0, 0, -1, 0, 2.220446049250313e-16, 0, -4.693270413204931, 0,
-            -3.990580028452574, 1
+            2.220446049250313e-16,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0,
+            2.220446049250313e-16,
+            0,
+            -4.693270413204931,
+            0,
+            -3.990580028452574,
+            1
           ],
           "createdAt": "2026-09-08T19:51:04.316Z",
           "updatedAt": "2026-09-08T19:53:19.309Z"
@@ -221,14 +263,28 @@
         {
           "publicId": "9833ebf1-6c8e-4aeb-ba3f-b833405e1ec5",
           "name": "Light stand 3",
-          "sceneObjectTypePublicId": "25d1cb7c-e1a6-41c7-b524-e9c7b132ecea",
+          "sceneObjectTypePublicId": "9d0d742c-a6b0-4359-b29b-824ed592066a",
           "sceneObjectTypeName": "Light stand",
           "sizeX": null,
           "sizeY": null,
           "sizeZ": null,
           "transform": [
-            0.9395054790516244, 0, 0.34253387399201535, 0, 0, 1, 0, 0, -0.34253387399201535, 0, 0.9395054790516244, 0,
-            -3, 0, 0, 1
+            0.9395054790516244,
+            0,
+            0.34253387399201535,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -0.34253387399201535,
+            0,
+            0.9395054790516244,
+            0,
+            -3,
+            0,
+            0,
+            1
           ],
           "createdAt": "2026-09-08T19:50:08.976Z",
           "updatedAt": "2026-09-08T19:53:19.257Z"
@@ -236,19 +292,188 @@
         {
           "publicId": "ee102b68-e209-4be5-bd0f-3debd2300eee",
           "name": "Light stand 2",
-          "sceneObjectTypePublicId": "25d1cb7c-e1a6-41c7-b524-e9c7b132ecea",
+          "sceneObjectTypePublicId": "9d0d742c-a6b0-4359-b29b-824ed592066a",
           "sceneObjectTypeName": "Light stand",
           "sizeX": null,
           "sizeY": null,
           "sizeZ": null,
           "transform": [
-            0.9396926207859084, 0, -0.34202014332566866, 0, 0, 1, 0, 0, 0.34202014332566866, 0, 0.9396926207859084, 0,
-            3, 0, 0, 1
+            0.9396926207859084,
+            0,
+            -0.34202014332566866,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0.34202014332566866,
+            0,
+            0.9396926207859084,
+            0,
+            3,
+            0,
+            0,
+            1
           ],
           "createdAt": "2026-09-08T19:48:23.917Z",
           "updatedAt": "2026-09-08T19:53:19.200Z"
         }
-      ]
+      ],
+      "virtualConsole": {
+        "schemaVersion": 1,
+        "width": 1920,
+        "height": 1080,
+        "snap": 5,
+        "pages": [
+          {
+            "id": "1b4e1ba9-ae65-4975-9100-45a89d34f008",
+            "name": "Page 1",
+            "controls": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "children": null,
+                        "id": "f3be87ef-c570-4bcd-93d5-abd54c549650",
+                        "type": "button",
+                        "x": 580,
+                        "y": 295,
+                        "width": 100,
+                        "height": 100,
+                        "label": "Red",
+                        "backgroundColor": "#ff0000",
+                        "borderWidth": null,
+                        "borderColor": null,
+                        "orientation": null,
+                        "foregroundColor": "#ffffff",
+                        "fontFamily": "system-ui, sans-serif",
+                        "fontSize": 16,
+                        "fontWeight": 700,
+                        "valueType": null
+                      },
+                      {
+                        "children": null,
+                        "id": "c207d246-c41c-4770-991d-813dde22081e",
+                        "type": "slider",
+                        "x": 15,
+                        "y": 5,
+                        "width": 80,
+                        "height": 220,
+                        "label": "Red",
+                        "backgroundColor": "#ff0000",
+                        "borderWidth": null,
+                        "borderColor": null,
+                        "orientation": "vertical",
+                        "foregroundColor": "#ffffff",
+                        "fontFamily": "system-ui, sans-serif",
+                        "fontSize": 16,
+                        "fontWeight": 700,
+                        "valueType": "dmx"
+                      },
+                      {
+                        "children": null,
+                        "id": "6d5445db-3976-4396-830f-180ed8a76fe5",
+                        "type": "slider",
+                        "x": 765,
+                        "y": 65,
+                        "width": 340,
+                        "height": 90,
+                        "label": "Slider",
+                        "backgroundColor": "#00ffff",
+                        "borderWidth": null,
+                        "borderColor": null,
+                        "orientation": "horizontal",
+                        "foregroundColor": "#ff0000",
+                        "fontFamily": "system-ui, sans-serif",
+                        "fontSize": 16,
+                        "fontWeight": 600,
+                        "valueType": "dmx"
+                      },
+                      {
+                        "children": null,
+                        "id": "80282361-c4b6-4eaa-bda1-bd87ad69c7a9",
+                        "type": "slider",
+                        "x": 100,
+                        "y": 5,
+                        "width": 80,
+                        "height": 220,
+                        "label": "Green",
+                        "backgroundColor": "#00ff00",
+                        "borderWidth": null,
+                        "borderColor": null,
+                        "orientation": "vertical",
+                        "foregroundColor": "#ffffff",
+                        "fontFamily": "system-ui, sans-serif",
+                        "fontSize": 16,
+                        "fontWeight": 700,
+                        "valueType": "dmx"
+                      }
+                    ],
+                    "id": "fb4f4504-9187-450d-94ab-5c0a8c9a2c1d",
+                    "type": "frame",
+                    "x": 30,
+                    "y": 15,
+                    "width": 1255,
+                    "height": 530,
+                    "label": "Frame 2",
+                    "backgroundColor": "#1a1b1e",
+                    "borderWidth": 2,
+                    "borderColor": "#51ff00",
+                    "orientation": null,
+                    "foregroundColor": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 600,
+                    "valueType": null
+                  }
+                ],
+                "id": "61e08b98-148d-4f46-8ca5-18616956545d",
+                "type": "frame",
+                "x": 15,
+                "y": 15,
+                "width": 1450,
+                "height": 785,
+                "label": "Frame 1",
+                "backgroundColor": "#1a1b1e",
+                "borderWidth": 2,
+                "borderColor": "#ff0000",
+                "orientation": null,
+                "foregroundColor": null,
+                "fontFamily": "system-ui, sans-serif",
+                "fontSize": 16,
+                "fontWeight": 600,
+                "valueType": null
+              }
+            ]
+          },
+          {
+            "id": "b1fa964f-f015-4307-a68a-f4c986962165",
+            "name": "Page 2",
+            "controls": [
+              {
+                "children": null,
+                "id": "9d4403ff-b957-479d-bf80-b8c46a6fafff",
+                "type": "button",
+                "x": 667,
+                "y": 238.8125,
+                "width": 88,
+                "height": 40,
+                "label": "Button",
+                "backgroundColor": "#228be6",
+                "borderWidth": null,
+                "borderColor": null,
+                "orientation": null,
+                "foregroundColor": "#ffffff",
+                "fontFamily": null,
+                "fontSize": null,
+                "fontWeight": null,
+                "valueType": null
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

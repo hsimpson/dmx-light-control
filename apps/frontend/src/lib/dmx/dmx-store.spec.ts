@@ -49,6 +49,22 @@ describe('createDmxStore', () => {
     expect(store.getState().channels.every(value => value === 0)).toBe(true);
   });
 
+  it('applySnapshot skips holes and out-of-range values', () => {
+    const store = createDmxStore();
+    store.getState().applySnapshot([10, undefined as unknown as number, 300, 20]);
+    expect(store.getState().channels[0]).toBe(10);
+    expect(store.getState().channels[1]).toBe(0);
+    expect(store.getState().channels[2]).toBe(0);
+    expect(store.getState().channels[3]).toBe(20);
+  });
+
+  it('applyDelta ignores an unchanged value', () => {
+    const store = createDmxStore();
+    store.getState().applyDelta([{ channel: 1, value: 40 }]);
+    store.getState().applyDelta([{ channel: 1, value: 40 }]);
+    expect(store.getState().channels[0]).toBe(40);
+  });
+
   it('setStatus updates connection status', () => {
     const store = createDmxStore();
     store.getState().setStatus('connecting');

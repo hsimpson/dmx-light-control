@@ -55,4 +55,12 @@ test.describe('project detail', () => {
     await expect(page).toHaveURL(new RegExp(`/de/project/${mockedProject.publicId}/universe$`));
     await expect(page.getByRole('tab', { name: 'Universumsansicht' })).toHaveAttribute('aria-selected', 'true');
   });
+
+  test('opens the virtual console tab', async ({ page }) => {
+    await page.goto(`/de/project/${mockedProject.publicId}/console`);
+
+    await expect(page.getByRole('tab', { name: 'Virtuelle Konsole' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tab', { name: 'Page 1' })).toBeVisible();
+    await expect(page.getByTestId('virtual-console-canvas')).toBeVisible();
+  });
 });

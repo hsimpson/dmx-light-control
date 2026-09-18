@@ -1,5 +1,5 @@
-import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { ProjectEnvironmentType } from '@/shared/types/graphql/graphql';
+import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import RoomDimensionsPanel from './room-dimensions-panel';
