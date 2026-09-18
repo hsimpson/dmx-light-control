@@ -159,4 +159,65 @@ describe('virtual console controls', () => {
     );
     expect(screen.getByTestId('virtual-console-slider-handle')).toHaveStyle({ height: '20px', width: '24px' });
   });
+
+  it('ignores pointer and keyboard input on sliders in edit mode', () => {
+    const control = { ...createControl('slider', 0, 0), label: 'Dimmer' };
+    renderWithProviders(<SliderControl control={control} mode="edit" selected />);
+    const rail = screen.getByTestId('virtual-console-slider-rail');
+    mockRailRect(rail, { top: 0, left: 0, width: 40, height: 100 });
+
+    fireEvent.pointerDown(rail, { clientX: 20, clientY: 0, pointerId: 1 });
+    fireEvent.keyDown(screen.getByTestId('virtual-console-slider'), { key: 'ArrowUp' });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('0');
+  });
+
+  it('steps a play-mode slider with arrow keys and ignores other keys', () => {
+    const control = { ...createControl('slider', 0, 0), label: 'Dimmer' };
+    renderWithProviders(<SliderControl control={control} mode="play" />);
+    const slider = screen.getByRole('slider', { name: 'Dimmer' });
+
+    fireEvent.keyDown(slider, { key: 'ArrowUp' });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('1');
+    fireEvent.keyDown(slider, { key: 'ArrowRight' });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('2');
+    fireEvent.keyDown(slider, { key: 'ArrowDown' });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('1');
+    fireEvent.keyDown(slider, { key: 'ArrowLeft' });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('0');
+    fireEvent.keyDown(slider, { key: 'a' });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('0');
+  });
+
+  it('does not move a play-mode slider until a pointer is captured', () => {
+    const control = { ...createControl('slider', 0, 0), label: 'Dimmer' };
+    renderWithProviders(<SliderControl control={control} mode="play" />);
+    const rail = screen.getByTestId('virtual-console-slider-rail');
+    mockRailRect(rail, { top: 0, left: 0, width: 40, height: 100 });
+
+    fireEvent.pointerMove(rail, { clientX: 20, clientY: 0, pointerId: 1 });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('0');
+
+    fireEvent.pointerDown(rail, { clientX: 20, clientY: 0, pointerId: 1 });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('255');
+    fireEvent.pointerCancel(rail, { pointerId: 1 });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('255');
+  });
+
+  it('clears a play-mode button press on pointer cancel', () => {
+    const control = { ...createControl('button', 0, 0), label: 'Go' };
+    renderWithProviders(<ButtonControl control={control} mode="play" selected />);
+    const button = screen.getByRole('button', { name: 'Go' });
+    fireEvent.pointerDown(button, { pointerId: 1 });
+    expect(button).toHaveAttribute('data-pressed', 'true');
+    fireEvent.pointerCancel(button);
+    expect(button).not.toHaveAttribute('data-pressed');
+  });
+
+  it('does not press a button in edit mode', () => {
+    const control = { ...createControl('button', 0, 0), label: 'Go' };
+    renderWithProviders(<ButtonControl control={control} mode="edit" selected />);
+    const button = screen.getByRole('button', { name: 'Go' });
+    fireEvent.pointerDown(button, { pointerId: 1 });
+    expect(button).not.toHaveAttribute('data-pressed');
+  });
 });

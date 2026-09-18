@@ -40,6 +40,7 @@ export default mergeConfig(baseConfig, {
         'src/app/**/fixture-channel-definition-item.tsx',
         'src/app/**/fixture-channel-range-table.tsx',
         'src/app/**/fixture-vendor-table.tsx',
+        'src/app/**/virtual-console-control-properties.ts',
       ],
     },
   },

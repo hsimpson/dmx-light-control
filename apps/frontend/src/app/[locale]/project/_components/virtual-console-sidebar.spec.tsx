@@ -1,10 +1,13 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { fireEvent, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { createControl, createDefaultVirtualConsoleDocument } from './virtual-console-document';
 import VirtualConsoleSidebar from './virtual-console-sidebar';
 
 describe('virtual console sidebar', () => {
+  beforeAll(() => {
+    Element.prototype.scrollIntoView = vi.fn();
+  });
   it('applies a standard palette swatch to the selected control', async () => {
     const control = createControl('button', 0, 0);
     const document = createDefaultVirtualConsoleDocument();
@@ -116,5 +119,173 @@ describe('virtual console sidebar', () => {
     await user.clear(snap);
     await user.type(snap, '8');
     expect(onCanvasSizeChange).toHaveBeenCalledWith('snap', 8);
+  });
+
+  it('pops the console out and reports canvas width changes', async () => {
+    const document = createDefaultVirtualConsoleDocument();
+    const onPopOut = vi.fn();
+    const onCanvasSizeChange = vi.fn();
+    const { user } = renderWithProviders(
+      <VirtualConsoleSidebar
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={onCanvasSizeChange}
+        onControlPatch={vi.fn()}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onPopOut={onPopOut}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={undefined}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'canvas' }}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Pop out' }));
+    expect(onPopOut).toHaveBeenCalledTimes(1);
+
+    const width = screen.getByLabelText('Width');
+    await user.clear(width);
+    await user.type(width, '800');
+    expect(onCanvasSizeChange).toHaveBeenCalledWith('width', 800);
+  });
+
+  it('renames the selected page', async () => {
+    const document = createDefaultVirtualConsoleDocument();
+    const page = document.pages[0];
+    expect(page).toBeDefined();
+    if (!page) {
+      return;
+    }
+    const onPageNameChange = vi.fn();
+    const { user } = renderWithProviders(
+      <VirtualConsoleSidebar
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={vi.fn()}
+        onControlPatch={vi.fn()}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={onPageNameChange}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={undefined}
+        selectedPage={page}
+        selection={{ kind: 'page', pageId: page.id }}
+      />,
+    );
+
+    const name = screen.getByLabelText('Page name');
+    await user.clear(name);
+    await user.type(name, 'Intro');
+    expect(onPageNameChange).toHaveBeenCalled();
+  });
+
+  it('patches frame, slider and button specific fields', async () => {
+    const document = createDefaultVirtualConsoleDocument();
+    const onControlPatch = vi.fn();
+    const frame = createControl('frame', 0, 0);
+    const { user, rerender } = renderWithProviders(
+      <VirtualConsoleSidebar
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={vi.fn()}
+        onControlPatch={onControlPatch}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={frame}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'control', controlId: frame.id }}
+      />,
+    );
+
+    await user.type(screen.getByLabelText('X'), '4');
+    expect(onControlPatch).toHaveBeenCalled();
+
+    const slider = { ...createControl('slider', 0, 0), orientation: undefined, valueType: undefined };
+    rerender(
+      <VirtualConsoleSidebar
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={vi.fn()}
+        onControlPatch={onControlPatch}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={slider}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'control', controlId: slider.id }}
+      />,
+    );
+
+    await user.click(screen.getByRole('combobox', { name: 'Orientation' }));
+    await user.click(await screen.findByText('Horizontal'));
+    expect(onControlPatch).toHaveBeenCalledWith({ orientation: 'horizontal' });
+    await user.click(screen.getByRole('combobox', { name: 'Value type' }));
+    await user.click(await screen.findByText('Percentage'));
+    expect(onControlPatch).toHaveBeenCalledWith({ valueType: 'percentage' });
+  });
+
+  it('shows a custom font family when the value is not in the catalog', () => {
+    const document = createDefaultVirtualConsoleDocument();
+    const control = {
+      ...createControl('button', 0, 0),
+      fontFamily: '"Comic Sans MS", cursive',
+      fontSize: undefined,
+      fontWeight: undefined,
+    };
+    renderWithProviders(
+      <VirtualConsoleSidebar
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={vi.fn()}
+        onControlPatch={vi.fn()}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={control}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'control', controlId: control.id }}
+      />,
+    );
+
+    expect(screen.getByLabelText('Font')).toHaveValue('"Comic Sans MS", cursive · 16px · Default');
+  });
+
+  it('starts a palette drag with the control type', () => {
+    const document = createDefaultVirtualConsoleDocument();
+    renderWithProviders(
+      <VirtualConsoleSidebar
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={vi.fn()}
+        onControlPatch={vi.fn()}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={undefined}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'canvas' }}
+      />,
+    );
+
+    const dataTransfer = {
+      setData: vi.fn(),
+      effectAllowed: 'none',
+    };
+    fireEvent.dragStart(screen.getByText('Button'), { dataTransfer });
+    expect(dataTransfer.setData).toHaveBeenCalledWith('application/x-virtual-console-control', 'button');
+    expect(dataTransfer.effectAllowed).toBe('copy');
   });
 });

@@ -3,7 +3,10 @@ import {
   cloneVirtualConsoleDocument,
   createControl,
   createDefaultVirtualConsoleDocument,
+  extractControl,
+  findControl,
   findControlAbsolutePosition,
+  findControlParentId,
   findDropTarget,
   findFrameOrigin,
   frameHeaderHeight,
@@ -12,6 +15,7 @@ import {
   resizedControlBounds,
   snapControlBounds,
   snapToGrid,
+  updateControlInTree,
   type VirtualConsoleDocument,
 } from './virtual-console-document';
 
@@ -112,11 +116,74 @@ describe('virtual-console-document', () => {
     expect(snapToGrid(50.5, 1)).toBe(51);
     expect(snapToGrid(50, 8)).toBe(48);
     expect(snapToGrid(53, 8)).toBe(56);
+    expect(snapToGrid(50, 0)).toBe(50);
     expect(snapControlBounds({ x: 50, y: 11, width: 10, height: 9 }, 8)).toEqual({
       x: 48,
       y: 8,
       width: 8,
       height: 8,
     });
+    expect(snapControlBounds({ x: 1, y: 1, width: 0, height: 0 }, 8)).toEqual({
+      x: 0,
+      y: 0,
+      width: 8,
+      height: 8,
+    });
+  });
+
+  it('clamps west and north when resized below the minimum', () => {
+    const start = { x: 10, y: 20, width: 100, height: 80 };
+    expect(resizedControlBounds(start, 200, -200, 'sw')).toEqual({ x: 102, y: 20, width: 8, height: 8 });
+    expect(resizedControlBounds(start, 0, 200, 's')).toEqual({ x: 10, y: 20, width: 100, height: 280 });
+    expect(resizedControlBounds(start, 0, 200, 'ne')).toEqual({ x: 10, y: 92, width: 100, height: 8 });
+  });
+
+  it('finds, patches and extracts nested controls', () => {
+    const nested = { ...createControl('button', 8, 8), id: 'btn-1', label: 'Go' };
+    const frame = { ...createControl('frame', 0, 0), id: 'frame-1', children: [nested] };
+    const other = { ...createControl('button', 40, 0), id: 'btn-2' };
+
+    expect(findControl([frame, other], 'btn-1')?.label).toBe('Go');
+    expect(findControl([frame, other], 'missing')).toBeUndefined();
+    expect(findControlParentId([frame, other], 'btn-1')).toBe('frame-1');
+    expect(findControlParentId([frame, other], 'frame-1')).toBeNull();
+    expect(findControlParentId([frame, other], 'missing')).toBeUndefined();
+
+    const patched = updateControlInTree([frame, other], 'btn-1', { label: 'Stop' });
+    expect(findControl(patched, 'btn-1')?.label).toBe('Stop');
+    expect(updateControlInTree([other], 'btn-2', { label: 'X' })[0]?.label).toBe('X');
+
+    const extracted = extractControl([frame, other], 'btn-1');
+    expect(extracted.control?.id).toBe('btn-1');
+    expect(extracted.controls[0]?.children).toEqual([]);
+    expect(extractControl([other], 'missing').control).toBeUndefined();
+  });
+
+  it('returns canvas origin when the parent is missing or not a frame', () => {
+    const button = { ...createControl('button', 12, 24), id: 'btn-1' };
+    expect(findFrameOrigin([button], null)).toEqual({ x: 0, y: 0 });
+    expect(findFrameOrigin([button], 'btn-1')).toEqual({ x: 12, y: 24 });
+    expect(findFrameOrigin([button], 'missing')).toEqual({ x: 0, y: 0 });
+    expect(findControlAbsolutePosition([button], 'missing')).toBeUndefined();
+  });
+
+  it('leaves the tree unchanged when reparenting a missing control', () => {
+    const button = { ...createControl('button', 0, 0), id: 'btn-1' };
+    expect(reparentControl([button], 'missing', null, 1, 1)).toEqual([button]);
+  });
+
+  it('inserts into a nested frame and skips unrelated branches', () => {
+    const inner = { ...createControl('frame', 4, 4), id: 'inner', children: [] };
+    const outer = { ...createControl('frame', 0, 0), id: 'outer', children: [inner] };
+    const sibling = { ...createControl('button', 80, 0), id: 'btn-2' };
+    const next = insertControlInTree([outer, sibling], 'inner', createControl('button', 1, 2));
+    expect(next[0]?.children?.[0]?.children).toHaveLength(1);
+    expect(next[1]?.id).toBe('btn-2');
+  });
+
+  it('ignores a dragged frame when finding a drop target', () => {
+    const frame = { ...createControl('frame', 0, 0), id: 'frame-1', width: 200, height: 200, children: [] };
+    const target = findDropTarget([frame], 40, 40 + frameHeaderHeight(frame), 'frame-1');
+    expect(target.parentId).toBeNull();
   });
 });

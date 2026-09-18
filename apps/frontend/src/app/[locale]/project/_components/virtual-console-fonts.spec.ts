@@ -4,6 +4,7 @@ import {
   VIRTUAL_CONSOLE_FONT_WEIGHTS,
   controlFontStyle,
   findVirtualConsoleFont,
+  findVirtualConsoleFontWeight,
 } from './virtual-console-fonts';
 
 describe('virtual console fonts', () => {
@@ -33,10 +34,18 @@ describe('virtual console fonts', () => {
       fontSize: undefined,
       fontWeight: undefined,
     });
+    expect(controlFontStyle({ fontSize: null })).toEqual({
+      fontFamily: undefined,
+      fontSize: undefined,
+      fontWeight: undefined,
+    });
   });
 
   it('finds a font option by CSS family', () => {
     expect(findVirtualConsoleFont(VIRTUAL_CONSOLE_FONTS[2]?.value)?.label).toBe('Arial');
+    expect(findVirtualConsoleFont('unknown')).toBeUndefined();
     expect(VIRTUAL_CONSOLE_FONT_WEIGHTS.map(weight => weight.value)).toEqual([400, 500, 600, 700]);
+    expect(findVirtualConsoleFontWeight(700)?.id).toBe('bold');
+    expect(findVirtualConsoleFontWeight(undefined)).toBeUndefined();
   });
 });

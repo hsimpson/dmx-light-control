@@ -127,4 +127,20 @@ describe('FixtureDetailTabs', () => {
     await user.click(screen.getByRole('tab', { name: 'Channel modes' }));
     expect(push).toHaveBeenCalledWith('/fixture/fix-1/channel-modes');
   });
+
+  it('falls back to the general tab for an unknown route tab', () => {
+    mockUseParams.mockReturnValue({ tab: 'not-a-tab' });
+
+    renderWithProviders(
+      <FixtureDetailTabs
+        fixturePublicId="fix-1"
+        general={<div data-testid="general-panel" />}
+        properties={<div data-testid="properties-panel" />}
+        channels={<div data-testid="channels-panel" />}
+        channelModes={<div data-testid="channel-modes-panel" />}
+      />,
+    );
+
+    expect(screen.getByTestId('general-panel')).toBeInTheDocument();
+  });
 });

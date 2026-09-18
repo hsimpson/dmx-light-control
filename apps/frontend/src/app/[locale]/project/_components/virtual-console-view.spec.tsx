@@ -3,6 +3,7 @@ import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { notifications } from '@mantine/notifications';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { VIRTUAL_CONSOLE_PALETTE_MIME } from './virtual-console-document';
 import VirtualConsoleView from './virtual-console-view';
 
 vi.mock('next/navigation', () => ({
@@ -529,5 +530,249 @@ describe('VirtualConsoleView', () => {
 
     expect(screen.getByLabelText('X')).toHaveValue('48');
     expect(screen.getByLabelText('Y')).toHaveValue('48');
+  });
+
+  it('shows a loader while the project query is in flight', () => {
+    renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project } },
+          delay: Number.POSITIVE_INFINITY,
+        },
+      ],
+    });
+
+    expect(document.querySelector('.mantine-Loader-root')).not.toBeNull();
+  });
+
+  it('falls back to a default console when the project has none', async () => {
+    renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: { ...project, virtualConsole: null } } },
+        },
+      ],
+    });
+
+    expect(await screen.findByRole('tab', { name: 'Page 1' })).toBeInTheDocument();
+  });
+
+  it('drops a palette control onto the canvas', async () => {
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project } },
+        },
+      ],
+    });
+
+    const canvas = await screen.findByTestId('virtual-console-canvas');
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      bottom: 720,
+      right: 1280,
+      width: 1280,
+      height: 720,
+      toJSON: () => ({}),
+    });
+
+    const dropEvent = {
+      clientX: 80,
+      clientY: 60,
+      dataTransfer: {
+        getData: (type: string) => (type === VIRTUAL_CONSOLE_PALETTE_MIME ? 'button' : ''),
+      },
+    };
+    Object.defineProperty(dropEvent, 'clientX', { value: 80 });
+    fireEvent.dragOver(canvas, dropEvent);
+    fireEvent.drop(canvas, dropEvent);
+
+    expect(await screen.findByTestId('virtual-console-button')).toHaveTextContent('Button');
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+
+    fireEvent.drop(canvas, {
+      clientX: 80,
+      clientY: 60,
+      dataTransfer: { getData: () => 'unknown' },
+    });
+    expect(screen.getAllByTestId('virtual-console-button')).toHaveLength(1);
+
+    await user.click(screen.getByText('Canvas'));
+    expect(screen.queryByLabelText('Label')).not.toBeInTheDocument();
+  });
+
+  it('opens the pop-out window from the sidebar', async () => {
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project } },
+        },
+      ],
+    });
+
+    await user.click(await screen.findByRole('button', { name: 'Pop out' }));
+    expect(open).toHaveBeenCalledWith('/en/project/proj-1/console/popout', 'virtual-console', 'noopener,noreferrer');
+    open.mockRestore();
+  });
+
+  it('shows an error notification when save fails', async () => {
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project } },
+        },
+        {
+          request: {
+            query: UpdateProjectVirtualConsoleDocument,
+            variables: {
+              input: {
+                publicId: 'proj-1',
+                virtualConsole: {
+                  schemaVersion: 1,
+                  width: 1024,
+                  height: 720,
+                  snap: 1,
+                  pages: [{ id: pageId, name: 'Page 1', controls: [] }],
+                },
+              },
+            },
+          },
+          error: new Error('network'),
+        },
+      ],
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    });
+    await user.click(screen.getByText('Canvas'));
+    const width = screen.getByLabelText('Width');
+    await user.clear(width);
+    await user.type(width, '1024');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => {
+      expect(notifications.show).toHaveBeenCalledWith(expect.objectContaining({ color: 'red' }));
+    });
+  });
+
+  it('moves the splitter with arrow keys and ignores other keys', async () => {
+    renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project } },
+        },
+      ],
+    });
+
+    const split = await screen.findByTestId('virtual-console-split');
+    const splitter = screen.getByRole('separator', { name: 'Resize panels' });
+    vi.spyOn(split, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      bottom: 400,
+      right: 400,
+      width: 400,
+      height: 400,
+      toJSON: () => ({}),
+    });
+
+    fireEvent.pointerMove(splitter, { clientX: 50, pointerId: 1 });
+    expect(split).toHaveStyle({ gridTemplateColumns: '4fr 6px 1fr' });
+
+    fireEvent.keyDown(splitter, { key: 'a' });
+    fireEvent.keyDown(splitter, { key: 'ArrowLeft' });
+    expect(split).not.toHaveStyle({ gridTemplateColumns: '4fr 6px 1fr' });
+    fireEvent.keyDown(splitter, { key: 'ArrowRight' });
+  });
+
+  it('does not delete a control when Backspace is typed in an input', async () => {
+    const buttonId = '22222222-2222-4222-8222-222222222222';
+    const projectWithButton = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto',
+                id: buttonId,
+                type: 'button',
+                x: 40,
+                y: 50,
+                width: 80,
+                height: 40,
+                label: 'Go',
+                backgroundColor: '#111111',
+                borderWidth: null,
+                borderColor: null,
+                orientation: null,
+                foregroundColor: null,
+                fontFamily: null,
+                fontSize: null,
+                fontWeight: null,
+                valueType: null,
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithButton } },
+        },
+      ],
+    });
+
+    await user.click(await screen.findByTestId(`virtual-console-control-${buttonId}`));
+    fireEvent.keyDown(screen.getByLabelText('Label'), { key: 'Backspace' });
+    expect(screen.getByTestId(`virtual-console-control-${buttonId}`)).toBeInTheDocument();
+
+    fireEvent.keyDown(window, { key: 'a' });
+    expect(screen.getByTestId(`virtual-console-control-${buttonId}`)).toBeInTheDocument();
+  });
+
+  it('requests fullscreen and refetches when the play window becomes visible', async () => {
+    const requestFullscreen = vi.fn().mockResolvedValue(undefined);
+    document.documentElement.requestFullscreen = requestFullscreen;
+
+    const { user } = renderWithProviders(<VirtualConsoleView mode="play" projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project } },
+        },
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project } },
+        },
+      ],
+    });
+
+    await user.click(await screen.findByRole('button', { name: 'Fullscreen' }));
+    expect(requestFullscreen).toHaveBeenCalledTimes(1);
+
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'hidden' });
+    document.dispatchEvent(new Event('visibilitychange'));
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
+    document.dispatchEvent(new Event('visibilitychange'));
   });
 });
