@@ -4,10 +4,11 @@ Authoring files for runtime models served by the backend. After editing a `.blen
 
 ## Mapping
 
-| Source                                 | Runtime                                                |
-| -------------------------------------- | ------------------------------------------------------ |
-| `fixtures/_defaults/led_par_can.blend` | `apps/backend/src/assets/fixtures/_defaults/model.glb` |
-| `rig/light_stand.blend`                | `apps/backend/src/assets/3d/light_stand.glb`           |
+| Source                                                | Runtime                                                                           |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `fixtures/_defaults/led_par_can.blend`                | `apps/backend/src/assets/fixtures/_defaults/model.glb`                            |
+| `fixtures/american-dj/mega-tripar-profile-plus.blend` | `apps/backend/src/assets/fixtures/american-dj/mega-tripar-profile-plus/model.glb` |
+| `rig/light_stand.blend`                               | `apps/backend/src/assets/3d/light_stand.glb`                                      |
 
 Room GLTF (`apps/backend/src/assets/3d/room.gltf`) is served as-is; there is no matching file in this folder.
 
