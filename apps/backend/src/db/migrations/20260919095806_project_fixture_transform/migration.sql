@@ -1,0 +1,1 @@
+ALTER TABLE "project_fixtures" ADD COLUMN "transform" double precision[] DEFAULT ARRAY[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]::double precision[] NOT NULL;

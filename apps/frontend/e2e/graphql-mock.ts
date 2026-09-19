@@ -85,12 +85,14 @@ type MockedProjectFixture = {
   __typename: 'ProjectFixtureDto';
   publicId: string;
   startAddress: number;
+  transform: number[];
   createdAt: string;
   updatedAt: string;
   fixture: {
     __typename: 'ProjectFixtureFixtureDto';
     publicId: string;
     name: string;
+    model3dPath: string | null;
     fixtureVendor: {
       __typename: 'FixtureVendorDto';
       publicId: string;
@@ -138,6 +140,7 @@ export const mockGraphql = async (page: Page) => {
           fixturePublicId?: string;
           channelModePublicId?: string;
           startAddress?: number;
+          transform?: number[];
           channelModePublicId?: string;
         };
         document?: { schemaVersion: number; projects: { publicId?: string; name: string }[] };
@@ -273,12 +276,14 @@ export const mockGraphql = async (page: Page) => {
         __typename: 'ProjectFixtureDto',
         publicId: `pf-${(projectFixtures[projectPublicId]?.length ?? 0) + 1}`,
         startAddress: input?.startAddress ?? 1,
+        transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         createdAt: now,
         updatedAt: now,
         fixture: {
           __typename: 'ProjectFixtureFixtureDto',
           publicId: fixture.publicId,
           name: fixture.name,
+          model3dPath: fixture.model3dPath,
           fixtureVendor: {
             __typename: 'FixtureVendorDto',
             publicId: fixture.fixtureVendor.publicId,
@@ -306,6 +311,9 @@ export const mockGraphql = async (page: Page) => {
       if (existing) {
         if (input?.startAddress !== undefined) {
           existing.startAddress = input.startAddress;
+        }
+        if (input?.transform !== undefined) {
+          existing.transform = input.transform;
         }
         if (input?.channelModePublicId) {
           const mode = mockedFixture.fixtureChannelModes.find(entry => entry.publicId === input.channelModePublicId);

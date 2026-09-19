@@ -7,6 +7,7 @@ import {
   SceneObjectGeometryKind,
   UpdateProject3dObjectDocument,
   UpdateProjectDocument,
+  UpdateProjectFixtureDocument,
 } from '@/shared/types/graphql/graphql';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { CombinedGraphQLErrors } from '@apollo/client';
@@ -61,6 +62,28 @@ const project3dObject = {
   sceneObjectType,
   createdAt: now,
   updatedAt: now,
+};
+
+const projectFixture = {
+  __typename: 'ProjectFixtureDto' as const,
+  publicId: 'pf-1',
+  startAddress: 1,
+  transform: identityTransform,
+  createdAt: now,
+  updatedAt: now,
+  fixture: {
+    __typename: 'ProjectFixtureFixtureDto' as const,
+    publicId: 'fix-1',
+    name: 'PAR 64',
+    model3dPath: '/assets/fixtures/acme/par/model.glb',
+    fixtureVendor: { __typename: 'FixtureVendorDto' as const, publicId: 'vendor-1', name: 'Generic' },
+  },
+  channelMode: {
+    __typename: 'ProjectFixtureChannelModeDto' as const,
+    publicId: 'mode-1',
+    name: '3ch',
+    fixtureChannelAssignments: [],
+  },
 };
 
 const project = {
@@ -209,7 +232,7 @@ describe('ThreeDView', () => {
     });
     const getProjectCountAfterLoad = getProjectCount;
 
-    await user.click(screen.getByPlaceholderText('None'));
+    await user.click(screen.getByRole('combobox', { name: 'Selected object' }));
     await user.click(await screen.findByRole('option', { name: 'Box 1', hidden: true }));
 
     const positionX = screen.getByLabelText('Position X');
@@ -218,6 +241,66 @@ describe('ThreeDView', () => {
 
     expect(updateCount).toBe(0);
     expect(getProjectCount).toBe(getProjectCountAfterLoad);
+
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(updateCount).toBeGreaterThan(0);
+    });
+    expect(notifications.show).toHaveBeenCalledWith(expect.objectContaining({ color: 'green' }));
+  });
+
+  it('saves fixture pose drafts with updateProjectFixture', async () => {
+    const projectWithFixture = { ...project, projectFixtures: [projectFixture] };
+    let updateCount = 0;
+    const { user } = renderWithProviders(<ThreeDView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetSceneObjectTypesDocument },
+          result: { data: { sceneObjectTypes: [] } },
+        },
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          maxUsageCount: Number.POSITIVE_INFINITY,
+          result: { data: { project: projectWithFixture } },
+        },
+        {
+          request: {
+            query: UpdateProjectDocument,
+            variables: () => true,
+          },
+          result: {
+            data: {
+              updateProject: projectWithFixture,
+            },
+          },
+        },
+        {
+          request: {
+            query: UpdateProjectFixtureDocument,
+            variables: () => true,
+          },
+          maxUsageCount: Number.POSITIVE_INFINITY,
+          result: () => {
+            updateCount += 1;
+            return { data: { updateProjectFixture: projectFixture } };
+          },
+        },
+      ],
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('three-d-room-canvas')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('combobox', { name: 'Selected fixture' }));
+    await user.click(await screen.findByRole('option', { name: 'PAR 64 [1]', hidden: true }));
+
+    const positionX = screen.getByLabelText('Position X');
+    await user.clear(positionX);
+    await user.type(positionX, '2');
+
+    expect(updateCount).toBe(0);
 
     await user.click(screen.getByRole('button', { name: 'Save' }));
 
@@ -327,12 +410,12 @@ describe('ThreeDView', () => {
       ],
     });
 
-    await user.click(await screen.findByPlaceholderText('None'));
+    await user.click(await screen.findByRole('combobox', { name: 'Selected object' }));
     await user.click(await screen.findByRole('option', { name: 'Box 1', hidden: true }));
     await user.click(screen.getByRole('button', { name: 'Delete' }));
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText('None')).toHaveValue('');
+      expect(screen.getByRole('combobox', { name: 'Selected object' })).toHaveValue('');
     });
   });
 
@@ -358,7 +441,7 @@ describe('ThreeDView', () => {
       ],
     });
 
-    await user.click(await screen.findByPlaceholderText('None'));
+    await user.click(await screen.findByRole('combobox', { name: 'Selected object' }));
     await user.click(await screen.findByRole('option', { name: 'Box 1', hidden: true }));
     await user.click(screen.getByRole('button', { name: 'Delete' }));
 
@@ -393,7 +476,7 @@ describe('ThreeDView', () => {
       ],
     });
 
-    await user.click(await screen.findByPlaceholderText('None'));
+    await user.click(await screen.findByRole('combobox', { name: 'Selected object' }));
     await user.click(await screen.findByRole('option', { name: 'Box 1', hidden: true }));
 
     const nameInput = screen.getByLabelText('Name');
@@ -430,7 +513,7 @@ describe('ThreeDView', () => {
       ],
     });
 
-    await user.click(await screen.findByPlaceholderText('None'));
+    await user.click(await screen.findByRole('combobox', { name: 'Selected object' }));
     await user.click(await screen.findByRole('option', { name: 'Box 1', hidden: true }));
 
     const nameInput = screen.getByLabelText('Name');

@@ -1,7 +1,7 @@
 import { BaseDto } from '@/db/base.dto';
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
 import { FixtureVendorDto } from '@/fixtures/dto/fixture-vendor.dto';
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 
 @ObjectType()
@@ -27,6 +27,9 @@ export class ProjectFixtureFixtureDto extends BaseDto {
   @Field({ description: 'The name of the fixture' })
   public name: string;
 
+  @Field(() => String, { nullable: true, description: '3D model path relative to the API origin' })
+  public model3dPath?: string | null;
+
   @Type(() => FixtureVendorDto)
   @Field(() => FixtureVendorDto, { description: 'The vendor of the fixture' })
   public fixtureVendor: FixtureVendorDto;
@@ -48,6 +51,9 @@ export class ProjectFixtureChannelModeDto extends BaseDto {
 export class ProjectFixtureDto extends BaseDto {
   @Field(() => Int, { description: 'The DMX start address of the patched fixture instance' })
   public startAddress: number;
+
+  @Field(() => [Float], { description: 'Column-major 4×4 transform (16 values, translation and rotation only)' })
+  public transform: number[];
 
   @Type(() => ProjectFixtureFixtureDto)
   @Field(() => ProjectFixtureFixtureDto, { description: 'The catalog fixture type of this instance' })

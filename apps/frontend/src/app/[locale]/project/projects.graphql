@@ -66,9 +66,11 @@ fragment VirtualConsoleFields on VirtualConsoleDto {
 fragment ProjectFixtureFields on ProjectFixtureDto {
   publicId
   startAddress
+  transform
   fixture {
     publicId
     name
+    model3dPath
     fixtureVendor {
       publicId
       name
@@ -227,6 +229,7 @@ query ExportProjects {
         startAddress
         fixturePublicId
         channelModePublicId
+        transform
         createdAt
         updatedAt
       }

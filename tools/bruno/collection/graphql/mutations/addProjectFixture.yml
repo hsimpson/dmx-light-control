@@ -32,12 +32,14 @@ graphql:
               publicId
               updatedAt
             }
+            model3dPath
             name
             publicId
             updatedAt
           }
           publicId
           startAddress
+          transform
           updatedAt
         }
       }

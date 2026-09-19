@@ -62,10 +62,12 @@ const projectFixture = (overrides: { publicId: string; name: string; startAddres
   __typename: 'ProjectFixtureDto' as const,
   publicId: overrides.publicId,
   startAddress: overrides.startAddress,
+  transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
   fixture: {
     __typename: 'FixtureDto' as const,
     publicId: `fix-${overrides.publicId}`,
     name: overrides.name,
+    model3dPath: null,
     fixtureVendor: { __typename: 'FixtureVendorDto' as const, publicId: 'vendor-1', name: 'Generic' },
   },
   channelMode: {

@@ -718,4 +718,90 @@ describe('ThreeDRoomCanvas', () => {
     );
     expect(transformControlsConstruct).toHaveBeenCalled();
   });
+
+  it('loads the default fixture GLB when model3dPath is missing', () => {
+    load.mockClear();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            fixture: { model3dPath: null },
+          },
+        ]}
+      />,
+    );
+    expect(load).toHaveBeenCalled();
+    expect(String(load.mock.calls.at(-1)?.[0])).toContain('/assets/fixtures/_defaults/model.glb');
+  });
+
+  it('loads the catalog fixture model and attaches gizmos when selected', () => {
+    load.mockClear();
+    transformControlsConstruct.mockClear();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            fixture: { model3dPath: '/assets/fixtures/acme/par/model.glb' },
+          },
+        ]}
+        selectedFixturePublicId="pf-1"
+        scaleGizmoEnabled
+      />,
+    );
+    expect(String(load.mock.calls.at(-1)?.[0])).toContain('/assets/fixtures/acme/par/model.glb');
+    expect(transformControlsConstruct.mock.calls.length).toBeGreaterThanOrEqual(2);
+    const onLoad = load.mock.calls.at(-1)?.[1] as
+      ((gltf: { scene: { name?: string; traverse: (cb: (object: unknown) => void) => void } }) => void) | undefined;
+    const instanceMesh = { isMesh: true, castShadow: false, receiveShadow: false, material: {} };
+    onLoad?.({
+      scene: {
+        traverse(callback: (object: unknown) => void) {
+          callback(instanceMesh);
+        },
+      },
+    });
+    expect(instanceMesh.castShadow).toBe(true);
+    expect(instanceMesh.receiveShadow).toBe(true);
+  });
+
+  it('selects a fixture from a bounding-box pick', () => {
+    const onSelectFixture = vi.fn();
+    const onSelectObject = vi.fn();
+    intersectBox.mockReturnValue({});
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            fixture: { model3dPath: null },
+          },
+        ]}
+        onSelectFixture={onSelectFixture}
+        onSelectObject={onSelectObject}
+      />,
+    );
+    fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
+    expect(onSelectFixture).toHaveBeenCalledWith('pf-1');
+    expect(onSelectObject).toHaveBeenCalledWith(null);
+  });
 });

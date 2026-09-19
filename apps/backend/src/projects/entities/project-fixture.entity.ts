@@ -4,7 +4,7 @@ import fixture from '@/fixtures/entities/fixture.entity';
 import project from '@/projects/entities/project.entity';
 import { sql } from 'drizzle-orm';
 import * as d from 'drizzle-orm/pg-core';
-import { check, integer } from 'drizzle-orm/pg-core';
+import { check, doublePrecision, integer } from 'drizzle-orm/pg-core';
 
 const projectFixture = d.snakeCase.table(
   'project_fixtures',
@@ -20,6 +20,10 @@ const projectFixture = d.snakeCase.table(
       .notNull()
       .references(() => fixtureChannelMode.id),
     startAddress: integer().notNull(),
+    transform: doublePrecision()
+      .array()
+      .notNull()
+      .default(sql`ARRAY[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]::double precision[]`),
     ...timestamps,
   },
   table => [check('project_fixture_start_address_bounds', sql`${table.startAddress} BETWEEN 1 AND 512`)],

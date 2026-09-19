@@ -33,6 +33,7 @@ graphql:
               fixturePublicId
               publicId
               startAddress
+              transform
               updatedAt
             }
             publicId
@@ -48,6 +49,7 @@ graphql:
                 name
               }
               schemaVersion
+              snap
               width
             }
           }

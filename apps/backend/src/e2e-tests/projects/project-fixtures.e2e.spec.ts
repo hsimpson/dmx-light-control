@@ -1,3 +1,4 @@
+import { identityTransform } from '@/projects/project-3d-object.transform';
 import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -16,7 +17,8 @@ type AddProjectFixtureMutation = {
   addProjectFixture: {
     publicId: string;
     startAddress: number;
-    fixture: { publicId: string; name: string };
+    transform: number[];
+    fixture: { publicId: string; name: string; model3dPath: string | null };
     channelMode: { publicId: string; name: string; fixtureChannelAssignments: { channelNumber: number }[] };
   };
 };
@@ -28,7 +30,8 @@ type ProjectQuery = {
     projectFixtures: {
       publicId: string;
       startAddress: number;
-      fixture: { publicId: string };
+      transform: number[];
+      fixture: { publicId: string; model3dPath: string | null };
       channelMode: { publicId: string; fixtureChannelAssignments: { channelNumber: number }[] };
     }[];
   } | null;
@@ -48,9 +51,11 @@ const ADD_PROJECT_FIXTURE = gql`
     addProjectFixture(input: $input) {
       publicId
       startAddress
+      transform
       fixture {
         publicId
         name
+        model3dPath
       }
       channelMode {
         publicId
@@ -68,6 +73,7 @@ const UPDATE_PROJECT_FIXTURE = gql`
     updateProjectFixture(input: $input) {
       publicId
       startAddress
+      transform
       channelMode {
         publicId
       }
@@ -104,8 +110,10 @@ const GET_PROJECT = gql`
       projectFixtures {
         publicId
         startAddress
+        transform
         fixture {
           publicId
+          model3dPath
         }
         channelMode {
           publicId
@@ -162,6 +170,7 @@ describe('Project fixture mutations', () => {
 
     expect(added.errors).toBeUndefined();
     expect(added.data?.addProjectFixture.startAddress).toBe(1);
+    expect(added.data?.addProjectFixture.transform).toEqual(identityTransform());
     expect(added.data?.addProjectFixture.fixture.publicId).toBe(catalog.fixturePublicId);
     expect(added.data?.addProjectFixture.channelMode.fixtureChannelAssignments).toHaveLength(4);
 
@@ -173,8 +182,10 @@ describe('Project fixture mutations', () => {
     });
     expect(queried.data?.project?.projectFixtures).toHaveLength(1);
     expect(queried.data?.project?.projectFixtures[0]?.publicId).toBe(instancePublicId);
+    expect(queried.data?.project?.projectFixtures[0]?.transform).toEqual(identityTransform());
 
-    const updated = await graphqlQuery<{ updateProjectFixture: { startAddress: number } }>(
+    const moved = identityTransform(1, 0, 2);
+    const updated = await graphqlQuery<{ updateProjectFixture: { startAddress: number; transform: number[] } }>(
       app.getHttpAdapter().getInstance().server,
       UPDATE_PROJECT_FIXTURE,
       {
@@ -182,12 +193,14 @@ describe('Project fixture mutations', () => {
           input: {
             publicId: instancePublicId,
             startAddress: 10,
+            transform: moved,
           },
         },
       },
     );
     expect(updated.errors).toBeUndefined();
     expect(updated.data?.updateProjectFixture.startAddress).toBe(10);
+    expect(updated.data?.updateProjectFixture.transform).toEqual(moved);
 
     const deleted = await graphqlQuery<{ deleteProjectFixture: { deleted: boolean } }>(
       app.getHttpAdapter().getInstance().server,

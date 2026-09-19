@@ -59,8 +59,8 @@ describe('ProjectResolver', () => {
 
   it('exportProjects maps the versioned document', async () => {
     const { resolver, projectImportExportService } = build();
-    projectImportExportService.exportProjects.mockResolvedValue({ schemaVersion: 8, projects: [] });
-    await expect(resolver.exportProjects()).resolves.toEqual({ schemaVersion: 8, projects: [] });
+    projectImportExportService.exportProjects.mockResolvedValue({ schemaVersion: 9, projects: [] });
+    await expect(resolver.exportProjects()).resolves.toEqual({ schemaVersion: 9, projects: [] });
   });
 
   it('createProject and updateProject map service rows to DTOs', async () => {

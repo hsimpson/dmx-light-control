@@ -32,12 +32,14 @@ graphql:
               publicId
               updatedAt
             }
+            model3dPath
             name
             publicId
             updatedAt
           }
           publicId
           startAddress
+          transform
           updatedAt
         }
       }
@@ -46,7 +48,8 @@ graphql:
         "input": {
           "channelModePublicId": null,
           "publicId": null,
-          "startAddress": null
+          "startAddress": null,
+          "transform": []
         }
       }
 

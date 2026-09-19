@@ -102,7 +102,7 @@ describe('Project import/export', () => {
     });
 
     const body = await graphqlQuery<ExportProjectsQuery>(app.getHttpAdapter().getInstance().server, EXPORT_PROJECTS);
-    expect(body.data?.exportProjects.schemaVersion).toBe(8);
+    expect(body.data?.exportProjects.schemaVersion).toBe(9);
     const exported = body.data?.exportProjects.projects.find(project => project.name === 'Export List Project');
     expect(exported?.environmentType).toBe('SimpleGround');
     expect(exported?.virtualConsole).toBeNull();
