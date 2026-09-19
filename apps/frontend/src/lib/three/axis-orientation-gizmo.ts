@@ -93,11 +93,10 @@ export const createAxisOrientationGizmo = () => {
   };
 
   const render = (renderer: WebGLRenderer, width: number, height: number) => {
-    const pixelRatio = renderer.getPixelRatio();
-    const size = AXIS_GIZMO_SIZE_PX * pixelRatio;
-    const margin = AXIS_GIZMO_MARGIN_PX * pixelRatio;
-    const x = width * pixelRatio - margin - size;
-    const y = height * pixelRatio - margin - size;
+    const size = AXIS_GIZMO_SIZE_PX;
+    const margin = AXIS_GIZMO_MARGIN_PX;
+    const x = width - margin - size;
+    const y = height - margin - size;
 
     renderer.clearDepth();
     renderer.setScissorTest(true);
@@ -105,7 +104,7 @@ export const createAxisOrientationGizmo = () => {
     renderer.setViewport(x, y, size, size);
     renderer.render(scene, camera);
     renderer.setScissorTest(false);
-    renderer.setViewport(0, 0, width * pixelRatio, height * pixelRatio);
+    renderer.setViewport(0, 0, width, height);
   };
 
   const dispose = () => {
