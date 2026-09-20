@@ -15,6 +15,7 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { applyRoomDimensions, applySimpleGroundDimensions } from './room-layout';
 import { pickClosestSceneObject } from './scene-object-pick';
+import { SelectionBoxHighlighter } from './selection-bounding-box';
 import {
   applyTransformMatrix,
   applyVisualSize,
@@ -118,6 +119,7 @@ const ThreeDRoomCanvas = ({
   const scaleControlsRef = useRef<TransformControls | null>(null);
   const sceneRef = useRef<Scene | null>(null);
   const selectionGroupRef = useRef<Group | null>(null);
+  const selectionHighlighterRef = useRef<SelectionBoxHighlighter | null>(null);
   const instancesRef = useRef(new Map<string, Group>());
   const onSelectObjectRef = useRef(onSelectObject);
   const onSelectFixtureRef = useRef(onSelectFixture);
@@ -151,6 +153,14 @@ const ThreeDRoomCanvas = ({
       selectionGroup.userData.isSelectionGroup = true;
       scene.add(selectionGroup);
       selectionGroupRef.current = selectionGroup;
+      const selectionHighlighter = new SelectionBoxHighlighter(scene);
+      selectionHighlighterRef.current = selectionHighlighter;
+      let highlightFrame = 0;
+      const tickSelectionHighlights = () => {
+        highlightFrame = requestAnimationFrame(tickSelectionHighlights);
+        selectionHighlighter.update();
+      };
+      tickSelectionHighlights();
 
       type GizmoEntry = {
         transformControls: TransformControls;
@@ -391,6 +401,9 @@ const ThreeDRoomCanvas = ({
 
       return () => {
         cancelAnimationFrame(poseSyncFrame);
+        cancelAnimationFrame(highlightFrame);
+        selectionHighlighter.dispose();
+        selectionHighlighterRef.current = null;
         host.removeEventListener('pointerdown', onPointerDown);
         host.removeEventListener('pointerup', onPointerUp);
         translateGizmo.transformControls.removeEventListener('dragging-changed', onTranslateDraggingChanged);
@@ -560,6 +573,7 @@ const ThreeDRoomCanvas = ({
         rotateControls.attach(target);
       }
     };
+    selectionHighlighterRef.current?.setTargets(members);
     if (members.length === 0) {
       translateControls.detach();
       rotateControls.detach();

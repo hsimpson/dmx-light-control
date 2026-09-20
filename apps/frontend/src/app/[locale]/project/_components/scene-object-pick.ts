@@ -2,6 +2,10 @@ import { Box3, type Object3D, type Ray, type Raycaster, Vector3 } from 'three';
 
 const PICK_PADDING_METERS = 0.15;
 
+export function isSelectionHighlight(object: Object3D): boolean {
+  return object.userData.isSelectionHighlight === true;
+}
+
 export function pickClosestObjectByBoundingBox(ray: Ray, objects: Object3D[]): Object3D | undefined {
   const box = new Box3();
   const hitPoint = new Vector3();
@@ -9,6 +13,9 @@ export function pickClosestObjectByBoundingBox(ray: Ray, objects: Object3D[]): O
   let closestDistanceSq = Number.POSITIVE_INFINITY;
 
   for (const object of objects) {
+    if (isSelectionHighlight(object)) {
+      continue;
+    }
     box.setFromObject(object);
     if (box.isEmpty()) {
       continue;
@@ -43,8 +50,11 @@ export function pickClosestSceneObject(raycaster: Raycaster, objects: Object3D[]
   const roots = new Set(objects);
   const meshHits = raycaster.intersectObjects(objects, true);
   for (const hit of meshHits) {
+    if (isSelectionHighlight(hit.object)) {
+      continue;
+    }
     const root = findPickRoot(hit.object, roots);
-    if (root) {
+    if (root && !isSelectionHighlight(root)) {
       return root;
     }
   }

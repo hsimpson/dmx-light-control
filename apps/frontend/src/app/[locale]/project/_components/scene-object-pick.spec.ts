@@ -92,4 +92,21 @@ describe('pickClosestSceneObject', () => {
     raycaster.ray.copy(ray);
     expect(pickClosestSceneObject(raycaster, [object])).toBe(object);
   });
+
+  it('does not pick a selection highlight even when it is closer than a fixture', () => {
+    const highlight = new Mesh(new BoxGeometry(1, 1, 1));
+    highlight.userData.isSelectionHighlight = true;
+    highlight.position.set(0, 0, -2);
+    highlight.updateMatrixWorld(true);
+
+    const object = new Group();
+    object.add(new Mesh(new BoxGeometry(1, 1, 1)));
+    object.position.set(0, 0, -6);
+    object.updateMatrixWorld(true);
+
+    const ray = new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, -1));
+    const raycaster = new Raycaster();
+    raycaster.ray.copy(ray);
+    expect(pickClosestSceneObject(raycaster, [highlight, object])).toBe(object);
+  });
 });
