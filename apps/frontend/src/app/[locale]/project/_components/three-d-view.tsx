@@ -22,6 +22,7 @@ import { useState } from 'react';
 import ProjectFixtures3dPanel from './project-fixtures-3d-panel';
 import RoomDimensionsPanel from './room-dimensions-panel';
 import { composeTransformFromPose, type SceneObjectPose } from './scene-object-pose';
+import { applySceneSelectionClick, selectedIdsOfKind, type SceneSelectionItem } from './scene-selection';
 import SceneObjectsPanel from './scene-objects-panel';
 import classes from './three-d-view.module.css';
 
@@ -66,13 +67,16 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
   const [fixtureDrafts, setFixtureDrafts] = useState<Record<string, { transform: number[] }>>({});
   const [saving, setSaving] = useState(false);
   const [selectedTypePublicId, setSelectedTypePublicId] = useState<string | null>(null);
-  const [selectedObjectPublicId, setSelectedObjectPublicId] = useState<string | null>(null);
-  const [selectedFixturePublicId, setSelectedFixturePublicId] = useState<string | null>(null);
+  const [selection, setSelection] = useState<SceneSelectionItem[]>([]);
   const [scaleGizmoEnabled, setScaleGizmoEnabled] = useState(false);
   const [poseGizmoMode, setPoseGizmoMode] = useState<'translate' | 'rotate'>('translate');
   const project = data?.project;
   const types = typesData?.sceneObjectTypes ?? [];
   const typePublicId = selectedTypePublicId ?? types[0]?.publicId ?? null;
+  const selectedObjectPublicIds = selectedIdsOfKind(selection, 'object');
+  const selectedFixturePublicIds = selectedIdsOfKind(selection, 'fixture');
+  const selectedObjectPublicId = selectedObjectPublicIds.at(-1) ?? null;
+  const selectedFixturePublicId = selectedFixturePublicIds.at(-1) ?? null;
 
   if (loading) {
     return <Loading />;
@@ -168,8 +172,7 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
       });
       const created = result.data?.addProject3dObject.publicId;
       if (created) {
-        setSelectedObjectPublicId(created);
-        setSelectedFixturePublicId(null);
+        setSelection([{ kind: 'object', publicId: created }]);
       }
     } catch {
       notifications.show({
@@ -294,7 +297,9 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
         const { [selectedObjectPublicId]: _removed, ...next } = existing;
         return next;
       });
-      setSelectedObjectPublicId(null);
+      setSelection(current =>
+        current.filter(item => !(item.kind === 'object' && item.publicId === selectedObjectPublicId)),
+      );
     } catch {
       notifications.show({
         color: 'red',
@@ -337,21 +342,19 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
           roomHeight={roomHeight}
           objects={objects}
           fixtures={fixtures}
-          selectedObjectPublicId={selectedObjectPublicId}
-          selectedFixturePublicId={selectedFixturePublicId}
+          selectedObjectPublicIds={selectedObjectPublicIds}
+          selectedFixturePublicIds={selectedFixturePublicIds}
           scaleGizmoEnabled={scaleGizmoEnabled}
           poseGizmoMode={poseGizmoMode}
-          onSelectObject={publicId => {
-            setSelectedObjectPublicId(publicId);
-            if (publicId) {
-              setSelectedFixturePublicId(null);
-            }
+          onSelectObject={(publicId, options) => {
+            setSelection(current =>
+              applySceneSelectionClick(current, publicId ? { kind: 'object', publicId } : null, options.additive),
+            );
           }}
-          onSelectFixture={publicId => {
-            setSelectedFixturePublicId(publicId);
-            if (publicId) {
-              setSelectedObjectPublicId(null);
-            }
+          onSelectFixture={(publicId, options) => {
+            setSelection(current =>
+              applySceneSelectionClick(current, publicId ? { kind: 'fixture', publicId } : null, options.additive),
+            );
           }}
           onObjectCommit={handleCommit}
           onFixtureCommit={handleFixtureCommit}
@@ -393,10 +396,7 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
               void handleAdd();
             }}
             onSelectObject={publicId => {
-              setSelectedObjectPublicId(publicId);
-              if (publicId) {
-                setSelectedFixturePublicId(null);
-              }
+              setSelection(applySceneSelectionClick(selection, publicId ? { kind: 'object', publicId } : null, false));
             }}
             onDeleteObject={() => {
               void handleDelete();
@@ -412,10 +412,7 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
             fixtures={fixtures}
             selectedFixturePublicId={selectedFixturePublicId}
             onSelectFixture={publicId => {
-              setSelectedFixturePublicId(publicId);
-              if (publicId) {
-                setSelectedObjectPublicId(null);
-              }
+              setSelection(applySceneSelectionClick(selection, publicId ? { kind: 'fixture', publicId } : null, false));
             }}
             onPoseChange={handleFixturePoseChange}
           />

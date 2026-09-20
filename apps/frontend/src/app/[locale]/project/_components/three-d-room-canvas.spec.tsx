@@ -47,6 +47,10 @@ vi.mock('./scene-object-pose', () => ({
   applyTransformMatrix: vi.fn(),
   applyVisualSize: vi.fn(),
   bakeInstancePose: vi.fn(),
+  bakeWorldTranslationRotation: vi.fn(),
+  placeSelectionGroup: vi.fn(),
+  releaseSelectionGroup: vi.fn(),
+  syncInstanceParent: vi.fn(),
 }));
 
 vi.mock('@/lib/three/frame-camera', () => ({
@@ -188,8 +192,24 @@ vi.mock('three', () => {
     },
     Group: class {
       public userData: Record<string, unknown> = {};
+      public children: unknown[] = [];
+      public parent: unknown = null;
+      public position = new Position();
+      public quaternion = {
+        identity() {
+          return this;
+        },
+      };
+      public scale = new Position();
       public add() {
         return this;
+      }
+      public attach(object: unknown) {
+        this.children.push(object);
+        return this;
+      }
+      public updateMatrixWorld() {
+        return undefined;
       }
       public getObjectByName() {
         return null;
@@ -550,7 +570,7 @@ describe('ThreeDRoomCanvas', () => {
       />,
     );
     fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
-    expect(onSelectObject).toHaveBeenCalledWith(null);
+    expect(onSelectObject).toHaveBeenCalledWith(null, { additive: false });
   });
 
   it('selects an object even when gizmo helpers are under the pointer', () => {
@@ -587,8 +607,8 @@ describe('ThreeDRoomCanvas', () => {
       />,
     );
     fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
-    expect(onSelectObject).toHaveBeenCalledWith('obj-1');
-    expect(onSelectObject).not.toHaveBeenCalledWith(null);
+    expect(onSelectObject).toHaveBeenCalledWith('obj-1', { additive: false });
+    expect(onSelectObject).not.toHaveBeenCalledWith(null, expect.anything());
   });
 
   it('clears selection when the click misses objects even if gizmos are under the pointer', () => {
@@ -621,7 +641,7 @@ describe('ThreeDRoomCanvas', () => {
       />,
     );
     fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
-    expect(onSelectObject).toHaveBeenCalledWith(null);
+    expect(onSelectObject).toHaveBeenCalledWith(null, { additive: false });
   });
 
   it('does not change selection after orbiting the camera', () => {
@@ -801,7 +821,34 @@ describe('ThreeDRoomCanvas', () => {
       />,
     );
     fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
-    expect(onSelectFixture).toHaveBeenCalledWith('pf-1');
-    expect(onSelectObject).toHaveBeenCalledWith(null);
+    expect(onSelectFixture).toHaveBeenCalledWith('pf-1', { additive: false });
+    expect(onSelectObject).not.toHaveBeenCalled();
+  });
+
+  it('additive-clicks a fixture without clearing the object callback', () => {
+    const onSelectFixture = vi.fn();
+    const onSelectObject = vi.fn();
+    intersectBox.mockReturnValue({});
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            fixture: { model3dPath: null },
+          },
+        ]}
+        onSelectFixture={onSelectFixture}
+        onSelectObject={onSelectObject}
+      />,
+    );
+    fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'), { shiftKey: true });
+    expect(onSelectFixture).toHaveBeenCalledWith('pf-1', { additive: true });
+    expect(onSelectObject).not.toHaveBeenCalled();
   });
 });

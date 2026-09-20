@@ -9,13 +9,21 @@ import { roomGltfUrl, sceneAssetUrl } from '@/lib/graphql/graphql-api-origin';
 import { applyMeshShadowFlags } from '@/lib/three/mesh-shadow-flags';
 import ThreeCanvas, { type ThreeCanvasContext } from '@/lib/three/three-canvas';
 import { ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { BoxGeometry, Group, Mesh, MeshStandardMaterial, type Object3D, Raycaster, Scene, Vector2 } from 'three';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { applyRoomDimensions, applySimpleGroundDimensions } from './room-layout';
-import { pickClosestObjectByBoundingBox } from './scene-object-pick';
-import { applyTransformMatrix, applyVisualSize, bakeInstancePose } from './scene-object-pose';
+import { pickClosestSceneObject } from './scene-object-pick';
+import {
+  applyTransformMatrix,
+  applyVisualSize,
+  bakeInstancePose,
+  bakeWorldTranslationRotation,
+  placeSelectionGroup,
+  releaseSelectionGroup,
+  syncInstanceParent,
+} from './scene-object-pose';
 import classes from './three-d-room-canvas.module.css';
 
 export type ThreeDSceneObject = {
@@ -39,6 +47,10 @@ export type ThreeDProjectFixture = {
   };
 };
 
+export type SceneSelectOptions = {
+  additive: boolean;
+};
+
 export type ThreeDRoomCanvasProperties = {
   environmentType: ProjectEnvironmentType;
   roomWidth: number;
@@ -48,10 +60,12 @@ export type ThreeDRoomCanvasProperties = {
   fixtures?: ThreeDProjectFixture[];
   selectedObjectPublicId?: string | null;
   selectedFixturePublicId?: string | null;
+  selectedObjectPublicIds?: string[];
+  selectedFixturePublicIds?: string[];
   scaleGizmoEnabled?: boolean;
   poseGizmoMode?: 'translate' | 'rotate';
-  onSelectObject?: (publicId: string | null) => void;
-  onSelectFixture?: (publicId: string | null) => void;
+  onSelectObject?: (publicId: string | null, options: SceneSelectOptions) => void;
+  onSelectFixture?: (publicId: string | null, options: SceneSelectOptions) => void;
   onObjectCommit?: (
     publicId: string,
     pose: { transform: number[]; sizeX: number | null; sizeY: number | null; sizeZ: number | null },
@@ -74,6 +88,8 @@ const ThreeDRoomCanvas = ({
   fixtures = EMPTY_PROJECT_FIXTURES,
   selectedObjectPublicId = null,
   selectedFixturePublicId = null,
+  selectedObjectPublicIds,
+  selectedFixturePublicIds,
   scaleGizmoEnabled = false,
   poseGizmoMode = 'translate',
   onSelectObject,
@@ -81,12 +97,27 @@ const ThreeDRoomCanvas = ({
   onObjectCommit,
   onFixtureCommit,
 }: ThreeDRoomCanvasProperties) => {
+  const selectedObjectKey = (selectedObjectPublicIds ?? (selectedObjectPublicId ? [selectedObjectPublicId] : [])).join(
+    ',',
+  );
+  const selectedFixtureKey = (
+    selectedFixturePublicIds ?? (selectedFixturePublicId ? [selectedFixturePublicId] : [])
+  ).join(',');
+  const selectedObjectIds = useMemo(
+    () => (selectedObjectKey === '' ? [] : selectedObjectKey.split(',')),
+    [selectedObjectKey],
+  );
+  const selectedFixtureIds = useMemo(
+    () => (selectedFixtureKey === '' ? [] : selectedFixtureKey.split(',')),
+    [selectedFixtureKey],
+  );
   const roomRef = useRef<Object3D | null>(null);
   const groundRef = useRef<Mesh | null>(null);
   const translateControlsRef = useRef<TransformControls | null>(null);
   const rotateControlsRef = useRef<TransformControls | null>(null);
   const scaleControlsRef = useRef<TransformControls | null>(null);
   const sceneRef = useRef<Scene | null>(null);
+  const selectionGroupRef = useRef<Group | null>(null);
   const instancesRef = useRef(new Map<string, Group>());
   const onSelectObjectRef = useRef(onSelectObject);
   const onSelectFixtureRef = useRef(onSelectFixture);
@@ -116,6 +147,10 @@ const ThreeDRoomCanvas = ({
       sceneRef.current = scene;
       const instanceRoots = instancesRef.current;
       frameObjectRef.current = frameObject;
+      const selectionGroup = new Group();
+      selectionGroup.userData.isSelectionGroup = true;
+      scene.add(selectionGroup);
+      selectionGroupRef.current = selectionGroup;
 
       type GizmoEntry = {
         transformControls: TransformControls;
@@ -155,22 +190,56 @@ const ThreeDRoomCanvas = ({
 
       const isAnyGizmoDragging = () => gizmoEntries.some(entry => entry.transformControls.dragging);
 
-      const commitGizmoPose = (transformControls: TransformControls) => {
-        const object = transformControls.object;
-        const visual = object.getObjectByName('visual');
+      const commitMemberPose = (target: Object3D) => {
+        const visual = target.getObjectByName('visual');
         if (!visual) {
           return;
         }
-        const pose = bakeInstancePose(object, visual, Boolean(object.userData.isScalable));
-        const objectPublicId = object.userData.project3dObjectId as string | undefined;
+        const objectPublicId = target.userData.project3dObjectId as string | undefined;
         if (typeof objectPublicId === 'string') {
+          const pose = bakeInstancePose(target, visual, Boolean(target.userData.isScalable));
           onObjectCommitRef.current?.(objectPublicId, pose);
           return;
         }
-        const fixturePublicId = object.userData.projectFixtureId as string | undefined;
+        const fixturePublicId = target.userData.projectFixtureId as string | undefined;
         if (typeof fixturePublicId === 'string') {
+          const pose = bakeInstancePose(target, visual, false);
           onFixtureCommitRef.current?.(fixturePublicId, { transform: pose.transform });
         }
+      };
+
+      const commitMemberWorldPose = (target: Object3D) => {
+        const visual = target.getObjectByName('visual');
+        if (!visual) {
+          return;
+        }
+        const transform = bakeWorldTranslationRotation(target);
+        const objectPublicId = target.userData.project3dObjectId as string | undefined;
+        if (typeof objectPublicId === 'string') {
+          const isScalable = Boolean(target.userData.isScalable);
+          onObjectCommitRef.current?.(objectPublicId, {
+            transform,
+            sizeX: isScalable ? visual.scale.x : null,
+            sizeY: isScalable ? visual.scale.y : null,
+            sizeZ: isScalable ? visual.scale.z : null,
+          });
+          return;
+        }
+        const fixturePublicId = target.userData.projectFixtureId as string | undefined;
+        if (typeof fixturePublicId === 'string') {
+          onFixtureCommitRef.current?.(fixturePublicId, { transform });
+        }
+      };
+
+      const commitGizmoPose = (transformControls: TransformControls) => {
+        const object = transformControls.object;
+        if (object.userData.isSelectionGroup) {
+          for (const child of [...object.children]) {
+            commitMemberWorldPose(child);
+          }
+          return;
+        }
+        commitMemberPose(object);
       };
 
       let poseSyncFrame = 0;
@@ -305,19 +374,17 @@ const ThreeDRoomCanvas = ({
         pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
         raycaster.setFromCamera(pointer, camera);
         const roots = [...instancesRef.current.values()];
-        const picked = pickClosestObjectByBoundingBox(raycaster.ray, roots);
+        const picked = pickClosestSceneObject(raycaster, roots);
+        const options = { additive: event.shiftKey || event.ctrlKey || event.metaKey };
         if (typeof picked?.userData.projectFixtureId === 'string') {
-          onSelectFixtureRef.current?.(picked.userData.projectFixtureId);
-          onSelectObjectRef.current?.(null);
+          onSelectFixtureRef.current?.(picked.userData.projectFixtureId, options);
           return;
         }
         if (typeof picked?.userData.project3dObjectId === 'string') {
-          onSelectObjectRef.current?.(picked.userData.project3dObjectId);
-          onSelectFixtureRef.current?.(null);
+          onSelectObjectRef.current?.(picked.userData.project3dObjectId, options);
           return;
         }
-        onSelectObjectRef.current?.(null);
-        onSelectFixtureRef.current?.(null);
+        onSelectObjectRef.current?.(null, { additive: false });
       };
       host.addEventListener('pointerdown', onPointerDown);
       host.addEventListener('pointerup', onPointerUp);
@@ -357,6 +424,10 @@ const ThreeDRoomCanvas = ({
         translateControlsRef.current = null;
         rotateControlsRef.current = null;
         scaleControlsRef.current = null;
+        if (selectionGroupRef.current) {
+          scene.remove(selectionGroupRef.current);
+        }
+        selectionGroupRef.current = null;
         sceneRef.current = null;
         frameObjectRef.current = null;
       };
@@ -392,9 +463,12 @@ const ThreeDRoomCanvas = ({
       }
     }
 
-    const isDraggingSelected = (publicId: string | null) =>
-      Boolean(publicId) &&
+    const isGizmoDragging = () =>
       [translateControlsRef, rotateControlsRef, scaleControlsRef].some(ref => ref.current?.dragging);
+    const selectionGroup = selectionGroupRef.current;
+    if (selectionGroup && !isGizmoDragging()) {
+      releaseSelectionGroup(selectionGroup, scene);
+    }
 
     for (const object of objects) {
       const instanceKey = objectInstanceKey(object.publicId);
@@ -422,9 +496,9 @@ const ThreeDRoomCanvas = ({
           });
         }
       }
-      scene.add(root);
+      syncInstanceParent(scene, root, selectionGroup);
       root.userData.isScalable = object.sceneObjectType.isScalable;
-      if (!(object.publicId === selectedObjectPublicId && isDraggingSelected(selectedObjectPublicId))) {
+      if (!(selectionGroup && root.parent === selectionGroup)) {
         applyTransformMatrix(root, object.transform);
         const visual = root.getObjectByName('visual');
         if (visual) {
@@ -452,45 +526,63 @@ const ThreeDRoomCanvas = ({
           capturedRoot.add(gltf.scene);
         });
       }
-      scene.add(root);
+      syncInstanceParent(scene, root, selectionGroup);
       root.userData.isScalable = false;
-      if (!(fixture.publicId === selectedFixturePublicId && isDraggingSelected(selectedFixturePublicId))) {
+      if (!(selectionGroup && root.parent === selectionGroup)) {
         applyTransformMatrix(root, fixture.transform);
       }
     }
-  }, [objects, fixtures, selectedObjectPublicId, selectedFixturePublicId]);
+  }, [objects, fixtures, selectedObjectIds, selectedFixtureIds]);
 
   useEffect(() => {
     const translateControls = translateControlsRef.current;
     const rotateControls = rotateControlsRef.current;
     const scaleControls = scaleControlsRef.current;
-    if (!translateControls || !rotateControls || !scaleControls) {
+    const scene = sceneRef.current;
+    const selectionGroup = selectionGroupRef.current;
+    if (!translateControls || !rotateControls || !scaleControls || !scene || !selectionGroup) {
       return;
     }
-    const selected = selectedFixturePublicId
-      ? instancesRef.current.get(fixtureInstanceKey(selectedFixturePublicId))
-      : selectedObjectPublicId
-        ? instancesRef.current.get(objectInstanceKey(selectedObjectPublicId))
-        : undefined;
-    if (selected) {
+    if ([translateControls, rotateControls, scaleControls].some(controls => controls.dragging)) {
+      return;
+    }
+    releaseSelectionGroup(selectionGroup, scene);
+    const members = [
+      ...selectedObjectIds.map(publicId => instancesRef.current.get(objectInstanceKey(publicId))),
+      ...selectedFixtureIds.map(publicId => instancesRef.current.get(fixtureInstanceKey(publicId))),
+    ].filter((root): root is Group => Boolean(root));
+    const attachPoseGizmo = (target: Object3D) => {
       if (poseGizmoMode === 'translate') {
-        translateControls.attach(selected);
+        translateControls.attach(target);
         rotateControls.detach();
       } else {
         translateControls.detach();
-        rotateControls.attach(selected);
+        rotateControls.attach(target);
       }
+    };
+    if (members.length === 0) {
+      translateControls.detach();
+      rotateControls.detach();
+      scaleControls.detach();
+      return;
+    }
+    if (members.length === 1) {
+      const selected = members[0];
+      if (!selected) {
+        return;
+      }
+      attachPoseGizmo(selected);
       if (scaleGizmoEnabled && Boolean(selected.userData.isScalable)) {
         scaleControls.attach(selected);
       } else {
         scaleControls.detach();
       }
-    } else {
-      translateControls.detach();
-      rotateControls.detach();
-      scaleControls.detach();
+      return;
     }
-  }, [selectedObjectPublicId, selectedFixturePublicId, scaleGizmoEnabled, poseGizmoMode, objects, fixtures]);
+    placeSelectionGroup(selectionGroup, members);
+    attachPoseGizmo(selectionGroup);
+    scaleControls.detach();
+  }, [selectedObjectIds, selectedFixtureIds, scaleGizmoEnabled, poseGizmoMode, objects, fixtures]);
 
   return <ThreeCanvas className={classes.host} testId="three-d-room-canvas" showOrientationGizmo onReady={onReady} />;
 };

@@ -1,6 +1,9 @@
 import { Box3, type Object3D, type PerspectiveCamera, Vector3 } from 'three';
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+const MIN_ORBIT_DISTANCE_M = 0.05;
+const CAMERA_NEAR_M = 0.01;
+
 export const frameCameraOnObject = (camera: PerspectiveCamera, controls: OrbitControls, object: Object3D) => {
   const bounds = new Box3().setFromObject(object);
   if (bounds.isEmpty()) {
@@ -15,11 +18,11 @@ export const frameCameraOnObject = (camera: PerspectiveCamera, controls: OrbitCo
   const distance = fitDistance * 1.35;
 
   camera.position.set(center.x - distance * 0.22, center.y + distance * 0.22, center.z + distance * 0.8);
-  camera.near = Math.max(distance / 100, 0.01);
+  camera.near = CAMERA_NEAR_M;
   camera.far = Math.max(distance * 100, 100);
   camera.updateProjectionMatrix();
   controls.target.copy(center);
-  controls.minDistance = distance * 0.25;
+  controls.minDistance = MIN_ORBIT_DISTANCE_M;
   controls.maxDistance = distance * 4;
   controls.update();
 };
