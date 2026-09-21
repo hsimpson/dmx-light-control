@@ -23,7 +23,7 @@ updates:
           - "react-*"
 
   - package-ecosystem: docker
-    directory: /
+    directory: /infra
     schedule:
       interval: weekly
       day: sunday
