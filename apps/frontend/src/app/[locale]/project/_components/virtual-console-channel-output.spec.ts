@@ -4,6 +4,7 @@ import {
   controlToDmxValue,
   dmxChannelUpdates,
   publishVirtualConsoleValue,
+  resetVirtualConsoleChannelOutput,
   type VirtualConsoleBoundFixture,
 } from './virtual-console-channel-output';
 
@@ -41,6 +42,7 @@ const fixtures: VirtualConsoleBoundFixture[] = [
 describe('virtual console channel output', () => {
   beforeEach(() => {
     setChannels.mockClear();
+    resetVirtualConsoleChannelOutput();
   });
 
   it('maps percentage sliders onto 0-255 and fans one value across bound channels', () => {
@@ -81,6 +83,42 @@ describe('virtual console channel output', () => {
     expect(setChannels).toHaveBeenCalledWith([{ channel: 11, value: 255 }]);
     publishVirtualConsoleValue(control, 0, fixtures);
     expect(setChannels).toHaveBeenLastCalledWith([{ channel: 11, value: 0 }]);
+  });
+
+  it('restores the slider level when a button on the same channel is released', () => {
+    const slider = {
+      ...createControl('slider', 0, 0),
+      channelBindings: [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: RED_ID }],
+    };
+    const button = {
+      ...createControl('button', 0, 0),
+      channelBindings: [
+        { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: RED_ID },
+        { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: GREEN_ID },
+      ],
+    };
+    publishVirtualConsoleValue(slider, 100, fixtures);
+    publishVirtualConsoleValue(button, 255, fixtures);
+    publishVirtualConsoleValue(button, 0, fixtures);
+    expect(setChannels).toHaveBeenLastCalledWith([
+      { channel: 10, value: 100 },
+      { channel: 11, value: 0 },
+    ]);
+  });
+
+  it('keeps full when another button on the same channel is still held', () => {
+    const held = {
+      ...createControl('button', 0, 0),
+      channelBindings: [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: RED_ID }],
+    };
+    const released = {
+      ...createControl('button', 0, 0),
+      channelBindings: [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: RED_ID }],
+    };
+    publishVirtualConsoleValue(held, 255, fixtures);
+    publishVirtualConsoleValue(released, 255, fixtures);
+    publishVirtualConsoleValue(released, 0, fixtures);
+    expect(setChannels).toHaveBeenLastCalledWith([{ channel: 10, value: 255 }]);
   });
 
   it('does not write when the control has no resolvable channels', () => {

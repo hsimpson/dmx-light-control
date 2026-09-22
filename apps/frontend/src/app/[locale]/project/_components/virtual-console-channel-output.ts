@@ -45,14 +45,52 @@ export const dmxChannelUpdates = (
   return updates;
 };
 
+type ChannelContribution = {
+  channels: Set<number>;
+  value: number;
+};
+
+const contributions = new Map<string, ChannelContribution>();
+
+export const resetVirtualConsoleChannelOutput = (): void => {
+  contributions.clear();
+};
+
+const rememberContribution = (controlId: string, updates: { channel: number; value: number }[]): void => {
+  const [first] = updates;
+  if (!first) {
+    contributions.delete(controlId);
+    return;
+  }
+  contributions.set(controlId, {
+    channels: new Set(updates.map(update => update.channel)),
+    value: first.value,
+  });
+};
+
+const heldLevel = (channel: number): number => {
+  let level = 0;
+  for (const contribution of contributions.values()) {
+    if (contribution.channels.has(channel)) {
+      level = Math.max(level, contribution.value);
+    }
+  }
+  return level;
+};
+
 export const publishVirtualConsoleValue = (
   control: VirtualConsoleControl,
   rawValue: number,
   fixtures: readonly VirtualConsoleBoundFixture[],
 ): void => {
   const updates = dmxChannelUpdates(control, rawValue, fixtures);
+  rememberContribution(control.id, updates);
   if (updates.length === 0) {
     return;
   }
-  getDmxWebsocketClient()?.setChannels(updates);
+  const output =
+    control.type === 'button' && updates.every(update => update.value === 0)
+      ? updates.map(update => ({ channel: update.channel, value: heldLevel(update.channel) }))
+      : updates;
+  getDmxWebsocketClient()?.setChannels(output);
 };
