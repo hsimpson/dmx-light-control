@@ -22,11 +22,11 @@ updates:
           - "react"
           - "react-*"
 
-  - package-ecosystem: docker
-    directory: /infra
-    schedule:
-      interval: weekly
-      day: sunday
+  # - package-ecosystem: docker
+  #   directory: /infra
+  #   schedule:
+  #     interval: weekly
+  #     day: sunday
 
   - package-ecosystem: github-actions
     directory: /
