@@ -118,7 +118,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "clsx": "^2.1.1",
-    "drizzle-orm": "1.0.0-rc.4",
+    "drizzle-orm": "1.0.0-rc.5-5935859",
     "eventemitter2": "6.4.9",
     "graphql": "^17.0.2",
     "graphql-scalars": "^2.0.0",
