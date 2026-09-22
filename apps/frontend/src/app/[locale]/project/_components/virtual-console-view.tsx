@@ -15,6 +15,7 @@ import { ArrowsOutIcon, PlusIcon, XIcon } from '@phosphor-icons/react';
 import { useParams } from 'next/navigation';
 import { KeyboardEvent, PointerEvent, useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
 import { publishVirtualConsoleValue } from './virtual-console-channel-output';
+import VirtualConsoleChannelSidebar from './virtual-console-channel-sidebar';
 import {
   notifyVirtualConsoleSaved,
   reloadVirtualConsolePlayWindow,
@@ -52,11 +53,12 @@ type VirtualConsoleViewProperties = {
   mode?: 'edit' | 'play';
 };
 
-const PAGES_FR = 4;
-const SIDEBAR_FR = 1;
-const SPLIT_TOTAL_FR = PAGES_FR + SIDEBAR_FR;
 const SPLITTER_PX = 6;
-const MIN_PANE_RATIO = 0.2;
+const DEFAULT_SIDEBAR_PX = 320;
+const MIN_PANE_PX = 220;
+const MIN_CANVAS_PX = 160;
+
+type VirtualConsoleSplitPane = 'channel' | 'sidebar';
 
 const documentsEqual = (left: VirtualConsoleDocument, right: VirtualConsoleDocument) =>
   JSON.stringify(left) === JSON.stringify(right);
@@ -78,9 +80,9 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
   const clipboardRef = useRef<VirtualConsoleControl | null>(null);
   const pastePointerRef = useRef<{ x: number; y: number } | null>(null);
   const splitRef = useRef<HTMLDivElement>(null);
-  const splitDraggingRef = useRef(false);
-  const [pagesFr, setPagesFr] = useState(PAGES_FR);
-  const [sidebarFr, setSidebarFr] = useState(SIDEBAR_FR);
+  const splitDraggingRef = useRef<VirtualConsoleSplitPane | null>(null);
+  const [channelWidth, setChannelWidth] = useState(DEFAULT_SIDEBAR_PX);
+  const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_PX);
   const { data, loading, refetch } = useQuery(GetProjectDocument, {
     variables: { publicId: projectPublicId },
     skip: !projectPublicId,
@@ -505,38 +507,51 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     window.open(`/${locale}/project/${projectPublicId}/console/popout`, 'virtual-console', 'noopener,noreferrer');
   };
 
-  const applySplitFromClientX = (clientX: number) => {
+  const showChannelSidebar = selectedControl?.type === 'button' || selectedControl?.type === 'slider';
+
+  const applyPaneWidth = (pane: VirtualConsoleSplitPane, clientX: number) => {
     const split = splitRef.current;
     if (!split) {
       return;
     }
     const rect = split.getBoundingClientRect();
-    if (rect.width <= SPLITTER_PX) {
+    const other = pane === 'sidebar' ? (showChannelSidebar ? channelWidth : 0) : sidebarWidth;
+    const splitters = (showChannelSidebar ? 2 : 1) * SPLITTER_PX;
+    const max = Math.max(MIN_PANE_PX, rect.width - other - splitters - MIN_CANVAS_PX);
+    const next = pane === 'sidebar' ? rect.right - clientX : rect.right - clientX - sidebarWidth - SPLITTER_PX;
+    const width = clamp(next, MIN_PANE_PX, max);
+    if (pane === 'sidebar') {
+      setSidebarWidth(width);
       return;
     }
-    const ratio = clamp((clientX - rect.left) / rect.width, MIN_PANE_RATIO, 1 - MIN_PANE_RATIO);
-    setPagesFr(ratio * SPLIT_TOTAL_FR);
-    setSidebarFr((1 - ratio) * SPLIT_TOTAL_FR);
+    setChannelWidth(width);
   };
+
+  const paneFromEvent = (event: { currentTarget: EventTarget | null }): VirtualConsoleSplitPane =>
+    event.currentTarget instanceof HTMLElement && event.currentTarget.dataset.pane === 'channel'
+      ? 'channel'
+      : 'sidebar';
 
   const handleSplitterPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
-    splitDraggingRef.current = true;
+    const pane = paneFromEvent(event);
+    splitDraggingRef.current = pane;
     if (typeof event.currentTarget.setPointerCapture === 'function') {
       event.currentTarget.setPointerCapture(event.pointerId);
     }
-    applySplitFromClientX(event.clientX);
+    applyPaneWidth(pane, event.clientX);
   };
 
   const handleSplitterPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (!splitDraggingRef.current) {
+    const pane = paneFromEvent(event);
+    if (splitDraggingRef.current !== pane) {
       return;
     }
-    applySplitFromClientX(event.clientX);
+    applyPaneWidth(pane, event.clientX);
   };
 
   const handleSplitterPointerUp = () => {
-    splitDraggingRef.current = false;
+    splitDraggingRef.current = null;
   };
 
   const handleSplitterKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -548,9 +563,12 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     if (!split) {
       return;
     }
+    const pane = paneFromEvent(event);
     const rect = split.getBoundingClientRect();
     const delta = event.key === 'ArrowLeft' ? -16 : 16;
-    applySplitFromClientX(rect.left + (pagesFr / SPLIT_TOTAL_FR) * rect.width + delta);
+    const currentX =
+      pane === 'sidebar' ? rect.right - sidebarWidth : rect.right - sidebarWidth - SPLITTER_PX - channelWidth;
+    applyPaneWidth(pane, currentX + delta);
   };
 
   if (loading && !data) {
@@ -690,6 +708,15 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     </div>
   );
 
+  const channelControl =
+    selectedControl?.type === 'button' || selectedControl?.type === 'slider' ? selectedControl : undefined;
+  const patchSelectedControl = (patch: Partial<VirtualConsoleControl>) => {
+    if (!activePage || selection.kind !== 'control') {
+      return;
+    }
+    patchActivePageControls(updateControlInTree(activePage.controls, selection.controlId, patch));
+  };
+
   return (
     <Box
       className={mode === 'play' ? classes.popoutRoot : classes.root}
@@ -706,16 +733,48 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
           ref={splitRef}
           className={classes.split}
           data-testid="virtual-console-split"
-          style={{ gridTemplateColumns: `${pagesFr}fr ${SPLITTER_PX}px ${sidebarFr}fr` }}
+          style={{
+            gridTemplateColumns: channelControl
+              ? `minmax(0, 1fr) ${SPLITTER_PX}px ${channelWidth}px ${SPLITTER_PX}px ${sidebarWidth}px`
+              : `minmax(0, 1fr) ${SPLITTER_PX}px ${sidebarWidth}px`,
+          }}
         >
           {pagesPane}
+          {channelControl ? (
+            <div
+              aria-label={t({
+                id: 'ProjectDetail.virtualConsole.resizeChannelSidebar',
+                defaultMessage: 'Resize channel sidebar',
+              })}
+              aria-orientation="vertical"
+              aria-valuemax={2000}
+              aria-valuemin={MIN_PANE_PX}
+              aria-valuenow={channelWidth}
+              className={classes.splitter}
+              data-pane="channel"
+              role="separator"
+              tabIndex={0}
+              onKeyDown={handleSplitterKeyDown}
+              onPointerDown={handleSplitterPointerDown}
+              onPointerMove={handleSplitterPointerMove}
+              onPointerUp={handleSplitterPointerUp}
+            />
+          ) : null}
+          {channelControl ? (
+            <VirtualConsoleChannelSidebar
+              control={channelControl}
+              fixtures={data?.project?.projectFixtures ?? []}
+              onPatch={patchSelectedControl}
+            />
+          ) : null}
           <div
             aria-label={t({ id: 'ProjectDetail.virtualConsole.resizePanels', defaultMessage: 'Resize panels' })}
             aria-orientation="vertical"
-            aria-valuemax={80}
-            aria-valuemin={20}
-            aria-valuenow={Math.round((pagesFr / SPLIT_TOTAL_FR) * 100)}
+            aria-valuemax={2000}
+            aria-valuemin={MIN_PANE_PX}
+            aria-valuenow={sidebarWidth}
             className={classes.splitter}
+            data-pane="sidebar"
             role="separator"
             tabIndex={0}
             onKeyDown={handleSplitterKeyDown}
@@ -726,7 +785,6 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
           <VirtualConsoleSidebar
             dirty={dirty}
             document={draft}
-            fixtures={data?.project?.projectFixtures ?? []}
             saving={saving}
             selectedControl={selectedControl}
             selectedPage={selectedPage}
@@ -734,12 +792,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
             onCanvasSizeChange={(field, value) => {
               setDraft(current => ({ ...current, [field]: value }));
             }}
-            onControlPatch={patch => {
-              if (!activePage || selection.kind !== 'control') {
-                return;
-              }
-              patchActivePageControls(updateControlInTree(activePage.controls, selection.controlId, patch));
-            }}
+            onControlPatch={patchSelectedControl}
             onDeleteControl={handleDeleteControl}
             onPageNameChange={name => {
               if (!selectedPage) {

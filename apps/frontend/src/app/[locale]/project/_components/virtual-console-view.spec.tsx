@@ -159,7 +159,7 @@ describe('VirtualConsoleView', () => {
     expect(screen.queryByTestId('virtual-console-split')).not.toBeInTheDocument();
   });
 
-  it('starts with a 4/1 split and resizes when the splitter is dragged', async () => {
+  it('starts with a 320px properties sidebar and resizes it when the splitter is dragged', async () => {
     renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
       apolloMocks: [
         {
@@ -170,7 +170,7 @@ describe('VirtualConsoleView', () => {
     });
 
     const split = await screen.findByTestId('virtual-console-split');
-    expect(split).toHaveStyle({ gridTemplateColumns: '4fr 6px 1fr' });
+    expect(split).toHaveStyle({ gridTemplateColumns: 'minmax(0, 1fr) 6px 320px' });
     expect(screen.getByTestId('virtual-console-canvas')).toHaveStyle({ minHeight: '100%' });
 
     const splitter = screen.getByRole('separator', { name: 'Resize panels' });
@@ -180,17 +180,129 @@ describe('VirtualConsoleView', () => {
       top: 0,
       left: 0,
       bottom: 400,
-      right: 400,
-      width: 400,
+      right: 1000,
+      width: 1000,
       height: 400,
       toJSON: () => ({}),
     });
 
-    fireEvent.pointerDown(splitter, { clientX: 300, pointerId: 1 });
-    fireEvent.pointerMove(splitter, { clientX: 120, pointerId: 1 });
+    fireEvent.pointerDown(splitter, { clientX: 700, pointerId: 1 });
+    fireEvent.pointerMove(splitter, { clientX: 600, pointerId: 1 });
     fireEvent.pointerUp(splitter, { pointerId: 1 });
 
-    expect(split).toHaveStyle({ gridTemplateColumns: '1.5fr 6px 3.5fr' });
+    expect(split).toHaveStyle({ gridTemplateColumns: 'minmax(0, 1fr) 6px 400px' });
+  });
+
+  it('shows the channel sidebar only for a selected button or slider', async () => {
+    const buttonId = '22222222-2222-4222-8222-222222222222';
+    const frameId = '33333333-3333-4333-8333-333333333333';
+    const sliderId = '44444444-4444-4444-8444-444444444444';
+    const controlFields = {
+      backgroundColor: '#111111',
+      borderWidth: null,
+      borderColor: null,
+      orientation: null,
+      foregroundColor: null,
+      fontFamily: null,
+      fontSize: null,
+      fontWeight: null,
+      valueType: null,
+      channelBindings: null,
+      children: [],
+    };
+    const projectWithControls = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto' as const,
+                id: buttonId,
+                type: 'button',
+                x: 40,
+                y: 50,
+                width: 80,
+                height: 40,
+                label: 'Go',
+                ...controlFields,
+              },
+              {
+                __typename: 'VirtualConsoleControlDto' as const,
+                id: frameId,
+                type: 'frame',
+                x: 200,
+                y: 40,
+                width: 220,
+                height: 180,
+                label: 'Group',
+                ...controlFields,
+                backgroundColor: '#1a1b1e',
+              },
+              {
+                __typename: 'VirtualConsoleControlDto' as const,
+                id: sliderId,
+                type: 'slider',
+                x: 20,
+                y: 200,
+                width: 56,
+                height: 160,
+                label: 'Level',
+                ...controlFields,
+              },
+            ],
+          },
+        ],
+      },
+    };
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithControls } },
+        },
+      ],
+    });
+
+    const split = await screen.findByTestId('virtual-console-split');
+    expect(screen.queryByTestId('virtual-console-channel-sidebar')).not.toBeInTheDocument();
+    expect(screen.queryByRole('separator', { name: 'Resize channel sidebar' })).not.toBeInTheDocument();
+    expect(split).toHaveStyle({ gridTemplateColumns: 'minmax(0, 1fr) 6px 320px' });
+
+    await user.click(screen.getByTestId(`virtual-console-control-${buttonId}`));
+    expect(screen.getByTestId('virtual-console-channel-sidebar')).toBeInTheDocument();
+    expect(screen.getByRole('separator', { name: 'Resize channel sidebar' })).toBeInTheDocument();
+    expect(split).toHaveStyle({ gridTemplateColumns: 'minmax(0, 1fr) 6px 320px 6px 320px' });
+
+    vi.spyOn(split, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      bottom: 720,
+      right: 1200,
+      width: 1200,
+      height: 720,
+      toJSON: () => ({}),
+    });
+    const channelSplitter = screen.getByRole('separator', { name: 'Resize channel sidebar' });
+    fireEvent.pointerDown(channelSplitter, { clientX: 474, pointerId: 2 });
+    fireEvent.pointerUp(channelSplitter, { pointerId: 2 });
+    expect(split).toHaveStyle({ gridTemplateColumns: 'minmax(0, 1fr) 6px 400px 6px 320px' });
+
+    fireEvent.pointerDown(screen.getByRole('separator', { name: 'Resize panels' }), { clientX: 920, pointerId: 3 });
+    fireEvent.pointerUp(screen.getByRole('separator', { name: 'Resize panels' }), { pointerId: 3 });
+    expect(split).toHaveStyle({ gridTemplateColumns: 'minmax(0, 1fr) 6px 400px 6px 280px' });
+
+    await user.click(screen.getByTestId(`virtual-console-control-${frameId}`));
+    expect(screen.queryByTestId('virtual-console-channel-sidebar')).not.toBeInTheDocument();
+    expect(split).toHaveStyle({ gridTemplateColumns: 'minmax(0, 1fr) 6px 280px' });
+
+    await user.click(screen.getByTestId(`virtual-console-control-${sliderId}`));
+    expect(screen.getByTestId('virtual-console-channel-sidebar')).toBeInTheDocument();
+    expect(screen.getByText('No patched fixtures')).toBeInTheDocument();
   });
 
   it('resizes a selected control from every handle', async () => {
@@ -712,18 +824,18 @@ describe('VirtualConsoleView', () => {
       top: 0,
       left: 0,
       bottom: 400,
-      right: 400,
-      width: 400,
+      right: 1000,
+      width: 1000,
       height: 400,
       toJSON: () => ({}),
     });
 
     fireEvent.pointerMove(splitter, { clientX: 50, pointerId: 1 });
-    expect(split).toHaveStyle({ gridTemplateColumns: '4fr 6px 1fr' });
+    expect(split).toHaveStyle({ gridTemplateColumns: 'minmax(0, 1fr) 6px 320px' });
 
     fireEvent.keyDown(splitter, { key: 'a' });
     fireEvent.keyDown(splitter, { key: 'ArrowLeft' });
-    expect(split).not.toHaveStyle({ gridTemplateColumns: '4fr 6px 1fr' });
+    expect(split).not.toHaveStyle({ gridTemplateColumns: 'minmax(0, 1fr) 6px 320px' });
     fireEvent.keyDown(splitter, { key: 'ArrowRight' });
   });
 
