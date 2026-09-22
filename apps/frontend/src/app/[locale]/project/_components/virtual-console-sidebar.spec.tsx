@@ -2,7 +2,7 @@ import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { fireEvent, screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { createControl, createDefaultVirtualConsoleDocument } from './virtual-console-document';
-import VirtualConsoleSidebar from './virtual-console-sidebar';
+import VirtualConsoleSidebar, { type VirtualConsoleAssignableFixture } from './virtual-console-sidebar';
 
 describe('virtual console sidebar', () => {
   beforeAll(() => {
@@ -92,6 +92,76 @@ describe('virtual console sidebar', () => {
 
     await user.click(screen.getByRole('button', { name: 'Delete control' }));
     expect(onDeleteControl).toHaveBeenCalledTimes(1);
+  });
+
+  it('assigns and removes fixture channels on the selected slider', async () => {
+    const control = createControl('slider', 0, 0);
+    const document = createDefaultVirtualConsoleDocument();
+    const onControlPatch = vi.fn();
+    const fixtures: VirtualConsoleAssignableFixture[] = [
+      {
+        publicId: 'pf-b',
+        startAddress: 20,
+        fixture: { name: 'Wash', fixtureVendor: { name: 'Acme' } },
+        channelMode: {
+          name: '2ch',
+          fixtureChannelAssignments: [
+            {
+              publicId: 'assign-dimmer',
+              channelNumber: 1,
+              fixtureChannelDefinition: { name: 'Dimmer', preset: 'IntensityDimmer' },
+            },
+          ],
+        },
+      },
+      {
+        publicId: 'pf-a',
+        startAddress: 1,
+        fixture: { name: 'Par', fixtureVendor: { name: 'Generic' } },
+        channelMode: {
+          name: '3ch',
+          fixtureChannelAssignments: [
+            {
+              publicId: 'assign-red',
+              channelNumber: 1,
+              fixtureChannelDefinition: { name: 'Red', preset: 'IntensityRed' },
+            },
+          ],
+        },
+      },
+    ];
+    const { user } = renderWithProviders(
+      <VirtualConsoleSidebar
+        document={document}
+        dirty={false}
+        fixtures={fixtures}
+        onCanvasSizeChange={vi.fn()}
+        onControlPatch={onControlPatch}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={{
+          ...control,
+          channelBindings: [{ projectFixturePublicId: 'pf-missing', channelAssignmentPublicId: 'assign-missing' }],
+        }}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'control', controlId: control.id }}
+      />,
+    );
+
+    await user.click(screen.getByRole('checkbox', { name: '1 · Red · IntensityRed' }));
+    expect(onControlPatch).toHaveBeenCalledWith({
+      channelBindings: [
+        { projectFixturePublicId: 'pf-missing', channelAssignmentPublicId: 'assign-missing' },
+        { projectFixturePublicId: 'pf-a', channelAssignmentPublicId: 'assign-red' },
+      ],
+    });
+
+    onControlPatch.mockClear();
+    await user.click(screen.getByRole('button', { name: 'Remove' }));
+    expect(onControlPatch).toHaveBeenCalledWith({ channelBindings: undefined });
   });
 
   it('reports snap changes from the default of 1 pixel', async () => {

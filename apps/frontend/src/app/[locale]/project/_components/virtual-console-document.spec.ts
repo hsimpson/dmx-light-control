@@ -48,6 +48,32 @@ describe('virtual-console-document', () => {
     expect(cloned.pages[0]?.controls[0]?.children).toBeUndefined();
   });
 
+  it('keeps channel bindings and drops an empty list', () => {
+    const button = {
+      ...createControl('button', 0, 0),
+      channelBindings: [
+        {
+          projectFixturePublicId: '55555555-5555-4555-8555-555555555555',
+          channelAssignmentPublicId: '66666666-6666-4666-8666-666666666666',
+        },
+      ],
+    };
+    const cloned = cloneVirtualConsoleDocument({
+      schemaVersion: 1,
+      width: 1280,
+      height: 720,
+      pages: [
+        {
+          id: 'page',
+          name: 'Page 1',
+          controls: [button, { ...createControl('slider', 0, 0), channelBindings: undefined }],
+        },
+      ],
+    });
+    expect(cloned.pages[0]?.controls[0]?.channelBindings).toEqual(button.channelBindings);
+    expect(cloned.pages[0]?.controls[1]).not.toHaveProperty('channelBindings');
+  });
+
   it('creates a single Page 1', () => {
     const document = createDefaultVirtualConsoleDocument();
     expect(document.pages).toHaveLength(1);

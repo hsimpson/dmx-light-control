@@ -5,7 +5,7 @@ import { controlFontStyle } from '../virtual-console-fonts';
 import classes from './button-control.module.css';
 import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
 
-const ButtonControl = ({ control, mode, selected = false }: VirtualConsoleControlProperties) => {
+const ButtonControl = ({ control, mode, selected = false, onPlayValue }: VirtualConsoleControlProperties) => {
   const [pressed, setPressed] = useState(false);
   const play = mode === 'play';
 
@@ -23,6 +23,9 @@ const ButtonControl = ({ control, mode, selected = false }: VirtualConsoleContro
       disabled={mode === 'edit'}
       onPointerCancel={() => {
         setPressed(false);
+        if (play) {
+          onPlayValue?.(0);
+        }
       }}
       onPointerDown={event => {
         if (!play) {
@@ -32,9 +35,13 @@ const ButtonControl = ({ control, mode, selected = false }: VirtualConsoleContro
           event.currentTarget.setPointerCapture(event.pointerId);
         }
         setPressed(true);
+        onPlayValue?.(255);
       }}
       onPointerUp={() => {
         setPressed(false);
+        if (play) {
+          onPlayValue?.(0);
+        }
       }}
     >
       {control.label}

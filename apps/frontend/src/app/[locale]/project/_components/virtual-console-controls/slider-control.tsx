@@ -16,10 +16,19 @@ const valueFromPointer = (clientX: number, clientY: number, rect: DOMRect, isVer
   return clamp(Math.round(ratio * max), 0, max);
 };
 
-const SliderControl = ({ control, mode, selected = false }: VirtualConsoleControlProperties) => {
+const SliderControl = ({ control, mode, selected = false, onPlayValue }: VirtualConsoleControlProperties) => {
   const orientation = control.orientation ?? 'vertical';
   const max = control.valueType === 'percentage' ? 100 : 255;
   const [value, setValue] = useState(0);
+  const valueRef = useRef(0);
+  const commitValue = useCallback(
+    (next: number) => {
+      valueRef.current = next;
+      setValue(next);
+      onPlayValue?.(next);
+    },
+    [onPlayValue],
+  );
   const ratio = value / max;
   const isVertical = orientation === 'vertical';
   const displayValue = control.valueType === 'percentage' ? `${value}%` : String(value);
@@ -36,9 +45,9 @@ const SliderControl = ({ control, mode, selected = false }: VirtualConsoleContro
       if (!rail) {
         return;
       }
-      setValue(valueFromPointer(clientX, clientY, rail.getBoundingClientRect(), isVertical, max));
+      commitValue(valueFromPointer(clientX, clientY, rail.getBoundingClientRect(), isVertical, max));
     },
-    [isVertical, max],
+    [commitValue, isVertical, max],
   );
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -92,7 +101,7 @@ const SliderControl = ({ control, mode, selected = false }: VirtualConsoleContro
       return;
     }
     event.preventDefault();
-    setValue(current => clamp(current + delta, 0, max));
+    commitValue(clamp(valueRef.current + delta, 0, max));
   };
 
   return (

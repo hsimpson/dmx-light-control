@@ -220,4 +220,37 @@ describe('virtual console controls', () => {
     fireEvent.pointerDown(button, { pointerId: 1 });
     expect(button).not.toHaveAttribute('data-pressed');
   });
+
+  it('reports play-mode slider and button values and stays quiet in edit mode', () => {
+    const onSlider = vi.fn();
+    const onButton = vi.fn();
+    const slider = { ...createControl('slider', 0, 0), label: 'Dimmer' };
+    const button = { ...createControl('button', 0, 0), label: 'Go' };
+    const { unmount } = renderWithProviders(
+      <>
+        <SliderControl control={slider} mode="play" onPlayValue={onSlider} />
+        <ButtonControl control={button} mode="play" onPlayValue={onButton} />
+      </>,
+    );
+    const rail = screen.getByTestId('virtual-console-slider-rail');
+    mockRailRect(rail, { top: 0, left: 0, width: 40, height: 100 });
+    fireEvent.pointerDown(rail, { clientX: 20, clientY: 0, pointerId: 1 });
+    expect(onSlider).toHaveBeenCalledWith(255);
+    fireEvent.keyDown(screen.getByRole('slider', { name: 'Dimmer' }), { key: 'ArrowDown' });
+    expect(onSlider).toHaveBeenLastCalledWith(254);
+
+    const playButton = screen.getByRole('button', { name: 'Go' });
+    fireEvent.pointerDown(playButton, { pointerId: 1 });
+    expect(onButton).toHaveBeenCalledWith(255);
+    fireEvent.pointerUp(playButton, { pointerId: 1 });
+    expect(onButton).toHaveBeenLastCalledWith(0);
+    unmount();
+
+    const onEdit = vi.fn();
+    renderWithProviders(<SliderControl control={slider} mode="edit" onPlayValue={onEdit} />);
+    const editRail = screen.getByTestId('virtual-console-slider-rail');
+    mockRailRect(editRail, { top: 0, left: 0, width: 40, height: 100 });
+    fireEvent.pointerDown(editRail, { clientX: 20, clientY: 0, pointerId: 1 });
+    expect(onEdit).not.toHaveBeenCalled();
+  });
 });

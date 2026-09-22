@@ -10,4 +10,5 @@ export type VirtualConsoleControlProperties = {
   dropTarget?: boolean;
   liftOverflow?: boolean;
   children?: ReactNode;
+  onPlayValue?: (value: number) => void;
 };

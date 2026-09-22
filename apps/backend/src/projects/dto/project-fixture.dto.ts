@@ -3,15 +3,22 @@ import { FixtureChannelPreset } from '@/fixtures/channel-presets';
 import { FixtureVendorDto } from '@/fixtures/dto/fixture-vendor.dto';
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
+import { GraphQLUUID } from 'graphql-scalars';
 
 @ObjectType()
 export class ProjectFixtureChannelDefinitionDto {
+  @Field({ description: 'The name of the channel definition' })
+  public name: string;
+
   @Field(() => FixtureChannelPreset, { description: 'The preset of the channel definition' })
   public preset: FixtureChannelPreset;
 }
 
 @ObjectType()
 export class ProjectFixtureChannelAssignmentDto {
+  @Field(() => GraphQLUUID, { description: 'The public ID of the channel assignment' })
+  public publicId: string;
+
   @Field(() => Int, { description: 'The 1-based DMX channel number of the assignment' })
   public channelNumber: number;
 

@@ -26,25 +26,31 @@ const projectFixture = {
     fixtureChannelAssignments: [
       {
         __typename: 'ProjectFixtureChannelAssignmentDto' as const,
+        publicId: 'assign-red',
         channelNumber: 1,
         fixtureChannelDefinition: {
           __typename: 'ProjectFixtureChannelDefinitionDto' as const,
+          name: 'Red',
           preset: FixtureChannelPreset.IntensityRed,
         },
       },
       {
         __typename: 'ProjectFixtureChannelAssignmentDto' as const,
+        publicId: 'assign-green',
         channelNumber: 2,
         fixtureChannelDefinition: {
           __typename: 'ProjectFixtureChannelDefinitionDto' as const,
+          name: 'Green',
           preset: FixtureChannelPreset.IntensityGreen,
         },
       },
       {
         __typename: 'ProjectFixtureChannelAssignmentDto' as const,
+        publicId: 'assign-blue',
         channelNumber: 3,
         fixtureChannelDefinition: {
           __typename: 'ProjectFixtureChannelDefinitionDto' as const,
+          name: 'Blue',
           preset: FixtureChannelPreset.IntensityBlue,
         },
       },

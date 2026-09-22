@@ -104,8 +104,9 @@ type MockedProjectFixture = {
     publicId: string;
     name: string;
     fixtureChannelAssignments: {
+      publicId: string;
       channelNumber: number;
-      fixtureChannelDefinition: { preset: string };
+      fixtureChannelDefinition: { name: string; preset: string };
     }[];
   };
 };
@@ -295,11 +296,19 @@ export const mockGraphql = async (page: Page) => {
           publicId: mode?.publicId ?? 'mode-8',
           name: mode?.name ?? '8ch',
           fixtureChannelAssignments: mode?.fixtureChannelAssignments.map(assignment => ({
+            publicId: assignment.publicId,
             channelNumber: assignment.channelNumber,
             fixtureChannelDefinition: {
+              name: assignment.fixtureChannelDefinition.name,
               preset: assignment.fixtureChannelDefinition.preset,
             },
-          })) ?? [{ channelNumber: 1, fixtureChannelDefinition: { preset: 'IntensityDimmer' } }],
+          })) ?? [
+            {
+              publicId: 'assign-1',
+              channelNumber: 1,
+              fixtureChannelDefinition: { name: 'Dimmer', preset: 'IntensityDimmer' },
+            },
+          ],
         },
       };
       projectFixtures[projectPublicId] = [...(projectFixtures[projectPublicId] ?? []), created];
@@ -323,8 +332,10 @@ export const mockGraphql = async (page: Page) => {
               publicId: mode.publicId,
               name: mode.name,
               fixtureChannelAssignments: mode.fixtureChannelAssignments.map(assignment => ({
+                publicId: assignment.publicId,
                 channelNumber: assignment.channelNumber,
                 fixtureChannelDefinition: {
+                  name: assignment.fixtureChannelDefinition.name,
                   preset: assignment.fixtureChannelDefinition.preset,
                 },
               })),

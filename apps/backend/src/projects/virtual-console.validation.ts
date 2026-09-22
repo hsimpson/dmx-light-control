@@ -16,6 +16,7 @@ import {
   VIRTUAL_CONSOLE_SIZE_MIN,
   VIRTUAL_CONSOLE_SNAP_MAX,
   VIRTUAL_CONSOLE_SNAP_MIN,
+  VirtualConsoleChannelBinding,
   VirtualConsoleControl,
   VirtualConsoleControlType,
   VirtualConsoleDocument,
@@ -115,6 +116,7 @@ function assertControl(control: VirtualConsoleControl, ids: Set<string>, depth: 
     throw new InvalidVirtualConsoleException('Control label must be at most 255 characters.');
   }
   assertTypography(control);
+  assertChannelBindings(control);
 
   switch (control.type) {
     case VIRTUAL_CONSOLE_CONTROL_TYPE.Frame:
@@ -225,6 +227,73 @@ function assertSlider(control: VirtualConsoleControl): void {
 function assertButton(control: VirtualConsoleControl): void {
   assertNoChildren(control);
   assertColor(control.foregroundColor, 'foregroundColor');
+}
+
+export type VirtualConsoleBindingFixture = {
+  publicId: string;
+  channelAssignmentPublicIds: ReadonlySet<string>;
+};
+
+export function assertVirtualConsoleChannelBindings(
+  document: VirtualConsoleDocument,
+  fixtures: readonly VirtualConsoleBindingFixture[],
+): void {
+  const assignmentsByFixture = new Map(fixtures.map(fixture => [fixture.publicId, fixture.channelAssignmentPublicIds]));
+  for (const page of document.pages) {
+    for (const control of page.controls) {
+      assertControlBindingsResolve(control, assignmentsByFixture);
+    }
+  }
+}
+
+function assertControlBindingsResolve(
+  control: VirtualConsoleControl,
+  assignmentsByFixture: ReadonlyMap<string, ReadonlySet<string>>,
+): void {
+  for (const binding of control.channelBindings ?? []) {
+    const assignments = assignmentsByFixture.get(binding.projectFixturePublicId);
+    if (!assignments?.has(binding.channelAssignmentPublicId)) {
+      throw new InvalidVirtualConsoleException(
+        `Channel binding ${binding.channelAssignmentPublicId} is not on project fixture ${binding.projectFixturePublicId}.`,
+      );
+    }
+  }
+  for (const child of control.children ?? []) {
+    assertControlBindingsResolve(child, assignmentsByFixture);
+  }
+}
+
+function assertChannelBindings(control: VirtualConsoleControl): void {
+  const bindings = control.channelBindings;
+  if (bindings === undefined) {
+    return;
+  }
+  if (!Array.isArray(bindings)) {
+    throw new InvalidVirtualConsoleException('Control channelBindings must be an array.');
+  }
+  const allowsBindings =
+    control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Slider || control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Button;
+  if (!allowsBindings && bindings.length > 0) {
+    throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have channel bindings.`);
+  }
+  const seen = new Set<string>();
+  for (const binding of bindings) {
+    assertBinding(binding);
+    const key = `${binding.projectFixturePublicId}:${binding.channelAssignmentPublicId}`;
+    if (seen.has(key)) {
+      throw new InvalidVirtualConsoleException(`Duplicate channel binding ${key}.`);
+    }
+    seen.add(key);
+  }
+}
+
+function assertBinding(binding: unknown): asserts binding is VirtualConsoleChannelBinding {
+  if (typeof binding !== 'object' || binding === null) {
+    throw new InvalidVirtualConsoleException('Channel binding must be an object.');
+  }
+  const record = binding as VirtualConsoleChannelBinding;
+  assertUuid(record.projectFixturePublicId, 'projectFixturePublicId');
+  assertUuid(record.channelAssignmentPublicId, 'channelAssignmentPublicId');
 }
 
 function assertNoChildren(control: VirtualConsoleControl): void {

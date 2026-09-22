@@ -21,7 +21,7 @@ import { optionalRoomDimensions } from '@/projects/project-room-dimensions';
 import { ProjectImportConflictException } from '@/projects/project.exceptions';
 import { ProjectFixtureRepository } from '@/projects/repositories/project-fixture.repository';
 import { ProjectRepository } from '@/projects/repositories/project.repository';
-import { assertValidVirtualConsole } from '@/projects/virtual-console.validation';
+import { assertValidVirtualConsole, assertVirtualConsoleChannelBindings } from '@/projects/virtual-console.validation';
 import { Injectable } from '@nestjs/common';
 import { eq, InferSelectModel } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
@@ -122,6 +122,8 @@ export class ProjectImportExportService {
         `Project publicId ${incoming.publicId} and name "${incoming.name}" match different projects`,
       );
     }
+
+    await this.assertIncomingChannelBindings(tx, incoming);
 
     const existing = byPublicId ?? byName;
     if (existing) {
@@ -314,6 +316,39 @@ export class ProjectImportExportService {
   private async findFixtureByPublicId(tx: Tx, publicId: string) {
     const rows = await tx.select().from(fixture).where(eq(fixture.publicId, publicId)).limit(1);
     return rows[0];
+  }
+
+  private async assertIncomingChannelBindings(
+    tx: Tx,
+    incoming: ImportProjectsInput['projects'][number],
+  ): Promise<void> {
+    const virtualConsole = incoming.virtualConsole;
+    if (virtualConsole === null || virtualConsole === undefined) {
+      return;
+    }
+    assertValidVirtualConsole(virtualConsole);
+    const fixtures = [];
+    for (const instance of incoming.projectFixtures ?? []) {
+      if (!instance.publicId) {
+        continue;
+      }
+      const modeRow = await this.findChannelModeByPublicId(tx, instance.channelModePublicId);
+      const modeWithAssignments = modeRow?.id
+        ? await tx.query.fixtureChannelMode.findFirst({
+            where: { id: modeRow.id },
+            with: { fixtureChannelAssignments: true },
+          })
+        : undefined;
+      fixtures.push({
+        publicId: instance.publicId,
+        channelAssignmentPublicIds: new Set(
+          (modeWithAssignments?.fixtureChannelAssignments ?? []).flatMap(assignment =>
+            assignment.publicId ? [assignment.publicId] : [],
+          ),
+        ),
+      });
+    }
+    assertVirtualConsoleChannelBindings(virtualConsole, fixtures);
   }
 
   private async findChannelModeByPublicId(tx: Tx, publicId: string) {

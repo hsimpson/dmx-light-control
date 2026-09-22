@@ -42,6 +42,7 @@ graphql:
               fixtureChannelAssignments {
                 channelNumber
                 fixtureChannelDefinition
+                publicId
               }
               name
               publicId
@@ -78,6 +79,7 @@ graphql:
                 backgroundColor
                 borderColor
                 borderWidth
+                channelBindings
                 children
                 fontFamily
                 fontSize

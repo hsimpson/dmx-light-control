@@ -1,4 +1,5 @@
 import { FixtureChannelPreset } from '@/fixtures/channel-presets';
+import { VirtualConsoleControlTypeEnum } from '@/projects/virtual-console';
 import { ChannelModeNotFoundException, FixtureNotFoundException } from '@/fixtures/fixture.exceptions';
 import { FixtureChannelModeRepository } from '@/fixtures/repositories/fixture-channel-mode.repository';
 import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
@@ -7,6 +8,7 @@ import { identityTransform } from './project-3d-object.transform';
 import { ProjectEnvironmentType } from './project-environment';
 import {
   InvalidProject3dObjectTransformException,
+  InvalidVirtualConsoleException,
   Project3dObjectNameExistsException,
   Project3dObjectNotFoundException,
   ProjectAlreadyExistsException,
@@ -152,6 +154,7 @@ describe('ProjectService', () => {
       height: 720,
       pages: [{ id: '11111111-1111-4111-8111-111111111111', name: 'Page 1', controls: [] }],
     };
+    projectRepository.findOneByPublicIdWithFixtures.mockResolvedValue({ publicId: 'p', projectFixtures: [] });
     projectRepository.updateOneByPublicId.mockResolvedValue({ publicId: 'p', virtualConsole });
     const result = await service.updateProjectVirtualConsole({ publicId: 'p', virtualConsole });
     expect(projectRepository.updateOneByPublicId).toHaveBeenCalledWith('p', { virtualConsole });
@@ -161,6 +164,71 @@ describe('ProjectService', () => {
       projectFixtures: [],
       project3dObjects: [],
     });
+  });
+
+  it('updateProjectVirtualConsole rejects a binding that is not on the fixture mode', async () => {
+    const { service, projectRepository } = build();
+    const fixtureId = '55555555-5555-4555-8555-555555555555';
+    const assignmentId = '66666666-6666-4666-8666-666666666666';
+    const otherAssignmentId = '77777777-7777-4777-8777-777777777777';
+    const virtualConsole = {
+      schemaVersion: 1 as const,
+      width: 1280,
+      height: 720,
+      pages: [
+        {
+          id: '11111111-1111-4111-8111-111111111111',
+          name: 'Page 1',
+          controls: [
+            {
+              id: '44444444-4444-4444-8444-444444444444',
+              type: VirtualConsoleControlTypeEnum.button,
+              x: 0,
+              y: 0,
+              width: 80,
+              height: 40,
+              label: 'Go',
+              backgroundColor: '#444444',
+              foregroundColor: '#ffffff',
+              channelBindings: [{ projectFixturePublicId: fixtureId, channelAssignmentPublicId: assignmentId }],
+            },
+          ],
+        },
+      ],
+    };
+    projectRepository.findOneByPublicIdWithFixtures.mockResolvedValue({
+      publicId: 'p',
+      projectFixtures: [
+        {
+          publicId: fixtureId,
+          fixtureChannelMode: { fixtureChannelAssignments: [{ publicId: assignmentId }] },
+        },
+      ],
+    });
+    projectRepository.updateOneByPublicId.mockResolvedValue({ publicId: 'p', virtualConsole });
+    await expect(service.updateProjectVirtualConsole({ publicId: 'p', virtualConsole })).resolves.toMatchObject({
+      publicId: 'p',
+    });
+
+    const bindings = virtualConsole.pages[0]?.controls[0]?.channelBindings;
+    if (!bindings) {
+      throw new Error('expected channel bindings');
+    }
+    bindings.splice(0, 1, {
+      projectFixturePublicId: fixtureId,
+      channelAssignmentPublicId: otherAssignmentId,
+    });
+    await expect(service.updateProjectVirtualConsole({ publicId: 'p', virtualConsole })).rejects.toBeInstanceOf(
+      InvalidVirtualConsoleException,
+    );
+
+    bindings.splice(0, 1, {
+      projectFixturePublicId: otherAssignmentId,
+      channelAssignmentPublicId: assignmentId,
+    });
+    await expect(service.updateProjectVirtualConsole({ publicId: 'p', virtualConsole })).rejects.toBeInstanceOf(
+      InvalidVirtualConsoleException,
+    );
   });
 
   it('updateProjectVirtualConsole throws PROJECT_NOT_FOUND when missing', async () => {
@@ -397,7 +465,9 @@ describe('ProjectService', () => {
             fixtureChannelAssignments: [
               {
                 channelNumber: 1,
+                publicId: 'a-1',
                 fixtureChannelDefinition: {
+                  name: 'Dimmer',
                   preset: FixtureChannelPreset.IntensityDimmer,
                 },
               },

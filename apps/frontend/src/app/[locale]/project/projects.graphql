@@ -26,6 +26,10 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
   fontSize
   fontWeight
   valueType
+  channelBindings {
+    projectFixturePublicId
+    channelAssignmentPublicId
+  }
 }
 
 fragment VirtualConsoleFields on VirtualConsoleDto {
@@ -80,8 +84,10 @@ fragment ProjectFixtureFields on ProjectFixtureDto {
     publicId
     name
     fixtureChannelAssignments {
+      publicId
       channelNumber
       fixtureChannelDefinition {
+        name
         preset
       }
     }

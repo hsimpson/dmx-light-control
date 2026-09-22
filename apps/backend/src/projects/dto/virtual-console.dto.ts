@@ -33,6 +33,26 @@ const UUID_PATTERN = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{
 const COLOR_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 
 @ObjectType()
+export class VirtualConsoleChannelBindingDto {
+  @Field(() => GraphQLUUID, { description: 'Public id of the patched project fixture' })
+  public projectFixturePublicId: string;
+
+  @Field(() => GraphQLUUID, { description: 'Public id of the channel assignment in the fixture mode' })
+  public channelAssignmentPublicId: string;
+}
+
+@InputType()
+export class VirtualConsoleChannelBindingInput {
+  @Field(() => GraphQLUUID, { description: 'Public id of the patched project fixture' })
+  @Matches(UUID_PATTERN, { message: 'projectFixturePublicId must be a UUID' })
+  public projectFixturePublicId: string;
+
+  @Field(() => GraphQLUUID, { description: 'Public id of the channel assignment in the fixture mode' })
+  @Matches(UUID_PATTERN, { message: 'channelAssignmentPublicId must be a UUID' })
+  public channelAssignmentPublicId: string;
+}
+
+@ObjectType()
 export class VirtualConsoleControlDto {
   @Field(() => GraphQLUUID, { description: 'Stable id of this control' })
   public id: string;
@@ -85,6 +105,13 @@ export class VirtualConsoleControlDto {
 
   @Field(() => VirtualConsoleSliderValueType, { nullable: true, description: 'Slider value interpretation' })
   public valueType?: VirtualConsoleSliderValueType;
+
+  @Field(() => [VirtualConsoleChannelBindingDto], {
+    nullable: true,
+    description: 'Fixture channels this slider or button controls',
+  })
+  @Type(() => VirtualConsoleChannelBindingDto)
+  public channelBindings?: VirtualConsoleChannelBindingDto[];
 }
 
 @ObjectType()
@@ -211,6 +238,16 @@ export class VirtualConsoleControlInput {
   @IsOptional()
   @IsEnum(VirtualConsoleSliderValueType)
   public valueType?: VirtualConsoleSliderValueType;
+
+  @Field(() => [VirtualConsoleChannelBindingInput], {
+    nullable: true,
+    description: 'Fixture channels this slider or button controls',
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => VirtualConsoleChannelBindingInput)
+  public channelBindings?: VirtualConsoleChannelBindingInput[];
 }
 
 @InputType()

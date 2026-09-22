@@ -34,7 +34,12 @@ import { ProjectFixtureRepository } from './repositories/project-fixture.reposit
 import { LoadedProject, ProjectRepository } from './repositories/project.repository';
 import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
 import { VirtualConsoleDocument } from './virtual-console';
-import { assertValidVirtualConsole, normalizeVirtualConsole } from './virtual-console.validation';
+import {
+  assertValidVirtualConsole,
+  assertVirtualConsoleChannelBindings,
+  normalizeVirtualConsole,
+  VirtualConsoleBindingFixture,
+} from './virtual-console.validation';
 
 function getErrorCode(error: unknown): unknown {
   if (typeof error !== 'object' || error === null || !('code' in error)) {
@@ -78,6 +83,26 @@ function occupiedPatchesFromFixtures(
   });
 }
 
+function bindingFixturesFromProject(
+  fixtures: LoadedProject['projectFixtures'] | null | undefined,
+): VirtualConsoleBindingFixture[] {
+  return (fixtures ?? []).flatMap(fixture => {
+    const publicId = fixture.publicId;
+    const assignments = fixture.fixtureChannelMode?.fixtureChannelAssignments;
+    if (!publicId || !assignments) {
+      return [];
+    }
+    return [
+      {
+        publicId,
+        channelAssignmentPublicIds: new Set(
+          assignments.flatMap(assignment => (assignment.publicId ? [assignment.publicId] : [])),
+        ),
+      },
+    ];
+  });
+}
+
 function sortProjectFixtures(fixtures: LoadedProjectFixture[]): LoadedProjectFixture[] {
   return [...fixtures].sort(
     (left, right) =>
@@ -107,10 +132,17 @@ function mapProjectFixtureToDto(fixture: LoadedProjectFixture) {
           return [];
         }
 
+        const publicId = assignment.publicId;
+        if (!publicId) {
+          return [];
+        }
+
         return [
           {
+            publicId,
             channelNumber: assignment.channelNumber,
             fixtureChannelDefinition: {
+              name: assignment.fixtureChannelDefinition.name,
               preset: assignment.fixtureChannelDefinition.preset,
             },
           },
@@ -226,6 +258,11 @@ export class ProjectService {
 
   public async updateProjectVirtualConsole(input: UpdateProjectVirtualConsoleInput) {
     assertValidVirtualConsole(input.virtualConsole);
+    const project = await this.projectRepository.findOneByPublicIdWithFixtures(input.publicId);
+    if (!project) {
+      throw new ProjectNotFoundException(input.publicId);
+    }
+    assertVirtualConsoleChannelBindings(input.virtualConsole, bindingFixturesFromProject(project.projectFixtures));
     const updated = await this.projectRepository.updateOneByPublicId(input.publicId, {
       virtualConsole: input.virtualConsole,
     });

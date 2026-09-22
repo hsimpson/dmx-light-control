@@ -14,6 +14,12 @@ import { notifications } from '@mantine/notifications';
 import { ArrowsOutIcon, PlusIcon, XIcon } from '@phosphor-icons/react';
 import { useParams } from 'next/navigation';
 import { KeyboardEvent, PointerEvent, useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
+import { publishVirtualConsoleValue } from './virtual-console-channel-output';
+import {
+  notifyVirtualConsoleSaved,
+  reloadVirtualConsolePlayWindow,
+  virtualConsoleReloadChannel,
+} from './virtual-console-reload';
 import VirtualConsoleControlTree from './virtual-console-control-tree';
 import {
   cloneVirtualConsoleDocument,
@@ -132,6 +138,19 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [mode, refetch]);
+
+  useEffect(() => {
+    if (mode !== 'play' || typeof BroadcastChannel === 'undefined') {
+      return;
+    }
+    const channel = new BroadcastChannel(virtualConsoleReloadChannel(projectPublicId));
+    channel.onmessage = () => {
+      reloadVirtualConsolePlayWindow();
+    };
+    return () => {
+      channel.close();
+    };
+  }, [mode, projectPublicId]);
 
   const activePage = draft.pages.find(page => page.id === activePageId) ?? draft.pages[0];
   const selectedControl =
@@ -424,6 +443,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
         },
       });
       setEdits(null);
+      notifyVirtualConsoleSaved(projectPublicId);
       notifications.show({
         color: 'green',
         title: t(globalMessages.success),
@@ -606,6 +626,12 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
                 setSelection({ kind: 'control', controlId: id });
               }}
               onMovePointerDown={handleMovePointerDown}
+              onPlayValue={(control, rawValue) => {
+                if (mode !== 'play') {
+                  return;
+                }
+                publishVirtualConsoleValue(control, rawValue, data?.project?.projectFixtures ?? []);
+              }}
               onResizePointerDown={handleResizePointerDown}
             />
           ) : null}
@@ -650,6 +676,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
           <VirtualConsoleSidebar
             dirty={dirty}
             document={draft}
+            fixtures={data?.project?.projectFixtures ?? []}
             saving={saving}
             selectedControl={selectedControl}
             selectedPage={selectedPage}

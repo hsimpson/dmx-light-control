@@ -16,8 +16,10 @@ graphql:
             fixtureChannelAssignments {
               channelNumber
               fixtureChannelDefinition {
+                name
                 preset
               }
+              publicId
             }
             name
             publicId

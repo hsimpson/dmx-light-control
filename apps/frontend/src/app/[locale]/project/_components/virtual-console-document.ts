@@ -22,6 +22,11 @@ export type VirtualConsoleControlType = 'frame' | 'slider' | 'button';
 export type VirtualConsoleSliderOrientation = 'vertical' | 'horizontal';
 export type VirtualConsoleSliderValueType = 'dmx' | 'percentage';
 
+export type VirtualConsoleChannelBinding = {
+  projectFixturePublicId: string;
+  channelAssignmentPublicId: string;
+};
+
 export type VirtualConsoleControl = {
   id: string;
   type: VirtualConsoleControlType;
@@ -40,6 +45,7 @@ export type VirtualConsoleControl = {
   fontSize?: number;
   fontWeight?: number;
   valueType?: VirtualConsoleSliderValueType;
+  channelBindings?: VirtualConsoleChannelBinding[];
 };
 
 export type VirtualConsolePage = {
@@ -136,7 +142,7 @@ const omitGraphqlArtifacts = (value: unknown): unknown => {
   }
   return Object.fromEntries(
     Object.entries(value)
-      .filter(([key, nested]) => key !== '__typename' && nested !== null)
+      .filter(([key, nested]) => key !== '__typename' && nested !== null && nested !== undefined)
       .map(([key, nested]) => [key, omitGraphqlArtifacts(nested)]),
   );
 };

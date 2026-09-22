@@ -4,7 +4,16 @@ import { notifications } from '@mantine/notifications';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { VIRTUAL_CONSOLE_PALETTE_MIME } from './virtual-console-document';
+import { reloadVirtualConsolePlayWindow } from './virtual-console-reload';
 import VirtualConsoleView from './virtual-console-view';
+
+vi.mock('./virtual-console-reload', async () => {
+  const actual = await vi.importActual<typeof import('./virtual-console-reload')>('./virtual-console-reload');
+  return {
+    ...actual,
+    reloadVirtualConsolePlayWindow: vi.fn(),
+  };
+});
 
 vi.mock('next/navigation', () => ({
   useParams: () => ({ locale: 'en', publicId: 'proj-1' }),
@@ -72,6 +81,11 @@ describe('VirtualConsoleView', () => {
   });
 
   it('does not save until Save is clicked', async () => {
+    const messages: string[] = [];
+    const channel = new BroadcastChannel('dmx-virtual-console:proj-1');
+    channel.onmessage = event => {
+      messages.push(String(event.data));
+    };
     const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
       apolloMocks: [
         {
@@ -118,6 +132,10 @@ describe('VirtualConsoleView', () => {
     await waitFor(() => {
       expect(notifications.show).toHaveBeenCalledWith(expect.objectContaining({ color: 'green' }));
     });
+    await waitFor(() => {
+      expect(messages).toEqual(['saved']);
+    });
+    channel.close();
   });
 
   it('hides the sidebar in play mode and puts fullscreen in the page header', async () => {
@@ -203,6 +221,7 @@ describe('VirtualConsoleView', () => {
                 fontSize: null,
                 fontWeight: null,
                 valueType: null,
+                channelBindings: null,
                 children: [],
               },
             ],
@@ -243,6 +262,7 @@ describe('VirtualConsoleView', () => {
       fontSize: null,
       fontWeight: null,
       valueType: null,
+      channelBindings: null,
       children: [] as unknown[],
     };
     const projectWithControls = {
@@ -349,6 +369,7 @@ describe('VirtualConsoleView', () => {
                 fontSize: null,
                 fontWeight: null,
                 valueType: null,
+                channelBindings: null,
                 children: [],
               },
             ],
@@ -404,6 +425,7 @@ describe('VirtualConsoleView', () => {
       fontSize: null,
       fontWeight: null,
       valueType: null,
+      channelBindings: null,
     };
     const projectWithControls = {
       ...project,
@@ -505,6 +527,7 @@ describe('VirtualConsoleView', () => {
                 fontSize: null,
                 fontWeight: null,
                 valueType: null,
+                channelBindings: null,
                 children: [],
               },
             ],
@@ -624,6 +647,11 @@ describe('VirtualConsoleView', () => {
   });
 
   it('shows an error notification when save fails', async () => {
+    const messages: string[] = [];
+    const channel = new BroadcastChannel('dmx-virtual-console:proj-1');
+    channel.onmessage = event => {
+      messages.push(String(event.data));
+    };
     const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
       apolloMocks: [
         {
@@ -662,6 +690,8 @@ describe('VirtualConsoleView', () => {
     await waitFor(() => {
       expect(notifications.show).toHaveBeenCalledWith(expect.objectContaining({ color: 'red' }));
     });
+    expect(messages).toEqual([]);
+    channel.close();
   });
 
   it('moves the splitter with arrow keys and ignores other keys', async () => {
@@ -725,6 +755,7 @@ describe('VirtualConsoleView', () => {
                 fontSize: null,
                 fontWeight: null,
                 valueType: null,
+                channelBindings: null,
                 children: [],
               },
             ],
@@ -748,6 +779,26 @@ describe('VirtualConsoleView', () => {
 
     fireEvent.keyDown(window, { key: 'a' });
     expect(screen.getByTestId(`virtual-console-control-${buttonId}`)).toBeInTheDocument();
+  });
+
+  it('reloads the play window when the editor saves the console', async () => {
+    vi.mocked(reloadVirtualConsolePlayWindow).mockClear();
+    renderWithProviders(<VirtualConsoleView mode="play" projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project } },
+        },
+      ],
+    });
+
+    await screen.findByRole('tab', { name: 'Page 1' });
+    const channel = new BroadcastChannel('dmx-virtual-console:proj-1');
+    channel.postMessage('saved');
+    await waitFor(() => {
+      expect(reloadVirtualConsolePlayWindow).toHaveBeenCalledTimes(1);
+    });
+    channel.close();
   });
 
   it('requests fullscreen and refetches when the play window becomes visible', async () => {

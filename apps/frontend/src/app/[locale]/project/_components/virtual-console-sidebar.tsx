@@ -5,10 +5,12 @@ import { useTranslation } from '@/lib/i18n/use-translation';
 import {
   ActionIcon,
   Button,
+  Checkbox,
   ColorInput,
   Group,
   NumberInput,
   Paper,
+  ScrollArea,
   Select,
   Stack,
   Text,
@@ -24,6 +26,7 @@ import {
   VIRTUAL_CONSOLE_PALETTE_MIME,
   VIRTUAL_CONSOLE_SNAP_MAX,
   VIRTUAL_CONSOLE_SNAP_MIN,
+  type VirtualConsoleChannelBinding,
   type VirtualConsoleControl,
   type VirtualConsoleControlType,
   type VirtualConsoleDocument,
@@ -51,11 +54,28 @@ const SIZE_MAX = 4096;
 export type VirtualConsoleSelection =
   { kind: 'canvas' } | { kind: 'page'; pageId: string } | { kind: 'control'; controlId: string };
 
+export type VirtualConsoleAssignableFixture = {
+  publicId: string;
+  startAddress: number;
+  fixture: { name: string; fixtureVendor: { name: string } };
+  channelMode: {
+    name: string;
+    fixtureChannelAssignments: {
+      publicId: string;
+      channelNumber: number;
+      fixtureChannelDefinition: { name: string; preset: string };
+    }[];
+  };
+};
+
+const NO_FIXTURES: VirtualConsoleAssignableFixture[] = [];
+
 type VirtualConsoleSidebarProperties = {
   document: VirtualConsoleDocument;
   selection: VirtualConsoleSelection;
   selectedPage: VirtualConsolePage | undefined;
   selectedControl: VirtualConsoleControl | undefined;
+  fixtures?: VirtualConsoleAssignableFixture[];
   dirty: boolean;
   saving: boolean;
   onSelectCanvas: () => void;
@@ -97,6 +117,7 @@ const VirtualConsoleSidebar = ({
   selection,
   selectedPage,
   selectedControl,
+  fixtures = NO_FIXTURES,
   dirty,
   saving,
   onSelectCanvas,
@@ -203,7 +224,12 @@ const VirtualConsoleSidebar = ({
         ) : null}
 
         {selectedControl ? (
-          <ControlFields control={selectedControl} onDelete={onDeleteControl} onPatch={onControlPatch} />
+          <ControlFields
+            control={selectedControl}
+            fixtures={fixtures}
+            onDelete={onDeleteControl}
+            onPatch={onControlPatch}
+          />
         ) : null}
 
         <Button disabled={!dirty} loading={saving} onClick={onSave}>
@@ -216,11 +242,109 @@ const VirtualConsoleSidebar = ({
 
 type ControlFieldsProperties = {
   control: VirtualConsoleControl;
+  fixtures: VirtualConsoleAssignableFixture[];
   onDelete: () => void;
   onPatch: (patch: Partial<VirtualConsoleControl>) => void;
 };
 
-const ControlFields = ({ control, onDelete, onPatch }: ControlFieldsProperties) => {
+const bindingKey = (binding: VirtualConsoleChannelBinding) =>
+  `${binding.projectFixturePublicId}:${binding.channelAssignmentPublicId}`;
+
+const ChannelBindings = ({
+  control,
+  fixtures,
+  onPatch,
+}: {
+  control: VirtualConsoleControl;
+  fixtures: VirtualConsoleAssignableFixture[];
+  onPatch: (patch: Partial<VirtualConsoleControl>) => void;
+}) => {
+  const { t } = useTranslation();
+  const bindings = control.channelBindings ?? [];
+  const known = new Set(
+    fixtures.flatMap(fixture =>
+      fixture.channelMode.fixtureChannelAssignments.map(assignment =>
+        bindingKey({ projectFixturePublicId: fixture.publicId, channelAssignmentPublicId: assignment.publicId }),
+      ),
+    ),
+  );
+  const unavailable = bindings.filter(binding => !known.has(bindingKey(binding)));
+  const sortedFixtures = [...fixtures].sort(
+    (left, right) => left.startAddress - right.startAddress || left.publicId.localeCompare(right.publicId),
+  );
+
+  const writeBindings = (next: VirtualConsoleChannelBinding[]) => {
+    onPatch({ channelBindings: next.length > 0 ? next : undefined });
+  };
+
+  const toggle = (binding: VirtualConsoleChannelBinding, checked: boolean) => {
+    const without = bindings.filter(current => bindingKey(current) !== bindingKey(binding));
+    writeBindings(checked ? [...without, binding] : without);
+  };
+
+  return (
+    <Stack gap="xs">
+      <Text size="sm" fw={600}>
+        {t({ id: 'ProjectDetail.virtualConsole.channels', defaultMessage: 'Channels' })}
+      </Text>
+      {sortedFixtures.length === 0 ? (
+        <Text size="sm" c="dimmed">
+          {t({ id: 'ProjectDetail.virtualConsole.channelsEmpty', defaultMessage: 'No patched fixtures' })}
+        </Text>
+      ) : (
+        <ScrollArea.Autosize mah={240} type="auto">
+          <Stack gap="sm">
+            {sortedFixtures.map(fixture => (
+              <Stack key={fixture.publicId} gap={4}>
+                <Text size="xs" fw={600}>
+                  {fixture.fixture.fixtureVendor.name} {fixture.fixture.name} · {fixture.channelMode.name} ·{' '}
+                  {fixture.startAddress}
+                </Text>
+                {[...fixture.channelMode.fixtureChannelAssignments]
+                  .sort((left, right) => left.channelNumber - right.channelNumber)
+                  .map(assignment => {
+                    const binding = {
+                      projectFixturePublicId: fixture.publicId,
+                      channelAssignmentPublicId: assignment.publicId,
+                    };
+                    const absolute = fixture.startAddress + assignment.channelNumber - 1;
+                    return (
+                      <Checkbox
+                        key={assignment.publicId}
+                        checked={bindings.some(current => bindingKey(current) === bindingKey(binding))}
+                        label={`${absolute} · ${assignment.fixtureChannelDefinition.name} · ${assignment.fixtureChannelDefinition.preset}`}
+                        onChange={event => {
+                          toggle(binding, event.currentTarget.checked);
+                        }}
+                      />
+                    );
+                  })}
+              </Stack>
+            ))}
+          </Stack>
+        </ScrollArea.Autosize>
+      )}
+      {unavailable.map(binding => (
+        <Group key={bindingKey(binding)} justify="space-between">
+          <Text size="xs" c="dimmed">
+            {t({ id: 'ProjectDetail.virtualConsole.channelUnavailable', defaultMessage: 'Unavailable' })}
+          </Text>
+          <Button
+            size="compact-xs"
+            variant="subtle"
+            onClick={() => {
+              writeBindings(bindings.filter(current => bindingKey(current) !== bindingKey(binding)));
+            }}
+          >
+            {t({ id: 'ProjectDetail.virtualConsole.channelRemove', defaultMessage: 'Remove' })}
+          </Button>
+        </Group>
+      ))}
+    </Stack>
+  );
+};
+
+const ControlFields = ({ control, fixtures, onDelete, onPatch }: ControlFieldsProperties) => {
   const { t } = useTranslation();
   const [fontOpened, setFontOpened] = useState(false);
   const fontLabel =
@@ -404,6 +528,9 @@ const ControlFields = ({ control, onDelete, onPatch }: ControlFieldsProperties) 
             }}
           />
         </>
+      ) : null}
+      {control.type === 'slider' || control.type === 'button' ? (
+        <ChannelBindings control={control} fixtures={fixtures} onPatch={onPatch} />
       ) : null}
       <Button color="red" variant="light" onClick={onDelete}>
         {t({ id: 'ProjectDetail.virtualConsole.deleteControl', defaultMessage: 'Delete control' })}

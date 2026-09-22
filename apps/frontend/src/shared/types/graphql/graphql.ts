@@ -376,6 +376,13 @@ export type UpdateProjectVirtualConsoleInput = {
   virtualConsole: VirtualConsoleInput;
 };
 
+export type VirtualConsoleChannelBindingInput = {
+  /** Public id of the channel assignment in the fixture mode */
+  channelAssignmentPublicId: string;
+  /** Public id of the patched project fixture */
+  projectFixturePublicId: string;
+};
+
 export type VirtualConsoleControlInput = {
   /** Background color as hex */
   backgroundColor: string;
@@ -383,6 +390,8 @@ export type VirtualConsoleControlInput = {
   borderColor?: string | null | undefined;
   /** Frame border width in pixels */
   borderWidth?: number | null | undefined;
+  /** Fixture channels this slider or button controls */
+  channelBindings?: Array<VirtualConsoleChannelBindingInput> | null | undefined;
   /** Nested controls when this is a frame */
   children?: Array<VirtualConsoleControlInput> | null | undefined;
   /** CSS font family */
@@ -1032,6 +1041,7 @@ export type VirtualConsoleControlFieldsFragment = {
   fontSize: number | null;
   fontWeight: number | null;
   valueType: VirtualConsoleSliderValueType | null;
+  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
 };
 
 export type VirtualConsoleFieldsFragment = {
@@ -1178,13 +1188,24 @@ export type VirtualConsoleFieldsFragment = {
                     fontSize: number | null;
                     fontWeight: number | null;
                     valueType: VirtualConsoleSliderValueType | null;
+                    channelBindings: Array<{
+                      projectFixturePublicId: string;
+                      channelAssignmentPublicId: string;
+                    }> | null;
                   }> | null;
+                  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
                 }> | null;
+                channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
               }> | null;
+              channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
             }> | null;
+            channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
           }> | null;
+          channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
         }> | null;
+        channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
       }> | null;
+      channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
     }>;
   }>;
 };
@@ -1205,8 +1226,9 @@ export type ProjectFixtureFieldsFragment = {
     publicId: string;
     name: string;
     fixtureChannelAssignments: Array<{
+      publicId: string;
       channelNumber: number;
-      fixtureChannelDefinition: { preset: FixtureChannelPreset };
+      fixtureChannelDefinition: { name: string; preset: FixtureChannelPreset };
     }>;
   };
 };
@@ -1424,13 +1446,30 @@ export type GetProjectQuery = {
                         fontSize: number | null;
                         fontWeight: number | null;
                         valueType: VirtualConsoleSliderValueType | null;
+                        channelBindings: Array<{
+                          projectFixturePublicId: string;
+                          channelAssignmentPublicId: string;
+                        }> | null;
+                      }> | null;
+                      channelBindings: Array<{
+                        projectFixturePublicId: string;
+                        channelAssignmentPublicId: string;
                       }> | null;
                     }> | null;
+                    channelBindings: Array<{
+                      projectFixturePublicId: string;
+                      channelAssignmentPublicId: string;
+                    }> | null;
                   }> | null;
+                  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
                 }> | null;
+                channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
               }> | null;
+              channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
             }> | null;
+            channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
           }> | null;
+          channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
         }>;
       }>;
     };
@@ -1450,8 +1489,9 @@ export type GetProjectQuery = {
         publicId: string;
         name: string;
         fixtureChannelAssignments: Array<{
+          publicId: string;
           channelNumber: number;
-          fixtureChannelDefinition: { preset: FixtureChannelPreset };
+          fixtureChannelDefinition: { name: string; preset: FixtureChannelPreset };
         }>;
       };
     }>;
@@ -1558,8 +1598,9 @@ export type AddProjectFixtureMutation = {
       publicId: string;
       name: string;
       fixtureChannelAssignments: Array<{
+        publicId: string;
         channelNumber: number;
-        fixtureChannelDefinition: { preset: FixtureChannelPreset };
+        fixtureChannelDefinition: { name: string; preset: FixtureChannelPreset };
       }>;
     };
   };
@@ -1586,8 +1627,9 @@ export type UpdateProjectFixtureMutation = {
       publicId: string;
       name: string;
       fixtureChannelAssignments: Array<{
+        publicId: string;
         channelNumber: number;
-        fixtureChannelDefinition: { preset: FixtureChannelPreset };
+        fixtureChannelDefinition: { name: string; preset: FixtureChannelPreset };
       }>;
     };
   };
@@ -1842,13 +1884,33 @@ export type ExportProjectsQuery = {
                           fontSize: number | null;
                           fontWeight: number | null;
                           valueType: VirtualConsoleSliderValueType | null;
+                          channelBindings: Array<{
+                            projectFixturePublicId: string;
+                            channelAssignmentPublicId: string;
+                          }> | null;
+                        }> | null;
+                        channelBindings: Array<{
+                          projectFixturePublicId: string;
+                          channelAssignmentPublicId: string;
                         }> | null;
                       }> | null;
+                      channelBindings: Array<{
+                        projectFixturePublicId: string;
+                        channelAssignmentPublicId: string;
+                      }> | null;
+                    }> | null;
+                    channelBindings: Array<{
+                      projectFixturePublicId: string;
+                      channelAssignmentPublicId: string;
                     }> | null;
                   }> | null;
+                  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
                 }> | null;
+                channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
               }> | null;
+              channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
             }> | null;
+            channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
           }>;
         }>;
       } | null;
@@ -2319,6 +2381,17 @@ export const VirtualConsoleControlFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelBindings' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -2479,6 +2552,17 @@ export const VirtualConsoleFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelBindings' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -2534,13 +2618,17 @@ export const ProjectFixtureFieldsFragmentDoc = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'fixtureChannelDefinition' },
                         selectionSet: {
                           kind: 'SelectionSet',
-                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                          ],
                         },
                       },
                     ],
@@ -4057,6 +4145,17 @@ export const GetProjectDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelBindings' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -4254,13 +4353,17 @@ export const GetProjectDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'fixtureChannelDefinition' },
                         selectionSet: {
                           kind: 'SelectionSet',
-                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                          ],
                         },
                       },
                     ],
@@ -4618,13 +4721,17 @@ export const AddProjectFixtureDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'fixtureChannelDefinition' },
                         selectionSet: {
                           kind: 'SelectionSet',
-                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                          ],
                         },
                       },
                     ],
@@ -4725,13 +4832,17 @@ export const UpdateProjectFixtureDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'fixtureChannelDefinition' },
                         selectionSet: {
                           kind: 'SelectionSet',
-                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                          ],
                         },
                       },
                     ],
@@ -5089,6 +5200,17 @@ export const ExportProjectsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelBindings' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+              ],
+            },
+          },
         ],
       },
     },
