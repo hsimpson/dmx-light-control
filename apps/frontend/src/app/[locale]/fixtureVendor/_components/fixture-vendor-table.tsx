@@ -174,7 +174,7 @@ const FixtureVendorTable = () => {
             {t(globalMessages.cancel)}
           </Button>
           <Button color="red" loading={deleting} onClick={() => void handleConfirmDelete()}>
-            {t({ id: 'FixtureVendorList.confirmDelete', defaultMessage: 'Delete vendor' })}
+            {t({ id: 'FixtureVendorList.delete', defaultMessage: 'Delete vendor' })}
           </Button>
         </Group>
       </Modal>

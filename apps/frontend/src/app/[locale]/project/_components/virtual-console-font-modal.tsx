@@ -12,6 +12,7 @@ import {
   VIRTUAL_CONSOLE_FONTS,
   VIRTUAL_CONSOLE_FONT_SIZES,
   VIRTUAL_CONSOLE_FONT_WEIGHTS,
+  virtualConsoleFontWeightMessages,
 } from './virtual-console-fonts';
 
 export type VirtualConsoleFontModalProperties = {
@@ -64,10 +65,7 @@ const VirtualConsoleFontModal = ({ opened, control, onClose, onApply }: VirtualC
           allowDeselect={false}
           data={VIRTUAL_CONSOLE_FONT_WEIGHTS.map(weight => ({
             value: String(weight.value),
-            label: t({
-              id: `ProjectDetail.virtualConsole.fontWeight.${weight.id}`,
-              defaultMessage: weight.label,
-            }),
+            label: t(virtualConsoleFontWeightMessages[weight.id]),
           }))}
           label={t({ id: 'ProjectDetail.virtualConsole.fontWeight', defaultMessage: 'Font weight' })}
           value={fontWeight}

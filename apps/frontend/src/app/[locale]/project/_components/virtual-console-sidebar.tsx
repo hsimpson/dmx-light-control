@@ -34,6 +34,7 @@ import {
   VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE,
   findVirtualConsoleFont,
   findVirtualConsoleFontWeight,
+  virtualConsoleFontWeightMessages,
 } from './virtual-console-fonts';
 import classes from './virtual-console-view.module.css';
 
@@ -229,7 +230,7 @@ const ControlFields = ({ control, onDelete, onPatch }: ControlFieldsProperties) 
   const sizeLabel = `${control.fontSize ?? VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE}px`;
   const weight = findVirtualConsoleFontWeight(control.fontWeight);
   const weightLabel = weight
-    ? t({ id: `ProjectDetail.virtualConsole.fontWeight.${weight.id}`, defaultMessage: weight.label })
+    ? t(virtualConsoleFontWeightMessages[weight.id])
     : t({ id: 'ProjectDetail.virtualConsole.fontDefault', defaultMessage: 'Default' });
 
   return (

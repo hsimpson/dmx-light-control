@@ -70,6 +70,7 @@
   "FixtureVendorList.create": "Hersteller hinzufügen",
   "FixtureVendorList.createError": "Hersteller konnte nicht erstellt werden",
   "FixtureVendorList.created": "Hersteller erstellt",
+  "FixtureVendorList.delete": "Hersteller löschen",
   "FixtureVendorList.deleteError": "Hersteller konnte nicht gelöscht werden",
   "FixtureVendorList.deleted": "Hersteller gelöscht",
   "FixtureVendorList.name": "Name",
