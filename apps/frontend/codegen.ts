@@ -1,5 +1,7 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
-import 'dotenv/config';
+import { config as loadEnv } from 'dotenv';
+
+loadEnv();
 
 const graphqlApiUrl = process.env.NEXT_PUBLIC_GRAPHQL_API_URL;
 if (!graphqlApiUrl) {
