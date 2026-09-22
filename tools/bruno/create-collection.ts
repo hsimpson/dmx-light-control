@@ -1,6 +1,8 @@
 import { loadSchema } from '@graphql-tools/load';
 import { UrlLoader } from '@graphql-tools/url-loader';
-import 'dotenv/config';
+import { config } from 'dotenv';
+
+config();
 import {
   isListType,
   isNonNullType,

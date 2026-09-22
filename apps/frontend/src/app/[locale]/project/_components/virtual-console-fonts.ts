@@ -1,3 +1,5 @@
+import { defineMessages } from 'react-intl';
+
 export const VIRTUAL_CONSOLE_DEFAULT_FONT_FAMILY = 'system-ui, sans-serif';
 export const VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE = 16;
 export const VIRTUAL_CONSOLE_DEFAULT_FONT_WEIGHT = 600;
@@ -11,11 +13,32 @@ export type VirtualConsoleFontOption = {
   value: string;
 };
 
+export type VirtualConsoleFontWeightId = 'regular' | 'medium' | 'semibold' | 'bold';
+
 export type VirtualConsoleFontWeightOption = {
-  id: string;
+  id: VirtualConsoleFontWeightId;
   label: string;
   value: number;
 };
+
+export const virtualConsoleFontWeightMessages = defineMessages({
+  regular: {
+    id: 'ProjectDetail.virtualConsole.fontWeight.regular',
+    defaultMessage: 'Regular',
+  },
+  medium: {
+    id: 'ProjectDetail.virtualConsole.fontWeight.medium',
+    defaultMessage: 'Medium',
+  },
+  semibold: {
+    id: 'ProjectDetail.virtualConsole.fontWeight.semibold',
+    defaultMessage: 'Semibold',
+  },
+  bold: {
+    id: 'ProjectDetail.virtualConsole.fontWeight.bold',
+    defaultMessage: 'Bold',
+  },
+});
 
 /** System fonts offered in the virtual-console font picker. */
 export const VIRTUAL_CONSOLE_FONTS: readonly VirtualConsoleFontOption[] = [

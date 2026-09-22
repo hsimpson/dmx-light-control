@@ -1,4 +1,6 @@
-import 'dotenv/config';
+import { config as loadEnv } from 'dotenv';
+
+loadEnv();
 import type { IGraphQLConfig } from 'graphql-config';
 
 const graphqlApiUrl = process.env.NEXT_PUBLIC_GRAPHQL_API_URL;
