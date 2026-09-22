@@ -287,8 +287,8 @@ importers:
         specifier: ^19.3.0
         version: 19.3.0(react@19.3.0)
       react-intl:
-        specifier: ^12.0.2
-        version: 12.0.2(@types/react@19.3.0)(react@19.3.0)
+        specifier: ^12.1.1
+        version: 12.1.1(@types/react@19.3.0)(react@19.3.0)
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -2123,8 +2123,8 @@ packages:
   '@formatjs/intl-localematcher@0.6.2':
     resolution: {integrity: sha512-XOMO2Hupl0wdd172Y06h6kLpBz6Dv+J4okPLl4LPtzbr8f66WbIoy4ev98EBuZ6ZK4h5ydTN6XneT4QVpD7cdA==}
 
-  '@formatjs/intl@6.0.1':
-    resolution: {integrity: sha512-VdKjXuppUDHwQBcnW5Ahy5nZa3f1q/oqYso5GEsVKtlk4MWj8qhT2zfxq/hfKjJScp2JH5E2MMP5M9xj1dFIYg==}
+  '@formatjs/intl@6.1.1':
+    resolution: {integrity: sha512-kKxt7HZrmlSChntA4OAD5DlaDcKeUJOOvWKA/7ORiM1dQ+GYuiIz6FuDOkMeo/aVzSJ6hA25etFAtCnHEalqJw==}
 
   '@golevelup/nestjs-discovery@7.0.3':
     resolution: {integrity: sha512-wBlSxU1wgBS+x4adwgp2qklXKCC9sufn8zrrSJ1WSCEHb48OBMrn0FskU862CFPwyotJaElRrirHTICAOsl1Mg==}
@@ -7481,8 +7481,8 @@ packages:
     resolution: {integrity: sha512-6xwYfHbajpoF0xLW+iwLkhwgvLoZDfjYfoFNu8ftMoXINzwuymNLd9u/KmwtdT2GbR+/Cz66otEGEVVUHX9QLQ==}
     engines: {node: '>=10.13.0'}
 
-  intl-messageformat@12.0.0:
-    resolution: {integrity: sha512-DHF7YkwmXutmmcZg3hG7pizhjbznSMLM6Sb3frzmmNcW6VPGiiPtItHbP+wbZjbRiX0fIn5yuP31pXuPhbAt2Q==}
+  intl-messageformat@12.1.1:
+    resolution: {integrity: sha512-ZNwni2Ihmge8FZ0O+n7JQXHNAZfFGN/ovLrIxyfFK/bEsnHV2bG3W75Z24GdKmMepiq21SiMfANNPze+xjSCHA==}
 
   invariant@2.2.4:
     resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
@@ -9306,8 +9306,8 @@ packages:
     peerDependencies:
       react: ^19.3.0
 
-  react-intl@12.0.2:
-    resolution: {integrity: sha512-RgS4htmXwa/c46ixwoC/e8KD8NOatH8pukkcdelNziUGoYYMW8hOhLnaccKvWH1bNMeN78opn6P+kZBNRmLQMA==}
+  react-intl@12.1.1:
+    resolution: {integrity: sha512-W+i+eifLA3ZTVmAtdfjU7+2dBPAapJeaFwHGKeEyVv1xYUft6tBEU5z1dmgvJlkgs6mn8phFHP5wQQIfU1SjCQ==}
     peerDependencies:
       '@types/react': '>=18.0.0'
       react: '>=18.0.0'
@@ -12805,11 +12805,11 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@formatjs/intl@6.0.1':
+  '@formatjs/intl@6.1.1':
     dependencies:
       '@formatjs/fast-memoize': 3.1.7
       '@formatjs/icu-messageformat-parser': 3.5.19
-      intl-messageformat: 12.0.0
+      intl-messageformat: 12.1.1
 
   '@golevelup/nestjs-discovery@7.0.3(@nestjs/common@12.0.3(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.0.3)':
     dependencies:
@@ -18939,7 +18939,7 @@ snapshots:
   interpret@3.1.1:
     optional: true
 
-  intl-messageformat@12.0.0:
+  intl-messageformat@12.1.1:
     dependencies:
       '@formatjs/fast-memoize': 3.1.7
       '@formatjs/icu-messageformat-parser': 3.5.19
@@ -21052,12 +21052,12 @@ snapshots:
       react: 19.3.0
       scheduler: 0.28.0
 
-  react-intl@12.0.2(@types/react@19.3.0)(react@19.3.0):
+  react-intl@12.1.1(@types/react@19.3.0)(react@19.3.0):
     dependencies:
       '@formatjs/icu-messageformat-parser': 3.5.19
-      '@formatjs/intl': 6.0.1
+      '@formatjs/intl': 6.1.1
       '@types/react': 19.3.0
-      intl-messageformat: 12.0.0
+      intl-messageformat: 12.1.1
       react: 19.3.0
 
   react-is@16.13.1: {}
