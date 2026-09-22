@@ -19,6 +19,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { createAxisOrientationGizmo } from './axis-orientation-gizmo';
 import { frameCameraOnObject } from './frame-camera';
+import { orbitPanSpeedForDistance, applyLinearOrbitDolly } from './orbit-pan-speed';
 import { createSceneAoComposer } from './scene-ao-composer';
 
 export type ThreeCanvasContext = {
@@ -100,6 +101,7 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
+    applyLinearOrbitDolly(controls);
 
     const frameObject = (object: Object3D) => {
       frameCameraOnObject(camera, controls, object);
@@ -131,6 +133,7 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
     resize();
 
     renderer.setAnimationLoop(() => {
+      controls.panSpeed = orbitPanSpeedForDistance(camera.position.distanceTo(controls.target));
       controls.update();
       aoComposer.render();
       if (orientationGizmo) {

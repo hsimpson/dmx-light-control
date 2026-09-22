@@ -46,7 +46,7 @@ describe('createAxisOrientationGizmo', () => {
     gizmo.dispose();
   });
 
-  it('renders into a top-right scissor inset then restores the full viewport', () => {
+  it('renders into a top-right scissor inset using logical pixels, then restores the full CSS viewport', () => {
     const gizmo = createAxisOrientationGizmo();
     const setViewport = vi.fn();
     const setScissor = vi.fn();
@@ -65,11 +65,10 @@ describe('createAxisOrientationGizmo', () => {
 
     gizmo.render(renderer, 800, 600);
 
-    const pixelRatio = 2;
-    const size = AXIS_GIZMO_SIZE_PX * pixelRatio;
-    const margin = AXIS_GIZMO_MARGIN_PX * pixelRatio;
-    const x = 800 * pixelRatio - margin - size;
-    const y = 600 * pixelRatio - margin - size;
+    const size = AXIS_GIZMO_SIZE_PX;
+    const margin = AXIS_GIZMO_MARGIN_PX;
+    const x = 800 - margin - size;
+    const y = 600 - margin - size;
 
     expect(clearDepth).toHaveBeenCalled();
     expect(setScissorTest).toHaveBeenNthCalledWith(1, true);
@@ -77,7 +76,7 @@ describe('createAxisOrientationGizmo', () => {
     expect(setViewport).toHaveBeenNthCalledWith(1, x, y, size, size);
     expect(render).toHaveBeenCalledWith(expect.any(Scene), expect.any(OrthographicCamera));
     expect(setScissorTest).toHaveBeenLastCalledWith(false);
-    expect(setViewport).toHaveBeenLastCalledWith(0, 0, 800 * pixelRatio, 600 * pixelRatio);
+    expect(setViewport).toHaveBeenLastCalledWith(0, 0, 800, 600);
 
     gizmo.dispose();
   });

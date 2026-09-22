@@ -4,8 +4,12 @@ import {
   applyTransformMatrix,
   applyVisualSize,
   bakeInstancePose,
+  bakeWorldTranslationRotation,
   composeTransformFromPose,
   decomposePose,
+  placeSelectionGroup,
+  releaseSelectionGroup,
+  syncInstanceParent,
 } from './scene-object-pose';
 
 describe('scene-object-pose', () => {
@@ -69,5 +73,78 @@ describe('scene-object-pose', () => {
     expect(pose.rotationX).toBeCloseTo(10);
     expect(pose.rotationY).toBeCloseTo(20);
     expect(pose.rotationZ).toBeCloseTo(30);
+  });
+
+  it('bakes world translation after a parent group is moved', () => {
+    const scene = new Group();
+    const child = new Group();
+    scene.add(child);
+    applyTransformMatrix(
+      child,
+      composeTransformFromPose({
+        positionX: 1,
+        positionY: 0,
+        positionZ: 0,
+        rotationX: 0,
+        rotationY: 0,
+        rotationZ: 0,
+      }),
+    );
+    const group = new Group();
+    scene.add(group);
+    placeSelectionGroup(group, [child]);
+    group.position.x += 2;
+    group.updateMatrixWorld(true);
+    const transform = bakeWorldTranslationRotation(child);
+    const pose = decomposePose(transform);
+    expect(pose.positionX).toBeCloseTo(3);
+    expect(pose.positionZ).toBeCloseTo(0);
+    releaseSelectionGroup(group, scene);
+    expect(child.parent).toBe(scene);
+  });
+
+  it('does not reparent selection-group members onto the scene during a group drag', () => {
+    const scene = new Group();
+    const stand = new Group();
+    const fixture = new Group();
+    scene.add(stand);
+    scene.add(fixture);
+    applyTransformMatrix(
+      stand,
+      composeTransformFromPose({
+        positionX: 4,
+        positionY: 0,
+        positionZ: 0,
+        rotationX: 0,
+        rotationY: 0,
+        rotationZ: 0,
+      }),
+    );
+    applyTransformMatrix(
+      fixture,
+      composeTransformFromPose({
+        positionX: 6,
+        positionY: 0,
+        positionZ: 0,
+        rotationX: 0,
+        rotationY: 0,
+        rotationZ: 0,
+      }),
+    );
+    const group = new Group();
+    scene.add(group);
+    placeSelectionGroup(group, [stand, fixture]);
+    group.position.x += 3;
+    group.updateMatrixWorld(true);
+
+    syncInstanceParent(scene, stand, group);
+    syncInstanceParent(scene, fixture, group);
+    expect(stand.parent).toBe(group);
+    expect(fixture.parent).toBe(group);
+
+    const standPose = decomposePose(bakeWorldTranslationRotation(stand));
+    const fixturePose = decomposePose(bakeWorldTranslationRotation(fixture));
+    expect(standPose.positionX).toBeCloseTo(7);
+    expect(fixturePose.positionX).toBeCloseTo(9);
   });
 });

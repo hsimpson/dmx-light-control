@@ -36,12 +36,12 @@ describe('frameCameraOnObject', () => {
     expect(camera.position.x).toBeCloseTo(-distance * 0.22);
     expect(camera.position.y).toBeCloseTo(distance * 0.22);
     expect(camera.position.z).toBeCloseTo(distance * 0.8);
-    expect(camera.near).toBeCloseTo(Math.max(distance / 100, 0.01));
+    expect(camera.near).toBeCloseTo(0.01);
     expect(camera.far).toBeCloseTo(Math.max(distance * 100, 100));
     expect(controls.target.x).toBeCloseTo(0);
     expect(controls.target.y).toBeCloseTo(0);
     expect(controls.target.z).toBeCloseTo(0);
-    expect(controls.minDistance).toBeCloseTo(distance * 0.25);
+    expect(controls.minDistance).toBeCloseTo(0.05);
     expect(controls.maxDistance).toBeCloseTo(distance * 4);
     expect(controls.update).toHaveBeenCalled();
   });

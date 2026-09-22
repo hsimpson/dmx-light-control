@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { identityTransform } from './project-3d-object.transform';
 import { ProjectEnvironmentType } from './project-environment';
 import {
+  InvalidProject3dObjectTransformException,
   Project3dObjectNameExistsException,
   Project3dObjectNotFoundException,
   ProjectAlreadyExistsException,
@@ -384,6 +385,7 @@ describe('ProjectService', () => {
         {
           publicId: 'pf-1',
           startAddress: 1,
+          transform: identityTransform(),
           createdAt: new Date('2024-01-01T00:00:00.000Z'),
           updatedAt: new Date('2024-01-01T00:00:00.000Z'),
           fixture: { publicId: 'f-1' },
@@ -413,6 +415,7 @@ describe('ProjectService', () => {
       projectFixtures: [
         {
           publicId: 'pf-1',
+          transform: identityTransform(),
           channelMode: {
             fixtureChannelAssignments: [{ channelNumber: 1 }],
           },
@@ -439,6 +442,7 @@ describe('ProjectService', () => {
     projectFixtureRepository.findOneByPublicId.mockResolvedValue({
       publicId: 'pf-1',
       startAddress: 1,
+      transform: identityTransform(),
       createdAt: new Date('2024-01-01T00:00:00.000Z'),
       updatedAt: new Date('2024-01-01T00:00:00.000Z'),
       fixture: { publicId: 'f-1' },
@@ -458,7 +462,10 @@ describe('ProjectService', () => {
         channelModePublicId: 'm-1',
         startAddress: 1,
       }),
-    ).resolves.toMatchObject({ publicId: 'pf-1', startAddress: 1 });
+    ).resolves.toMatchObject({ publicId: 'pf-1', startAddress: 1, transform: identityTransform() });
+    expect(projectFixtureRepository.createOne).toHaveBeenCalledWith(
+      expect.objectContaining({ transform: identityTransform() }),
+    );
   });
 
   it('addProjectFixture throws when project is missing', async () => {
@@ -519,6 +526,7 @@ describe('ProjectService', () => {
       .mockResolvedValueOnce({
         publicId: 'pf-1',
         startAddress: 5,
+        transform: identityTransform(),
         createdAt: new Date('2024-01-01T00:00:00.000Z'),
         updatedAt: new Date('2024-01-01T00:00:00.000Z'),
         fixture: { publicId: 'f-1' },
@@ -542,6 +550,78 @@ describe('ProjectService', () => {
       startAddress: 5,
       fixtureChannelModeId: 4,
     });
+  });
+
+  it('updateProjectFixture persists a valid transform', async () => {
+    const { service, projectFixtureRepository, fixtureChannelModeRepository } = build();
+    const pose = identityTransform(1, 2, 3);
+    projectFixtureRepository.findOneByPublicId
+      .mockResolvedValueOnce({
+        id: 1,
+        publicId: 'pf-1',
+        projectId: 10,
+        fixtureId: 2,
+        fixtureChannelModeId: 3,
+        startAddress: 5,
+      })
+      .mockResolvedValueOnce({
+        publicId: 'pf-1',
+        startAddress: 5,
+        transform: pose,
+        createdAt: new Date('2024-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+        fixture: { publicId: 'f-1' },
+        fixtureChannelMode: {
+          publicId: 'm-1',
+          name: '4ch',
+          createdAt: new Date('2024-01-01T00:00:00.000Z'),
+          updatedAt: new Date('2024-01-01T00:00:00.000Z'),
+          fixtureChannelAssignments: [],
+        },
+      });
+    fixtureChannelModeRepository.findOneByIdWithAssignments.mockResolvedValue({
+      id: 3,
+      publicId: 'm-1',
+      fixtureId: 2,
+      fixtureChannelAssignments: [
+        { channelNumber: 1, fixtureChannelDefinition: { preset: FixtureChannelPreset.IntensityDimmer } },
+      ],
+    });
+    projectFixtureRepository.updateOneByPublicId.mockResolvedValue({ publicId: 'pf-1' });
+
+    await expect(service.updateProjectFixture({ publicId: 'pf-1', transform: pose })).resolves.toMatchObject({
+      publicId: 'pf-1',
+      transform: pose,
+    });
+    expect(projectFixtureRepository.updateOneByPublicId).toHaveBeenCalledWith('pf-1', {
+      startAddress: 5,
+      fixtureChannelModeId: 3,
+      transform: pose,
+    });
+  });
+
+  it('updateProjectFixture rejects a transform that is not 16 finite numbers', async () => {
+    const { service, projectFixtureRepository, fixtureChannelModeRepository } = build();
+    projectFixtureRepository.findOneByPublicId.mockResolvedValue({
+      id: 1,
+      publicId: 'pf-1',
+      projectId: 10,
+      fixtureId: 2,
+      fixtureChannelModeId: 3,
+      startAddress: 5,
+    });
+    fixtureChannelModeRepository.findOneByIdWithAssignments.mockResolvedValue({
+      id: 3,
+      publicId: 'm-1',
+      fixtureId: 2,
+      fixtureChannelAssignments: [
+        { channelNumber: 1, fixtureChannelDefinition: { preset: FixtureChannelPreset.IntensityDimmer } },
+      ],
+    });
+
+    await expect(service.updateProjectFixture({ publicId: 'pf-1', transform: [1, 0, 0, 1] })).rejects.toBeInstanceOf(
+      InvalidProject3dObjectTransformException,
+    );
   });
 
   it('updateProjectFixture throws when instance is missing', async () => {

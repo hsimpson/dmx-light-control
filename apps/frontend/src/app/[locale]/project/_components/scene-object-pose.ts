@@ -85,3 +85,43 @@ export function bakeInstancePose(
   visual.scale.set(sizeX, sizeY, sizeZ);
   return { transform: translationRotation.toArray(), sizeX, sizeY, sizeZ };
 }
+
+export function bakeWorldTranslationRotation(object: Object3D): number[] {
+  object.updateMatrixWorld(true);
+  const position = new Vector3();
+  const quaternion = new Quaternion();
+  const scale = new Vector3();
+  object.matrixWorld.decompose(position, quaternion, scale);
+  return new Matrix4().compose(position, quaternion, new Vector3(1, 1, 1)).toArray();
+}
+
+export function placeSelectionGroup(group: Object3D, members: Object3D[]): void {
+  const center = new Vector3();
+  for (const member of members) {
+    member.updateMatrixWorld(true);
+    center.add(new Vector3().setFromMatrixPosition(member.matrixWorld));
+  }
+  if (members.length > 0) {
+    center.divideScalar(members.length);
+  }
+  group.position.copy(center);
+  group.quaternion.identity();
+  group.scale.set(1, 1, 1);
+  group.updateMatrixWorld(true);
+  for (const member of members) {
+    group.attach(member);
+  }
+}
+
+export function releaseSelectionGroup(group: Object3D, parent: Object3D): void {
+  for (const member of [...group.children]) {
+    parent.attach(member);
+  }
+}
+
+export function syncInstanceParent(scene: Object3D, root: Object3D, selectionGroup: Object3D | null): void {
+  if (selectionGroup !== null && root.parent === selectionGroup) {
+    return;
+  }
+  scene.add(root);
+}

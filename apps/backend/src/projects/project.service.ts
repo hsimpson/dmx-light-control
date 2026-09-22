@@ -10,7 +10,7 @@ import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
 import { UpdateProjectVirtualConsoleInput } from './dto/virtual-console.dto';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from './project-3d-object-name';
-import { defaultTransformForObject } from './project-3d-object.transform';
+import { defaultTransformForObject, identityTransform } from './project-3d-object.transform';
 import { assertValidTransform, resolveSizesForType } from './project-3d-object.validation';
 import { optionalEnvironmentType } from './project-environment';
 import {
@@ -95,6 +95,7 @@ function mapProjectFixtureToDto(fixture: LoadedProjectFixture) {
     createdAt: fixture.createdAt,
     updatedAt: fixture.updatedAt,
     startAddress: fixture.startAddress,
+    transform: [...fixture.transform],
     fixture: fixture.fixture,
     channelMode: {
       publicId: mode.publicId,
@@ -264,6 +265,7 @@ export class ProjectService {
       fixtureId: fixture.id,
       fixtureChannelModeId: mode.id,
       startAddress: input.startAddress,
+      transform: identityTransform(),
     });
     if (!created?.publicId) {
       throw new ProjectFixtureNotFoundException(input.projectPublicId);
@@ -305,9 +307,14 @@ export class ProjectService {
     );
     assertNoPatchOverlap(startAddress, channelCountFromMode(modeForValidation), occupied);
 
+    if (input.transform !== undefined) {
+      assertValidTransform(input.transform);
+    }
+
     const updated = await this.projectFixtureRepository.updateOneByPublicId(input.publicId, {
       startAddress,
       fixtureChannelModeId,
+      ...(input.transform !== undefined ? { transform: input.transform } : {}),
     });
     if (!updated?.publicId) {
       throw new ProjectFixtureNotFoundException(input.publicId);

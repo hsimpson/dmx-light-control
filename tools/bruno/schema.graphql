@@ -1006,6 +1006,11 @@ input ImportProjectFixtureInput {
   startAddress: Int!
 
   """
+  Column-major 4×4 transform (16 values); omitted documents use identity
+  """
+  transform: [Float!]
+
+  """
   The date and time when the entity was last updated
   """
   updatedAt: DateTime
@@ -1433,6 +1438,11 @@ type ProjectExportFixtureDto {
   startAddress: Int!
 
   """
+  Column-major 4×4 transform (16 values, translation and rotation only)
+  """
+  transform: [Float!]!
+
+  """
   The date and time when the entity was last updated
   """
   updatedAt: DateTime!
@@ -1568,6 +1578,11 @@ type ProjectFixtureDto {
   startAddress: Int!
 
   """
+  Column-major 4×4 transform (16 values, translation and rotation only)
+  """
+  transform: [Float!]!
+
+  """
   The date and time when the entity was last updated
   """
   updatedAt: DateTime!
@@ -1583,6 +1598,11 @@ type ProjectFixtureFixtureDto {
   The vendor of the fixture
   """
   fixtureVendor: FixtureVendorDto!
+
+  """
+  3D model path relative to the API origin
+  """
+  model3dPath: String
 
   """
   The name of the fixture
@@ -1891,6 +1911,11 @@ input UpdateProjectFixtureInput {
   The DMX start address (1–512)
   """
   startAddress: Int
+
+  """
+  Column-major 4×4 transform (16 values, translation and rotation only)
+  """
+  transform: [Float!]
 }
 
 input UpdateProjectInput {
@@ -1959,11 +1984,6 @@ type VirtualConsoleControlDto {
   children: [VirtualConsoleControlDto!]
 
   """
-  Foreground color as hex
-  """
-  foregroundColor: String
-
-  """
   CSS font family
   """
   fontFamily: String
@@ -1977,6 +1997,11 @@ type VirtualConsoleControlDto {
   CSS font weight
   """
   fontWeight: Int
+
+  """
+  Foreground color as hex
+  """
+  foregroundColor: String
 
   """
   Height in pixels
@@ -2046,11 +2071,6 @@ input VirtualConsoleControlInput {
   children: [VirtualConsoleControlInput!]
 
   """
-  Foreground color as hex
-  """
-  foregroundColor: String
-
-  """
   CSS font family
   """
   fontFamily: String
@@ -2064,6 +2084,11 @@ input VirtualConsoleControlInput {
   CSS font weight
   """
   fontWeight: Int
+
+  """
+  Foreground color as hex
+  """
+  foregroundColor: String
 
   """
   Height in pixels

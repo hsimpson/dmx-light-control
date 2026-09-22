@@ -1,6 +1,6 @@
-import { BoxGeometry, Group, Mesh, Ray, Vector3 } from 'three';
+import { BoxGeometry, Group, Mesh, Ray, Raycaster, Vector3 } from 'three';
 import { describe, expect, it } from 'vitest';
-import { pickClosestObjectByBoundingBox } from './scene-object-pick';
+import { pickClosestObjectByBoundingBox, pickClosestSceneObject } from './scene-object-pick';
 
 describe('pickClosestObjectByBoundingBox', () => {
   it('selects an object when the ray hits its bounding box', () => {
@@ -59,5 +59,54 @@ describe('pickClosestObjectByBoundingBox', () => {
 
     const ray = new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, -1));
     expect(pickClosestObjectByBoundingBox(ray, [empty, mesh])).toBe(mesh);
+  });
+});
+
+describe('pickClosestSceneObject', () => {
+  it('prefers a mesh hit over a closer padded bounding box', () => {
+    const stand = new Group();
+    stand.add(new Mesh(new BoxGeometry(0.05, 2, 0.05)));
+    stand.position.set(0, 1, -2);
+    stand.updateMatrixWorld(true);
+
+    const fixture = new Group();
+    fixture.add(new Mesh(new BoxGeometry(0.2, 0.2, 0.2)));
+    fixture.position.set(0.12, 1, -4);
+    fixture.updateMatrixWorld(true);
+
+    const ray = new Ray(new Vector3(0.12, 1, 0), new Vector3(0, 0, -1));
+    const raycaster = new Raycaster();
+    raycaster.ray.copy(ray);
+    expect(pickClosestObjectByBoundingBox(ray, [stand, fixture])).toBe(stand);
+    expect(pickClosestSceneObject(raycaster, [stand, fixture])).toBe(fixture);
+  });
+
+  it('falls back to the padded bounding box when the ray misses every mesh', () => {
+    const object = new Group();
+    object.add(new Mesh(new BoxGeometry(0.05, 2, 0.05)));
+    object.position.set(0, 1, -4);
+    object.updateMatrixWorld(true);
+
+    const ray = new Ray(new Vector3(0.1, 1, 0), new Vector3(0, 0, -1));
+    const raycaster = new Raycaster();
+    raycaster.ray.copy(ray);
+    expect(pickClosestSceneObject(raycaster, [object])).toBe(object);
+  });
+
+  it('does not pick a selection highlight even when it is closer than a fixture', () => {
+    const highlight = new Mesh(new BoxGeometry(1, 1, 1));
+    highlight.userData.isSelectionHighlight = true;
+    highlight.position.set(0, 0, -2);
+    highlight.updateMatrixWorld(true);
+
+    const object = new Group();
+    object.add(new Mesh(new BoxGeometry(1, 1, 1)));
+    object.position.set(0, 0, -6);
+    object.updateMatrixWorld(true);
+
+    const ray = new Ray(new Vector3(0, 0, 0), new Vector3(0, 0, -1));
+    const raycaster = new Raycaster();
+    raycaster.ray.copy(ray);
+    expect(pickClosestSceneObject(raycaster, [highlight, object])).toBe(object);
   });
 });

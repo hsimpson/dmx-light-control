@@ -107,6 +107,7 @@ erDiagram
         integer fixture_id FK
         integer fixture_channel_mode_id FK
         integer start_address
+        doubleprecision transform
         timestamp created_at
         timestamp updated_at
     }

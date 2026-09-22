@@ -5,6 +5,7 @@ import { fixture, fixtureChannelMode } from '@/fixtures/entities';
 import { ImportProject3dObjectInput, ImportProjectsInput } from '@/projects/dto/import-projects.dto';
 import { project, project3dObject, projectFixture, sceneObjectType } from '@/projects/entities';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from '@/projects/project-3d-object-name';
+import { identityTransform } from '@/projects/project-3d-object.transform';
 import { assertValidTransform, resolveSizesForType } from '@/projects/project-3d-object.validation';
 import { environmentTypeForImport, optionalEnvironmentType } from '@/projects/project-environment';
 import { mapProjectsToExportDocument, ProjectExportDocument } from '@/projects/project-export.mapper';
@@ -216,11 +217,15 @@ export class ProjectImportExportService {
       assertNoPatchOverlap(instance.startAddress, channelCount, occupied);
       occupied.push({ startAddress: instance.startAddress, channelCount });
 
+      const transform = instance.transform ?? identityTransform();
+      assertValidTransform(transform);
+
       await tx.insert(projectFixture).values({
         projectId,
         fixtureId: fixtureRow.id,
         fixtureChannelModeId: modeRow.id,
         startAddress: instance.startAddress,
+        transform,
         ...optionalPublicId(instance.publicId),
         ...optionalImportTimestamps(instance),
       });

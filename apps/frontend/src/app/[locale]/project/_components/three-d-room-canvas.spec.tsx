@@ -15,6 +15,7 @@ const {
   capturedThreeCanvasProps,
   capturedRenderer,
   createdMeshes,
+  createdBox3Helpers,
 } = vi.hoisted(() => ({
   transformControlsConstruct: vi.fn(),
   intersectObjects: vi.fn(() => [] as { object: { userData: Record<string, unknown>; parent: unknown } }[]),
@@ -23,6 +24,7 @@ const {
   capturedThreeCanvasProps: { current: undefined as { showOrientationGizmo?: boolean } | undefined },
   capturedRenderer: { current: undefined as { shadowMap: { enabled: boolean; type: number } } | undefined },
   createdMeshes: [] as { name: string; castShadow: boolean; receiveShadow: boolean }[],
+  createdBox3Helpers: [] as { color: unknown; userData: Record<string, unknown>; disposed?: boolean }[],
 }));
 
 vi.mock('@/lib/three/three-canvas', async importOriginal => {
@@ -47,6 +49,10 @@ vi.mock('./scene-object-pose', () => ({
   applyTransformMatrix: vi.fn(),
   applyVisualSize: vi.fn(),
   bakeInstancePose: vi.fn(),
+  bakeWorldTranslationRotation: vi.fn(),
+  placeSelectionGroup: vi.fn(),
+  releaseSelectionGroup: vi.fn(),
+  syncInstanceParent: vi.fn(),
 }));
 
 vi.mock('@/lib/three/frame-camera', () => ({
@@ -144,7 +150,7 @@ vi.mock('three', () => {
         return undefined;
       }
     },
-    Box3: class {
+    Box3: class Box3 {
       public setFromObject() {
         return this;
       }
@@ -154,8 +160,51 @@ vi.mock('three', () => {
       public expandByScalar() {
         return this;
       }
+      public copy() {
+        return this;
+      }
+      public clone() {
+        return new Box3();
+      }
+      public getSize(target: { set?: (x: number, y: number, z: number) => unknown }) {
+        target.set?.(1, 1, 1);
+        return target;
+      }
+    },
+    Box3Helper: class {
+      public userData: Record<string, unknown> = {};
+      public visible = true;
+      public disposed = false;
+      public geometry = {
+        dispose: () => {
+          this.disposed = true;
+        },
+      };
+      public material = {
+        dispose() {
+          return undefined;
+        },
+      };
+      public constructor(
+        public readonly box: unknown,
+        public readonly color: unknown,
+      ) {
+        createdBox3Helpers.push(this);
+      }
+      public raycast() {
+        return undefined;
+      }
     },
     Vector3: class {
+      public x = 0;
+      public y = 0;
+      public z = 0;
+      public set(x: number, y: number, z: number) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        return this;
+      }
       public distanceToSquared() {
         return Number.POSITIVE_INFINITY;
       }
@@ -188,8 +237,24 @@ vi.mock('three', () => {
     },
     Group: class {
       public userData: Record<string, unknown> = {};
+      public children: unknown[] = [];
+      public parent: unknown = null;
+      public position = new Position();
+      public quaternion = {
+        identity() {
+          return this;
+        },
+      };
+      public scale = new Position();
       public add() {
         return this;
+      }
+      public attach(object: unknown) {
+        this.children.push(object);
+        return this;
+      }
+      public updateMatrixWorld() {
+        return undefined;
       }
       public getObjectByName() {
         return null;
@@ -371,6 +436,7 @@ describe('ThreeDRoomCanvas', () => {
     capturedThreeCanvasProps.current = undefined;
     capturedRenderer.current = undefined;
     createdMeshes.length = 0;
+    createdBox3Helpers.length = 0;
   });
 
   it('opts the room canvas into the orientation gizmo', () => {
@@ -550,7 +616,7 @@ describe('ThreeDRoomCanvas', () => {
       />,
     );
     fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
-    expect(onSelectObject).toHaveBeenCalledWith(null);
+    expect(onSelectObject).toHaveBeenCalledWith(null, { additive: false });
   });
 
   it('selects an object even when gizmo helpers are under the pointer', () => {
@@ -587,8 +653,8 @@ describe('ThreeDRoomCanvas', () => {
       />,
     );
     fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
-    expect(onSelectObject).toHaveBeenCalledWith('obj-1');
-    expect(onSelectObject).not.toHaveBeenCalledWith(null);
+    expect(onSelectObject).toHaveBeenCalledWith('obj-1', { additive: false });
+    expect(onSelectObject).not.toHaveBeenCalledWith(null, expect.anything());
   });
 
   it('clears selection when the click misses objects even if gizmos are under the pointer', () => {
@@ -621,7 +687,7 @@ describe('ThreeDRoomCanvas', () => {
       />,
     );
     fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
-    expect(onSelectObject).toHaveBeenCalledWith(null);
+    expect(onSelectObject).toHaveBeenCalledWith(null, { additive: false });
   });
 
   it('does not change selection after orbiting the camera', () => {
@@ -717,5 +783,183 @@ describe('ThreeDRoomCanvas', () => {
       />,
     );
     expect(transformControlsConstruct).toHaveBeenCalled();
+  });
+
+  it('loads the default fixture GLB when model3dPath is missing', () => {
+    load.mockClear();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            fixture: { model3dPath: null },
+          },
+        ]}
+      />,
+    );
+    expect(load).toHaveBeenCalled();
+    expect(String(load.mock.calls.at(-1)?.[0])).toContain('/assets/fixtures/_defaults/model.glb');
+  });
+
+  it('loads the catalog fixture model and attaches gizmos when selected', () => {
+    load.mockClear();
+    transformControlsConstruct.mockClear();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            fixture: { model3dPath: '/assets/fixtures/acme/par/model.glb' },
+          },
+        ]}
+        selectedFixturePublicId="pf-1"
+        scaleGizmoEnabled
+      />,
+    );
+    expect(String(load.mock.calls.at(-1)?.[0])).toContain('/assets/fixtures/acme/par/model.glb');
+    expect(transformControlsConstruct.mock.calls.length).toBeGreaterThanOrEqual(2);
+    const onLoad = load.mock.calls.at(-1)?.[1] as
+      ((gltf: { scene: { name?: string; traverse: (cb: (object: unknown) => void) => void } }) => void) | undefined;
+    const instanceMesh = { isMesh: true, castShadow: false, receiveShadow: false, material: {} };
+    onLoad?.({
+      scene: {
+        traverse(callback: (object: unknown) => void) {
+          callback(instanceMesh);
+        },
+      },
+    });
+    expect(instanceMesh.castShadow).toBe(true);
+    expect(instanceMesh.receiveShadow).toBe(true);
+  });
+
+  it('selects a fixture from a bounding-box pick', () => {
+    const onSelectFixture = vi.fn();
+    const onSelectObject = vi.fn();
+    intersectBox.mockReturnValue({});
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            fixture: { model3dPath: null },
+          },
+        ]}
+        onSelectFixture={onSelectFixture}
+        onSelectObject={onSelectObject}
+      />,
+    );
+    fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'));
+    expect(onSelectFixture).toHaveBeenCalledWith('pf-1', { additive: false });
+    expect(onSelectObject).not.toHaveBeenCalled();
+  });
+
+  it('additive-clicks a fixture without clearing the object callback', () => {
+    const onSelectFixture = vi.fn();
+    const onSelectObject = vi.fn();
+    intersectBox.mockReturnValue({});
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            fixture: { model3dPath: null },
+          },
+        ]}
+        onSelectFixture={onSelectFixture}
+        onSelectObject={onSelectObject}
+      />,
+    );
+    fireEvent.pointerUp(screen.getByTestId('three-d-room-canvas'), { shiftKey: true });
+    expect(onSelectFixture).toHaveBeenCalledWith('pf-1', { additive: true });
+    expect(onSelectObject).not.toHaveBeenCalled();
+  });
+
+  const boxObject = (publicId: string) => ({
+    publicId,
+    sizeX: 1,
+    sizeY: 1,
+    sizeZ: 1,
+    transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    sceneObjectType: {
+      geometryKind: SceneObjectGeometryKind.Box,
+      modelPath: null,
+      isScalable: true,
+    },
+  });
+
+  it('draws a yellow unpickable box per selected object and removes it when cleared', () => {
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    const { rerender } = renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        objects={[boxObject('obj-1')]}
+        selectedObjectPublicId="obj-1"
+      />,
+    );
+    expect(createdBox3Helpers).toHaveLength(1);
+    expect(createdBox3Helpers[0]?.color).toBe(0xffff00);
+    expect(createdBox3Helpers[0]?.userData.isSelectionHighlight).toBe(true);
+
+    rerender(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        objects={[boxObject('obj-1')]}
+        selectedObjectPublicId={null}
+      />,
+    );
+    expect(createdBox3Helpers[0]?.disposed).toBe(true);
+  });
+
+  it('draws a selection box for each selected object and fixture', () => {
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        objects={[boxObject('obj-1'), boxObject('obj-2')]}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            fixture: { model3dPath: null },
+          },
+        ]}
+        selectedObjectPublicIds={['obj-1', 'obj-2']}
+        selectedFixturePublicIds={['pf-1']}
+      />,
+    );
+    expect(createdBox3Helpers).toHaveLength(3);
   });
 });

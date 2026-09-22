@@ -52,6 +52,10 @@ describe('GraphQL schema generation', () => {
     expect(schema.getMutationType()?.getFields().updateProjectVirtualConsole).toBeDefined();
     expect(schema.getType('VirtualConsoleDto')).toBeDefined();
     expect(schema.getMutationType()?.getFields().deleteProject).toBeDefined();
+    const projectFixtureDto = schema.getType('ProjectFixtureDto') as GraphQLObjectType | undefined;
+    expect(projectFixtureDto?.getFields().transform).toBeDefined();
+    const projectFixtureFixtureDto = schema.getType('ProjectFixtureFixtureDto') as GraphQLObjectType | undefined;
+    expect(projectFixtureFixtureDto?.getFields().model3dPath).toBeDefined();
     expect(schema.getMutationType()?.getFields().addProjectFixture).toBeDefined();
     expect(schema.getMutationType()?.getFields().updateProjectFixture).toBeDefined();
     expect(schema.getMutationType()?.getFields().deleteProjectFixture).toBeDefined();

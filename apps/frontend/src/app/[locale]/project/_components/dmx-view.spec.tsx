@@ -11,10 +11,12 @@ const projectFixture = {
   __typename: 'ProjectFixtureDto' as const,
   publicId: 'pf-1',
   startAddress: 1,
+  transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
   fixture: {
     __typename: 'FixtureDto' as const,
     publicId: 'fix-1',
     name: 'PAR 64',
+    model3dPath: null,
     fixtureVendor: { __typename: 'FixtureVendorDto' as const, publicId: 'vendor-1', name: 'Generic' },
   },
   channelMode: {

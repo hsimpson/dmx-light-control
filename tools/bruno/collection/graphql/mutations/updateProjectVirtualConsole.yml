@@ -56,12 +56,14 @@ graphql:
                 publicId
                 updatedAt
               }
+              model3dPath
               name
               publicId
               updatedAt
             }
             publicId
             startAddress
+            transform
             updatedAt
           }
           publicId
@@ -77,6 +79,9 @@ graphql:
                 borderColor
                 borderWidth
                 children
+                fontFamily
+                fontSize
+                fontWeight
                 foregroundColor
                 height
                 id
@@ -92,6 +97,7 @@ graphql:
               name
             }
             schemaVersion
+            snap
             width
           }
         }
@@ -104,6 +110,7 @@ graphql:
             "height": null,
             "pages": [],
             "schemaVersion": null,
+            "snap": null,
             "width": null
           }
         }

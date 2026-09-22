@@ -212,6 +212,8 @@ export type ImportProjectFixtureInput = {
   publicId?: string | null | undefined;
   /** The DMX start address of the patched fixture instance */
   startAddress: number;
+  /** Column-major 4×4 transform (16 values); omitted documents use identity */
+  transform?: Array<number> | null | undefined;
   /** The date and time when the entity was last updated */
   updatedAt?: Date | null | undefined;
 };
@@ -348,6 +350,8 @@ export type UpdateProjectFixtureInput = {
   publicId: string;
   /** The DMX start address (1–512) */
   startAddress?: number | null | undefined;
+  /** Column-major 4×4 transform (16 values, translation and rotation only) */
+  transform?: Array<number> | null | undefined;
 };
 
 export type UpdateProjectInput = {
@@ -381,14 +385,14 @@ export type VirtualConsoleControlInput = {
   borderWidth?: number | null | undefined;
   /** Nested controls when this is a frame */
   children?: Array<VirtualConsoleControlInput> | null | undefined;
-  /** Foreground color as hex */
-  foregroundColor?: string | null | undefined;
   /** CSS font family */
   fontFamily?: string | null | undefined;
   /** Font size in pixels */
   fontSize?: number | null | undefined;
   /** CSS font weight */
   fontWeight?: number | null | undefined;
+  /** Foreground color as hex */
+  foregroundColor?: string | null | undefined;
   /** Height in pixels */
   height: number;
   /** Stable id of this control */
@@ -1188,9 +1192,15 @@ export type VirtualConsoleFieldsFragment = {
 export type ProjectFixtureFieldsFragment = {
   publicId: string;
   startAddress: number;
+  transform: Array<number>;
   createdAt: Date;
   updatedAt: Date;
-  fixture: { publicId: string; name: string; fixtureVendor: { publicId: string; name: string } };
+  fixture: {
+    publicId: string;
+    name: string;
+    model3dPath: string | null;
+    fixtureVendor: { publicId: string; name: string };
+  };
   channelMode: {
     publicId: string;
     name: string;
@@ -1427,9 +1437,15 @@ export type GetProjectQuery = {
     projectFixtures: Array<{
       publicId: string;
       startAddress: number;
+      transform: Array<number>;
       createdAt: Date;
       updatedAt: Date;
-      fixture: { publicId: string; name: string; fixtureVendor: { publicId: string; name: string } };
+      fixture: {
+        publicId: string;
+        name: string;
+        model3dPath: string | null;
+        fixtureVendor: { publicId: string; name: string };
+      };
       channelMode: {
         publicId: string;
         name: string;
@@ -1529,9 +1545,15 @@ export type AddProjectFixtureMutation = {
   addProjectFixture: {
     publicId: string;
     startAddress: number;
+    transform: Array<number>;
     createdAt: Date;
     updatedAt: Date;
-    fixture: { publicId: string; name: string; fixtureVendor: { publicId: string; name: string } };
+    fixture: {
+      publicId: string;
+      name: string;
+      model3dPath: string | null;
+      fixtureVendor: { publicId: string; name: string };
+    };
     channelMode: {
       publicId: string;
       name: string;
@@ -1551,9 +1573,15 @@ export type UpdateProjectFixtureMutation = {
   updateProjectFixture: {
     publicId: string;
     startAddress: number;
+    transform: Array<number>;
     createdAt: Date;
     updatedAt: Date;
-    fixture: { publicId: string; name: string; fixtureVendor: { publicId: string; name: string } };
+    fixture: {
+      publicId: string;
+      name: string;
+      model3dPath: string | null;
+      fixtureVendor: { publicId: string; name: string };
+    };
     channelMode: {
       publicId: string;
       name: string;
@@ -1654,6 +1682,7 @@ export type ExportProjectsQuery = {
         startAddress: number;
         fixturePublicId: string;
         channelModePublicId: string;
+        transform: Array<number>;
         createdAt: Date;
         updatedAt: Date;
       }>;
@@ -2467,6 +2496,7 @@ export const ProjectFixtureFieldsFragmentDoc = {
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'startAddress' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'fixture' },
@@ -2475,6 +2505,7 @@ export const ProjectFixtureFieldsFragmentDoc = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },
@@ -4185,6 +4216,7 @@ export const GetProjectDocument = {
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'startAddress' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'fixture' },
@@ -4193,6 +4225,7 @@ export const GetProjectDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },
@@ -4547,6 +4580,7 @@ export const AddProjectFixtureDocument = {
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'startAddress' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'fixture' },
@@ -4555,6 +4589,7 @@ export const AddProjectFixtureDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },
@@ -4652,6 +4687,7 @@ export const UpdateProjectFixtureDocument = {
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'startAddress' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'fixture' },
@@ -4660,6 +4696,7 @@ export const UpdateProjectFixtureDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },
@@ -4985,6 +5022,7 @@ export const ExportProjectsDocument = {
                             { kind: 'Field', name: { kind: 'Name', value: 'startAddress' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicId' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'channelModePublicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
                           ],

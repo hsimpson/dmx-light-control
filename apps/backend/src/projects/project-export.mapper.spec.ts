@@ -36,7 +36,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 8,
+      schemaVersion: 9,
       projects: [
         {
           publicId: 'a',
@@ -80,6 +80,7 @@ describe('mapProjectsToExportDocument', () => {
             {
               publicId: null,
               startAddress: 1,
+              transform: identityTransform(),
               fixture: null,
               fixtureChannelMode: null,
               ...timestamps,
@@ -101,7 +102,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 8,
+      schemaVersion: 9,
       projects: [
         {
           publicId: '',
@@ -117,6 +118,7 @@ describe('mapProjectsToExportDocument', () => {
               startAddress: 1,
               fixturePublicId: '',
               channelModePublicId: '',
+              transform: identityTransform(),
               ...timestamps,
             },
           ],
@@ -176,6 +178,7 @@ describe('mapProjectsToExportDocument', () => {
           {
             publicId: 'pf-b',
             startAddress: 1,
+            transform: identityTransform(),
             fixture: { publicId: 'f-1' },
             fixtureChannelMode: { publicId: 'm-1' },
             ...timestamps,
@@ -183,6 +186,7 @@ describe('mapProjectsToExportDocument', () => {
           {
             publicId: 'pf-a',
             startAddress: 1,
+            transform: identityTransform(),
             fixture: { publicId: 'f-1' },
             fixtureChannelMode: { publicId: 'm-1' },
             ...timestamps,
@@ -208,6 +212,7 @@ describe('mapProjectsToExportDocument', () => {
             {
               publicId: 'pf-2',
               startAddress: 10,
+              transform: identityTransform(2, 0, 0),
               fixture: { publicId: 'f-1' },
               fixtureChannelMode: { publicId: 'm-1' },
               ...timestamps,
@@ -215,6 +220,7 @@ describe('mapProjectsToExportDocument', () => {
             {
               publicId: 'pf-1',
               startAddress: 1,
+              transform: identityTransform(1, 0, 0),
               fixture: { publicId: 'f-1' },
               fixtureChannelMode: { publicId: 'm-1' },
               ...timestamps,
@@ -246,7 +252,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 8,
+      schemaVersion: 9,
       projects: [
         {
           publicId: 'p',
@@ -262,6 +268,7 @@ describe('mapProjectsToExportDocument', () => {
               startAddress: 1,
               fixturePublicId: 'f-1',
               channelModePublicId: 'm-1',
+              transform: identityTransform(1, 0, 0),
               ...timestamps,
             },
             {
@@ -269,6 +276,7 @@ describe('mapProjectsToExportDocument', () => {
               startAddress: 10,
               fixturePublicId: 'f-1',
               channelModePublicId: 'm-1',
+              transform: identityTransform(2, 0, 0),
               ...timestamps,
             },
           ],

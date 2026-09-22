@@ -2,13 +2,14 @@ import { ExportTimestamps, ExportTimestampSource, mapExportTimestamps } from '@/
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { VirtualConsoleDocument } from '@/projects/virtual-console';
 
-export const PROJECT_EXPORT_SCHEMA_VERSION = 8;
+export const PROJECT_EXPORT_SCHEMA_VERSION = 9;
 
 export type ProjectExportFixture = {
   publicId: string;
   startAddress: number;
   fixturePublicId: string;
   channelModePublicId: string;
+  transform: number[];
 } & ExportTimestamps;
 
 export type ProjectExport3dObject = {
@@ -42,6 +43,7 @@ export type ProjectExportDocument = {
 export type ProjectExportFixtureSource = {
   publicId: string | null;
   startAddress: number;
+  transform: number[];
   fixture: { publicId: string | null } | null;
   fixtureChannelMode: { publicId: string | null } | null;
 } & ExportTimestampSource;
@@ -74,6 +76,7 @@ function mapProjectFixtureToExport(fixture: ProjectExportFixtureSource): Project
     startAddress: fixture.startAddress,
     fixturePublicId: fixture.fixture?.publicId ?? '',
     channelModePublicId: fixture.fixtureChannelMode?.publicId ?? '',
+    transform: [...fixture.transform],
     ...mapExportTimestamps(fixture),
   };
 }

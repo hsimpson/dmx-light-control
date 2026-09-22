@@ -46,6 +46,17 @@ export class ImportProjectFixtureInput extends ImportTimestampsInput {
   @Field(() => GraphQLUUID, { description: 'The public ID of the channel mode' })
   @Matches(IMPORT_PROJECT_PUBLIC_ID_PATTERN, { message: 'channelModePublicId must be a UUID' })
   public channelModePublicId: string;
+
+  @Field(() => [Float], {
+    nullable: true,
+    description: 'Column-major 4×4 transform (16 values); omitted documents use identity',
+  })
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(16)
+  @ArrayMaxSize(16)
+  @IsNumber({}, { each: true })
+  public transform?: number[];
 }
 
 @InputType()

@@ -50,12 +50,14 @@ graphql:
               fixture {
                 createdAt
                 fixtureVendor
+                model3dPath
                 name
                 publicId
                 updatedAt
               }
               publicId
               startAddress
+              transform
               updatedAt
             }
             publicId
@@ -71,6 +73,7 @@ graphql:
                 name
               }
               schemaVersion
+              snap
               width
             }
           }

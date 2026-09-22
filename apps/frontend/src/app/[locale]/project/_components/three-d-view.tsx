@@ -11,6 +11,7 @@ import {
   ProjectEnvironmentType,
   UpdateProject3dObjectDocument,
   UpdateProjectDocument,
+  UpdateProjectFixtureDocument,
 } from '@/shared/types/graphql/graphql';
 import { CombinedGraphQLErrors } from '@apollo/client';
 import { useMutation, useQuery } from '@apollo/client/react';
@@ -18,8 +19,10 @@ import { Box, Group, Paper, Stack, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
+import ProjectFixtures3dPanel from './project-fixtures-3d-panel';
 import RoomDimensionsPanel from './room-dimensions-panel';
 import { composeTransformFromPose, type SceneObjectPose } from './scene-object-pose';
+import { applySceneSelectionClick, selectedIdsOfKind, type SceneSelectionItem } from './scene-selection';
 import SceneObjectsPanel from './scene-objects-panel';
 import classes from './three-d-view.module.css';
 
@@ -55,19 +58,25 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
     refetchQueries: [{ query: GetProjectDocument, variables: { publicId: projectPublicId } }],
   });
   const [updateObject] = useMutation(UpdateProject3dObjectDocument);
+  const [updateFixture] = useMutation(UpdateProjectFixtureDocument);
   const [deleteObject] = useMutation(DeleteProject3dObjectDocument, {
     refetchQueries: [{ query: GetProjectDocument, variables: { publicId: projectPublicId } }],
   });
   const [draft, setDraft] = useState<RoomDraft | null>(null);
   const [objectDrafts, setObjectDrafts] = useState<Record<string, ObjectDraft>>({});
+  const [fixtureDrafts, setFixtureDrafts] = useState<Record<string, { transform: number[] }>>({});
   const [saving, setSaving] = useState(false);
   const [selectedTypePublicId, setSelectedTypePublicId] = useState<string | null>(null);
-  const [selectedObjectPublicId, setSelectedObjectPublicId] = useState<string | null>(null);
+  const [selection, setSelection] = useState<SceneSelectionItem[]>([]);
   const [scaleGizmoEnabled, setScaleGizmoEnabled] = useState(false);
   const [poseGizmoMode, setPoseGizmoMode] = useState<'translate' | 'rotate'>('translate');
   const project = data?.project;
   const types = typesData?.sceneObjectTypes ?? [];
   const typePublicId = selectedTypePublicId ?? types[0]?.publicId ?? null;
+  const selectedObjectPublicIds = selectedIdsOfKind(selection, 'object');
+  const selectedFixturePublicIds = selectedIdsOfKind(selection, 'fixture');
+  const selectedObjectPublicId = selectedObjectPublicIds.at(-1) ?? null;
+  const selectedFixturePublicId = selectedFixturePublicIds.at(-1) ?? null;
 
   if (loading) {
     return <Loading />;
@@ -84,6 +93,10 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
   const objects = project.project3dObjects.map(object => {
     const objectDraft = objectDrafts[object.publicId];
     return objectDraft ? { ...object, ...objectDraft } : object;
+  });
+  const fixtures = project.projectFixtures.map(fixture => {
+    const fixtureDraft = fixtureDrafts[fixture.publicId];
+    return fixtureDraft ? { ...fixture, transform: fixtureDraft.transform } : fixture;
   });
 
   const handleSave = async () => {
@@ -115,8 +128,19 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
           },
         });
       }
+      for (const [publicId, fixtureDraft] of Object.entries(fixtureDrafts)) {
+        await updateFixture({
+          variables: {
+            input: {
+              publicId,
+              transform: fixtureDraft.transform,
+            },
+          },
+        });
+      }
       setDraft(null);
       setObjectDrafts({});
+      setFixtureDrafts({});
       notifications.show({
         color: 'green',
         title: t(globalMessages.success),
@@ -148,7 +172,7 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
       });
       const created = result.data?.addProject3dObject.publicId;
       if (created) {
-        setSelectedObjectPublicId(created);
+        setSelection([{ kind: 'object', publicId: created }]);
       }
     } catch {
       notifications.show({
@@ -171,6 +195,13 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
         sizeY: pose.sizeY,
         sizeZ: pose.sizeZ,
       },
+    }));
+  };
+
+  const handleFixtureCommit = (publicId: string, pose: { transform: number[] }) => {
+    setFixtureDrafts(current => ({
+      ...current,
+      [publicId]: { transform: pose.transform },
     }));
   };
 
@@ -246,6 +277,16 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
     }));
   };
 
+  const handleFixturePoseChange = (pose: SceneObjectPose) => {
+    if (!selectedFixturePublicId) {
+      return;
+    }
+    setFixtureDrafts(existing => ({
+      ...existing,
+      [selectedFixturePublicId]: { transform: composeTransformFromPose(pose) },
+    }));
+  };
+
   const handleDelete = async () => {
     if (!selectedObjectPublicId) {
       return;
@@ -256,7 +297,9 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
         const { [selectedObjectPublicId]: _removed, ...next } = existing;
         return next;
       });
-      setSelectedObjectPublicId(null);
+      setSelection(current =>
+        current.filter(item => !(item.kind === 'object' && item.publicId === selectedObjectPublicId)),
+      );
     } catch {
       notifications.show({
         color: 'red',
@@ -298,11 +341,23 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
           roomLength={roomLength}
           roomHeight={roomHeight}
           objects={objects}
-          selectedObjectPublicId={selectedObjectPublicId}
+          fixtures={fixtures}
+          selectedObjectPublicIds={selectedObjectPublicIds}
+          selectedFixturePublicIds={selectedFixturePublicIds}
           scaleGizmoEnabled={scaleGizmoEnabled}
           poseGizmoMode={poseGizmoMode}
-          onSelectObject={setSelectedObjectPublicId}
+          onSelectObject={(publicId, options) => {
+            setSelection(current =>
+              applySceneSelectionClick(current, publicId ? { kind: 'object', publicId } : null, options.additive),
+            );
+          }}
+          onSelectFixture={(publicId, options) => {
+            setSelection(current =>
+              applySceneSelectionClick(current, publicId ? { kind: 'fixture', publicId } : null, options.additive),
+            );
+          }}
           onObjectCommit={handleCommit}
+          onFixtureCommit={handleFixtureCommit}
         />
       </Box>
       <Paper w={320} p="md" withBorder className={classes.panel}>
@@ -340,7 +395,9 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
             onAdd={() => {
               void handleAdd();
             }}
-            onSelectObject={setSelectedObjectPublicId}
+            onSelectObject={publicId => {
+              setSelection(applySceneSelectionClick(selection, publicId ? { kind: 'object', publicId } : null, false));
+            }}
             onDeleteObject={() => {
               void handleDelete();
             }}
@@ -350,6 +407,14 @@ const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
             }}
             onPoseChange={handlePoseChange}
             onSizeChange={handleSizeChange}
+          />
+          <ProjectFixtures3dPanel
+            fixtures={fixtures}
+            selectedFixturePublicId={selectedFixturePublicId}
+            onSelectFixture={publicId => {
+              setSelection(applySceneSelectionClick(selection, publicId ? { kind: 'fixture', publicId } : null, false));
+            }}
+            onPoseChange={handleFixturePoseChange}
           />
         </Stack>
       </Paper>

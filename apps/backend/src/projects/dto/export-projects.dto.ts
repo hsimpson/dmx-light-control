@@ -18,6 +18,9 @@ export class ProjectExportFixtureDto extends ExportTimestampsDto {
 
   @Field(() => GraphQLUUID, { description: 'The public ID of the channel mode' })
   public channelModePublicId: string;
+
+  @Field(() => [Float], { description: 'Column-major 4×4 transform (16 values, translation and rotation only)' })
+  public transform: number[];
 }
 
 @ObjectType()
