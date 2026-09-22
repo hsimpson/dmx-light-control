@@ -3,7 +3,7 @@ import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { notifications } from '@mantine/notifications';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { VIRTUAL_CONSOLE_PALETTE_MIME } from './virtual-console-document';
+import { frameHeaderHeight, VIRTUAL_CONSOLE_PALETTE_MIME } from './virtual-console-document';
 import { reloadVirtualConsolePlayWindow } from './virtual-console-reload';
 import VirtualConsoleView from './virtual-console-view';
 
@@ -779,6 +779,329 @@ describe('VirtualConsoleView', () => {
 
     fireEvent.keyDown(window, { key: 'a' });
     expect(screen.getByTestId(`virtual-console-control-${buttonId}`)).toBeInTheDocument();
+  });
+
+  it('pastes a copied control on the canvas at the snapped cursor', async () => {
+    const buttonId = '22222222-2222-4222-8222-222222222222';
+    const projectWithButton = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        snap: 8,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto',
+                id: buttonId,
+                type: 'button',
+                x: 40,
+                y: 50,
+                width: 80,
+                height: 40,
+                label: 'Go',
+                backgroundColor: '#111111',
+                borderWidth: null,
+                borderColor: null,
+                orientation: null,
+                foregroundColor: '#ffffff',
+                fontFamily: null,
+                fontSize: null,
+                fontWeight: null,
+                valueType: null,
+                channelBindings: null,
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithButton } },
+        },
+      ],
+    });
+
+    const canvas = await screen.findByTestId('virtual-console-canvas');
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      bottom: 720,
+      right: 1280,
+      width: 1280,
+      height: 720,
+      toJSON: () => ({}),
+    });
+
+    fireEvent.keyDown(window, { key: 'c', ctrlKey: true });
+    fireEvent.keyDown(window, { key: 'v', ctrlKey: true });
+    expect(screen.getAllByTestId('virtual-console-button')).toHaveLength(1);
+
+    await user.click(screen.getByTestId(`virtual-console-control-${buttonId}`));
+    fireEvent.keyDown(window, { key: 'v', ctrlKey: true });
+    expect(screen.getAllByTestId('virtual-console-button')).toHaveLength(1);
+
+    fireEvent.keyDown(window, { key: 'c', ctrlKey: true });
+    fireEvent.change(screen.getByLabelText('Label'), { target: { value: 'Stop' } });
+    fireEvent.keyDown(window, { key: 'v', ctrlKey: true });
+
+    const originPaste = screen.getByText('Go (1)').closest('[data-testid^="virtual-console-control-"]');
+    expect(originPaste).toHaveStyle({ left: '0px', top: '0px', zIndex: '1' });
+    expect(originPaste?.parentElement).toBe(canvas);
+    expect(screen.getByLabelText('Label')).toHaveValue('Go (1)');
+    expect(screen.getByLabelText('X')).toHaveValue('0');
+    expect(screen.getByLabelText('Y')).toHaveValue('0');
+    expect(screen.getByText('Stop')).toBeInTheDocument();
+
+    await user.click(screen.getByTestId(`virtual-console-control-${buttonId}`));
+    fireEvent.pointerMove(canvas, { clientX: 100, clientY: 70 });
+    fireEvent.keyDown(window, { key: 'v', ctrlKey: true });
+
+    const snapped = screen
+      .getAllByText('Go (1)')
+      .map(node => node.closest('[data-testid^="virtual-console-control-"]'));
+    const cursorPaste = snapped.find(node => node !== originPaste);
+    expect(cursorPaste).toHaveStyle({ left: '104px', top: '72px', zIndex: '1' });
+    expect(cursorPaste?.parentElement).toBe(canvas);
+    expect(screen.getByLabelText('X')).toHaveValue('104');
+    expect(screen.getByLabelText('Y')).toHaveValue('72');
+
+    await user.click(screen.getByText('Canvas'));
+    fireEvent.pointerMove(canvas, { clientX: 16, clientY: 24 });
+    fireEvent.keyDown(window, { key: 'v', metaKey: true });
+
+    const canvasPaste = screen
+      .getAllByText('Go (1)')
+      .map(node => node.closest('[data-testid^="virtual-console-control-"]'))
+      .find(node => node !== originPaste && node !== cursorPaste);
+    expect(canvasPaste).toHaveStyle({ left: '16px', top: '24px', zIndex: '1' });
+    expect(canvasPaste?.parentElement).toBe(canvas);
+    expect(screen.getByLabelText('X')).toHaveValue('16');
+    expect(screen.getByLabelText('Y')).toHaveValue('24');
+    expect(screen.getAllByTestId('virtual-console-button')).toHaveLength(4);
+  });
+
+  it('pastes a copied control into the selected frame using local coordinates', async () => {
+    const buttonId = '22222222-2222-4222-8222-222222222222';
+    const frameId = '33333333-3333-4333-8333-333333333333';
+    const frame = {
+      __typename: 'VirtualConsoleControlDto' as const,
+      id: frameId,
+      type: 'frame',
+      x: 200,
+      y: 40,
+      width: 220,
+      height: 180,
+      label: 'Group',
+      backgroundColor: '#1a1b1e',
+      borderWidth: 2,
+      borderColor: '#868e96',
+      orientation: null,
+      foregroundColor: null,
+      fontFamily: null,
+      fontSize: null,
+      fontWeight: null,
+      valueType: null,
+      channelBindings: null,
+      children: [],
+    };
+    const projectWithFrame = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        snap: 8,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto',
+                id: buttonId,
+                type: 'button',
+                x: 40,
+                y: 50,
+                width: 80,
+                height: 40,
+                label: 'Go',
+                backgroundColor: '#111111',
+                borderWidth: null,
+                borderColor: null,
+                orientation: null,
+                foregroundColor: '#ffffff',
+                fontFamily: null,
+                fontSize: null,
+                fontWeight: null,
+                valueType: null,
+                channelBindings: null,
+                children: [],
+              },
+              frame,
+            ],
+          },
+        ],
+      },
+    };
+
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithFrame } },
+        },
+      ],
+    });
+
+    const canvas = await screen.findByTestId('virtual-console-canvas');
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      bottom: 720,
+      right: 1280,
+      width: 1280,
+      height: 720,
+      toJSON: () => ({}),
+    });
+
+    await user.click(screen.getByTestId(`virtual-console-control-${buttonId}`));
+    fireEvent.keyDown(window, { key: 'c', ctrlKey: true });
+    await user.click(screen.getByTestId(`virtual-console-control-${frameId}`));
+
+    const header = frameHeaderHeight({ fontSize: undefined });
+    fireEvent.pointerMove(canvas, { clientX: frame.x + 17, clientY: frame.y + header + 15 });
+    fireEvent.keyDown(window, { key: 'v', ctrlKey: true });
+
+    const frameElement = screen.getByTestId(`virtual-console-control-${frameId}`);
+    const pasted = screen.getByText('Go (1)').closest('[data-testid^="virtual-console-control-"]');
+    expect(pasted).toHaveStyle({ left: '16px', top: '16px', zIndex: '1' });
+    expect(pasted?.parentElement).toHaveAttribute('data-testid', 'virtual-console-frame-client');
+    expect(frameElement.contains(pasted)).toBe(true);
+    expect(screen.getByTestId(`virtual-console-control-${buttonId}`).parentElement).toBe(canvas);
+    expect(screen.getByLabelText('Label')).toHaveValue('Go (1)');
+    expect(screen.getByLabelText('X')).toHaveValue('16');
+    expect(screen.getByLabelText('Y')).toHaveValue('16');
+  });
+
+  it('does not paste in play mode', async () => {
+    const buttonId = '22222222-2222-4222-8222-222222222222';
+    const projectWithButton = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto',
+                id: buttonId,
+                type: 'button',
+                x: 40,
+                y: 50,
+                width: 80,
+                height: 40,
+                label: 'Go',
+                backgroundColor: '#111111',
+                borderWidth: null,
+                borderColor: null,
+                orientation: null,
+                foregroundColor: null,
+                fontFamily: null,
+                fontSize: null,
+                fontWeight: null,
+                valueType: null,
+                channelBindings: null,
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    renderWithProviders(<VirtualConsoleView mode="play" projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithButton } },
+        },
+      ],
+    });
+
+    const canvas = await screen.findByTestId('virtual-console-canvas');
+    fireEvent.click(screen.getByTestId(`virtual-console-control-${buttonId}`));
+    fireEvent.pointerMove(canvas, { clientX: 80, clientY: 60 });
+    fireEvent.keyDown(window, { key: 'c', ctrlKey: true });
+    fireEvent.keyDown(window, { key: 'v', metaKey: true });
+    expect(screen.getAllByTestId('virtual-console-button')).toHaveLength(1);
+  });
+
+  it('ignores copy and paste while an input is focused', async () => {
+    const buttonId = '22222222-2222-4222-8222-222222222222';
+    const projectWithButton = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto',
+                id: buttonId,
+                type: 'button',
+                x: 40,
+                y: 50,
+                width: 80,
+                height: 40,
+                label: 'Go',
+                backgroundColor: '#111111',
+                borderWidth: null,
+                borderColor: null,
+                orientation: null,
+                foregroundColor: null,
+                fontFamily: null,
+                fontSize: null,
+                fontWeight: null,
+                valueType: null,
+                channelBindings: null,
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithButton } },
+        },
+      ],
+    });
+
+    const canvas = await screen.findByTestId('virtual-console-canvas');
+    await user.click(screen.getByTestId(`virtual-console-control-${buttonId}`));
+    const label = screen.getByLabelText('Label');
+    fireEvent.pointerMove(canvas, { clientX: 80, clientY: 60 });
+    fireEvent.keyDown(label, { key: 'c', ctrlKey: true });
+    fireEvent.keyDown(window, { key: 'v', ctrlKey: true });
+    expect(screen.getAllByTestId('virtual-console-button')).toHaveLength(1);
+
+    fireEvent.keyDown(window, { key: 'c', ctrlKey: true });
+    fireEvent.keyDown(label, { key: 'v', metaKey: true });
+    expect(screen.getAllByTestId('virtual-console-button')).toHaveLength(1);
   });
 
   it('reloads the play window when the editor saves the console', async () => {

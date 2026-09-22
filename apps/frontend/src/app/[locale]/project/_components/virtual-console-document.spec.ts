@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  cloneControlForPaste,
   cloneVirtualConsoleDocument,
   createControl,
   createDefaultVirtualConsoleDocument,
@@ -211,5 +212,89 @@ describe('virtual-console-document', () => {
     const frame = { ...createControl('frame', 0, 0), id: 'frame-1', width: 200, height: 200, children: [] };
     const target = findDropTarget([frame], 40, 40 + frameHeaderHeight(frame), 'frame-1');
     expect(target.parentId).toBeNull();
+  });
+
+  it('clones a control for paste with new ids and a root label suffix', () => {
+    const child = {
+      ...createControl('slider', 4, 6),
+      id: 'child',
+      label: 'Nested',
+      orientation: 'horizontal' as const,
+      valueType: 'percentage' as const,
+      foregroundColor: '#ffcc00',
+      channelBindings: [
+        {
+          projectFixturePublicId: '55555555-5555-4555-8555-555555555555',
+          channelAssignmentPublicId: '66666666-6666-4666-8666-666666666666',
+        },
+      ],
+    };
+    const frame = {
+      ...createControl('frame', 10, 20),
+      id: 'frame',
+      label: 'Group',
+      width: 240,
+      height: 180,
+      backgroundColor: '#112233',
+      borderWidth: 3,
+      borderColor: '#abcdef',
+      fontFamily: 'Inter',
+      fontSize: 18,
+      fontWeight: 700,
+      children: [child],
+    };
+
+    const pasted = cloneControlForPaste(frame);
+
+    expect(pasted).toMatchObject({
+      type: 'frame',
+      x: 10,
+      y: 20,
+      width: 240,
+      height: 180,
+      label: 'Group (1)',
+      backgroundColor: '#112233',
+      borderWidth: 3,
+      borderColor: '#abcdef',
+      fontFamily: 'Inter',
+      fontSize: 18,
+      fontWeight: 700,
+    });
+    expect(pasted.id).not.toBe(frame.id);
+    expect(pasted.children).toHaveLength(1);
+    expect(pasted.children?.[0]).toMatchObject({
+      type: 'slider',
+      x: 4,
+      y: 6,
+      label: 'Nested',
+      orientation: 'horizontal',
+      valueType: 'percentage',
+      foregroundColor: '#ffcc00',
+      backgroundColor: child.backgroundColor,
+      width: child.width,
+      height: child.height,
+    });
+    expect(pasted.children?.[0]?.id).not.toBe(child.id);
+    expect(pasted.children?.[0]?.id).not.toBe(pasted.id);
+    expect(pasted.children?.[0]?.channelBindings).toEqual(child.channelBindings);
+    expect(pasted.children?.[0]?.channelBindings).not.toBe(child.channelBindings);
+    expect(pasted.children).not.toBe(frame.children);
+
+    frame.label = 'Changed';
+    child.label = 'Changed child';
+    const binding = child.channelBindings[0];
+    if (binding) {
+      binding.projectFixturePublicId = 'changed';
+    }
+    expect(pasted.label).toBe('Group (1)');
+    expect(pasted.children?.[0]?.label).toBe('Nested');
+    expect(pasted.children?.[0]?.channelBindings?.[0]?.projectFixturePublicId).toBe(
+      '55555555-5555-4555-8555-555555555555',
+    );
+
+    const again = cloneControlForPaste({ ...createControl('button', 0, 0), label: 'Slider (1)' });
+    expect(again.label).toBe('Slider (1) (1)');
+    expect(again.id).not.toBe(pasted.id);
+    expect(again.children).toBeUndefined();
   });
 });

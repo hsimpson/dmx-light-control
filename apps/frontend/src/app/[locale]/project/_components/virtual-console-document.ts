@@ -150,6 +150,16 @@ const omitGraphqlArtifacts = (value: unknown): unknown => {
 export const cloneVirtualConsoleDocument = (document: VirtualConsoleDocument): VirtualConsoleDocument =>
   omitGraphqlArtifacts(structuredClone(document)) as VirtualConsoleDocument;
 
+const cloneControlWithNewIds = (control: VirtualConsoleControl, relabel: boolean): VirtualConsoleControl => ({
+  ...control,
+  id: crypto.randomUUID(),
+  label: relabel ? `${control.label} (1)` : control.label,
+  ...(control.children ? { children: control.children.map(child => cloneControlWithNewIds(child, false)) } : {}),
+});
+
+export const cloneControlForPaste = (control: VirtualConsoleControl): VirtualConsoleControl =>
+  cloneControlWithNewIds(structuredClone(control), true);
+
 export const resizedControlBounds = (
   start: { x: number; y: number; width: number; height: number },
   deltaX: number,

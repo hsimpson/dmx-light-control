@@ -22,6 +22,7 @@ import {
 } from './virtual-console-reload';
 import VirtualConsoleControlTree from './virtual-console-control-tree';
 import {
+  cloneControlForPaste,
   cloneVirtualConsoleDocument,
   createControl,
   createDefaultVirtualConsoleDocument,
@@ -39,6 +40,7 @@ import {
   updateControlInTree,
   VIRTUAL_CONSOLE_DEFAULT_SNAP,
   VIRTUAL_CONSOLE_PALETTE_MIME,
+  type VirtualConsoleControl,
   type VirtualConsoleDocument,
   type VirtualConsoleResizeHandle,
 } from './virtual-console-document';
@@ -73,6 +75,8 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
   const { t } = useTranslation();
   const params = useParams<{ locale?: string }>();
   const canvasRef = useRef<HTMLDivElement>(null);
+  const clipboardRef = useRef<VirtualConsoleControl | null>(null);
+  const pastePointerRef = useRef<{ x: number; y: number } | null>(null);
   const splitRef = useRef<HTMLDivElement>(null);
   const splitDraggingRef = useRef(false);
   const [pagesFr, setPagesFr] = useState(PAGES_FR);
@@ -393,20 +397,56 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     setSelection({ kind: 'canvas' });
   };
 
+  const handlePaste = () => {
+    const source = clipboardRef.current;
+    if (mode !== 'edit' || !activePage || !source) {
+      return false;
+    }
+    const parentId = selectedControl?.type === 'frame' ? selectedControl.id : null;
+    const origin = findFrameOrigin(activePage.controls, parentId);
+    const pointer = pastePointerRef.current;
+    const localX = pointer ? pointer.x - origin.x : 0;
+    const localY = pointer ? pointer.y - origin.y : 0;
+    const snap = draft.snap ?? VIRTUAL_CONSOLE_DEFAULT_SNAP;
+    const pasted = {
+      ...cloneControlForPaste(source),
+      x: snapToGrid(localX, snap),
+      y: snapToGrid(localY, snap),
+    };
+    patchActivePageControls(insertControlInTree(activePage.controls, parentId, pasted));
+    setSelection({ kind: 'control', controlId: pasted.id });
+    return true;
+  };
+
   useEffect(() => {
     if (mode !== 'edit') {
       return;
     }
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.key !== 'Delete' && event.key !== 'Backspace') {
-        return;
-      }
       const target = event.target;
       if (target instanceof HTMLElement) {
         const tag = target.tagName;
         if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) {
           return;
         }
+      }
+      const command = event.ctrlKey || event.metaKey;
+      if (command && (event.key === 'c' || event.key === 'C')) {
+        if (!selectedControl) {
+          return;
+        }
+        event.preventDefault();
+        clipboardRef.current = structuredClone(selectedControl);
+        return;
+      }
+      if (command && (event.key === 'v' || event.key === 'V')) {
+        if (handlePaste()) {
+          event.preventDefault();
+        }
+        return;
+      }
+      if (event.key !== 'Delete' && event.key !== 'Backspace') {
+        return;
       }
       if (selection.kind !== 'control') {
         return;
@@ -590,6 +630,16 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
           data-drop-target={canvasIsDropTarget ? 'true' : undefined}
           data-testid="virtual-console-canvas"
           style={{ height: draft.height, minHeight: '100%', minWidth: '100%', width: draft.width }}
+          onPointerMove={event => {
+            if (!canvasRef.current) {
+              return;
+            }
+            const bounds = canvasRef.current.getBoundingClientRect();
+            pastePointerRef.current = {
+              x: event.clientX - bounds.left,
+              y: event.clientY - bounds.top,
+            };
+          }}
           onClick={() => {
             if (mode === 'edit') {
               setSelection({ kind: 'canvas' });
