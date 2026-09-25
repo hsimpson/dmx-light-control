@@ -71,6 +71,11 @@ const CLOSED_NAME = /^(blackout|off|closed)$/i;
 const SHUTTER_CLOSED = /(blackout|\boff\b|closed)/i;
 const SHUTTER_STROBE = /(strob|pulse|random)/i;
 const FULL_RANGE_RATE = /strob|rate/i;
+const STROBE_EFFECT_DISABLED = /strobe\s+off|no strobe|without strobe|full brightness,\s*no strobe/i;
+
+function isStrobeEffectDisabled(description: string): boolean {
+  return STROBE_EFFECT_DISABLED.test(description.trim());
+}
 
 type Rgb = { r: number; g: number; b: number };
 
@@ -223,6 +228,9 @@ function shutterState(
   const range = containingRange(ranges, value);
   if (!range) {
     return { open: value > 0 ? 1 : 0, strobeHz: 0 };
+  }
+  if (isStrobeEffectDisabled(range.description)) {
+    return { open: 1, strobeHz: 0 };
   }
   if (SHUTTER_CLOSED.test(range.description)) {
     return { open: 0, strobeHz: 0 };

@@ -109,6 +109,40 @@ describe('fixtureBeamColor', () => {
     expect(fixtureBeamColor(rgb, channels({}))).toMatchObject({ r: 0, g: 0, b: 0 });
   });
 
+  it('keeps the beam on for strobe-off shutter bands (eurolite SLS-3)', () => {
+    const strobeOff = [
+      { dmxStart: 0, dmxEnd: 15, description: 'Strobe off' },
+      { dmxStart: 16, dmxEnd: 255, description: 'Strobe (increasing)' },
+    ];
+    const patched = fixture([
+      assignment(1, FixtureChannelPreset.IntensityRed),
+      assignment(2, FixtureChannelPreset.IntensityGreen),
+      assignment(3, FixtureChannelPreset.IntensityBlue),
+      assignment(4, FixtureChannelPreset.IntensityWhite),
+      assignment(5, FixtureChannelPreset.IntensityAmber),
+      assignment(6, FixtureChannelPreset.IntensityUv),
+      assignment(7, FixtureChannelPreset.IntensityMasterDimmer),
+      assignment(8, FixtureChannelPreset.ShutterStrobeSlowFast, strobeOff),
+    ]);
+
+    expect(fixtureBeamColor(patched, channels({ 1: 255, 7: 255, 8: 0 }))).toMatchObject({
+      r: 1,
+      g: 0,
+      b: 0,
+      strobeHz: 0,
+    });
+    expect(fixtureBeamColor(patched, channels({ 1: 255, 7: 255, 8: 10 }))).toMatchObject({
+      r: 1,
+      g: 0,
+      b: 0,
+      strobeHz: 0,
+    });
+
+    const increasing = fixtureBeamColor(patched, channels({ 1: 255, 7: 255, 8: 200 }));
+    expect(increasing.r).toBe(1);
+    expect(increasing.strobeHz).toBeGreaterThan(0);
+  });
+
   it('reads Mega TriPar shutter bands', () => {
     const patched = fixture([
       assignment(1, FixtureChannelPreset.IntensityRed),
@@ -116,6 +150,7 @@ describe('fixtureBeamColor', () => {
     ]);
 
     expect(fixtureBeamColor(patched, channels({ 1: 255, 2: 0 }))).toMatchObject({ r: 0, g: 0, b: 0, strobeHz: 0 });
+    expect(fixtureBeamColor(patched, channels({ 1: 255, 2: 30 }))).toMatchObject({ r: 0, g: 0, b: 0, strobeHz: 0 });
     expect(fixtureBeamColor(patched, channels({ 1: 255, 2: 32 }))).toMatchObject({ r: 1, g: 0, b: 0, strobeHz: 0 });
 
     const slow = fixtureBeamColor(patched, channels({ 1: 255, 2: 64 }));
