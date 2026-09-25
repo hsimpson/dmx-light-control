@@ -109,4 +109,21 @@ describe('pickClosestSceneObject', () => {
     raycaster.ray.copy(ray);
     expect(pickClosestSceneObject(raycaster, [highlight, object])).toBe(object);
   });
+
+  it('does not pick a fixture through its beam', () => {
+    const fixture = new Group();
+    fixture.add(new Mesh(new BoxGeometry(0.2, 0.2, 0.2)));
+    const beam = new Mesh(new BoxGeometry(6, 2, 2));
+    beam.userData.isBeam = true;
+    beam.position.set(3, 0, 0);
+    fixture.add(beam);
+    fixture.updateMatrixWorld(true);
+
+    const ray = new Ray(new Vector3(4, 0, 2), new Vector3(0, 0, -1));
+    expect(pickClosestObjectByBoundingBox(ray, [fixture])).toBeUndefined();
+
+    const raycaster = new Raycaster();
+    raycaster.ray.copy(ray);
+    expect(pickClosestSceneObject(raycaster, [fixture])).toBeUndefined();
+  });
 });

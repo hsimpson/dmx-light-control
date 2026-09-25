@@ -469,6 +469,10 @@ describe('ProjectService', () => {
                 fixtureChannelDefinition: {
                   name: 'Dimmer',
                   preset: FixtureChannelPreset.IntensityDimmer,
+                  fixtureChannelRanges: [
+                    { dmxStart: 10, dmxEnd: 20, description: 'narrow' },
+                    { dmxStart: 0, dmxEnd: 255, description: 'Dimmer 0-100%' },
+                  ],
                 },
               },
               {
@@ -487,7 +491,17 @@ describe('ProjectService', () => {
           publicId: 'pf-1',
           transform: identityTransform(),
           channelMode: {
-            fixtureChannelAssignments: [{ channelNumber: 1 }],
+            fixtureChannelAssignments: [
+              {
+                channelNumber: 1,
+                fixtureChannelDefinition: {
+                  fixtureChannelRanges: [
+                    { dmxStart: 0, dmxEnd: 255, description: 'Dimmer 0-100%' },
+                    { dmxStart: 10, dmxEnd: 20, description: 'narrow' },
+                  ],
+                },
+              },
+            ],
           },
         },
       ],

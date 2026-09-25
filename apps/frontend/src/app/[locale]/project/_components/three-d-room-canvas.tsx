@@ -5,7 +5,15 @@ import {
   fixtureAssetDisplayUrl,
 } from '@/app/[locale]/fixture/_components/fixture-asset-url';
 import { prepareFixtureModelForPreview } from '@/app/[locale]/fixture/_components/fixture-model-preview';
+import { dmxStore } from '@/lib/dmx/dmx-store';
+import { fixtureBeamColor, type FixtureBeamInput } from '@/lib/fixtures/fixture-beam-color';
 import { roomGltfUrl, sceneAssetUrl } from '@/lib/graphql/graphql-api-origin';
+import {
+  applyFixtureBeamAppearance,
+  createFixtureBeamCone,
+  disposeFixtureBeamCone,
+  updateFixtureBeamStrobe,
+} from '@/lib/three/fixture-beam-cone';
 import { applyMeshShadowFlags } from '@/lib/three/mesh-shadow-flags';
 import ThreeCanvas, { type ThreeCanvasContext } from '@/lib/three/three-canvas';
 import { ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
@@ -43,6 +51,8 @@ export type ThreeDSceneObject = {
 export type ThreeDProjectFixture = {
   publicId: string;
   transform: number[];
+  startAddress?: number;
+  channelMode?: FixtureBeamInput['channelMode'];
   fixture: {
     model3dPath?: string | null;
   };
@@ -79,6 +89,38 @@ const EMPTY_PROJECT_FIXTURES: ThreeDProjectFixture[] = [];
 
 const objectInstanceKey = (publicId: string) => `object:${publicId}`;
 const fixtureInstanceKey = (publicId: string) => `fixture:${publicId}`;
+
+const beamMesh = (root: Object3D): Mesh | undefined => {
+  if (root.userData.beam instanceof Mesh) {
+    return root.userData.beam;
+  }
+  return undefined;
+};
+
+const syncFixtureBeam = (root: Object3D, fixture: ThreeDProjectFixture): void => {
+  const beam = beamMesh(root);
+  if (!beam) {
+    return;
+  }
+  if (fixture.startAddress === undefined || fixture.channelMode === undefined) {
+    applyFixtureBeamAppearance(beam, { r: 0, g: 0, b: 0, strobeHz: 0 });
+    return;
+  }
+  applyFixtureBeamAppearance(
+    beam,
+    fixtureBeamColor(
+      { startAddress: fixture.startAddress, channelMode: fixture.channelMode },
+      dmxStore.getState().channels,
+    ),
+  );
+};
+
+const disposeInstanceRoot = (root: Object3D): void => {
+  const beam = beamMesh(root);
+  if (beam) {
+    disposeFixtureBeamCone(beam);
+  }
+};
 
 const ThreeDRoomCanvas = ({
   environmentType,
@@ -121,6 +163,17 @@ const ThreeDRoomCanvas = ({
   const selectionGroupRef = useRef<Group | null>(null);
   const selectionHighlighterRef = useRef<SelectionBoxHighlighter | null>(null);
   const instancesRef = useRef(new Map<string, Group>());
+  const syncBeamsRef = useRef<() => void>(() => undefined);
+  useEffect(() => {
+    syncBeamsRef.current = () => {
+      for (const root of instancesRef.current.values()) {
+        const fixture = root.userData.beamFixture as ThreeDProjectFixture | undefined;
+        if (fixture) {
+          syncFixtureBeam(root, fixture);
+        }
+      }
+    };
+  }, []);
   const onSelectObjectRef = useRef(onSelectObject);
   const onSelectFixtureRef = useRef(onSelectFixture);
   const onObjectCommitRef = useRef(onObjectCommit);
@@ -149,6 +202,9 @@ const ThreeDRoomCanvas = ({
       sceneRef.current = scene;
       const instanceRoots = instancesRef.current;
       frameObjectRef.current = frameObject;
+      const unsubscribeDmx = dmxStore.subscribe(() => {
+        syncBeamsRef.current();
+      });
       const selectionGroup = new Group();
       selectionGroup.userData.isSelectionGroup = true;
       scene.add(selectionGroup);
@@ -400,6 +456,7 @@ const ThreeDRoomCanvas = ({
       host.addEventListener('pointerup', onPointerUp);
 
       return () => {
+        unsubscribeDmx();
         cancelAnimationFrame(poseSyncFrame);
         cancelAnimationFrame(highlightFrame);
         selectionHighlighter.dispose();
@@ -429,6 +486,7 @@ const ThreeDRoomCanvas = ({
           groundRef.current.material.dispose();
         }
         for (const root of instanceRoots.values()) {
+          disposeInstanceRoot(root);
           scene.remove(root);
         }
         instanceRoots.clear();
@@ -471,6 +529,7 @@ const ThreeDRoomCanvas = ({
     ]);
     for (const [instanceKey, root] of instancesRef.current) {
       if (!known.has(instanceKey)) {
+        disposeInstanceRoot(root);
         scene.remove(root);
         instancesRef.current.delete(instanceKey);
       }
@@ -526,6 +585,9 @@ const ThreeDRoomCanvas = ({
       if (!root) {
         root = new Group();
         root.userData.projectFixtureId = fixture.publicId;
+        const beam = createFixtureBeamCone();
+        root.userData.beam = beam;
+        root.add(beam);
         instancesRef.current.set(instanceKey, root);
         const loader = new GLTFLoader();
         const capturedRoot = root;
@@ -544,6 +606,8 @@ const ThreeDRoomCanvas = ({
       if (!(selectionGroup && root.parent === selectionGroup)) {
         applyTransformMatrix(root, fixture.transform);
       }
+      root.userData.beamFixture = fixture;
+      syncFixtureBeam(root, fixture);
     }
   }, [objects, fixtures, selectedObjectIds, selectedFixtureIds]);
 
@@ -598,7 +662,24 @@ const ThreeDRoomCanvas = ({
     scaleControls.detach();
   }, [selectedObjectIds, selectedFixtureIds, scaleGizmoEnabled, poseGizmoMode, objects, fixtures]);
 
-  return <ThreeCanvas className={classes.host} testId="three-d-room-canvas" showOrientationGizmo onReady={onReady} />;
+  const onFrame = useCallback((timeSec: number) => {
+    for (const root of instancesRef.current.values()) {
+      const beam = beamMesh(root);
+      if (beam) {
+        updateFixtureBeamStrobe(beam, timeSec);
+      }
+    }
+  }, []);
+
+  return (
+    <ThreeCanvas
+      className={classes.host}
+      testId="three-d-room-canvas"
+      showOrientationGizmo
+      onFrame={onFrame}
+      onReady={onReady}
+    />
+  );
 };
 
 export default ThreeDRoomCanvas;

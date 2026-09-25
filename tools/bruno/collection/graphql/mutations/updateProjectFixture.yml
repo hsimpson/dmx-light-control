@@ -16,6 +16,7 @@ graphql:
             fixtureChannelAssignments {
               channelNumber
               fixtureChannelDefinition {
+                fixtureChannelRanges
                 name
                 preset
               }

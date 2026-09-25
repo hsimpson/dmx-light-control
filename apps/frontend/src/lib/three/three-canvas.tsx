@@ -18,6 +18,7 @@ import {
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { createAxisOrientationGizmo } from './axis-orientation-gizmo';
+import { FIXTURE_BEAM_LAYER } from './fixture-beam-cone';
 import { frameCameraOnObject } from './frame-camera';
 import { orbitPanSpeedForDistance, applyLinearOrbitDolly } from './orbit-pan-speed';
 import { createSceneAoComposer } from './scene-ao-composer';
@@ -44,11 +45,23 @@ export type ThreeCanvasProperties = {
   style?: CSSProperties;
   testId?: string;
   showOrientationGizmo?: boolean;
+  onFrame?: (timeSec: number) => void;
   onReady: (ctx: ThreeCanvasContext) => (() => void) | undefined;
 };
 
-const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, onReady }: ThreeCanvasProperties) => {
+const ThreeCanvas = ({
+  className,
+  style,
+  testId,
+  showOrientationGizmo = false,
+  onFrame,
+  onReady,
+}: ThreeCanvasProperties) => {
   const hostRef = useRef<HTMLDivElement>(null);
+  const onFrameRef = useRef(onFrame);
+  useEffect(() => {
+    onFrameRef.current = onFrame;
+  }, [onFrame]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -132,16 +145,32 @@ const ThreeCanvas = ({ className, style, testId, showOrientationGizmo = false, o
     resizeObserver.observe(host);
     resize();
 
-    renderer.setAnimationLoop(() => {
+    renderer.setAnimationLoop(time => {
       controls.panSpeed = orbitPanSpeedForDistance(camera.position.distanceTo(controls.target));
       controls.update();
+      onFrameRef.current?.(time / 1000);
       aoComposer.render();
+      const previousAutoClear = renderer.autoClear;
+      const previousLayerMask = camera.layers.mask;
+      const previousBackground = scene.background;
+      renderer.autoClear = false;
+      // A Color background forces a clear even when autoClear is false, which would erase the composer frame.
+      scene.background = null;
+      camera.layers.set(FIXTURE_BEAM_LAYER);
+      try {
+        renderer.clearDepth();
+        renderer.render(scene, camera);
+      } finally {
+        scene.background = previousBackground;
+        camera.layers.mask = previousLayerMask;
+        renderer.autoClear = previousAutoClear;
+      }
       if (orientationGizmo) {
-        const previousAutoClear = renderer.autoClear;
+        const gizmoAutoClear = renderer.autoClear;
         renderer.autoClear = false;
         orientationGizmo.updateFrom(camera);
         orientationGizmo.render(renderer, host.clientWidth, Math.max(host.clientHeight, 1));
-        renderer.autoClear = previousAutoClear;
+        renderer.autoClear = gizmoAutoClear;
       }
     });
 

@@ -1,4 +1,5 @@
-import { ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
+import { dmxStore, resetDmxStore } from '@/lib/dmx/dmx-store';
+import { FixtureChannelPreset, ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { fireEvent, screen } from '@testing-library/react';
 import { PCFShadowMap } from 'three';
@@ -23,7 +24,13 @@ const {
   frameCameraOnObject: vi.fn(),
   capturedThreeCanvasProps: { current: undefined as { showOrientationGizmo?: boolean } | undefined },
   capturedRenderer: { current: undefined as { shadowMap: { enabled: boolean; type: number } } | undefined },
-  createdMeshes: [] as { name: string; castShadow: boolean; receiveShadow: boolean }[],
+  createdMeshes: [] as {
+    name: string;
+    castShadow: boolean;
+    receiveShadow: boolean;
+    visible: boolean;
+    userData: Record<string, unknown>;
+  }[],
   createdBox3Helpers: [] as { color: unknown; userData: Record<string, unknown>; disposed?: boolean }[],
 }));
 
@@ -154,6 +161,15 @@ vi.mock('three', () => {
       public setFromObject() {
         return this;
       }
+      public makeEmpty() {
+        return this;
+      }
+      public union() {
+        return this;
+      }
+      public applyMatrix4() {
+        return this;
+      }
       public isEmpty() {
         return false;
       }
@@ -214,14 +230,27 @@ vi.mock('three', () => {
       public isMesh = true;
       public castShadow = false;
       public receiveShadow = false;
+      public visible = true;
+      public userData: Record<string, unknown> = {};
       public position = new Position();
       public scale = new Position();
+      public rotation = { x: 0, y: 0, z: 0 };
+      public layers = {
+        set() {
+          return undefined;
+        },
+      };
       public geometry = {
         dispose() {
           return undefined;
         },
       };
       public material = {
+        color: {
+          setRGB() {
+            return undefined;
+          },
+        },
         dispose() {
           return undefined;
         },
@@ -229,12 +258,33 @@ vi.mock('three', () => {
       public constructor() {
         createdMeshes.push(this);
       }
+      public raycast() {
+        return undefined;
+      }
     },
     MeshStandardMaterial: class {
       public dispose() {
         return undefined;
       }
     },
+    MeshBasicMaterial: class {
+      public color = {
+        setRGB() {
+          return undefined;
+        },
+      };
+      public constructor(public readonly parameters?: Record<string, unknown>) {}
+      public dispose() {
+        return undefined;
+      }
+    },
+    CylinderGeometry: class {
+      public dispose() {
+        return undefined;
+      }
+    },
+    AdditiveBlending: 2,
+    DoubleSide: 2,
     Group: class {
       public userData: Record<string, unknown> = {};
       public children: unknown[] = [];
@@ -254,6 +304,9 @@ vi.mock('three', () => {
         return this;
       }
       public updateMatrixWorld() {
+        return undefined;
+      }
+      public updateWorldMatrix() {
         return undefined;
       }
       public getObjectByName() {
@@ -961,5 +1014,41 @@ describe('ThreeDRoomCanvas', () => {
       />,
     );
     expect(createdBox3Helpers).toHaveLength(3);
+  });
+
+  it('shows one beam per fixture when its DMX channels light up', () => {
+    resetDmxStore();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            startAddress: 1,
+            channelMode: {
+              fixtureChannelAssignments: [
+                {
+                  channelNumber: 1,
+                  fixtureChannelDefinition: { preset: FixtureChannelPreset.IntensityRed },
+                },
+              ],
+            },
+            fixture: { model3dPath: null },
+          },
+        ]}
+      />,
+    );
+    const beams = createdMeshes.filter(mesh => mesh.userData.isBeam === true);
+    expect(beams).toHaveLength(1);
+    expect(beams[0]?.visible).toBe(false);
+
+    dmxStore.getState().applyDelta([{ channel: 1, value: 255 }]);
+    expect(beams[0]?.visible).toBe(true);
+    resetDmxStore();
   });
 });

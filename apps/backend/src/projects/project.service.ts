@@ -144,6 +144,13 @@ function mapProjectFixtureToDto(fixture: LoadedProjectFixture) {
             fixtureChannelDefinition: {
               name: assignment.fixtureChannelDefinition.name,
               preset: assignment.fixtureChannelDefinition.preset,
+              fixtureChannelRanges: [...assignment.fixtureChannelDefinition.fixtureChannelRanges]
+                .sort((left, right) => left.dmxStart - right.dmxStart || left.dmxEnd - right.dmxEnd)
+                .map(range => ({
+                  dmxStart: range.dmxStart,
+                  dmxEnd: range.dmxEnd,
+                  description: range.description,
+                })),
             },
           },
         ];

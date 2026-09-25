@@ -89,6 +89,11 @@ fragment ProjectFixtureFields on ProjectFixtureDto {
       fixtureChannelDefinition {
         name
         preset
+        fixtureChannelRanges {
+          dmxStart
+          dmxEnd
+          description
+        }
       }
     }
   }

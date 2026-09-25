@@ -1228,7 +1228,11 @@ export type ProjectFixtureFieldsFragment = {
     fixtureChannelAssignments: Array<{
       publicId: string;
       channelNumber: number;
-      fixtureChannelDefinition: { name: string; preset: FixtureChannelPreset };
+      fixtureChannelDefinition: {
+        name: string;
+        preset: FixtureChannelPreset;
+        fixtureChannelRanges: Array<{ dmxStart: number; dmxEnd: number; description: string }>;
+      };
     }>;
   };
 };
@@ -1491,7 +1495,11 @@ export type GetProjectQuery = {
         fixtureChannelAssignments: Array<{
           publicId: string;
           channelNumber: number;
-          fixtureChannelDefinition: { name: string; preset: FixtureChannelPreset };
+          fixtureChannelDefinition: {
+            name: string;
+            preset: FixtureChannelPreset;
+            fixtureChannelRanges: Array<{ dmxStart: number; dmxEnd: number; description: string }>;
+          };
         }>;
       };
     }>;
@@ -1600,7 +1608,11 @@ export type AddProjectFixtureMutation = {
       fixtureChannelAssignments: Array<{
         publicId: string;
         channelNumber: number;
-        fixtureChannelDefinition: { name: string; preset: FixtureChannelPreset };
+        fixtureChannelDefinition: {
+          name: string;
+          preset: FixtureChannelPreset;
+          fixtureChannelRanges: Array<{ dmxStart: number; dmxEnd: number; description: string }>;
+        };
       }>;
     };
   };
@@ -1629,7 +1641,11 @@ export type UpdateProjectFixtureMutation = {
       fixtureChannelAssignments: Array<{
         publicId: string;
         channelNumber: number;
-        fixtureChannelDefinition: { name: string; preset: FixtureChannelPreset };
+        fixtureChannelDefinition: {
+          name: string;
+          preset: FixtureChannelPreset;
+          fixtureChannelRanges: Array<{ dmxStart: number; dmxEnd: number; description: string }>;
+        };
       }>;
     };
   };
@@ -2628,6 +2644,18 @@ export const ProjectFixtureFieldsFragmentDoc = {
                           selections: [
                             { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                ],
+                              },
+                            },
                           ],
                         },
                       },
@@ -4363,6 +4391,18 @@ export const GetProjectDocument = {
                           selections: [
                             { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                ],
+                              },
+                            },
                           ],
                         },
                       },
@@ -4731,6 +4771,18 @@ export const AddProjectFixtureDocument = {
                           selections: [
                             { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                ],
+                              },
+                            },
                           ],
                         },
                       },
@@ -4842,6 +4894,18 @@ export const UpdateProjectFixtureDocument = {
                           selections: [
                             { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                ],
+                              },
+                            },
                           ],
                         },
                       },

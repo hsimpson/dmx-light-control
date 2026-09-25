@@ -32,6 +32,7 @@ const projectFixture = {
           __typename: 'ProjectFixtureChannelDefinitionDto' as const,
           name: 'Red',
           preset: FixtureChannelPreset.IntensityRed,
+          fixtureChannelRanges: [],
         },
       },
       {
@@ -42,6 +43,7 @@ const projectFixture = {
           __typename: 'ProjectFixtureChannelDefinitionDto' as const,
           name: 'Green',
           preset: FixtureChannelPreset.IntensityGreen,
+          fixtureChannelRanges: [],
         },
       },
       {
@@ -52,6 +54,7 @@ const projectFixture = {
           __typename: 'ProjectFixtureChannelDefinitionDto' as const,
           name: 'Blue',
           preset: FixtureChannelPreset.IntensityBlue,
+          fixtureChannelRanges: [],
         },
       },
     ],

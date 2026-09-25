@@ -977,6 +977,9 @@ type ProjectFixtureChannelAssignmentDto {
 }
 
 type ProjectFixtureChannelDefinitionDto {
+  """The DMX value ranges of the channel definition"""
+  fixtureChannelRanges: [ProjectFixtureChannelRangeDto!]!
+
   """The name of the channel definition"""
   name: String!
 
@@ -999,6 +1002,17 @@ type ProjectFixtureChannelModeDto {
 
   """The date and time when the entity was last updated"""
   updatedAt: DateTime!
+}
+
+type ProjectFixtureChannelRangeDto {
+  """The description of the channel range"""
+  description: String!
+
+  """The DMX end value of the channel range"""
+  dmxEnd: Int!
+
+  """The DMX start value of the channel range"""
+  dmxStart: Int!
 }
 
 type ProjectFixtureDto {

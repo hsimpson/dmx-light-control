@@ -20,7 +20,11 @@ describe('virtual console channel sidebar', () => {
             {
               publicId: 'assign-dimmer',
               channelNumber: 1,
-              fixtureChannelDefinition: { name: 'Dimmer', preset: FixtureChannelPreset.IntensityDimmer },
+              fixtureChannelDefinition: {
+                name: 'Dimmer',
+                preset: FixtureChannelPreset.IntensityDimmer,
+                fixtureChannelRanges: [],
+              },
             },
           ],
         },
@@ -35,7 +39,11 @@ describe('virtual console channel sidebar', () => {
             {
               publicId: 'assign-red',
               channelNumber: 1,
-              fixtureChannelDefinition: { name: 'Red', preset: FixtureChannelPreset.IntensityRed },
+              fixtureChannelDefinition: {
+                name: 'Red',
+                preset: FixtureChannelPreset.IntensityRed,
+                fixtureChannelRanges: [],
+              },
             },
           ],
         },
