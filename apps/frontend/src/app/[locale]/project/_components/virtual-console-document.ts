@@ -1,3 +1,9 @@
+import type { VirtualConsoleControlInput, VirtualConsoleInput } from '@/shared/types/graphql/graphql';
+import {
+  VirtualConsoleControlType as GqlVirtualConsoleControlType,
+  VirtualConsoleSliderOrientation as GqlVirtualConsoleSliderOrientation,
+  VirtualConsoleSliderValueType as GqlVirtualConsoleSliderValueType,
+} from '@/shared/types/graphql/graphql';
 import {
   VIRTUAL_CONSOLE_DEFAULT_FONT_FAMILY,
   VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE,
@@ -149,6 +155,64 @@ const omitGraphqlArtifacts = (value: unknown): unknown => {
 
 export const cloneVirtualConsoleDocument = (document: VirtualConsoleDocument): VirtualConsoleDocument =>
   omitGraphqlArtifacts(structuredClone(document)) as VirtualConsoleDocument;
+
+const controlTypeToInput = (type: VirtualConsoleControlType): GqlVirtualConsoleControlType => {
+  switch (type) {
+    case 'button':
+      return GqlVirtualConsoleControlType.Button;
+    case 'frame':
+      return GqlVirtualConsoleControlType.Frame;
+    case 'slider':
+      return GqlVirtualConsoleControlType.Slider;
+  }
+};
+
+const sliderOrientationToInput = (orientation: VirtualConsoleSliderOrientation): GqlVirtualConsoleSliderOrientation => {
+  switch (orientation) {
+    case 'horizontal':
+      return GqlVirtualConsoleSliderOrientation.Horizontal;
+    case 'vertical':
+      return GqlVirtualConsoleSliderOrientation.Vertical;
+  }
+};
+
+const sliderValueTypeToInput = (valueType: VirtualConsoleSliderValueType): GqlVirtualConsoleSliderValueType => {
+  switch (valueType) {
+    case 'dmx':
+      return GqlVirtualConsoleSliderValueType.Dmx;
+    case 'percentage':
+      return GqlVirtualConsoleSliderValueType.Percentage;
+  }
+};
+
+const controlToInput = (control: VirtualConsoleControl): VirtualConsoleControlInput => {
+  const { type, orientation, valueType, children, channelBindings, ...rest } = control;
+
+  return {
+    ...rest,
+    type: controlTypeToInput(type),
+    ...(orientation !== undefined ? { orientation: sliderOrientationToInput(orientation) } : {}),
+    ...(valueType !== undefined ? { valueType: sliderValueTypeToInput(valueType) } : {}),
+    ...(children !== undefined ? { children: children.map(controlToInput) } : {}),
+    ...(channelBindings !== undefined && channelBindings.length > 0 ? { channelBindings } : {}),
+  };
+};
+
+export const virtualConsoleDocumentToInput = (document: VirtualConsoleDocument): VirtualConsoleInput => {
+  const cloned = cloneVirtualConsoleDocument(document);
+
+  return {
+    schemaVersion: cloned.schemaVersion,
+    width: cloned.width,
+    height: cloned.height,
+    snap: cloned.snap,
+    pages: cloned.pages.map(page => ({
+      id: page.id,
+      name: page.name,
+      controls: page.controls.map(controlToInput),
+    })),
+  };
+};
 
 const cloneControlWithNewIds = (control: VirtualConsoleControl, relabel: boolean): VirtualConsoleControl => ({
   ...control,

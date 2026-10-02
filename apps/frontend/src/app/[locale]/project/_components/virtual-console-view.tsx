@@ -3,11 +3,7 @@
 import { Loading } from '@/components/loading';
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import {
-  GetProjectDocument,
-  UpdateProjectVirtualConsoleDocument,
-  type VirtualConsoleInput,
-} from '@/shared/types/graphql/graphql';
+import { GetProjectDocument, UpdateProjectVirtualConsoleDocument } from '@/shared/types/graphql/graphql';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { ActionIcon, Box, Group, Tabs } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
@@ -25,6 +21,7 @@ import VirtualConsoleControlTree from './virtual-console-control-tree';
 import {
   cloneControlForPaste,
   cloneVirtualConsoleDocument,
+  virtualConsoleDocumentToInput,
   createControl,
   createDefaultVirtualConsoleDocument,
   extractControl,
@@ -480,7 +477,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
         variables: {
           input: {
             publicId: projectPublicId,
-            virtualConsole: cloneVirtualConsoleDocument(draft) as VirtualConsoleInput,
+            virtualConsole: virtualConsoleDocumentToInput(draft),
           },
         },
       });

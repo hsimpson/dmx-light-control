@@ -1,3 +1,8 @@
+import {
+  VirtualConsoleControlType,
+  VirtualConsoleSliderOrientation,
+  VirtualConsoleSliderValueType,
+} from '@/shared/types/graphql/graphql';
 import { describe, expect, it } from 'vitest';
 import {
   cloneControlForPaste,
@@ -17,6 +22,7 @@ import {
   snapControlBounds,
   snapToGrid,
   updateControlInTree,
+  virtualConsoleDocumentToInput,
   type VirtualConsoleDocument,
 } from './virtual-console-document';
 
@@ -47,6 +53,18 @@ describe('virtual-console-document', () => {
     expect(JSON.stringify(cloned)).not.toContain('__typename');
     expect(cloned.pages[0]?.controls[0]?.type).toBe('button');
     expect(cloned.pages[0]?.controls[0]?.children).toBeUndefined();
+  });
+
+  it('maps document enums to GraphQL input enums', () => {
+    const document = createDefaultVirtualConsoleDocument();
+    document.pages[0]?.controls.push(createControl('slider', 10, 20));
+
+    const input = virtualConsoleDocumentToInput(document);
+    const slider = input.pages[0]?.controls[0];
+
+    expect(slider?.type).toBe(VirtualConsoleControlType.Slider);
+    expect(slider?.orientation).toBe(VirtualConsoleSliderOrientation.Vertical);
+    expect(slider?.valueType).toBe(VirtualConsoleSliderValueType.Dmx);
   });
 
   it('keeps channel bindings and drops an empty list', () => {
