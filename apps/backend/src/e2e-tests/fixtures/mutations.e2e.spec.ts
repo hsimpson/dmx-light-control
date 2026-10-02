@@ -248,11 +248,18 @@ describe('Fixture mutations', () => {
           width
           length
           height
+          beamAngle
         }
       }
     `;
     const created = await graphqlQuery<{
-      createFixture: { publicId: string; weight: number | null; width: number | null; height: number | null };
+      createFixture: {
+        publicId: string;
+        weight: number | null;
+        width: number | null;
+        height: number | null;
+        beamAngle: number;
+      };
     }>(app.getHttpAdapter().getInstance().server, mutation, {
       variables: {
         input: {
@@ -267,6 +274,7 @@ describe('Fixture mutations', () => {
     });
     expect(created.data?.createFixture.weight).toBe(6.5);
     expect(created.data?.createFixture.width).toBe(0.25);
+    expect(created.data?.createFixture.beamAngle).toBe(30);
 
     const update = gql`
       mutation ($input: UpdateFixtureInput!) {
@@ -274,24 +282,25 @@ describe('Fixture mutations', () => {
           publicId
           weight
           width
+          beamAngle
         }
       }
     `;
-    const updated = await graphqlQuery<{ updateFixture: { weight: number | null; width: number | null } }>(
-      app.getHttpAdapter().getInstance().server,
-      update,
-      {
-        variables: {
-          input: {
-            publicId: created.data?.createFixture.publicId,
-            weight: null,
-            width: 0.5,
-          },
+    const updated = await graphqlQuery<{
+      updateFixture: { weight: number | null; width: number | null; beamAngle: number };
+    }>(app.getHttpAdapter().getInstance().server, update, {
+      variables: {
+        input: {
+          publicId: created.data?.createFixture.publicId,
+          weight: null,
+          width: 0.5,
+          beamAngle: 45,
         },
       },
-    );
+    });
     expect(updated.data?.updateFixture.weight).toBeNull();
     expect(updated.data?.updateFixture.width).toBe(0.5);
+    expect(updated.data?.updateFixture.beamAngle).toBe(45);
   });
 
   it('should create a fixture via createFixture reusing an existing vendor publicId', async () => {

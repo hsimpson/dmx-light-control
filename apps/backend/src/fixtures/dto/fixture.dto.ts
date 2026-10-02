@@ -22,6 +22,9 @@ export class FixtureDto extends BaseDto {
   @Field(() => Float, { nullable: true, description: 'Fixture height in meters' })
   public height?: number | null;
 
+  @Field(() => Float, { description: 'Beam angle in degrees (full opening angle)' })
+  public beamAngle: number;
+
   @Field(() => String, { nullable: true, description: 'Product photo path relative to the API origin' })
   public picturePath?: string | null;
 

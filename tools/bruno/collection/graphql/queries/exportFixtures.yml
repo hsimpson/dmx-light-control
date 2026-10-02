@@ -12,6 +12,7 @@ graphql:
       query {
         exportFixtures {
           fixtures {
+            beamAngle
             channelDefinitions {
               createdAt
               name

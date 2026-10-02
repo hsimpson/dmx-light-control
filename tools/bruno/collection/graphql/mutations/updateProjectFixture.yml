@@ -28,6 +28,7 @@ graphql:
           }
           createdAt
           fixture {
+            beamAngle
             createdAt
             fixtureVendor {
               createdAt

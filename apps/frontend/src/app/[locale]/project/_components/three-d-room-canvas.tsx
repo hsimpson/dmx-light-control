@@ -11,7 +11,9 @@ import { roomGltfUrl, sceneAssetUrl } from '@/lib/graphql/graphql-api-origin';
 import {
   applyFixtureBeamAppearance,
   createFixtureBeamCone,
+  DEFAULT_BEAM_ANGLE_DEG,
   disposeFixtureBeamCone,
+  replaceFixtureBeamConeGeometry,
   updateFixtureBeamStrobe,
 } from '@/lib/three/fixture-beam-cone';
 import { applyMeshShadowFlags } from '@/lib/three/mesh-shadow-flags';
@@ -55,6 +57,7 @@ export type ThreeDProjectFixture = {
   channelMode?: FixtureBeamInput['channelMode'];
   fixture: {
     model3dPath?: string | null;
+    beamAngle?: number;
   };
 };
 
@@ -97,11 +100,32 @@ const beamMesh = (root: Object3D): Mesh | undefined => {
   return undefined;
 };
 
+const resolveFixtureBeamAngleDeg = (fixture: ThreeDProjectFixture): number => {
+  const angle = fixture.fixture.beamAngle;
+  if (typeof angle === 'number' && Number.isFinite(angle) && angle > 0 && angle < 180) {
+    return angle;
+  }
+  return DEFAULT_BEAM_ANGLE_DEG;
+};
+
+const syncFixtureBeamGeometry = (root: Object3D, fixture: ThreeDProjectFixture): void => {
+  const beam = beamMesh(root);
+  if (!beam) {
+    return;
+  }
+  const beamAngleDeg = resolveFixtureBeamAngleDeg(fixture);
+  if (beam.userData.beamAngleDeg === beamAngleDeg) {
+    return;
+  }
+  replaceFixtureBeamConeGeometry(beam, beamAngleDeg);
+};
+
 const syncFixtureBeam = (root: Object3D, fixture: ThreeDProjectFixture): void => {
   const beam = beamMesh(root);
   if (!beam) {
     return;
   }
+  syncFixtureBeamGeometry(root, fixture);
   if (fixture.startAddress === undefined || fixture.channelMode === undefined) {
     applyFixtureBeamAppearance(beam, { r: 0, g: 0, b: 0, strobeHz: 0 });
     return;
@@ -585,7 +609,7 @@ const ThreeDRoomCanvas = ({
       if (!root) {
         root = new Group();
         root.userData.projectFixtureId = fixture.publicId;
-        const beam = createFixtureBeamCone();
+        const beam = createFixtureBeamCone(resolveFixtureBeamAngleDeg(fixture));
         root.userData.beam = beam;
         root.add(beam);
         instancesRef.current.set(instanceKey, root);

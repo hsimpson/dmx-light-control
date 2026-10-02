@@ -17,6 +17,7 @@ const defaultValues = {
   width: 0.2,
   length: 0.3,
   height: 0.4,
+  beamAngle: 30,
   picturePath: null,
   picture2dPath: null,
   model3dPath: null,

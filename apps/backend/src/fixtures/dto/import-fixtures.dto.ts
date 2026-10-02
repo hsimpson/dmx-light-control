@@ -176,6 +176,13 @@ export class ImportFixtureInput extends ImportTimestampsInput {
   @Max(100)
   public height?: number | null;
 
+  @Field(() => Float, { nullable: true, description: 'Beam angle in degrees (full opening angle)' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0.001)
+  @Max(179.999)
+  public beamAngle?: number;
+
   @Field(() => String, { nullable: true, description: 'Product photo path relative to the API origin' })
   @IsOptional()
   @IsString()

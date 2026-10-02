@@ -11,6 +11,7 @@ graphql:
     query: |
       query {
         fixtures {
+          beamAngle
           createdAt
           fixtureChannelDefinitions {
             createdAt

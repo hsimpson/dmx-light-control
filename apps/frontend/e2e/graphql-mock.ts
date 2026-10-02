@@ -10,6 +10,7 @@ export const mockedFixture = {
   width: null,
   length: null,
   height: null,
+  beamAngle: 30,
   picturePath: null,
   picture2dPath: null,
   model3dPath: null,
@@ -93,6 +94,7 @@ type MockedProjectFixture = {
     publicId: string;
     name: string;
     model3dPath: string | null;
+    beamAngle: number;
     fixtureVendor: {
       __typename: 'FixtureVendorDto';
       publicId: string;
@@ -285,6 +287,7 @@ export const mockGraphql = async (page: Page) => {
           publicId: fixture.publicId,
           name: fixture.name,
           model3dPath: fixture.model3dPath,
+          beamAngle: fixture.beamAngle,
           fixtureVendor: {
             __typename: 'FixtureVendorDto',
             publicId: fixture.fixtureVendor.publicId,

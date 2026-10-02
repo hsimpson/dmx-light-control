@@ -1,6 +1,17 @@
 import { Field, Float, InputType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
-import { IsArray, IsNumber, IsOptional, IsString, IsUUID, Length, Max, Min, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  Max,
+  Min,
+  NotEquals,
+  ValidateNested,
+} from 'class-validator';
 import { GraphQLUUID } from 'graphql-scalars';
 import { UpdateFixtureVendorInput } from './fixture.input';
 import { UpdateFixtureChannelDefinitionInput } from './update-fixture-channel-definition.dto';
@@ -49,6 +60,14 @@ export class UpdateFixtureInput {
   @Min(0.001)
   @Max(100)
   public height?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Beam angle in degrees (full opening angle)' })
+  @IsOptional()
+  @NotEquals(null)
+  @IsNumber()
+  @Min(0.001)
+  @Max(179.999)
+  public beamAngle?: number;
 
   @Field(() => [UpdateFixtureChannelDefinitionInput], {
     nullable: true,

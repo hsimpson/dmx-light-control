@@ -42,6 +42,7 @@ export type FixtureExportFixture = {
   width: number | null;
   length: number | null;
   height: number | null;
+  beamAngle: number;
   picturePath: string | null;
   picture2dPath: string | null;
   model3dPath: string | null;
@@ -90,6 +91,7 @@ export type FixtureExportSource = {
   width?: number | null;
   length?: number | null;
   height?: number | null;
+  beamAngle?: number;
   picturePath?: string | null;
   picture2dPath?: string | null;
   model3dPath?: string | null;
@@ -144,6 +146,7 @@ export function mapFixturesToExportDocument(
       width: fixture.width ?? null,
       length: fixture.length ?? null,
       height: fixture.height ?? null,
+      beamAngle: fixture.beamAngle ?? 30,
       picturePath: fixture.picturePath ?? null,
       picture2dPath: fixture.picture2dPath ?? null,
       model3dPath: fixture.model3dPath ?? null,

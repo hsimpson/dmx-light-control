@@ -53,6 +53,9 @@ export class ProjectFixtureFixtureDto extends BaseDto {
   @Field(() => String, { nullable: true, description: '3D model path relative to the API origin' })
   public model3dPath?: string | null;
 
+  @Field(() => Float, { description: 'Beam angle in degrees (full opening angle)' })
+  public beamAngle: number;
+
   @Type(() => FixtureVendorDto)
   @Field(() => FixtureVendorDto, { description: 'The vendor of the fixture' })
   public fixtureVendor: FixtureVendorDto;

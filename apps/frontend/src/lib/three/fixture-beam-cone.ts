@@ -2,15 +2,24 @@ import { AdditiveBlending, CylinderGeometry, DoubleSide, Mesh, MeshBasicMaterial
 import type { FixtureBeamColor } from '@/lib/fixtures/fixture-beam-color';
 
 export const BEAM_LENGTH_M = 6;
-export const BEAM_HALF_ANGLE_RAD = (18 * Math.PI) / 180;
+export const DEFAULT_BEAM_ANGLE_DEG = 30;
 export const FIXTURE_BEAM_LAYER = 1;
 
 const BEAM_RADIAL_SEGMENTS = 32;
 const BEAM_OPACITY = 0.22;
 
-export function createFixtureBeamCone(): Mesh {
-  const radius = BEAM_LENGTH_M * Math.tan(BEAM_HALF_ANGLE_RAD);
-  const geometry = new CylinderGeometry(0, radius, BEAM_LENGTH_M, BEAM_RADIAL_SEGMENTS, 1, true);
+export function fixtureBeamConeRadius(beamAngleDeg: number, lengthM = BEAM_LENGTH_M): number {
+  const halfRad = (beamAngleDeg * Math.PI) / 180 / 2;
+  return lengthM * Math.tan(halfRad);
+}
+
+export function createFixtureBeamConeGeometry(beamAngleDeg = DEFAULT_BEAM_ANGLE_DEG): CylinderGeometry {
+  const radius = fixtureBeamConeRadius(beamAngleDeg);
+  return new CylinderGeometry(0, radius, BEAM_LENGTH_M, BEAM_RADIAL_SEGMENTS, 1, true);
+}
+
+export function createFixtureBeamCone(beamAngleDeg = DEFAULT_BEAM_ANGLE_DEG): Mesh {
+  const geometry = createFixtureBeamConeGeometry(beamAngleDeg);
   const material = new MeshBasicMaterial({
     color: 0xffffff,
     transparent: true,
@@ -30,11 +39,18 @@ export function createFixtureBeamCone(): Mesh {
   mesh.userData.isBeam = true;
   mesh.userData.beamLit = false;
   mesh.userData.strobeHz = 0;
+  mesh.userData.beamAngleDeg = beamAngleDeg;
   mesh.visible = false;
   mesh.raycast = () => {
     return;
   };
   return mesh;
+}
+
+export function replaceFixtureBeamConeGeometry(mesh: Mesh, beamAngleDeg: number): void {
+  mesh.geometry.dispose();
+  mesh.geometry = createFixtureBeamConeGeometry(beamAngleDeg);
+  mesh.userData.beamAngleDeg = beamAngleDeg;
 }
 
 export function applyFixtureBeamAppearance(mesh: Mesh, color: FixtureBeamColor): void {

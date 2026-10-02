@@ -36,6 +36,7 @@
   "FixtureProperties.assets.upload": "Hochladen",
   "FixtureProperties.assets.uploadError": "Asset konnte nicht hochgeladen werden",
   "FixtureProperties.dimensions": "Abmessungen",
+  "FixtureProperties.dimensions.beamAngle": "Abstrahlwinkel",
   "FixtureProperties.dimensions.height": "Höhe",
   "FixtureProperties.dimensions.length": "Länge",
   "FixtureProperties.dimensions.weight": "Gewicht",

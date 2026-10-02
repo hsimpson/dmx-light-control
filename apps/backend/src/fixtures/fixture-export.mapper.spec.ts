@@ -81,6 +81,7 @@ describe('mapFixturesToExportDocument', () => {
         width: null,
         length: null,
         height: null,
+        beamAngle: 30,
         picturePath: null,
         picture2dPath: null,
         model3dPath: null,

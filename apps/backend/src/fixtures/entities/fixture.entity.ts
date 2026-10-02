@@ -16,6 +16,7 @@ const fixture = d.snakeCase.table(
     width: doublePrecision(),
     length: doublePrecision(),
     height: doublePrecision(),
+    beamAngle: doublePrecision().notNull().default(30),
     picturePath: varchar({ length: 512 }),
     picture2dPath: varchar({ length: 512 }),
     model3dPath: varchar({ length: 512 }),
@@ -26,6 +27,7 @@ const fixture = d.snakeCase.table(
     check('fixture_width_positive', sql`${table.width} IS NULL OR ${table.width} > 0`),
     check('fixture_length_positive', sql`${table.length} IS NULL OR ${table.length} > 0`),
     check('fixture_height_positive', sql`${table.height} IS NULL OR ${table.height} > 0`),
+    check('fixture_beam_angle_range', sql`${table.beamAngle} > 0 AND ${table.beamAngle} < 180`),
   ],
 );
 

@@ -60,6 +60,7 @@
   "FixtureProperties.assets.upload": "Upload",
   "FixtureProperties.assets.uploadError": "Failed to upload asset",
   "FixtureProperties.dimensions": "Dimensions",
+  "FixtureProperties.dimensions.beamAngle": "Beam angle",
   "FixtureProperties.dimensions.height": "Height",
   "FixtureProperties.dimensions.length": "Length",
   "FixtureProperties.dimensions.weight": "Weight",

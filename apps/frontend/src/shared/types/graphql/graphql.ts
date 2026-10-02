@@ -33,6 +33,8 @@ export type AddProjectFixtureInput = {
 };
 
 export type CreateFixtureInput = {
+  /** Beam angle in degrees (full opening angle) */
+  beamAngle?: number | null | undefined;
   /** Channel definitions to create with the fixture */
   channelDefinitions?: Array<UpdateFixtureChannelDefinitionInput> | null | undefined;
   /** Channel modes to create with the fixture */
@@ -98,6 +100,8 @@ export type ImportFixtureDefinitionInput = {
 };
 
 export type ImportFixtureInput = {
+  /** Beam angle in degrees (full opening angle) */
+  beamAngle?: number | null | undefined;
   /** The channel definitions of the fixture */
   channelDefinitions: Array<ImportFixtureDefinitionInput>;
   /** The channel modes of the fixture */
@@ -301,6 +305,8 @@ export type UpdateFixtureChannelRangeInput = {
 };
 
 export type UpdateFixtureInput = {
+  /** Beam angle in degrees (full opening angle) */
+  beamAngle?: number | null | undefined;
   /** Rename fixture channel definitions when provided; omit to leave definition names unchanged */
   channelDefinitions?: Array<UpdateFixtureChannelDefinitionInput> | null | undefined;
   /** Replace the fixture channel modes when provided; omit to leave modes unchanged */
@@ -549,6 +555,7 @@ export type FixtureFieldsFragment = {
   width: number | null;
   length: number | null;
   height: number | null;
+  beamAngle: number;
   picturePath: string | null;
   picture2dPath: string | null;
   model3dPath: string | null;
@@ -612,6 +619,7 @@ export type GetFixturesQuery = {
     width: number | null;
     length: number | null;
     height: number | null;
+    beamAngle: number;
     picturePath: string | null;
     picture2dPath: string | null;
     model3dPath: string | null;
@@ -678,6 +686,7 @@ export type GetFixtureQuery = {
     width: number | null;
     length: number | null;
     height: number | null;
+    beamAngle: number;
     picturePath: string | null;
     picture2dPath: string | null;
     model3dPath: string | null;
@@ -744,6 +753,7 @@ export type UpdateFixtureMutation = {
     width: number | null;
     length: number | null;
     height: number | null;
+    beamAngle: number;
     picturePath: string | null;
     picture2dPath: string | null;
     model3dPath: string | null;
@@ -810,6 +820,7 @@ export type CreateFixtureMutation = {
     width: number | null;
     length: number | null;
     height: number | null;
+    beamAngle: number;
     picturePath: string | null;
     picture2dPath: string | null;
     model3dPath: string | null;
@@ -883,6 +894,7 @@ export type ExportFixturesQuery = {
       width: number | null;
       length: number | null;
       height: number | null;
+      beamAngle: number;
       picturePath: string | null;
       picture2dPath: string | null;
       model3dPath: string | null;
@@ -936,6 +948,7 @@ export type ImportFixturesMutation = {
       width: number | null;
       length: number | null;
       height: number | null;
+      beamAngle: number;
       picturePath: string | null;
       picture2dPath: string | null;
       model3dPath: string | null;
@@ -1220,6 +1233,7 @@ export type ProjectFixtureFieldsFragment = {
     publicId: string;
     name: string;
     model3dPath: string | null;
+    beamAngle: number;
     fixtureVendor: { publicId: string; name: string };
   };
   channelMode: {
@@ -1487,6 +1501,7 @@ export type GetProjectQuery = {
         publicId: string;
         name: string;
         model3dPath: string | null;
+        beamAngle: number;
         fixtureVendor: { publicId: string; name: string };
       };
       channelMode: {
@@ -1600,6 +1615,7 @@ export type AddProjectFixtureMutation = {
       publicId: string;
       name: string;
       model3dPath: string | null;
+      beamAngle: number;
       fixtureVendor: { publicId: string; name: string };
     };
     channelMode: {
@@ -1633,6 +1649,7 @@ export type UpdateProjectFixtureMutation = {
       publicId: string;
       name: string;
       model3dPath: string | null;
+      beamAngle: number;
       fixtureVendor: { publicId: string; name: string };
     };
     channelMode: {
@@ -2198,6 +2215,7 @@ export const FixtureFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -2606,6 +2624,7 @@ export const ProjectFixtureFieldsFragmentDoc = {
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },
@@ -2864,6 +2883,7 @@ export const GetFixturesDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -3062,6 +3082,7 @@ export const GetFixtureDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -3263,6 +3284,7 @@ export const UpdateFixtureDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -3464,6 +3486,7 @@ export const CreateFixtureDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -3580,6 +3603,7 @@ export const ExportFixturesDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'width' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'length' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -3843,6 +3867,7 @@ export const ImportFixturesDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -4353,6 +4378,7 @@ export const GetProjectDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },
@@ -4733,6 +4759,7 @@ export const AddProjectFixtureDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },
@@ -4856,6 +4883,7 @@ export const UpdateProjectFixtureDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },

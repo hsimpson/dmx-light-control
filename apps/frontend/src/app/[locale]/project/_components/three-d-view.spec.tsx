@@ -76,6 +76,7 @@ const projectFixture = {
     publicId: 'fix-1',
     name: 'PAR 64',
     model3dPath: '/assets/fixtures/acme/par/model.glb',
+    beamAngle: 30,
     fixtureVendor: { __typename: 'FixtureVendorDto' as const, publicId: 'vendor-1', name: 'Generic' },
   },
   channelMode: {

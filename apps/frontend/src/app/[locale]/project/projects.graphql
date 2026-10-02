@@ -75,6 +75,7 @@ fragment ProjectFixtureFields on ProjectFixtureDto {
     publicId
     name
     model3dPath
+    beamAngle
     fixtureVendor {
       publicId
       name
