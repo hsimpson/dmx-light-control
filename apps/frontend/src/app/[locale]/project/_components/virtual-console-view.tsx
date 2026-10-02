@@ -13,6 +13,13 @@ import { KeyboardEvent, PointerEvent, useEffect, useMemo, useRef, useState, type
 import { publishVirtualConsoleValue } from './virtual-console-channel-output';
 import VirtualConsoleChannelSidebar from './virtual-console-channel-sidebar';
 import {
+  clearVirtualConsoleDraft,
+  isVirtualConsoleDraftMessage,
+  publishVirtualConsoleDraft,
+  readVirtualConsoleDraft,
+  virtualConsoleDraftChannel,
+} from './virtual-console-draft-sync';
+import {
   notifyVirtualConsoleSaved,
   reloadVirtualConsolePlayWindow,
   virtualConsoleReloadChannel,
@@ -92,7 +99,9 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     () => toDocument(data?.project?.virtualConsole as VirtualConsoleDocument | null | undefined),
     [data?.project?.virtualConsole],
   );
-  const [edits, setEdits] = useState<VirtualConsoleDocument | null>(null);
+  const [edits, setEdits] = useState<VirtualConsoleDocument | null>(() =>
+    mode === 'play' ? readVirtualConsoleDraft(projectPublicId) : null,
+  );
   const draft = edits ?? saved;
   const [selection, setSelection] = useState<VirtualConsoleSelection>({ kind: 'canvas' });
   const [saving, setSaving] = useState(false);
@@ -154,6 +163,33 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       channel.close();
     };
   }, [mode, projectPublicId]);
+
+  useEffect(() => {
+    if (mode !== 'play' || typeof BroadcastChannel === 'undefined') {
+      return;
+    }
+    const channel = new BroadcastChannel(virtualConsoleDraftChannel(projectPublicId));
+    channel.onmessage = event => {
+      if (isVirtualConsoleDraftMessage(event.data)) {
+        setEdits(event.data.document);
+      }
+    };
+    return () => {
+      channel.close();
+    };
+  }, [mode, projectPublicId]);
+
+  useEffect(() => {
+    if (mode !== 'edit') {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      publishVirtualConsoleDraft(projectPublicId, draftRef.current);
+    }, 200);
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [mode, draft, projectPublicId]);
 
   const activePage = draft.pages.find(page => page.id === activePageId) ?? draft.pages[0];
   const selectedControl =
@@ -482,6 +518,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
         },
       });
       setEdits(null);
+      clearVirtualConsoleDraft(projectPublicId);
       notifyVirtualConsoleSaved(projectPublicId);
       notifications.show({
         color: 'green',
@@ -500,6 +537,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
   };
 
   const handlePopOut = () => {
+    publishVirtualConsoleDraft(projectPublicId, draft);
     const locale = params.locale ?? 'de';
     window.open(`/${locale}/project/${projectPublicId}/console/popout`, 'virtual-console', 'noopener,noreferrer');
   };

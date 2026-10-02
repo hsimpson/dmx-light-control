@@ -19,6 +19,7 @@ export class DmxWebsocketClient {
   private reconnectAttempt = 0;
   private sawSnapshot = false;
   private stopped = true;
+  private pendingByChannel = new Map<number, number>();
 
   public constructor(
     private readonly store: DmxStoreApi,
@@ -35,6 +36,7 @@ export class DmxWebsocketClient {
     this.stopped = true;
     this.clearReconnect();
     this.sawSnapshot = false;
+    this.pendingByChannel.clear();
     if (this.socket?.readyState === OPEN) {
       this.socket.close();
     }
@@ -43,9 +45,22 @@ export class DmxWebsocketClient {
   }
 
   public setChannels(values: DmxChannelUpdate[]): void {
-    if (!this.sawSnapshot || this.socket?.readyState !== OPEN) {
+    if (values.length === 0) {
       return;
     }
+    for (const update of values) {
+      this.pendingByChannel.set(update.channel, update.value);
+    }
+    this.flushPendingSets();
+  }
+
+  private flushPendingSets(): void {
+    if (!this.sawSnapshot || this.socket?.readyState !== OPEN || this.pendingByChannel.size === 0) {
+      return;
+    }
+    const values = Array.from(this.pendingByChannel.entries()).map(([channel, value]) => ({ channel, value }));
+    this.pendingByChannel.clear();
+    this.store.getState().applyDelta(values);
     this.socket.send(JSON.stringify({ type: 'set', values }));
   }
 
@@ -87,6 +102,7 @@ export class DmxWebsocketClient {
     if (message.type === 'snapshot' && Array.isArray(message.channels)) {
       this.store.getState().applySnapshot(message.channels as number[]);
       this.sawSnapshot = true;
+      this.flushPendingSets();
       return;
     }
     if (message.type === 'delta' && Array.isArray(message.values)) {

@@ -54,7 +54,7 @@ describe('DmxWebsocketClient', () => {
     expect(store.getState().channels[1]).toBe(99);
   });
 
-  it('does not send set until a snapshot arrives', () => {
+  it('queues set until a snapshot arrives, then flushes automatically', () => {
     const store = createDmxStore();
     const client = new DmxWebsocketClient(store, 'ws://localhost/dmx', FakeWebSocket);
     client.connect();
@@ -64,8 +64,8 @@ describe('DmxWebsocketClient', () => {
     expect(socket?.sent).toEqual([]);
 
     socket?.receive({ type: 'snapshot', channels: Array.from({ length: 512 }, () => 0) });
-    client.setChannels([{ channel: 1, value: 1 }]);
     expect(socket?.sent).toEqual([JSON.stringify({ type: 'set', values: [{ channel: 1, value: 1 }] })]);
+    expect(store.getState().channels[0]).toBe(1);
   });
 
   it('replaces local channels on reconnect snapshot and does not push 1-512', () => {

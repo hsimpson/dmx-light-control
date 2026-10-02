@@ -73,6 +73,7 @@ type DefinitionRow = {
 } & ExportTimestampSource;
 
 type AssignmentRow = {
+  publicId?: string | null;
   channelNumber: number;
   fixtureChannelDefinition?: { publicId: string | null } | null;
 } & ExportTimestampSource;
@@ -176,6 +177,7 @@ export function mapFixturesToExportDocument(
         assignments: [...(mode.fixtureChannelAssignments ?? [])]
           .sort((left, right) => left.channelNumber - right.channelNumber)
           .map(assignment => ({
+            publicId: assignment.publicId ?? '',
             channelNumber: assignment.channelNumber,
             channelDefinitionPublicId: assignment.fixtureChannelDefinition?.publicId ?? '',
             ...mapExportTimestamps(assignment),

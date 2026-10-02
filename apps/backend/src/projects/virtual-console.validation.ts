@@ -50,6 +50,33 @@ export function normalizeVirtualConsole(value: VirtualConsoleDocument | null | u
   return value;
 }
 
+type ImportVirtualConsoleControl = VirtualConsoleControl & {
+  channelBindings?: VirtualConsoleChannelBinding[] | null;
+  children?: VirtualConsoleControl[] | null;
+};
+
+function sanitizeControlForImport(control: ImportVirtualConsoleControl): VirtualConsoleControl {
+  const { channelBindings, children, ...rest } = control;
+  const sanitized: VirtualConsoleControl = { ...rest };
+  if (Array.isArray(channelBindings) && channelBindings.length > 0) {
+    sanitized.channelBindings = channelBindings;
+  }
+  if (rest.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame) {
+    sanitized.children = Array.isArray(children) ? children.map(sanitizeControlForImport) : [];
+  }
+  return sanitized;
+}
+
+export function sanitizeVirtualConsoleForImport(document: VirtualConsoleDocument): VirtualConsoleDocument {
+  return {
+    ...document,
+    pages: document.pages.map(page => ({
+      ...page,
+      controls: page.controls.map(control => sanitizeControlForImport(control as ImportVirtualConsoleControl)),
+    })),
+  };
+}
+
 export function assertValidVirtualConsole(document: VirtualConsoleDocument): void {
   if (document.schemaVersion !== VIRTUAL_CONSOLE_SCHEMA_VERSION) {
     throw new InvalidVirtualConsoleException(
@@ -232,7 +259,174 @@ function assertButton(control: VirtualConsoleControl): void {
 export type VirtualConsoleBindingFixture = {
   publicId: string;
   channelAssignmentPublicIds: ReadonlySet<string>;
+  channelAssignmentPublicIdByChannelNumber?: ReadonlyMap<number, string>;
+  channelAssignmentPublicIdByDefinitionPublicId?: ReadonlyMap<string, string>;
 };
+
+export type VirtualConsoleImportBindingHint = {
+  channelNumber: number;
+  channelDefinitionPublicId?: string;
+};
+
+export type VirtualConsoleImportBindingHints = Map<string, Map<string, VirtualConsoleImportBindingHint>>;
+
+export function enrichVirtualConsoleForExport(
+  virtualConsole: VirtualConsoleDocument | null | undefined,
+  fixtures: readonly {
+    publicId: string | null;
+    fixtureChannelMode?: {
+      fixtureChannelAssignments?: readonly {
+        publicId: string | null;
+        channelNumber: number;
+        fixtureChannelDefinition?: { publicId: string | null } | null;
+      }[];
+    } | null;
+  }[],
+): VirtualConsoleDocument | null {
+  if (!virtualConsole) {
+    return null;
+  }
+  const metadataByKey = new Map<string, { channelNumber: number; channelDefinitionPublicId?: string }>();
+  for (const fixture of fixtures) {
+    if (!fixture.publicId) {
+      continue;
+    }
+    for (const assignment of fixture.fixtureChannelMode?.fixtureChannelAssignments ?? []) {
+      if (!assignment.publicId) {
+        continue;
+      }
+      const key = `${fixture.publicId}:${assignment.publicId}`;
+      const channelDefinitionPublicId = assignment.fixtureChannelDefinition?.publicId ?? undefined;
+      metadataByKey.set(key, {
+        channelNumber: assignment.channelNumber,
+        ...(channelDefinitionPublicId ? { channelDefinitionPublicId } : {}),
+      });
+    }
+  }
+
+  const enrichControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
+    const bindings = control.channelBindings?.map(binding => {
+      const metadata = metadataByKey.get(`${binding.projectFixturePublicId}:${binding.channelAssignmentPublicId}`);
+      if (!metadata) {
+        return binding;
+      }
+      return {
+        ...binding,
+        channelNumber: metadata.channelNumber,
+        ...(metadata.channelDefinitionPublicId
+          ? { channelDefinitionPublicId: metadata.channelDefinitionPublicId }
+          : {}),
+      };
+    });
+    const next: VirtualConsoleControl = bindings ? { ...control, channelBindings: bindings } : control;
+    if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && control.children) {
+      return { ...next, children: control.children.map(enrichControl) };
+    }
+    return next;
+  };
+
+  return {
+    ...virtualConsole,
+    pages: virtualConsole.pages.map(page => ({
+      ...page,
+      controls: page.controls.map(enrichControl),
+    })),
+  };
+}
+
+export function stripVirtualConsoleBindingHints(document: VirtualConsoleDocument): VirtualConsoleDocument {
+  const stripControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
+    const bindings = control.channelBindings?.map(binding => ({
+      projectFixturePublicId: binding.projectFixturePublicId,
+      channelAssignmentPublicId: binding.channelAssignmentPublicId,
+    }));
+    const next: VirtualConsoleControl =
+      bindings && bindings.length > 0
+        ? { ...control, channelBindings: bindings }
+        : { ...control, channelBindings: undefined };
+    if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && control.children) {
+      return { ...next, children: control.children.map(stripControl) };
+    }
+    return next;
+  };
+
+  return {
+    ...document,
+    pages: document.pages.map(page => ({
+      ...page,
+      controls: page.controls.map(stripControl),
+    })),
+  };
+}
+
+export async function remapVirtualConsoleBindingsForImport(
+  document: VirtualConsoleDocument,
+  fixtures: readonly VirtualConsoleBindingFixture[],
+  assignmentChannelNumberByPublicId: (assignmentPublicId: string) => Promise<number | undefined>,
+  importHints: VirtualConsoleImportBindingHints = new Map(),
+): Promise<VirtualConsoleDocument> {
+  const byFixture = new Map(fixtures.map(fixture => [fixture.publicId, fixture]));
+
+  const remapControl = async (control: VirtualConsoleControl): Promise<VirtualConsoleControl> => {
+    const bindings = control.channelBindings;
+    let nextControl: VirtualConsoleControl = control;
+    if (bindings && bindings.length > 0) {
+      const remappedBindings: VirtualConsoleChannelBinding[] = [];
+      for (const binding of bindings) {
+        const fixture = byFixture.get(binding.projectFixturePublicId);
+        if (!fixture) {
+          continue;
+        }
+        if (fixture.channelAssignmentPublicIds.has(binding.channelAssignmentPublicId)) {
+          remappedBindings.push({
+            projectFixturePublicId: binding.projectFixturePublicId,
+            channelAssignmentPublicId: binding.channelAssignmentPublicId,
+          });
+          continue;
+        }
+        const hint = importHints.get(binding.projectFixturePublicId)?.get(binding.channelAssignmentPublicId);
+        const channelNumber =
+          (await assignmentChannelNumberByPublicId(binding.channelAssignmentPublicId)) ??
+          binding.channelNumber ??
+          hint?.channelNumber;
+        let replacement =
+          channelNumber === undefined
+            ? undefined
+            : fixture.channelAssignmentPublicIdByChannelNumber?.get(channelNumber);
+        if (!replacement) {
+          const definitionPublicId = binding.channelDefinitionPublicId ?? hint?.channelDefinitionPublicId;
+          if (definitionPublicId) {
+            replacement = fixture.channelAssignmentPublicIdByDefinitionPublicId?.get(definitionPublicId);
+          }
+        }
+        if (!replacement) {
+          continue;
+        }
+        remappedBindings.push({
+          projectFixturePublicId: binding.projectFixturePublicId,
+          channelAssignmentPublicId: replacement,
+        });
+      }
+      nextControl =
+        remappedBindings.length > 0
+          ? { ...control, channelBindings: remappedBindings }
+          : { ...control, channelBindings: undefined };
+    }
+    if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && control.children) {
+      const children = await Promise.all(control.children.map(remapControl));
+      nextControl = { ...nextControl, children };
+    }
+    return nextControl;
+  };
+
+  const pages = await Promise.all(
+    document.pages.map(async page => ({
+      ...page,
+      controls: await Promise.all(page.controls.map(remapControl)),
+    })),
+  );
+  return { ...document, pages };
+}
 
 export function assertVirtualConsoleChannelBindings(
   document: VirtualConsoleDocument,
@@ -294,6 +488,14 @@ function assertBinding(binding: unknown): asserts binding is VirtualConsoleChann
   const record = binding as VirtualConsoleChannelBinding;
   assertUuid(record.projectFixturePublicId, 'projectFixturePublicId');
   assertUuid(record.channelAssignmentPublicId, 'channelAssignmentPublicId');
+  if (record.channelNumber !== undefined) {
+    if (!Number.isInteger(record.channelNumber) || record.channelNumber < 1) {
+      throw new InvalidVirtualConsoleException('Channel binding channelNumber must be a positive integer.');
+    }
+  }
+  if (record.channelDefinitionPublicId !== undefined) {
+    assertUuid(record.channelDefinitionPublicId, 'channelDefinitionPublicId');
+  }
 }
 
 function assertNoChildren(control: VirtualConsoleControl): void {

@@ -52,6 +52,7 @@ const project = {
 describe('VirtualConsoleView', () => {
   beforeEach(() => {
     vi.mocked(notifications.show).mockClear();
+    sessionStorage.clear();
   });
 
   it('adds a page and keeps at least one page', async () => {

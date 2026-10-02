@@ -56,11 +56,13 @@ describe('mapFixturesToExportDocument', () => {
             ...timestamps,
             fixtureChannelAssignments: [
               {
+                publicId: 'assign-dimmer',
                 channelNumber: 2,
                 fixtureChannelDefinition: { publicId: 'def-dimmer' },
                 ...timestamps,
               },
               {
+                publicId: 'assign-red',
                 channelNumber: 1,
                 fixtureChannelDefinition: { publicId: 'def-red' },
                 ...timestamps,
@@ -128,11 +130,13 @@ describe('mapFixturesToExportDocument', () => {
             ...timestamps,
             assignments: [
               {
+                publicId: 'assign-red',
                 channelNumber: 1,
                 channelDefinitionPublicId: 'def-red',
                 ...timestamps,
               },
               {
+                publicId: 'assign-dimmer',
                 channelNumber: 2,
                 channelDefinitionPublicId: 'def-dimmer',
                 ...timestamps,

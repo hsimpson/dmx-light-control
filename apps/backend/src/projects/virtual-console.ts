@@ -59,6 +59,10 @@ registerEnumType(VirtualConsoleSliderValueType, {
 export type VirtualConsoleChannelBinding = {
   projectFixturePublicId: string;
   channelAssignmentPublicId: string;
+  /** Present in export documents to remap bindings after catalog re-import. */
+  channelNumber?: number;
+  /** Present in export documents to remap bindings when assignment publicIds change. */
+  channelDefinitionPublicId?: string;
 };
 
 export type VirtualConsoleControl = {

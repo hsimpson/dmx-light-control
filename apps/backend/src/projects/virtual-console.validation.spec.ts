@@ -1,16 +1,21 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { InvalidVirtualConsoleException } from './project.exceptions';
 import {
   VIRTUAL_CONSOLE_CONTROL_TYPE,
   VIRTUAL_CONSOLE_DEFAULT_HEIGHT,
   VIRTUAL_CONSOLE_DEFAULT_WIDTH,
   VIRTUAL_CONSOLE_SCHEMA_VERSION,
+  VirtualConsoleChannelBinding,
   VirtualConsoleDocument,
 } from './virtual-console';
 import {
   assertValidVirtualConsole,
   assertVirtualConsoleChannelBindings,
   defaultVirtualConsoleDocument,
+  enrichVirtualConsoleForExport,
+  remapVirtualConsoleBindingsForImport,
+  sanitizeVirtualConsoleForImport,
+  stripVirtualConsoleBindingHints,
 } from './virtual-console.validation';
 
 const PAGE_ID = '11111111-1111-4111-8111-111111111111';
@@ -267,6 +272,20 @@ describe('assertValidVirtualConsole', () => {
     }).toThrow(InvalidVirtualConsoleException);
   });
 
+  it('sanitizes null channelBindings from import documents', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    button.channelBindings = null as unknown as VirtualConsoleChannelBinding[];
+    const sanitized = sanitizeVirtualConsoleForImport(document);
+    expect(sanitized.pages[0]?.controls[1]).not.toHaveProperty('channelBindings');
+    expect(() => {
+      assertValidVirtualConsole(sanitized);
+    }).not.toThrow();
+  });
+
   it('accepts slider and button channel bindings and an empty list on a frame', () => {
     const document = validDocument();
     const frame = document.pages[0]?.controls[0];
@@ -309,6 +328,98 @@ describe('assertValidVirtualConsole', () => {
     expect(() => {
       assertValidVirtualConsole(document);
     }).toThrow(InvalidVirtualConsoleException);
+  });
+
+  it('enriches virtual console bindings with channel metadata on export', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    button.channelBindings = [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID }];
+    const enriched = enrichVirtualConsoleForExport(document, [
+      {
+        publicId: FIXTURE_ID,
+        fixtureChannelMode: {
+          fixtureChannelAssignments: [
+            {
+              publicId: ASSIGNMENT_ID,
+              channelNumber: 2,
+              fixtureChannelDefinition: { publicId: 'def-red' },
+            },
+          ],
+        },
+      },
+    ]);
+    expect(enriched?.pages[0]?.controls[1]?.channelBindings).toEqual([
+      {
+        projectFixturePublicId: FIXTURE_ID,
+        channelAssignmentPublicId: ASSIGNMENT_ID,
+        channelNumber: 2,
+        channelDefinitionPublicId: 'def-red',
+      },
+    ]);
+    expect(stripVirtualConsoleBindingHints(enriched ?? document).pages[0]?.controls[1]?.channelBindings).toEqual([
+      { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID },
+    ]);
+  });
+
+  it('remaps stale channel assignment publicIds using export channelNumber hints', async () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    const staleAssignmentId = '88888888-8888-4888-8888-888888888888';
+    const currentAssignmentId = '99999999-9999-4999-8999-999999999999';
+    button.channelBindings = [
+      {
+        projectFixturePublicId: FIXTURE_ID,
+        channelAssignmentPublicId: staleAssignmentId,
+        channelNumber: 1,
+      },
+    ];
+    const fixtures = [
+      {
+        publicId: FIXTURE_ID,
+        channelAssignmentPublicIds: new Set([currentAssignmentId]),
+        channelAssignmentPublicIdByChannelNumber: new Map([[1, currentAssignmentId]]),
+      },
+    ];
+    const lookup = vi.fn<(assignmentPublicId: string) => Promise<number | undefined>>().mockResolvedValue(undefined);
+    const remapped = await remapVirtualConsoleBindingsForImport(document, fixtures, lookup);
+    expect(remapped.pages[0]?.controls[1]?.channelBindings).toEqual([
+      { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: currentAssignmentId },
+    ]);
+  });
+
+  it('remaps stale channel assignment publicIds by channel number during import', async () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    const staleAssignmentId = '88888888-8888-4888-8888-888888888888';
+    const currentAssignmentId = '99999999-9999-4999-8999-999999999999';
+    button.channelBindings = [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: staleAssignmentId }];
+    const fixtures = [
+      {
+        publicId: FIXTURE_ID,
+        channelAssignmentPublicIds: new Set([currentAssignmentId]),
+        channelAssignmentPublicIdByChannelNumber: new Map([[1, currentAssignmentId]]),
+      },
+    ];
+    const remapped = await remapVirtualConsoleBindingsForImport(
+      document,
+      fixtures,
+      async assignmentPublicId => await Promise.resolve(assignmentPublicId === staleAssignmentId ? 1 : undefined),
+    );
+    expect(remapped.pages[0]?.controls[1]?.channelBindings).toEqual([
+      { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: currentAssignmentId },
+    ]);
+    expect(() => {
+      assertVirtualConsoleChannelBindings(remapped, fixtures);
+    }).not.toThrow();
   });
 
   it('accepts a binding that belongs to the fixture mode and rejects one that does not', () => {

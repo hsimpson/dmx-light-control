@@ -40,6 +40,9 @@ export class FixtureExportDefinitionDto extends ExportTimestampsDto {
 
 @ObjectType()
 export class FixtureExportAssignmentDto extends ExportTimestampsDto {
+  @Field(() => GraphQLUUID, { description: 'The public ID of the channel assignment' })
+  public publicId: string;
+
   @Field(() => Int, { description: 'The 1-based DMX channel number of the assignment' })
   public channelNumber: number;
 

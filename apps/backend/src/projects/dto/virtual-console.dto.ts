@@ -39,6 +39,18 @@ export class VirtualConsoleChannelBindingDto {
 
   @Field(() => GraphQLUUID, { description: 'Public id of the channel assignment in the fixture mode' })
   public channelAssignmentPublicId: string;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: '1-based channel number within the fixture mode (export/import remapping hint)',
+  })
+  public channelNumber?: number;
+
+  @Field(() => GraphQLUUID, {
+    nullable: true,
+    description: 'Catalog channel definition public id (export/import remapping hint)',
+  })
+  public channelDefinitionPublicId?: string;
 }
 
 @InputType()
@@ -50,6 +62,23 @@ export class VirtualConsoleChannelBindingInput {
   @Field(() => GraphQLUUID, { description: 'Public id of the channel assignment in the fixture mode' })
   @Matches(UUID_PATTERN, { message: 'channelAssignmentPublicId must be a UUID' })
   public channelAssignmentPublicId: string;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: '1-based channel number within the fixture mode (export/import remapping hint)',
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  public channelNumber?: number;
+
+  @Field(() => GraphQLUUID, {
+    nullable: true,
+    description: 'Catalog channel definition public id (export/import remapping hint)',
+  })
+  @IsOptional()
+  @Matches(UUID_PATTERN, { message: 'channelDefinitionPublicId must be a UUID' })
+  public channelDefinitionPublicId?: string;
 }
 
 @ObjectType()

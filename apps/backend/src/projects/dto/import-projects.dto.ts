@@ -27,6 +27,26 @@ export const IMPORT_PROJECT_PUBLIC_ID_PATTERN =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
 @InputType()
+export class ImportProjectFixtureChannelAssignmentInput {
+  @Field(() => GraphQLUUID, { description: 'The public ID of the channel assignment at export time' })
+  @Matches(IMPORT_PROJECT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })
+  public publicId: string;
+
+  @Field(() => Int, { description: 'The 1-based channel number within the fixture mode' })
+  @IsInt()
+  @Min(1)
+  public channelNumber: number;
+
+  @Field(() => GraphQLUUID, {
+    nullable: true,
+    description: 'The public ID of the catalog channel definition',
+  })
+  @IsOptional()
+  @Matches(IMPORT_PROJECT_PUBLIC_ID_PATTERN, { message: 'channelDefinitionPublicId must be a UUID' })
+  public channelDefinitionPublicId?: string;
+}
+
+@InputType()
 export class ImportProjectFixtureInput extends ImportTimestampsInput {
   @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the project fixture instance' })
   @IsOptional()
@@ -57,6 +77,16 @@ export class ImportProjectFixtureInput extends ImportTimestampsInput {
   @ArrayMaxSize(16)
   @IsNumber({}, { each: true })
   public transform?: number[];
+
+  @Field(() => [ImportProjectFixtureChannelAssignmentInput], {
+    nullable: true,
+    description: 'Channel assignment snapshot from export; used to remap virtual console bindings on import',
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ImportProjectFixtureChannelAssignmentInput)
+  public channelAssignments?: ImportProjectFixtureChannelAssignmentInput[];
 }
 
 @InputType()

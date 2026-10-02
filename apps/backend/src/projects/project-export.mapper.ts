@@ -1,8 +1,15 @@
 import { ExportTimestamps, ExportTimestampSource, mapExportTimestamps } from '@/db/export-timestamps';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { VirtualConsoleDocument } from '@/projects/virtual-console';
+import { enrichVirtualConsoleForExport } from '@/projects/virtual-console.validation';
 
 export const PROJECT_EXPORT_SCHEMA_VERSION = 9;
+
+export type ProjectExportFixtureChannelAssignment = {
+  publicId: string;
+  channelNumber: number;
+  channelDefinitionPublicId: string;
+};
 
 export type ProjectExportFixture = {
   publicId: string;
@@ -10,6 +17,7 @@ export type ProjectExportFixture = {
   fixturePublicId: string;
   channelModePublicId: string;
   transform: number[];
+  channelAssignments?: ProjectExportFixtureChannelAssignment[];
 } & ExportTimestamps;
 
 export type ProjectExport3dObject = {
@@ -45,7 +53,14 @@ export type ProjectExportFixtureSource = {
   startAddress: number;
   transform: number[];
   fixture: { publicId: string | null } | null;
-  fixtureChannelMode: { publicId: string | null } | null;
+  fixtureChannelMode: {
+    publicId: string | null;
+    fixtureChannelAssignments?: readonly {
+      publicId: string | null;
+      channelNumber: number;
+      fixtureChannelDefinition?: { publicId: string | null } | null;
+    }[];
+  } | null;
 } & ExportTimestampSource;
 
 export type ProjectExport3dObjectSource = {
@@ -71,12 +86,26 @@ export type ProjectExportSource = {
 } & ExportTimestampSource;
 
 function mapProjectFixtureToExport(fixture: ProjectExportFixtureSource): ProjectExportFixture {
+  const assignments = [...(fixture.fixtureChannelMode?.fixtureChannelAssignments ?? [])]
+    .sort((left, right) => left.channelNumber - right.channelNumber)
+    .flatMap(assignment =>
+      assignment.publicId
+        ? [
+            {
+              publicId: assignment.publicId,
+              channelNumber: assignment.channelNumber,
+              channelDefinitionPublicId: assignment.fixtureChannelDefinition?.publicId ?? '',
+            },
+          ]
+        : [],
+    );
   return {
     publicId: fixture.publicId ?? '',
     startAddress: fixture.startAddress,
     fixturePublicId: fixture.fixture?.publicId ?? '',
     channelModePublicId: fixture.fixtureChannelMode?.publicId ?? '',
     transform: [...fixture.transform],
+    ...(assignments.length > 0 ? { channelAssignments: assignments } : {}),
     ...mapExportTimestamps(fixture),
   };
 }
@@ -106,7 +135,7 @@ export function mapProjectsToExportDocument(projects: ProjectExportSource[]): Pr
         roomWidth: project.roomWidth,
         roomLength: project.roomLength,
         roomHeight: project.roomHeight,
-        virtualConsole: project.virtualConsole ?? null,
+        virtualConsole: enrichVirtualConsoleForExport(project.virtualConsole, project.projectFixtures ?? []),
         projectFixtures: [...(project.projectFixtures ?? [])]
           .map(mapProjectFixtureToExport)
           .sort((left, right) => left.startAddress - right.startAddress || left.publicId.localeCompare(right.publicId)),

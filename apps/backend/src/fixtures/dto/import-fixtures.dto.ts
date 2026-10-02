@@ -89,6 +89,11 @@ export class ImportFixtureDefinitionInput extends ImportTimestampsInput {
 
 @InputType()
 export class ImportFixtureAssignmentInput extends ImportTimestampsInput {
+  @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the channel assignment' })
+  @IsOptional()
+  @Matches(IMPORT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })
+  public publicId?: string;
+
   @Field(() => Int, { description: 'The 1-based DMX channel number of the assignment' })
   @IsInt()
   @Min(1)
