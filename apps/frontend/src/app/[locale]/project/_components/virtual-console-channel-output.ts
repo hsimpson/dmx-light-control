@@ -13,11 +13,15 @@ export type VirtualConsoleBoundFixture = {
 };
 
 export const controlToDmxValue = (
-  control: Pick<VirtualConsoleControl, 'type' | 'valueType'>,
+  control: Pick<VirtualConsoleControl, 'type' | 'valueType' | 'lowerLimit' | 'upperLimit'>,
   rawValue: number,
 ): number => {
+  const lowerLimit = control.lowerLimit ?? 0;
+  const upperLimit = control.upperLimit ?? DMX_MAX;
   const scaled =
-    control.type === 'slider' && control.valueType === 'percentage' ? (rawValue / 100) * DMX_MAX : rawValue;
+    control.type === 'slider' && control.valueType === 'percentage'
+      ? lowerLimit + (rawValue / 100) * (upperLimit - lowerLimit)
+      : rawValue;
   return Math.min(DMX_MAX, Math.max(0, Math.round(scaled)));
 };
 

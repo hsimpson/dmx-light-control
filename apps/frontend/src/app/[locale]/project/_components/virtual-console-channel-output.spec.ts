@@ -56,6 +56,11 @@ describe('virtual console channel output', () => {
       ],
     };
     expect(controlToDmxValue(control, 50)).toBe(128);
+    expect(controlToDmxValue({ ...control, lowerLimit: undefined, upperLimit: undefined }, 50)).toBe(128);
+    expect(controlToDmxValue({ ...control, lowerLimit: 0, upperLimit: 255 }, 50)).toBe(128);
+    expect(controlToDmxValue({ ...control, lowerLimit: 10, upperLimit: 110 }, 0)).toBe(10);
+    expect(controlToDmxValue({ ...control, lowerLimit: 10, upperLimit: 110 }, 50)).toBe(60);
+    expect(controlToDmxValue({ ...control, lowerLimit: 10, upperLimit: 110 }, 100)).toBe(110);
     expect(dmxChannelUpdates(control, 100, fixtures)).toEqual([
       { channel: 10, value: 255 },
       { channel: 11, value: 255 },

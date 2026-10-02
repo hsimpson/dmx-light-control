@@ -8,6 +8,7 @@ import type { VirtualConsoleControlProperties } from './virtual-console-control-
 const ButtonControl = ({ control, mode, selected = false, onPlayValue }: VirtualConsoleControlProperties) => {
   const [pressed, setPressed] = useState(false);
   const play = mode === 'play';
+  const upperLimit = control.upperLimit ?? 255;
 
   return (
     <button
@@ -35,7 +36,7 @@ const ButtonControl = ({ control, mode, selected = false, onPlayValue }: Virtual
           event.currentTarget.setPointerCapture(event.pointerId);
         }
         setPressed(true);
-        onPlayValue?.(255);
+        onPlayValue?.(upperLimit);
       }}
       onPointerUp={() => {
         setPressed(false);

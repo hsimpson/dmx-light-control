@@ -414,10 +414,14 @@ export type VirtualConsoleControlInput = {
   id: string;
   /** Display label */
   label: string;
+  /** Inclusive lower DMX limit for a slider */
+  lowerLimit?: number | null | undefined;
   /** Slider orientation */
   orientation?: VirtualConsoleSliderOrientation | null | undefined;
   /** Control kind */
   type: VirtualConsoleControlType;
+  /** Inclusive upper DMX limit for a slider or button */
+  upperLimit?: number | null | undefined;
   /** Slider value interpretation */
   valueType?: VirtualConsoleSliderValueType | null | undefined;
   /** Width in pixels */
@@ -1054,6 +1058,8 @@ export type VirtualConsoleControlFieldsFragment = {
   fontSize: number | null;
   fontWeight: number | null;
   valueType: VirtualConsoleSliderValueType | null;
+  lowerLimit: number | null;
+  upperLimit: number | null;
   channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
 };
 
@@ -1082,6 +1088,8 @@ export type VirtualConsoleFieldsFragment = {
       fontSize: number | null;
       fontWeight: number | null;
       valueType: VirtualConsoleSliderValueType | null;
+      lowerLimit: number | null;
+      upperLimit: number | null;
       children: Array<{
         id: string;
         type: VirtualConsoleControlType;
@@ -1099,6 +1107,8 @@ export type VirtualConsoleFieldsFragment = {
         fontSize: number | null;
         fontWeight: number | null;
         valueType: VirtualConsoleSliderValueType | null;
+        lowerLimit: number | null;
+        upperLimit: number | null;
         children: Array<{
           id: string;
           type: VirtualConsoleControlType;
@@ -1116,6 +1126,8 @@ export type VirtualConsoleFieldsFragment = {
           fontSize: number | null;
           fontWeight: number | null;
           valueType: VirtualConsoleSliderValueType | null;
+          lowerLimit: number | null;
+          upperLimit: number | null;
           children: Array<{
             id: string;
             type: VirtualConsoleControlType;
@@ -1133,6 +1145,8 @@ export type VirtualConsoleFieldsFragment = {
             fontSize: number | null;
             fontWeight: number | null;
             valueType: VirtualConsoleSliderValueType | null;
+            lowerLimit: number | null;
+            upperLimit: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -1150,6 +1164,8 @@ export type VirtualConsoleFieldsFragment = {
               fontSize: number | null;
               fontWeight: number | null;
               valueType: VirtualConsoleSliderValueType | null;
+              lowerLimit: number | null;
+              upperLimit: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -1167,6 +1183,8 @@ export type VirtualConsoleFieldsFragment = {
                 fontSize: number | null;
                 fontWeight: number | null;
                 valueType: VirtualConsoleSliderValueType | null;
+                lowerLimit: number | null;
+                upperLimit: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -1184,6 +1202,8 @@ export type VirtualConsoleFieldsFragment = {
                   fontSize: number | null;
                   fontWeight: number | null;
                   valueType: VirtualConsoleSliderValueType | null;
+                  lowerLimit: number | null;
+                  upperLimit: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -1201,6 +1221,8 @@ export type VirtualConsoleFieldsFragment = {
                     fontSize: number | null;
                     fontWeight: number | null;
                     valueType: VirtualConsoleSliderValueType | null;
+                    lowerLimit: number | null;
+                    upperLimit: number | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
                       channelAssignmentPublicId: string;
@@ -1345,6 +1367,8 @@ export type GetProjectQuery = {
           fontSize: number | null;
           fontWeight: number | null;
           valueType: VirtualConsoleSliderValueType | null;
+          lowerLimit: number | null;
+          upperLimit: number | null;
           children: Array<{
             id: string;
             type: VirtualConsoleControlType;
@@ -1362,6 +1386,8 @@ export type GetProjectQuery = {
             fontSize: number | null;
             fontWeight: number | null;
             valueType: VirtualConsoleSliderValueType | null;
+            lowerLimit: number | null;
+            upperLimit: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -1379,6 +1405,8 @@ export type GetProjectQuery = {
               fontSize: number | null;
               fontWeight: number | null;
               valueType: VirtualConsoleSliderValueType | null;
+              lowerLimit: number | null;
+              upperLimit: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -1396,6 +1424,8 @@ export type GetProjectQuery = {
                 fontSize: number | null;
                 fontWeight: number | null;
                 valueType: VirtualConsoleSliderValueType | null;
+                lowerLimit: number | null;
+                upperLimit: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -1413,6 +1443,8 @@ export type GetProjectQuery = {
                   fontSize: number | null;
                   fontWeight: number | null;
                   valueType: VirtualConsoleSliderValueType | null;
+                  lowerLimit: number | null;
+                  upperLimit: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -1430,6 +1462,8 @@ export type GetProjectQuery = {
                     fontSize: number | null;
                     fontWeight: number | null;
                     valueType: VirtualConsoleSliderValueType | null;
+                    lowerLimit: number | null;
+                    upperLimit: number | null;
                     children: Array<{
                       id: string;
                       type: VirtualConsoleControlType;
@@ -1447,6 +1481,8 @@ export type GetProjectQuery = {
                       fontSize: number | null;
                       fontWeight: number | null;
                       valueType: VirtualConsoleSliderValueType | null;
+                      lowerLimit: number | null;
+                      upperLimit: number | null;
                       children: Array<{
                         id: string;
                         type: VirtualConsoleControlType;
@@ -1464,6 +1500,8 @@ export type GetProjectQuery = {
                         fontSize: number | null;
                         fontWeight: number | null;
                         valueType: VirtualConsoleSliderValueType | null;
+                        lowerLimit: number | null;
+                        upperLimit: number | null;
                         channelBindings: Array<{
                           projectFixturePublicId: string;
                           channelAssignmentPublicId: string;
@@ -1798,6 +1836,8 @@ export type ExportProjectsQuery = {
             fontSize: number | null;
             fontWeight: number | null;
             valueType: VirtualConsoleSliderValueType | null;
+            lowerLimit: number | null;
+            upperLimit: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -1815,6 +1855,8 @@ export type ExportProjectsQuery = {
               fontSize: number | null;
               fontWeight: number | null;
               valueType: VirtualConsoleSliderValueType | null;
+              lowerLimit: number | null;
+              upperLimit: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -1832,6 +1874,8 @@ export type ExportProjectsQuery = {
                 fontSize: number | null;
                 fontWeight: number | null;
                 valueType: VirtualConsoleSliderValueType | null;
+                lowerLimit: number | null;
+                upperLimit: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -1849,6 +1893,8 @@ export type ExportProjectsQuery = {
                   fontSize: number | null;
                   fontWeight: number | null;
                   valueType: VirtualConsoleSliderValueType | null;
+                  lowerLimit: number | null;
+                  upperLimit: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -1866,6 +1912,8 @@ export type ExportProjectsQuery = {
                     fontSize: number | null;
                     fontWeight: number | null;
                     valueType: VirtualConsoleSliderValueType | null;
+                    lowerLimit: number | null;
+                    upperLimit: number | null;
                     children: Array<{
                       id: string;
                       type: VirtualConsoleControlType;
@@ -1883,6 +1931,8 @@ export type ExportProjectsQuery = {
                       fontSize: number | null;
                       fontWeight: number | null;
                       valueType: VirtualConsoleSliderValueType | null;
+                      lowerLimit: number | null;
+                      upperLimit: number | null;
                       children: Array<{
                         id: string;
                         type: VirtualConsoleControlType;
@@ -1900,6 +1950,8 @@ export type ExportProjectsQuery = {
                         fontSize: number | null;
                         fontWeight: number | null;
                         valueType: VirtualConsoleSliderValueType | null;
+                        lowerLimit: number | null;
+                        upperLimit: number | null;
                         children: Array<{
                           id: string;
                           type: VirtualConsoleControlType;
@@ -1917,6 +1969,8 @@ export type ExportProjectsQuery = {
                           fontSize: number | null;
                           fontWeight: number | null;
                           valueType: VirtualConsoleSliderValueType | null;
+                          lowerLimit: number | null;
+                          upperLimit: number | null;
                           channelBindings: Array<{
                             projectFixturePublicId: string;
                             channelAssignmentPublicId: string;
@@ -2415,6 +2469,8 @@ export const VirtualConsoleControlFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'lowerLimit' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'upperLimit' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'channelBindings' },
@@ -2586,6 +2642,8 @@ export const VirtualConsoleFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'lowerLimit' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'upperLimit' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'channelBindings' },
@@ -4198,6 +4256,8 @@ export const GetProjectDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'lowerLimit' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'upperLimit' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'channelBindings' },
@@ -5292,6 +5352,8 @@ export const ExportProjectsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'lowerLimit' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'upperLimit' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'channelBindings' },

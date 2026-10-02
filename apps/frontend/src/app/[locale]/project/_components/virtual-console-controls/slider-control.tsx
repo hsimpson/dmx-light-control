@@ -9,18 +9,29 @@ const HANDLE_SIZE_PX = 24;
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-const valueFromPointer = (clientX: number, clientY: number, rect: DOMRect, isVertical: boolean, max: number) => {
+const valueFromPointer = (
+  clientX: number,
+  clientY: number,
+  rect: DOMRect,
+  isVertical: boolean,
+  min: number,
+  max: number,
+) => {
   const ratio = isVertical
     ? 1 - (clientY - rect.top) / Math.max(rect.height, 1)
     : (clientX - rect.left) / Math.max(rect.width, 1);
-  return clamp(Math.round(ratio * max), 0, max);
+  return clamp(Math.round(min + ratio * (max - min)), min, max);
 };
 
 const SliderControl = ({ control, mode, selected = false, onPlayValue }: VirtualConsoleControlProperties) => {
   const orientation = control.orientation ?? 'vertical';
-  const max = control.valueType === 'percentage' ? 100 : 255;
-  const [value, setValue] = useState(0);
-  const valueRef = useRef(0);
+  const percentage = control.valueType === 'percentage';
+  const lowerLimit = control.lowerLimit ?? 0;
+  const upperLimit = control.upperLimit ?? 255;
+  const min = percentage ? 0 : lowerLimit;
+  const max = percentage ? 100 : upperLimit;
+  const [value, setValue] = useState(min);
+  const valueRef = useRef(min);
   const commitValue = useCallback(
     (next: number) => {
       valueRef.current = next;
@@ -29,7 +40,7 @@ const SliderControl = ({ control, mode, selected = false, onPlayValue }: Virtual
     },
     [onPlayValue],
   );
-  const ratio = value / max;
+  const ratio = max === min ? 0 : (value - min) / (max - min);
   const isVertical = orientation === 'vertical';
   const displayValue = control.valueType === 'percentage' ? `${value}%` : String(value);
   const handleSize = isVertical ? control.width / 2 : control.height / 2;
@@ -45,9 +56,9 @@ const SliderControl = ({ control, mode, selected = false, onPlayValue }: Virtual
       if (!rail) {
         return;
       }
-      commitValue(valueFromPointer(clientX, clientY, rail.getBoundingClientRect(), isVertical, max));
+      commitValue(valueFromPointer(clientX, clientY, rail.getBoundingClientRect(), isVertical, min, max));
     },
-    [commitValue, isVertical, max],
+    [commitValue, isVertical, max, min],
   );
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -101,7 +112,7 @@ const SliderControl = ({ control, mode, selected = false, onPlayValue }: Virtual
       return;
     }
     event.preventDefault();
-    commitValue(clamp(valueRef.current + delta, 0, max));
+    commitValue(clamp(valueRef.current + delta, min, max));
   };
 
   return (
@@ -109,7 +120,7 @@ const SliderControl = ({ control, mode, selected = false, onPlayValue }: Virtual
       aria-label={mode === 'play' ? control.label : undefined}
       aria-orientation={mode === 'play' ? orientation : undefined}
       aria-valuemax={mode === 'play' ? max : undefined}
-      aria-valuemin={mode === 'play' ? 0 : undefined}
+      aria-valuemin={mode === 'play' ? min : undefined}
       aria-valuenow={mode === 'play' ? value : undefined}
       className={`${classes.slider} ${isVertical ? classes.vertical : classes.horizontal}${mode === 'play' ? ` ${classes.play}` : ''}${selected ? ` ${classes.selected}` : ''}`}
       data-testid="virtual-console-slider"

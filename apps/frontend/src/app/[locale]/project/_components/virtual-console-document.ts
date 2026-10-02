@@ -51,6 +51,8 @@ export type VirtualConsoleControl = {
   fontSize?: number;
   fontWeight?: number;
   valueType?: VirtualConsoleSliderValueType;
+  lowerLimit?: number;
+  upperLimit?: number;
   channelBindings?: VirtualConsoleChannelBinding[];
 };
 
@@ -121,6 +123,8 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         foregroundColor: '#4dabf7',
         orientation: 'vertical',
         valueType: 'dmx',
+        lowerLimit: 0,
+        upperLimit: 255,
         ...font,
       };
     case 'button':
@@ -134,6 +138,7 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         label: 'Button',
         backgroundColor: '#228be6',
         foregroundColor: '#ffffff',
+        upperLimit: 255,
         ...font,
       };
   }

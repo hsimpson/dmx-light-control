@@ -135,6 +135,12 @@ export class VirtualConsoleControlDto {
   @Field(() => VirtualConsoleSliderValueType, { nullable: true, description: 'Slider value interpretation' })
   public valueType?: VirtualConsoleSliderValueType;
 
+  @Field(() => Int, { nullable: true, description: 'Inclusive lower DMX limit for a slider' })
+  public lowerLimit?: number;
+
+  @Field(() => Int, { nullable: true, description: 'Inclusive upper DMX limit for a slider or button' })
+  public upperLimit?: number;
+
   @Field(() => [VirtualConsoleChannelBindingDto], {
     nullable: true,
     description: 'Fixture channels this slider or button controls',
@@ -267,6 +273,20 @@ export class VirtualConsoleControlInput {
   @IsOptional()
   @IsEnum(VirtualConsoleSliderValueType)
   public valueType?: VirtualConsoleSliderValueType;
+
+  @Field(() => Int, { nullable: true, description: 'Inclusive lower DMX limit for a slider' })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(255)
+  public lowerLimit?: number;
+
+  @Field(() => Int, { nullable: true, description: 'Inclusive upper DMX limit for a slider or button' })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(255)
+  public upperLimit?: number;
 
   @Field(() => [VirtualConsoleChannelBindingInput], {
     nullable: true,

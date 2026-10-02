@@ -2110,6 +2110,11 @@ type VirtualConsoleControlDto {
   label: String!
 
   """
+  Inclusive lower DMX limit for a slider
+  """
+  lowerLimit: Int
+
+  """
   Slider orientation
   """
   orientation: VirtualConsoleSliderOrientation
@@ -2118,6 +2123,11 @@ type VirtualConsoleControlDto {
   Control kind
   """
   type: VirtualConsoleControlType!
+
+  """
+  Inclusive upper DMX limit for a slider or button
+  """
+  upperLimit: Int
 
   """
   Slider value interpretation
@@ -2202,6 +2212,11 @@ input VirtualConsoleControlInput {
   label: String!
 
   """
+  Inclusive lower DMX limit for a slider
+  """
+  lowerLimit: Int
+
+  """
   Slider orientation
   """
   orientation: VirtualConsoleSliderOrientation
@@ -2210,6 +2225,11 @@ input VirtualConsoleControlInput {
   Control kind
   """
   type: VirtualConsoleControlType!
+
+  """
+  Inclusive upper DMX limit for a slider or button
+  """
+  upperLimit: Int
 
   """
   Slider value interpretation

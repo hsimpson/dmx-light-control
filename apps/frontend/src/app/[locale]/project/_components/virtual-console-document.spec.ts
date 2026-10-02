@@ -65,6 +65,16 @@ describe('virtual-console-document', () => {
     expect(slider?.type).toBe(VirtualConsoleControlType.Slider);
     expect(slider?.orientation).toBe(VirtualConsoleSliderOrientation.Vertical);
     expect(slider?.valueType).toBe(VirtualConsoleSliderValueType.Dmx);
+    expect(slider?.lowerLimit).toBe(0);
+    expect(slider?.upperLimit).toBe(255);
+
+    const button = createControl('button', 0, 0);
+    expect(button.upperLimit).toBe(255);
+    expect(button.lowerLimit).toBeUndefined();
+    document.pages[0]?.controls.push(button);
+    const withButton = virtualConsoleDocumentToInput(document);
+    expect(withButton.pages[0]?.controls[1]?.upperLimit).toBe(255);
+    expect(withButton.pages[0]?.controls[1]?.lowerLimit).toBeUndefined();
   });
 
   it('keeps channel bindings and drops an empty list', () => {

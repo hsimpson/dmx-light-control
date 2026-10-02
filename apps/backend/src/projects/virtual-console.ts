@@ -83,6 +83,8 @@ export type VirtualConsoleControl = {
   fontSize?: number;
   fontWeight?: number;
   valueType?: `${VirtualConsoleSliderValueType}`;
+  lowerLimit?: number | null;
+  upperLimit?: number | null;
   channelBindings?: VirtualConsoleChannelBinding[];
 };
 

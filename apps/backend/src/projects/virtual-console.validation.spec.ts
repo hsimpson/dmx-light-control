@@ -445,6 +445,67 @@ describe('assertValidVirtualConsole', () => {
     }).toThrow(InvalidVirtualConsoleException);
   });
 
+  it('accepts omitted slider and button limits and explicit limits in range', () => {
+    expect(() => {
+      assertValidVirtualConsole(validDocument());
+    }).not.toThrow();
+
+    const document = validDocument();
+    const slider = document.pages[0]?.controls[0]?.children?.[0];
+    const button = document.pages[0]?.controls[1];
+    if (!slider || !button) {
+      throw new Error('expected slider and button');
+    }
+    slider.lowerLimit = 10;
+    slider.upperLimit = 200;
+    button.upperLimit = 128;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).not.toThrow();
+
+    slider.lowerLimit = null;
+    slider.upperLimit = null;
+    button.upperLimit = null;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).not.toThrow();
+  });
+
+  it('rejects slider and button limits outside 0 to 255 and a slider whose lower limit exceeds its upper limit', () => {
+    const document = validDocument();
+    const slider = document.pages[0]?.controls[0]?.children?.[0];
+    const button = document.pages[0]?.controls[1];
+    if (!slider || !button) {
+      throw new Error('expected slider and button');
+    }
+
+    slider.lowerLimit = -1;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+    slider.lowerLimit = 1.5;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+    slider.lowerLimit = 200;
+    slider.upperLimit = 10;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+
+    slider.lowerLimit = 0;
+    slider.upperLimit = 256;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+
+    slider.upperLimit = 255;
+    button.upperLimit = 256;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+  });
+
   it('rejects children on a slider', () => {
     const document = validDocument({
       pages: [

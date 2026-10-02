@@ -240,6 +240,16 @@ function assertFrame(control: VirtualConsoleControl, ids: Set<string>, depth: nu
   }
 }
 
+function assertDmxLimit(value: number | null | undefined, field: string, fallback: number): number {
+  if (value === undefined || value === null) {
+    return fallback;
+  }
+  if (!Number.isInteger(value) || value < 0 || value > 255) {
+    throw new InvalidVirtualConsoleException(`Control ${field} must be an integer between 0 and 255.`);
+  }
+  return value;
+}
+
 function assertSlider(control: VirtualConsoleControl): void {
   assertNoChildren(control);
   if (control.orientation !== 'vertical' && control.orientation !== 'horizontal') {
@@ -248,11 +258,17 @@ function assertSlider(control: VirtualConsoleControl): void {
   if (control.valueType !== 'dmx' && control.valueType !== 'percentage') {
     throw new InvalidVirtualConsoleException('Slider valueType must be dmx or percentage.');
   }
+  const lowerLimit = assertDmxLimit(control.lowerLimit, 'lowerLimit', 0);
+  const upperLimit = assertDmxLimit(control.upperLimit, 'upperLimit', 255);
+  if (lowerLimit > upperLimit) {
+    throw new InvalidVirtualConsoleException('Slider lowerLimit must be less than or equal to upperLimit.');
+  }
   assertColor(control.foregroundColor, 'foregroundColor');
 }
 
 function assertButton(control: VirtualConsoleControl): void {
   assertNoChildren(control);
+  assertDmxLimit(control.upperLimit, 'upperLimit', 255);
   assertColor(control.foregroundColor, 'foregroundColor');
 }
 

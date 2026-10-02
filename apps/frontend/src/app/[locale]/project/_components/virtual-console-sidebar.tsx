@@ -403,7 +403,48 @@ const ControlFields = ({ control, onDelete, onPatch }: ControlFieldsProperties) 
               }
             }}
           />
+          <NumberInput
+            hideControls
+            label={t({ id: 'ProjectDetail.virtualConsole.lowerLimit', defaultMessage: 'Lower limit' })}
+            max={255}
+            min={0}
+            value={control.lowerLimit ?? 0}
+            onChange={value => {
+              const next = toFiniteNumber(value);
+              if (next !== undefined) {
+                onPatch({ lowerLimit: Math.round(next) });
+              }
+            }}
+          />
+          <NumberInput
+            hideControls
+            label={t({ id: 'ProjectDetail.virtualConsole.upperLimit', defaultMessage: 'Upper limit' })}
+            max={255}
+            min={0}
+            value={control.upperLimit ?? 255}
+            onChange={value => {
+              const next = toFiniteNumber(value);
+              if (next !== undefined) {
+                onPatch({ upperLimit: Math.round(next) });
+              }
+            }}
+          />
         </>
+      ) : null}
+      {control.type === 'button' ? (
+        <NumberInput
+          hideControls
+          label={t({ id: 'ProjectDetail.virtualConsole.upperLimit', defaultMessage: 'Upper limit' })}
+          max={255}
+          min={0}
+          value={control.upperLimit ?? 255}
+          onChange={value => {
+            const next = toFiniteNumber(value);
+            if (next !== undefined) {
+              onPatch({ upperLimit: Math.round(next) });
+            }
+          }}
+        />
       ) : null}
       <Button color="red" variant="light" onClick={onDelete}>
         {t({ id: 'ProjectDetail.virtualConsole.deleteControl', defaultMessage: 'Delete control' })}

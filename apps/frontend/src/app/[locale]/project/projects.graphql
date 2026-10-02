@@ -26,6 +26,8 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
   fontSize
   fontWeight
   valueType
+  lowerLimit
+  upperLimit
   channelBindings {
     projectFixturePublicId
     channelAssignmentPublicId
