@@ -7,11 +7,11 @@
   "engines": {
     "node": "24.21.0"
   },
-  "packageManager": "pnpm@12.8.2",
+  "packageManager": "pnpm@12.9.0",
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.8.2",
+      "version": "12.9.0",
       "onFail": "download"
     }
   },
@@ -20,8 +20,8 @@
     "@eslint/js": "^10.0.1",
     "@formatjs/cli": "^6.16.32",
     "@graphql-codegen/cli": "^7.4.3",
-    "@graphql-tools/load": "^8.1.17",
-    "@graphql-tools/url-loader": "^9.1.10",
+    "@graphql-tools/load": "^8.1.19",
+    "@graphql-tools/url-loader": "^9.1.12",
     "@nestjs/schematics": "^12.0.6",
     "@nestjs/testing": "^12.1.2",
     "@next/eslint-plugin-next": "^16.3.8",
@@ -86,7 +86,7 @@
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.0",
-    "vite": "^8.3.1",
+    "vite": "^8.3.2",
     "vitest": "~5.0.3",
     "wait-on": "^9.5.1"
   },
