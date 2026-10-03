@@ -14,6 +14,7 @@ import {
   createFixtureBeamCone,
   DEFAULT_BEAM_ANGLE_DEG,
   disposeFixtureBeamCone,
+  positionFixtureBeamFromModel,
   replaceFixtureBeamConeGeometry,
   syncFixtureBeamRoomBounds,
   updateFixtureBeamStrobe,
@@ -639,6 +640,10 @@ const ThreeDRoomCanvas = ({
           gltf.scene.name = 'visual';
           prepareFixtureModelForPreview(gltf.scene);
           capturedRoot.add(gltf.scene);
+          const loadedBeam = beamMesh(capturedRoot);
+          if (loadedBeam) {
+            positionFixtureBeamFromModel(loadedBeam, gltf.scene);
+          }
         });
       }
       syncInstanceParent(scene, root, selectionGroup);

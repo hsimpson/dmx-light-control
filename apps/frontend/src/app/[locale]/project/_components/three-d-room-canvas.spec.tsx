@@ -1,4 +1,5 @@
 import { dmxStore, resetDmxStore } from '@/lib/dmx/dmx-store';
+import { BEAM_LENGTH_M } from '@/lib/three/fixture-beam-cone';
 import { FixtureChannelPreset, ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { fireEvent, screen } from '@testing-library/react';
@@ -90,7 +91,13 @@ vi.mock('@/lib/three/scene-ao-composer', () => ({
 
 vi.mock('three', () => {
   class Position {
-    public set(_x: number, _y: number, _z: number) {
+    public x = 0;
+    public y = 0;
+    public z = 0;
+    public set(x: number, y: number, z: number) {
+      this.x = x;
+      this.y = y;
+      this.z = z;
       return this;
     }
   }
@@ -221,6 +228,9 @@ vi.mock('three', () => {
         this.z = z;
         return this;
       }
+      public copy(other: { x: number; y: number; z: number }) {
+        return this.set(other.x, other.y, other.z);
+      }
       public distanceToSquared() {
         return Number.POSITIVE_INFINITY;
       }
@@ -332,6 +342,9 @@ vi.mock('three', () => {
       }
       public updateWorldMatrix() {
         return undefined;
+      }
+      public worldToLocal<T>(vector: T): T {
+        return vector;
       }
       public getObjectByName() {
         return null;
@@ -908,17 +921,77 @@ describe('ThreeDRoomCanvas', () => {
     expect(String(load.mock.calls.at(-1)?.[0])).toContain('/assets/fixtures/acme/par/model.glb');
     expect(transformControlsConstruct.mock.calls.length).toBeGreaterThanOrEqual(2);
     const onLoad = load.mock.calls.at(-1)?.[1] as
-      ((gltf: { scene: { name?: string; traverse: (cb: (object: unknown) => void) => void } }) => void) | undefined;
+      | ((gltf: {
+          scene: {
+            name?: string;
+            traverse: (cb: (object: unknown) => void) => void;
+            getObjectByName?: (name: string) => unknown;
+          };
+        }) => void)
+      | undefined;
     const instanceMesh = { isMesh: true, castShadow: false, receiveShadow: false, material: {} };
     onLoad?.({
       scene: {
         traverse(callback: (object: unknown) => void) {
           callback(instanceMesh);
         },
+        getObjectByName: () => undefined,
       },
     });
     expect(instanceMesh.castShadow).toBe(true);
     expect(instanceMesh.receiveShadow).toBe(true);
+  });
+
+  it('places the beam apex on the model BeamOrigin without moving the fixture pivot', () => {
+    load.mockClear();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 5, 0, 0, 1],
+            fixture: { model3dPath: '/assets/fixtures/acme/par/model.glb' },
+          },
+        ]}
+      />,
+    );
+    const onLoad = load.mock.calls.at(-1)?.[1] as
+      | ((gltf: {
+          scene: {
+            traverse: (cb: (object: unknown) => void) => void;
+            getObjectByName: (name: string) => unknown;
+            updateWorldMatrix: () => void;
+            worldToLocal: (vector: unknown) => unknown;
+          };
+        }) => void)
+      | undefined;
+    const marker = {
+      getWorldPosition(target: { set: (x: number, y: number, z: number) => unknown }) {
+        target.set(0.0735, 0.118, 0);
+        return target;
+      },
+    };
+    onLoad?.({
+      scene: {
+        traverse() {
+          return undefined;
+        },
+        getObjectByName: name => (name === 'BeamOrigin' ? marker : undefined),
+        updateWorldMatrix() {
+          return undefined;
+        },
+        worldToLocal(vector) {
+          return vector;
+        },
+      },
+    });
+    const beam = createdMeshes.find(mesh => mesh.userData.isBeam === true);
+    expect(beam?.position).toMatchObject({ x: 0.0735 + BEAM_LENGTH_M / 2, y: 0.118, z: 0 });
   });
 
   it('selects a fixture from a bounding-box pick', () => {

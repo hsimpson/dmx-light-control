@@ -19,7 +19,11 @@ import type { FixtureBeamColor } from '@/lib/fixtures/fixture-beam-color';
 
 export const BEAM_LENGTH_M = 6;
 export const DEFAULT_BEAM_ANGLE_DEG = 30;
+/** Near-cap radius when the model has no lens meshes. About a small PAR face. */
+export const DEFAULT_BEAM_SOURCE_RADIUS_M = 0.06;
 export const FIXTURE_BEAM_LAYER = 1;
+/** Empty in the fixture GLB at the LED-cluster center on the lens face. The room pivot stays the group origin. */
+export const FIXTURE_BEAM_ORIGIN_NAME = 'BeamOrigin';
 
 const BEAM_RADIAL_SEGMENTS = 32;
 const BEAM_RAY_STEPS = 32;
@@ -33,21 +37,30 @@ const beamOccluderBox = new Box3();
 const beamOccluderHit = new Vector3();
 
 /**
- * Closed cone so a back-face draw covers the volume once.
- * The apex cap is degenerate (radius 0); the base cap closes the open end.
- * Bounds stay the beam length and the full opening angle.
+ * Closed frustum so a back-face draw covers the volume once.
+ * The near cap matches the LED face; the far cap keeps the beam angle.
  */
 export function createFixtureBeamConeGeometry(
   beamAngleDeg = DEFAULT_BEAM_ANGLE_DEG,
   lengthM = BEAM_LENGTH_M,
+  sourceRadiusM = DEFAULT_BEAM_SOURCE_RADIUS_M,
 ): CylinderGeometry {
-  const radius = fixtureBeamConeRadius(beamAngleDeg, lengthM);
-  return new CylinderGeometry(0, radius, lengthM, BEAM_RADIAL_SEGMENTS, 1, false);
+  const farRadius = fixtureBeamFarRadius(beamAngleDeg, lengthM, sourceRadiusM);
+  return new CylinderGeometry(sourceRadiusM, farRadius, lengthM, BEAM_RADIAL_SEGMENTS, 1, false);
 }
 
+/** Radius added by the beam angle over `lengthM`, measured from the rim of the source. */
 export function fixtureBeamConeRadius(beamAngleDeg: number, lengthM = BEAM_LENGTH_M): number {
   const halfRad = (beamAngleDeg * Math.PI) / 180 / 2;
   return lengthM * Math.tan(halfRad);
+}
+
+export function fixtureBeamFarRadius(
+  beamAngleDeg: number,
+  lengthM = BEAM_LENGTH_M,
+  sourceRadiusM = DEFAULT_BEAM_SOURCE_RADIUS_M,
+): number {
+  return sourceRadiusM + fixtureBeamConeRadius(beamAngleDeg, lengthM);
 }
 
 const BEAM_VERTEX_SHADER = /* glsl */ `
@@ -74,6 +87,7 @@ export const FIXTURE_BEAM_FRAGMENT_SHADER = /* glsl */ `
   uniform mat4 inverseModelMatrix;
   uniform float coneLength;
   uniform float coneRadius;
+  uniform float coneSourceRadius;
   uniform vec3 roomMin;
   uniform vec3 roomMax;
   uniform float roomClip;
@@ -93,7 +107,7 @@ export const FIXTURE_BEAM_FRAGMENT_SHADER = /* glsl */ `
     if (along <= 0.0 || along >= coneLength) {
       return 0.0;
     }
-    float radiusAt = coneRadius * (along / coneLength);
+    float radiusAt = mix(coneSourceRadius, coneRadius, along / coneLength);
     float radial = length(pObj.xz);
     if (radial >= radiusAt || radiusAt <= 0.0) {
       return 0.0;
@@ -215,6 +229,7 @@ type FixtureBeamUniforms = {
   inverseModelMatrix: { value: Matrix4 };
   coneLength: { value: number };
   coneRadius: { value: number };
+  coneSourceRadius: { value: number };
 };
 
 type FixtureBeamMaterial = ShaderMaterial & { color: Color; uniforms: FixtureBeamUniforms };
@@ -234,7 +249,8 @@ function createFixtureBeamMaterial(beamAngleDeg: number): FixtureBeamMaterial {
       roomClip: { value: 0 },
       inverseModelMatrix: { value: inverseModelMatrix },
       coneLength: { value: BEAM_LENGTH_M },
-      coneRadius: { value: fixtureBeamConeRadius(beamAngleDeg) },
+      coneRadius: { value: fixtureBeamFarRadius(beamAngleDeg) },
+      coneSourceRadius: { value: DEFAULT_BEAM_SOURCE_RADIUS_M },
     },
     vertexShader: BEAM_VERTEX_SHADER,
     fragmentShader: FIXTURE_BEAM_FRAGMENT_SHADER,
@@ -258,7 +274,7 @@ function fixtureBeamUniforms(material: Material | Material[]): FixtureBeamUnifor
     return undefined;
   }
   const uniforms = material.uniforms as Partial<FixtureBeamUniforms>;
-  if (!uniforms.tSceneDepth || !uniforms.sceneDepthSize || !uniforms.coneRadius) {
+  if (!uniforms.tSceneDepth || !uniforms.sceneDepthSize || !uniforms.coneRadius || !uniforms.coneSourceRadius) {
     return undefined;
   }
   return uniforms as FixtureBeamUniforms;
@@ -270,7 +286,6 @@ export function createFixtureBeamCone(beamAngleDeg = DEFAULT_BEAM_ANGLE_DEG): Me
   const mesh = new Mesh(geometry, material);
   mesh.name = 'beam';
   mesh.rotation.z = Math.PI / 2;
-  mesh.position.x = BEAM_LENGTH_M / 2;
   mesh.castShadow = false;
   mesh.receiveShadow = false;
   mesh.layers.set(FIXTURE_BEAM_LAYER);
@@ -279,6 +294,9 @@ export function createFixtureBeamCone(beamAngleDeg = DEFAULT_BEAM_ANGLE_DEG): Me
   mesh.userData.strobeHz = 0;
   mesh.userData.beamAngleDeg = beamAngleDeg;
   mesh.userData.beamLengthM = BEAM_LENGTH_M;
+  mesh.userData.beamSourceRadiusM = DEFAULT_BEAM_SOURCE_RADIUS_M;
+  mesh.userData.beamOriginOffset = new Vector3();
+  applyBeamApexPosition(mesh);
   mesh.visible = false;
   mesh.raycast = () => {
     return;
@@ -287,16 +305,8 @@ export function createFixtureBeamCone(beamAngleDeg = DEFAULT_BEAM_ANGLE_DEG): Me
 }
 
 export function replaceFixtureBeamConeGeometry(mesh: Mesh, beamAngleDeg: number): void {
-  const lengthM = beamLengthM(mesh);
-  mesh.geometry.dispose();
-  mesh.geometry = createFixtureBeamConeGeometry(beamAngleDeg, lengthM);
-  mesh.position.x = lengthM / 2;
   mesh.userData.beamAngleDeg = beamAngleDeg;
-  const uniforms = fixtureBeamUniforms(mesh.material);
-  if (uniforms) {
-    uniforms.coneLength.value = lengthM;
-    uniforms.coneRadius.value = fixtureBeamConeRadius(beamAngleDeg, lengthM);
-  }
+  rebuildBeamGeometry(mesh);
 }
 
 function beamLengthM(mesh: Mesh): number {
@@ -304,22 +314,135 @@ function beamLengthM(mesh: Mesh): number {
   return typeof length === 'number' && Number.isFinite(length) ? length : BEAM_LENGTH_M;
 }
 
+function storedBeamAngleDeg(mesh: Mesh): number {
+  return typeof mesh.userData.beamAngleDeg === 'number' ? mesh.userData.beamAngleDeg : DEFAULT_BEAM_ANGLE_DEG;
+}
+
+function beamSourceRadiusM(mesh: Mesh): number {
+  const radius = mesh.userData.beamSourceRadiusM;
+  return typeof radius === 'number' && Number.isFinite(radius) ? Math.max(0, radius) : DEFAULT_BEAM_SOURCE_RADIUS_M;
+}
+
+function syncBeamShapeUniforms(mesh: Mesh): void {
+  const uniforms = fixtureBeamUniforms(mesh.material);
+  if (!uniforms) {
+    return;
+  }
+  const length = beamLengthM(mesh);
+  const sourceRadius = beamSourceRadiusM(mesh);
+  uniforms.coneLength.value = length;
+  uniforms.coneSourceRadius.value = sourceRadius;
+  uniforms.coneRadius.value = fixtureBeamFarRadius(storedBeamAngleDeg(mesh), length, sourceRadius);
+}
+
+function rebuildBeamGeometry(mesh: Mesh): void {
+  const length = beamLengthM(mesh);
+  mesh.geometry.dispose();
+  mesh.geometry = createFixtureBeamConeGeometry(storedBeamAngleDeg(mesh), length, beamSourceRadiusM(mesh));
+  applyBeamApexPosition(mesh);
+  syncBeamShapeUniforms(mesh);
+}
+
+function beamOriginOffset(mesh: Mesh): Vector3 {
+  if (!(mesh.userData.beamOriginOffset instanceof Vector3)) {
+    mesh.userData.beamOriginOffset = new Vector3();
+  }
+  return mesh.userData.beamOriginOffset as Vector3;
+}
+
+/** Apex stays at the beam origin; the mesh center is half a cone length along local +X. */
+function applyBeamApexPosition(mesh: Mesh): void {
+  const origin = beamOriginOffset(mesh);
+  const length = beamLengthM(mesh);
+  mesh.position.set(origin.x + length / 2, origin.y, origin.z);
+}
+
+/**
+ * Move the cone apex to the LED center. The fixture group origin is the room placement pivot and stays put.
+ */
+export function setFixtureBeamOrigin(mesh: Mesh, origin: Vector3): void {
+  beamOriginOffset(mesh).copy(origin);
+  applyBeamApexPosition(mesh);
+}
+
+/** Widen the near cap so the beam starts on the LED face instead of a point. */
+export function setFixtureBeamSourceRadius(mesh: Mesh, radiusM: number): void {
+  const radius = Math.max(0, radiusM);
+  if (Math.abs(beamSourceRadiusM(mesh) - radius) < 1e-4) {
+    return;
+  }
+  mesh.userData.beamSourceRadiusM = radius;
+  rebuildBeamGeometry(mesh);
+}
+
+const lensRadial = new Vector3();
+const lensCorner = new Vector3();
+const lensBox = new Box3();
+
+/** Radius of the lens cluster around the beam origin, in the plane perpendicular to +X. */
+export function measureFixtureBeamSourceRadius(model: Object3D, originWorld: Vector3): number {
+  const axis = new Vector3(1, 0, 0);
+  if (model.matrixWorld) {
+    axis.setFromMatrixColumn(model.matrixWorld, 0);
+    if (axis.lengthSq() < 1e-8) {
+      axis.set(1, 0, 0);
+    } else {
+      axis.normalize();
+    }
+  }
+  let maxRadial = 0;
+  let found = false;
+  model.traverse(object => {
+    if (!/lens/i.test(object.name) || !isMeshObject(object)) {
+      return;
+    }
+    lensBox.setFromObject(object);
+    if (lensBox.isEmpty()) {
+      return;
+    }
+    found = true;
+    const { min, max } = lensBox;
+    for (const x of [min.x, max.x]) {
+      for (const y of [min.y, max.y]) {
+        for (const z of [min.z, max.z]) {
+          lensCorner.set(x, y, z);
+          lensRadial.copy(lensCorner).sub(originWorld);
+          const along = lensRadial.dot(axis);
+          lensRadial.addScaledVector(axis, -along);
+          maxRadial = Math.max(maxRadial, lensRadial.length());
+        }
+      }
+    }
+  });
+  return found ? maxRadial : DEFAULT_BEAM_SOURCE_RADIUS_M;
+}
+
+const isMeshObject = (object: Object3D): object is Mesh => 'isMesh' in object && object.isMesh === true;
+
+/** Read a `BeamOrigin` empty from the loaded fixture model and place the cone on the LED face. */
+export function positionFixtureBeamFromModel(beam: Mesh, model: Object3D): void {
+  const marker = model.getObjectByName(FIXTURE_BEAM_ORIGIN_NAME);
+  if (!marker) {
+    return;
+  }
+  model.updateWorldMatrix(true, true);
+  const origin = new Vector3();
+  marker.getWorldPosition(origin);
+  const sourceRadius = measureFixtureBeamSourceRadius(model, origin);
+  const parent = beam.parent ?? model;
+  parent.updateWorldMatrix(true, false);
+  parent.worldToLocal(origin);
+  setFixtureBeamOrigin(beam, origin);
+  setFixtureBeamSourceRadius(beam, sourceRadius);
+}
+
 export function setFixtureBeamLength(mesh: Mesh, lengthM: number): void {
   const length = Math.min(BEAM_LENGTH_M, Math.max(MIN_BEAM_LENGTH_M, lengthM));
   if (Math.abs(beamLengthM(mesh) - length) < 0.01) {
     return;
   }
-  const beamAngleDeg =
-    typeof mesh.userData.beamAngleDeg === 'number' ? mesh.userData.beamAngleDeg : DEFAULT_BEAM_ANGLE_DEG;
-  mesh.geometry.dispose();
-  mesh.geometry = createFixtureBeamConeGeometry(beamAngleDeg, length);
-  mesh.position.x = length / 2;
   mesh.userData.beamLengthM = length;
-  const uniforms = fixtureBeamUniforms(mesh.material);
-  if (uniforms) {
-    uniforms.coneLength.value = length;
-    uniforms.coneRadius.value = fixtureBeamConeRadius(beamAngleDeg, length);
-  }
+  rebuildBeamGeometry(mesh);
 }
 
 const isTransformGizmo = (object: Object3D): boolean =>
@@ -370,7 +493,9 @@ export function clipFixtureBeamToScene(mesh: Mesh, scene: Object3D): void {
     return;
   }
   root.updateWorldMatrix(true, false);
-  beamOrigin.setFromMatrixPosition(root.matrixWorld);
+  const origin = beamOriginOffset(mesh);
+  beamOrigin.set(origin.x, origin.y, origin.z);
+  root.localToWorld(beamOrigin);
   beamDirection.setFromMatrixColumn(root.matrixWorld, 0);
   if (beamDirection.lengthSq() < 1e-8) {
     return;

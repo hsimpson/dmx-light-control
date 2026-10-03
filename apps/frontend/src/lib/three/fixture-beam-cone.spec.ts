@@ -16,9 +16,15 @@ import {
   BEAM_LENGTH_M,
   clipFixtureBeamToScene,
   createFixtureBeamCone,
+  setFixtureBeamLength,
   DEFAULT_BEAM_ANGLE_DEG,
+  DEFAULT_BEAM_SOURCE_RADIUS_M,
   FIXTURE_BEAM_FRAGMENT_SHADER,
+  FIXTURE_BEAM_ORIGIN_NAME,
+  positionFixtureBeamFromModel,
+  setFixtureBeamOrigin,
   fixtureBeamConeRadius,
+  fixtureBeamFarRadius,
   syncFixtureBeamSceneDepth,
 } from './fixture-beam-cone';
 
@@ -37,14 +43,25 @@ describe('createFixtureBeamCone', () => {
     expect(mesh.userData.isBeam).toBe(true);
   });
 
-  it('uses the full beam angle for the cone opening', () => {
+  it('opens from the LED face and keeps the beam angle', () => {
     const mesh = createFixtureBeamCone(DEFAULT_BEAM_ANGLE_DEG);
     mesh.updateMatrixWorld(true);
 
+    const geometry = mesh.geometry as CylinderGeometry;
+    const farRadius = fixtureBeamFarRadius(DEFAULT_BEAM_ANGLE_DEG);
+    expect(geometry.parameters.radiusTop).toBeCloseTo(DEFAULT_BEAM_SOURCE_RADIUS_M, 5);
+    expect(geometry.parameters.radiusBottom).toBeCloseTo(farRadius, 5);
+    expect(farRadius - DEFAULT_BEAM_SOURCE_RADIUS_M).toBeCloseTo(fixtureBeamConeRadius(DEFAULT_BEAM_ANGLE_DEG), 5);
+
     const box = new Box3().setFromObject(mesh);
-    const expectedRadius = fixtureBeamConeRadius(DEFAULT_BEAM_ANGLE_DEG);
-    expect(box.max.y).toBeCloseTo(expectedRadius, 4);
-    expect(box.min.y).toBeCloseTo(-expectedRadius, 4);
+    expect(box.max.y).toBeCloseTo(farRadius, 4);
+    expect(box.min.y).toBeCloseTo(-farRadius, 4);
+    expect(mesh.material).toMatchObject({
+      uniforms: {
+        coneSourceRadius: { value: DEFAULT_BEAM_SOURCE_RADIUS_M },
+        coneRadius: { value: farRadius },
+      },
+    });
   });
 
   it('fades through the volume and samples scene depth instead of a flat opacity', () => {
@@ -126,5 +143,95 @@ describe('createFixtureBeamCone', () => {
     clipFixtureBeamToScene(beam, scene);
 
     expect(beam.userData.beamLengthM).toBe(BEAM_LENGTH_M);
+  });
+
+  it('moves the apex to the LED center and keeps that offset when the cone shortens', () => {
+    const mesh = createFixtureBeamCone();
+    setFixtureBeamOrigin(mesh, new Vector3(0.0735, 0.118, 0));
+    mesh.updateMatrixWorld(true);
+
+    let box = new Box3().setFromObject(mesh);
+    expect(box.min.x).toBeCloseTo(0.0735, 5);
+    expect(box.max.x).toBeCloseTo(0.0735 + BEAM_LENGTH_M, 5);
+    expect(box.getCenter(new Vector3()).y).toBeCloseTo(0.118, 5);
+    expect(box.getCenter(new Vector3()).z).toBeCloseTo(0, 5);
+
+    setFixtureBeamLength(mesh, 2);
+    mesh.updateMatrixWorld(true);
+    box = new Box3().setFromObject(mesh);
+    expect(box.min.x).toBeCloseTo(0.0735, 5);
+    expect(box.max.x).toBeCloseTo(2.0735, 5);
+    expect(box.getCenter(new Vector3()).y).toBeCloseTo(0.118, 5);
+  });
+
+  it('places the cone from a BeamOrigin empty in the fixture group', () => {
+    const fixture = new Group();
+    fixture.position.set(4, 1, -2);
+    const beam = createFixtureBeamCone();
+    const model = new Group();
+    const marker = new Group();
+    marker.name = FIXTURE_BEAM_ORIGIN_NAME;
+    marker.position.set(0.0833, 0.1405, 0);
+    model.add(marker);
+    fixture.add(beam);
+    fixture.add(model);
+    fixture.updateMatrixWorld(true);
+
+    positionFixtureBeamFromModel(beam, model);
+
+    expect(beam.position.x).toBeCloseTo(0.0833 + BEAM_LENGTH_M / 2, 5);
+    expect(beam.position.y).toBeCloseTo(0.1405, 5);
+    expect(beam.position.z).toBeCloseTo(0, 5);
+    expect(fixture.position.x).toBe(4);
+  });
+
+  it('sizes the near cap to the lens cluster around BeamOrigin', () => {
+    const fixture = new Group();
+    const beam = createFixtureBeamCone();
+    const model = new Group();
+    const marker = new Group();
+    marker.name = FIXTURE_BEAM_ORIGIN_NAME;
+    marker.position.set(0.07, 0.12, 0);
+    const lens = new Mesh(new BoxGeometry(0.01, 0.04, 0.04), new MeshBasicMaterial());
+    lens.name = 'PAR_Lens_0';
+    lens.position.set(0.07, 0.12, 0.05);
+    model.add(marker);
+    model.add(lens);
+    fixture.add(beam);
+    fixture.add(model);
+    fixture.updateMatrixWorld(true);
+
+    positionFixtureBeamFromModel(beam, model);
+
+    const geometry = beam.geometry as CylinderGeometry;
+    const sourceRadius = Math.hypot(0.02, 0.07);
+    expect(geometry.parameters.radiusTop).toBeCloseTo(sourceRadius, 4);
+    expect(geometry.parameters.radiusBottom).toBeCloseTo(
+      fixtureBeamFarRadius(DEFAULT_BEAM_ANGLE_DEG, BEAM_LENGTH_M, sourceRadius),
+      4,
+    );
+    expect(beam.position.y).toBeCloseTo(0.12, 5);
+  });
+
+  it('clips from the lens apex when the beam origin is in front of the pivot', () => {
+    const scene = new Scene();
+    const fixture = new Group();
+    const beam = createFixtureBeamCone();
+    setFixtureBeamOrigin(beam, new Vector3(0.5, 0.2, 0));
+    fixture.add(beam);
+    scene.add(fixture);
+
+    const wall = new Mesh(new BoxGeometry(0.4, 4, 4), new MeshBasicMaterial());
+    wall.position.set(2, 0, 0);
+    scene.add(wall);
+
+    scene.updateMatrixWorld(true);
+    clipFixtureBeamToScene(beam, scene);
+
+    beam.updateMatrixWorld(true);
+    const box = new Box3().setFromObject(beam);
+    expect(box.min.x).toBeCloseTo(0.5, 2);
+    expect(box.max.x).toBeCloseTo(1.78, 2);
+    expect(box.getCenter(new Vector3()).y).toBeCloseTo(0.2, 2);
   });
 });
