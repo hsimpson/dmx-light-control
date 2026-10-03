@@ -89,6 +89,11 @@ export class ImportFixtureDefinitionInput extends ImportTimestampsInput {
 
 @InputType()
 export class ImportFixtureAssignmentInput extends ImportTimestampsInput {
+  @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the channel assignment' })
+  @IsOptional()
+  @Matches(IMPORT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })
+  public publicId?: string;
+
   @Field(() => Int, { description: 'The 1-based DMX channel number of the assignment' })
   @IsInt()
   @Min(1)
@@ -175,6 +180,13 @@ export class ImportFixtureInput extends ImportTimestampsInput {
   @Min(0.001)
   @Max(100)
   public height?: number | null;
+
+  @Field(() => Float, { nullable: true, description: 'Beam angle in degrees (full opening angle)' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0.001)
+  @Max(179.999)
+  public beamAngle?: number;
 
   @Field(() => String, { nullable: true, description: 'Product photo path relative to the API origin' })
   @IsOptional()

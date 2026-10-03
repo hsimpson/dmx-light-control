@@ -42,6 +42,7 @@ export type FixtureExportFixture = {
   width: number | null;
   length: number | null;
   height: number | null;
+  beamAngle: number;
   picturePath: string | null;
   picture2dPath: string | null;
   model3dPath: string | null;
@@ -72,6 +73,7 @@ type DefinitionRow = {
 } & ExportTimestampSource;
 
 type AssignmentRow = {
+  publicId?: string | null;
   channelNumber: number;
   fixtureChannelDefinition?: { publicId: string | null } | null;
 } & ExportTimestampSource;
@@ -90,6 +92,7 @@ export type FixtureExportSource = {
   width?: number | null;
   length?: number | null;
   height?: number | null;
+  beamAngle?: number;
   picturePath?: string | null;
   picture2dPath?: string | null;
   model3dPath?: string | null;
@@ -144,6 +147,7 @@ export function mapFixturesToExportDocument(
       width: fixture.width ?? null,
       length: fixture.length ?? null,
       height: fixture.height ?? null,
+      beamAngle: fixture.beamAngle ?? 30,
       picturePath: fixture.picturePath ?? null,
       picture2dPath: fixture.picture2dPath ?? null,
       model3dPath: fixture.model3dPath ?? null,
@@ -173,6 +177,7 @@ export function mapFixturesToExportDocument(
         assignments: [...(mode.fixtureChannelAssignments ?? [])]
           .sort((left, right) => left.channelNumber - right.channelNumber)
           .map(assignment => ({
+            publicId: assignment.publicId ?? '',
             channelNumber: assignment.channelNumber,
             channelDefinitionPublicId: assignment.fixtureChannelDefinition?.publicId ?? '',
             ...mapExportTimestamps(assignment),

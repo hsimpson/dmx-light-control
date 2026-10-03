@@ -77,26 +77,35 @@ const projectFixture = (overrides: { publicId: string; name: string; startAddres
     fixtureChannelAssignments: [
       {
         __typename: 'ProjectFixtureChannelAssignmentDto' as const,
+        publicId: 'assign-red',
         channelNumber: 1,
         fixtureChannelDefinition: {
           __typename: 'ProjectFixtureChannelDefinitionDto' as const,
+          name: 'Red',
           preset: FixtureChannelPreset.IntensityRed,
+          fixtureChannelRanges: [],
         },
       },
       {
         __typename: 'ProjectFixtureChannelAssignmentDto' as const,
+        publicId: 'assign-green',
         channelNumber: 2,
         fixtureChannelDefinition: {
           __typename: 'ProjectFixtureChannelDefinitionDto' as const,
+          name: 'Green',
           preset: FixtureChannelPreset.IntensityGreen,
+          fixtureChannelRanges: [],
         },
       },
       {
         __typename: 'ProjectFixtureChannelAssignmentDto' as const,
+        publicId: 'assign-blue',
         channelNumber: 3,
         fixtureChannelDefinition: {
           __typename: 'ProjectFixtureChannelDefinitionDto' as const,
+          name: 'Blue',
           preset: FixtureChannelPreset.IntensityBlue,
+          fixtureChannelRanges: [],
         },
       },
     ],
@@ -246,6 +255,7 @@ describe('ProjectFixtureTable', () => {
                   width: null,
                   length: null,
                   height: null,
+                  beamAngle: 30,
                   picturePath: null,
                   picture2dPath: null,
                   model3dPath: null,
@@ -331,6 +341,7 @@ const catalogFixture = {
   width: null,
   length: null,
   height: null,
+  beamAngle: 30,
   picturePath: null,
   picture2dPath: null,
   model3dPath: null,

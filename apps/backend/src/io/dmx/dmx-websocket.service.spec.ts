@@ -100,6 +100,10 @@ describe('DmxWebsocketService', () => {
     listeners.get('dmx.channelValues')?.([]);
     expect(client.sent).toEqual([]);
 
+    client.readyState = 3;
+    listeners.get('dmx.channelValues')?.([{ channel: 1, value: 10 }]);
+    expect(client.sent).toEqual([]);
+
     service.onModuleDestroy();
   });
 });

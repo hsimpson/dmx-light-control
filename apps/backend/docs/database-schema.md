@@ -24,6 +24,7 @@ erDiagram
         doubleprecision width
         doubleprecision length
         doubleprecision height
+        doubleprecision beam_angle
         varchar picture_path
         varchar picture2d_path
         varchar model3d_path

@@ -56,6 +56,15 @@ registerEnumType(VirtualConsoleSliderValueType, {
   description: 'How a slider value is interpreted',
 });
 
+export type VirtualConsoleChannelBinding = {
+  projectFixturePublicId: string;
+  channelAssignmentPublicId: string;
+  /** Present in export documents to remap bindings after catalog re-import. */
+  channelNumber?: number;
+  /** Present in export documents to remap bindings when assignment publicIds change. */
+  channelDefinitionPublicId?: string;
+};
+
 export type VirtualConsoleControl = {
   id: string;
   type: VirtualConsoleControlType;
@@ -74,6 +83,9 @@ export type VirtualConsoleControl = {
   fontSize?: number;
   fontWeight?: number;
   valueType?: `${VirtualConsoleSliderValueType}`;
+  lowerLimit?: number | null;
+  upperLimit?: number | null;
+  channelBindings?: VirtualConsoleChannelBinding[];
 };
 
 export type VirtualConsolePage = {

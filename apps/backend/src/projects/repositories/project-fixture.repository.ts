@@ -10,7 +10,9 @@ export const projectFixtureRelations = {
   fixture: { with: { fixtureVendor: true } },
   fixtureChannelMode: {
     with: {
-      fixtureChannelAssignments: { with: { fixtureChannelDefinition: true } },
+      fixtureChannelAssignments: {
+        with: { fixtureChannelDefinition: { with: { fixtureChannelRanges: true } } },
+      },
     },
   },
 } as const;

@@ -43,6 +43,7 @@ describe('GraphQL schema generation', () => {
     expect(schema.getMutationType()?.getFields().importFixtures).toBeDefined();
     const fixtureDto = schema.getType('FixtureDto') as GraphQLObjectType | undefined;
     expect(fixtureDto?.getFields().weight).toBeDefined();
+    expect(fixtureDto?.getFields().beamAngle).toBeDefined();
     expect(fixtureDto?.getFields().picturePath).toBeDefined();
     expect(schema.getMutationType()?.getFields().createProject).toBeDefined();
     expect(schema.getQueryType()?.getFields().exportProjects).toBeDefined();

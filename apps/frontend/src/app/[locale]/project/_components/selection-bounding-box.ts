@@ -1,4 +1,13 @@
-import { Box3, Box3Helper, type LineBasicMaterial, type Object3D, type Scene, Vector3 } from 'three';
+import {
+  Box3,
+  Box3Helper,
+  type BufferGeometry,
+  type LineBasicMaterial,
+  type Mesh,
+  type Object3D,
+  type Scene,
+  Vector3,
+} from 'three';
 
 export const SELECTION_HIGHLIGHT_COLOR = 0xffff00;
 export const SELECTION_AABB_PADDING_FRACTION = 0.03;
@@ -18,8 +27,39 @@ export function expandWorldAabb(box: Box3): Box3 {
   return target.expandByScalar(paddingForWorldAabb(box));
 }
 
+const scratchAabb = new Box3();
+
+export function isFixtureBeam(object: Object3D): boolean {
+  return object.userData.isBeam === true;
+}
+
+export function setWorldAabbIgnoringBeams(object: Object3D, target: Box3): Box3 {
+  target.makeEmpty();
+  object.updateWorldMatrix(true, true);
+  const visit = (current: Object3D): void => {
+    if (isFixtureBeam(current)) {
+      return;
+    }
+    const geometry = (current as Mesh).geometry as BufferGeometry | undefined;
+    if (geometry) {
+      if (geometry.boundingBox === null) {
+        geometry.computeBoundingBox();
+      }
+      if (geometry.boundingBox) {
+        scratchAabb.copy(geometry.boundingBox).applyMatrix4(current.matrixWorld);
+        target.union(scratchAabb);
+      }
+    }
+    for (const child of current.children) {
+      visit(child);
+    }
+  };
+  visit(object);
+  return target;
+}
+
 export function setPaddedWorldAabbFromObject(object: Object3D, target: Box3): boolean {
-  target.setFromObject(object);
+  setWorldAabbIgnoringBeams(object, target);
   if (target.isEmpty()) {
     return false;
   }

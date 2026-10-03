@@ -23,6 +23,7 @@ export type FixturePropertiesValues = {
   width: number | null;
   length: number | null;
   height: number | null;
+  beamAngle: number;
   picturePath: string | null;
   picture2dPath: string | null;
   model3dPath: string | null;
@@ -31,7 +32,9 @@ export type FixturePropertiesValues = {
 export type FixturePropertiesPanelProperties = {
   fixturePublicId?: string;
   values: FixturePropertiesValues;
-  onDimensionsChange: (values: Pick<FixturePropertiesValues, 'weight' | 'width' | 'length' | 'height'>) => void;
+  onDimensionsChange: (
+    values: Pick<FixturePropertiesValues, 'weight' | 'width' | 'length' | 'height' | 'beamAngle'>,
+  ) => void;
   onAssetPathChange: (kind: FixtureAssetKind, path: string | null) => void;
 };
 
@@ -178,6 +181,21 @@ const FixtureProperties = ({
               const next = toFiniteNumber(value);
               if (next !== undefined) {
                 onDimensionsChange({ ...values, height: next });
+              }
+            }}
+          />
+          <NumberInput
+            label={t({ id: 'FixtureProperties.dimensions.beamAngle', defaultMessage: 'Beam angle' })}
+            suffix="°"
+            hideControls
+            min={0.001}
+            max={179.999}
+            decimalScale={1}
+            value={values.beamAngle}
+            onChange={value => {
+              const next = toFiniteNumber(value);
+              if (next !== undefined) {
+                onDimensionsChange({ ...values, beamAngle: next });
               }
             }}
           />

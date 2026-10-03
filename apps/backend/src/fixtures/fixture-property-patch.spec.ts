@@ -18,9 +18,14 @@ describe('fixturePropertyPatch', () => {
       width: null,
       length: null,
       height: null,
+      beamAngle: 30,
       picturePath: null,
       picture2dPath: null,
       model3dPath: null,
     });
+  });
+
+  it('uses provided beam angle on import', () => {
+    expect(fixturePropertyPatch({ beamAngle: 45 })).toMatchObject({ beamAngle: 45 });
   });
 });

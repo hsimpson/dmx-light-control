@@ -85,12 +85,12 @@
             0,
             2.220446049250313e-16,
             0,
-            -4.693270413204931,
+            -4.95,
             0,
             -3.990580028452574,
             1
           ],
-          "updatedAt": "2026-09-08T19:53:19.309Z"
+          "updatedAt": "2026-09-22T03:10:51.251Z"
         },
         {
           "createdAt": "2026-09-08T19:50:08.976Z",
@@ -159,24 +159,24 @@
           "publicId": "3fec16ae-17c5-468b-9ee0-0965de847985",
           "startAddress": 1,
           "transform": [
-            0.17364817766693086,
-            0.984807753012208,
+            0.08715574274765792,
+            0.9961946980917457,
             0,
             0,
-            -0.984807753012208,
-            0.17364817766693086,
+            -0.9961946980917457,
+            0.08715574274765792,
             0,
             0,
             0,
             0,
             1,
             0,
-            5.85,
+            5.55,
             0.10345162315075446,
             6,
             1
           ],
-          "updatedAt": "2026-09-19T11:32:31.611Z"
+          "updatedAt": "2026-10-03T11:02:29.623Z"
         },
         {
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -185,24 +185,24 @@
           "publicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5",
           "startAddress": 10,
           "transform": [
-            0.17364817766693086,
-            0.984807753012208,
+            0.08715574274765758,
+            0.9961946980917454,
             0,
             0,
-            -0.984807753012208,
-            0.17364817766693086,
+            -0.9961946980917454,
+            0.08715574274765758,
             0,
             0,
             0,
             0,
             1,
             0,
-            5.85,
+            5.55,
             0.1,
             2,
             1
           ],
-          "updatedAt": "2026-09-19T11:52:06.651Z"
+          "updatedAt": "2026-10-03T11:02:29.731Z"
         },
         {
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -211,24 +211,24 @@
           "publicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b",
           "startAddress": 19,
           "transform": [
-            0.17364817766693086,
-            0.984807753012208,
+            0.08715574274765758,
+            0.9961946980917454,
             0,
             0,
-            -0.984807753012208,
-            0.17364817766693086,
+            -0.9961946980917454,
+            0.08715574274765758,
             0,
             0,
             0,
             0,
             1,
             0,
-            5.85,
+            5.55,
             0.1,
             -2,
             1
           ],
-          "updatedAt": "2026-09-19T11:52:06.707Z"
+          "updatedAt": "2026-10-03T11:02:29.831Z"
         },
         {
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -237,24 +237,24 @@
           "publicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9",
           "startAddress": 28,
           "transform": [
-            2.107342433887993e-8,
-            0.9848077530122079,
-            -0.17364817766692953,
+            0.06162841671621655,
+            0.9961946980917458,
+            -0.06162841671621727,
             0,
-            5.551115123125783e-17,
-            0.17364817766692964,
-            0.9848077530122081,
+            -0.7044160264027588,
+            0.0871557427476547,
+            0.704416026402759,
             0,
-            0.9999999999999997,
-            -2.0753271490203673e-8,
-            3.6593617025459935e-9,
+            0.7071067811865477,
+            4.996003610813204e-16,
+            0.7071067811865475,
             0,
-            4.5,
+            4.15,
             1.400677032331758,
-            -7,
+            -6.75,
             1
           ],
-          "updatedAt": "2026-09-19T11:56:06.553Z"
+          "updatedAt": "2026-10-03T11:13:51.282Z"
         },
         {
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -263,24 +263,24 @@
           "publicId": "abb4d4bb-92cd-4511-8849-123435bb1475",
           "startAddress": 37,
           "transform": [
+            -0.1227878039689716,
+            0.9884930672974104,
+            -0.08834371002756297,
             0,
-            0.9848077530122081,
-            -0.1736481776669303,
+            0.6963642403200165,
+            0.14923963438012333,
+            0.7020002680438326,
             0,
-            1.1102230246251565e-16,
-            0.1736481776669303,
-            0.9848077530122081,
+            0.7071067811865497,
+            0.02467767077833599,
+            -0.7066760308408317,
             0,
-            1,
-            -1.1102230246251565e-16,
-            0,
-            0,
-            -4.5,
+            -4.15,
             1.4,
-            -7,
+            -6.75,
             1
           ],
-          "updatedAt": "2026-09-19T12:07:50.005Z"
+          "updatedAt": "2026-10-03T11:13:51.184Z"
         },
         {
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -289,24 +289,24 @@
           "publicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73",
           "startAddress": 46,
           "transform": [
-            0.17364817766693053,
-            0.9848077530122079,
-            -1.0269819204374752e-16,
+            -0.08715574274766058,
+            0.9961946980917453,
+            -1.3098585089404534e-16,
             0,
-            0.9848077530122079,
-            -0.1736481776669303,
-            1.2281559447529715e-16,
+            0.9961946980917453,
+            0.08715574274766058,
+            9.205050657621642e-17,
             0,
-            1.0311639573199075e-16,
-            -1.224646799147353e-16,
-            -0.9999999999999998,
+            1.0311639573199097e-16,
+            -1.2246467991473535e-16,
+            -1,
             0,
-            -5.85,
+            -5.55,
             0.1,
             -2,
             1
           ],
-          "updatedAt": "2026-09-19T12:22:40.939Z"
+          "updatedAt": "2026-10-03T11:02:29.933Z"
         },
         {
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -315,24 +315,24 @@
           "publicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303",
           "startAddress": 55,
           "transform": [
-            0.17364817766693053,
-            0.9848077530122079,
-            -1.2060416625018976e-16,
+            -0.08715574274765991,
+            0.9961946980917455,
+            -1.2199866483456202e-16,
             0,
-            0.9848077530122079,
-            -0.1736481776669303,
-            2.126576849575772e-17,
+            0.9961946980917455,
+            0.08715574274765969,
+            -1.0673500138323081e-17,
             0,
+            9.860761315262648e-32,
+            -1.2246467991473535e-16,
+            -1,
             0,
-            -1.224646799147353e-16,
-            -0.9999999999999998,
-            0,
-            -5.85,
+            -5.55,
             0.1,
             2,
             1
           ],
-          "updatedAt": "2026-09-19T12:22:41.014Z"
+          "updatedAt": "2026-10-03T11:02:30.031Z"
         },
         {
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -341,24 +341,24 @@
           "publicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1",
           "startAddress": 64,
           "transform": [
-            0.17364817766693053,
-            0.9848077530122079,
-            -1.2060416625018976e-16,
+            -0.08715574274766058,
+            0.9961946980917453,
+            -1.21998664834562e-16,
             0,
-            0.9848077530122079,
-            -0.1736481776669303,
-            2.126576849575772e-17,
+            0.9961946980917453,
+            0.08715574274766058,
+            -1.0673500138323168e-17,
             0,
+            9.860761315262648e-32,
+            -1.2246467991473535e-16,
+            -1,
             0,
-            -1.224646799147353e-16,
-            -0.9999999999999998,
-            0,
-            -5.85,
+            -5.55,
             0.1,
             6,
             1
           ],
-          "updatedAt": "2026-09-19T12:22:41.076Z"
+          "updatedAt": "2026-10-03T11:02:30.133Z"
         },
         {
           "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
@@ -367,16 +367,16 @@
           "publicId": "0c8f305c-fe11-4823-9902-36265f01106f",
           "startAddress": 73,
           "transform": [
-            -1,
-            -1.2246467991473532e-16,
-            1.2246467991473532e-16,
+            -0.9396926207859082,
+            -0.3420201433256688,
+            1.1507915602278503e-16,
             0,
-            1.2246467991473532e-16,
-            -1,
-            -1.4997597826618576e-32,
+            0.3420201433256688,
+            -0.9396926207859082,
+            -4.1885387376769936e-17,
             0,
-            1.2246467991473532e-16,
-            0,
+            1.2246467991473535e-16,
+            -3.0814879110195774e-33,
             1,
             0,
             4.963669339959954,
@@ -384,7 +384,7 @@
             -4.544405528140621,
             1
           ],
-          "updatedAt": "2026-09-20T14:19:47.324Z"
+          "updatedAt": "2026-10-03T13:48:08.554Z"
         },
         {
           "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
@@ -393,12 +393,12 @@
           "publicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284",
           "startAddress": 82,
           "transform": [
-            -1,
-            -1.2246467991473532e-16,
+            -0.9396926207859082,
+            -0.34202014332566905,
             0,
             0,
-            1.2246467991473532e-16,
-            -1,
+            0.34202014332566905,
+            -0.9396926207859082,
             0,
             0,
             0,
@@ -410,7 +410,7 @@
             -3.667549674998774,
             1
           ],
-          "updatedAt": "2026-09-20T12:00:44.945Z"
+          "updatedAt": "2026-10-03T13:48:08.399Z"
         },
         {
           "channelModePublicId": "742dc3d6-2a99-4a43-9d73-a309b633aa2f",
@@ -419,24 +419,24 @@
           "publicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689",
           "startAddress": 91,
           "transform": [
-            -0.41469324265623886,
-            1.0371371924782412e-16,
-            -0.9099612708765433,
+            -0.38968418001384464,
+            -0.34202014332566893,
+            -0.8550838914436557,
             0,
-            5.0785275224700023e-17,
-            -1,
-            -1.3712015412452968e-16,
+            0.14183344228947242,
+            -0.9396926207859078,
+            0.3112250842860036,
             0,
-            -0.9099612708765433,
-            -1.0307543493270753e-16,
-            0.41469324265623875,
+            -0.9099612708765442,
+            -1.3877787807814457e-16,
+            0.4146932426562363,
             0,
             3.5549475630387932,
             3.3141887198355957,
             -0.2011194890338346,
             1
           ],
-          "updatedAt": "2026-09-20T11:28:15.598Z"
+          "updatedAt": "2026-10-03T13:48:09.019Z"
         },
         {
           "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
@@ -445,24 +445,24 @@
           "publicId": "a095dba7-8a57-4f17-8623-1b79f059248a",
           "startAddress": 101,
           "transform": [
-            -0.41469324265623886,
-            -1.224646799147353e-16,
-            -0.9099612708765433,
+            -0.38968418001384686,
+            -0.34202014332566877,
+            -0.8550838914436552,
             0,
-            5.0785275224699974e-17,
-            -1,
-            1.1143811577270162e-16,
+            0.14183344228947287,
+            -0.9396926207859084,
+            0.31122508428600315,
             0,
-            -0.9099612708765433,
-            -3.697785493223493e-32,
-            0.41469324265623875,
+            -0.9099612708765437,
+            -5.551115123125783e-17,
+            0.4146932426562381,
             0,
             3.22615092189588,
             3.3259513671103225,
             -0.03011686954092338,
             1
           ],
-          "updatedAt": "2026-09-20T13:56:01.077Z"
+          "updatedAt": "2026-10-03T13:48:09.171Z"
         },
         {
           "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
@@ -471,24 +471,24 @@
           "publicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1",
           "startAddress": 109,
           "transform": [
-            -0.41469324265623775,
-            -6.565756913240982e-19,
-            -0.9099612708765439,
+            -0.38968418001384575,
+            -0.3420201433256687,
+            -0.8550838914436555,
             0,
-            5.078527522469985e-17,
-            -1,
-            -2.242264085716719e-17,
+            0.14183344228947253,
+            -0.9396926207859082,
+            0.31122508428600326,
             0,
-            -0.9099612708765439,
-            -5.551115123125783e-17,
-            0.41469324265623764,
+            -0.909961270876544,
+            -8.326672684688674e-17,
+            0.41469324265623697,
             0,
             2.8640210277840334,
             3.33,
             0.14257434972266209,
             1
           ],
-          "updatedAt": "2026-09-20T13:56:00.918Z"
+          "updatedAt": "2026-10-03T13:48:09.326Z"
         },
         {
           "channelModePublicId": "827f5348-56af-4505-bfdb-573f5f47aaf1",
@@ -497,24 +497,24 @@
           "publicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399",
           "startAddress": 117,
           "transform": [
-            -0.4146932426562375,
-            -6.565756913242215e-19,
-            -0.9099612708765438,
+            -0.38968418001384575,
+            -0.3420201433256687,
+            -0.8550838914436555,
             0,
-            5.0785275224699894e-17,
-            -1,
-            -2.2422640857167066e-17,
+            0.14183344228947253,
+            -0.9396926207859082,
+            0.31122508428600326,
             0,
-            -0.9099612708765438,
-            -5.551115123125782e-17,
-            0.41469324265623764,
+            -0.909961270876544,
+            -8.326672684688674e-17,
+            0.41469324265623697,
             0,
             2.5683322749001043,
             3.3275336344579953,
             0.3004072459341789,
             1
           ],
-          "updatedAt": "2026-09-20T13:56:01.002Z"
+          "updatedAt": "2026-10-03T13:48:09.482Z"
         },
         {
           "channelModePublicId": "827f5348-56af-4505-bfdb-573f5f47aaf1",
@@ -523,24 +523,24 @@
           "publicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc",
           "startAddress": 123,
           "transform": [
-            0.41469324265623875,
-            -2.7561598330762595e-16,
-            -0.9099612708765433,
+            0.38968418001384464,
+            -0.3420201433256698,
+            -0.8550838914436557,
             0,
-            -1.605087194310102e-16,
-            -1,
-            2.2973955998237506e-16,
+            -0.14183344228947253,
+            -0.9396926207859078,
+            0.3112250842860045,
             0,
-            -0.9099612708765433,
-            5.0785275224699974e-17,
-            -0.41469324265623886,
+            -0.9099612708765447,
+            5.551115123125783e-17,
+            -0.41469324265623553,
             0,
             -2.5592013307666863,
             3.33,
             0.30125040038332535,
             1
           ],
-          "updatedAt": "2026-09-20T14:02:45.812Z"
+          "updatedAt": "2026-10-03T13:48:09.635Z"
         },
         {
           "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
@@ -549,24 +549,24 @@
           "publicId": "2464da63-909a-43ba-a93a-c8a33d4f25de",
           "startAddress": 129,
           "transform": [
-            0.4146932426562385,
-            1.1143811577270147e-16,
-            -0.9099612708765434,
+            0.38968418001384575,
+            -0.34202014332566955,
+            -0.8550838914436554,
             0,
-            -7.395570986446986e-32,
-            -1,
-            -1.2246467991473515e-16,
+            -0.14183344228947292,
+            -0.9396926207859082,
+            0.31122508428600404,
             0,
-            -0.9099612708765434,
-            5.078527522469992e-17,
-            -0.41469324265623864,
+            -0.9099612708765441,
+            8.326672684688674e-17,
+            -0.4146932426562371,
             0,
             -2.8351598295075715,
             3.33,
             0.10576015432413266,
             1
           ],
-          "updatedAt": "2026-09-20T14:02:45.632Z"
+          "updatedAt": "2026-10-03T13:48:09.944Z"
         },
         {
           "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
@@ -575,24 +575,24 @@
           "publicId": "a0e2ab07-3d39-4971-a247-8b062b819780",
           "startAddress": 137,
           "transform": [
-            0.41469324265623875,
-            1.1143811577270157e-16,
-            -0.9099612708765433,
+            0.38968418001384575,
+            -0.34202014332566955,
+            -0.8550838914436554,
             0,
-            -8.628166150854817e-32,
-            -1,
-            -1.2246467991473527e-16,
+            -0.14183344228947292,
+            -0.9396926207859082,
+            0.31122508428600404,
             0,
-            -0.9099612708765433,
-            5.0785275224700005e-17,
-            -0.41469324265623886,
+            -0.9099612708765441,
+            8.326672684688674e-17,
+            -0.4146932426562371,
             0,
             -3.2044769991110007,
             3.33,
             -0.04115243876933028,
             1
           ],
-          "updatedAt": "2026-09-20T14:02:45.714Z"
+          "updatedAt": "2026-10-03T13:48:09.791Z"
         },
         {
           "channelModePublicId": "742dc3d6-2a99-4a43-9d73-a309b633aa2f",
@@ -601,24 +601,24 @@
           "publicId": "f9decd3b-7c97-4513-9f63-f811a507c754",
           "startAddress": 145,
           "transform": [
-            0.4146932426562385,
-            1.1143811577270142e-16,
-            -0.9099612708765434,
+            0.38968418001384575,
+            -0.34202014332566955,
+            -0.8550838914436554,
             0,
-            -9.860761315262648e-32,
-            -1,
-            -1.224646799147351e-16,
+            -0.14183344228947292,
+            -0.9396926207859082,
+            0.31122508428600404,
             0,
-            -0.9099612708765434,
-            5.078527522469992e-17,
-            -0.41469324265623864,
+            -0.9099612708765441,
+            8.326672684688674e-17,
+            -0.4146932426562371,
             0,
             -3.55,
             3.31,
             -0.2,
             1
           ],
-          "updatedAt": "2026-09-20T14:04:49.113Z"
+          "updatedAt": "2026-10-03T13:48:10.098Z"
         },
         {
           "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
@@ -627,24 +627,24 @@
           "publicId": "381028c7-bb4c-4052-9135-f80467697064",
           "startAddress": 155,
           "transform": [
-            1,
+            0.9396926207859084,
+            -0.34202014332566866,
+            4.188538737676991e-17,
+            0,
+            -0.34202014332566866,
+            -0.9396926207859082,
+            1.1507915602278503e-16,
             0,
             0,
-            0,
-            0,
-            -1,
-            1.2246467991473532e-16,
-            0,
-            0,
-            -1.2246467991473532e-16,
-            -1,
+            -1.224646799147353e-16,
+            -0.9999999999999998,
             0,
             -4.96,
             3.35,
             -4.54,
             1
           ],
-          "updatedAt": "2026-09-20T14:18:48.818Z"
+          "updatedAt": "2026-10-03T13:48:08.868Z"
         },
         {
           "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
@@ -653,15 +653,15 @@
           "publicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a",
           "startAddress": 164,
           "transform": [
-            1,
+            0.9396926207859083,
+            -0.342020143325669,
+            -4.1885387376769973e-17,
             0,
+            -0.342020143325669,
+            -0.9396926207859082,
+            -1.15079156022785e-16,
             0,
-            0,
-            0,
-            -1,
-            -1.2246467991473532e-16,
-            0,
-            0,
+            -2.7733391199176196e-32,
             1.2246467991473532e-16,
             -1,
             0,
@@ -670,14 +670,14 @@
             -3.67,
             1
           ],
-          "updatedAt": "2026-09-20T14:19:47.404Z"
+          "updatedAt": "2026-10-03T13:48:08.712Z"
         }
       ],
       "publicId": "63208a07-9dc5-4711-93d5-cce441a9390e",
       "roomHeight": 6.58,
       "roomLength": 14.6,
       "roomWidth": 12.2,
-      "updatedAt": "2026-09-20T14:19:47.227Z",
+      "updatedAt": "2026-10-03T14:43:55.872Z",
       "virtualConsole": {
         "height": 1080,
         "pages": [
@@ -685,119 +685,1687 @@
             "controls": [
               {
                 "backgroundColor": "#1a1b1e",
-                "borderColor": "#ff0000",
+                "borderColor": "#51ff00",
                 "borderWidth": 2,
+                "channelBindings": null,
                 "children": [
                   {
-                    "backgroundColor": "#1a1b1e",
-                    "borderColor": "#51ff00",
-                    "borderWidth": 2,
-                    "children": [
+                    "backgroundColor": "#ff0000",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
                       {
-                        "backgroundColor": "#ff0000",
-                        "borderColor": null,
-                        "borderWidth": null,
-                        "children": null,
-                        "fontFamily": "system-ui, sans-serif",
-                        "fontSize": 16,
-                        "fontWeight": 700,
-                        "foregroundColor": "#ffffff",
-                        "height": 100,
-                        "id": "f3be87ef-c570-4bcd-93d5-abd54c549650",
-                        "label": "Red",
-                        "orientation": null,
-                        "type": "button",
-                        "valueType": null,
-                        "width": 100,
-                        "x": 580,
-                        "y": 295
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
                       },
                       {
-                        "backgroundColor": "#ff0000",
-                        "borderColor": null,
-                        "borderWidth": null,
-                        "children": null,
-                        "fontFamily": "system-ui, sans-serif",
-                        "fontSize": 16,
-                        "fontWeight": 700,
-                        "foregroundColor": "#ffffff",
-                        "height": 220,
-                        "id": "c207d246-c41c-4770-991d-813dde22081e",
-                        "label": "Red",
-                        "orientation": "vertical",
-                        "type": "slider",
-                        "valueType": "dmx",
-                        "width": 80,
-                        "x": 15,
-                        "y": 5
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                       },
                       {
-                        "backgroundColor": "#00ffff",
-                        "borderColor": null,
-                        "borderWidth": null,
-                        "children": null,
-                        "fontFamily": "system-ui, sans-serif",
-                        "fontSize": 16,
-                        "fontWeight": 600,
-                        "foregroundColor": "#ff0000",
-                        "height": 90,
-                        "id": "6d5445db-3976-4396-830f-180ed8a76fe5",
-                        "label": "Slider",
-                        "orientation": "horizontal",
-                        "type": "slider",
-                        "valueType": "dmx",
-                        "width": 340,
-                        "x": 765,
-                        "y": 65
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                       },
                       {
-                        "backgroundColor": "#00ff00",
-                        "borderColor": null,
-                        "borderWidth": null,
-                        "children": null,
-                        "fontFamily": "system-ui, sans-serif",
-                        "fontSize": 16,
-                        "fontWeight": 700,
-                        "foregroundColor": "#ffffff",
-                        "height": 220,
-                        "id": "80282361-c4b6-4eaa-bda1-bd87ad69c7a9",
-                        "label": "Green",
-                        "orientation": "vertical",
-                        "type": "slider",
-                        "valueType": "dmx",
-                        "width": 80,
-                        "x": 100,
-                        "y": 5
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
                       }
                     ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 100,
+                    "id": "f3be87ef-c570-4bcd-93d5-abd54c549650",
+                    "label": "Red",
+                    "lowerLimit": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": null,
+                    "valueType": null,
+                    "width": 100,
+                    "x": 0,
+                    "y": 305
+                  },
+                  {
+                    "backgroundColor": "#ff0000",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                        "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
+                      }
+                    ],
+                    "children": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
-                    "fontWeight": 600,
-                    "foregroundColor": null,
-                    "height": 530,
-                    "id": "fb4f4504-9187-450d-94ab-5c0a8c9a2c1d",
-                    "label": "Frame 2",
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "c207d246-c41c-4770-991d-813dde22081e",
+                    "label": "Red",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#00ff00",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "80282361-c4b6-4eaa-bda1-bd87ad69c7a9",
+                    "label": "Green",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 80,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#0000ff",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "60c5a97f-c7db-4cac-9f83-3db24117a13b",
+                    "label": "Blue",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 160,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#7f00ff",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "d172cf69-6b6b-4e17-8856-e8fe9461d404",
+                    "label": "UV",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 240,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#878787",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "6c49d06e-323d-4923-9e8a-6ddf69139094",
+                    "label": "Strobe",
+                    "lowerLimit": 63,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": 95,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 320,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#616161",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                        "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
+                      },
+                      {
+                        "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                        "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
+                      },
+                      {
+                        "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                        "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
+                      },
+                      {
+                        "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                        "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
+                      },
+                      {
+                        "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                        "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
+                      },
+                      {
+                        "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                        "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
+                      },
+                      {
+                        "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                        "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
+                      },
+                      {
+                        "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                        "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "0a41ee30-1770-43d3-9022-4794a7c8c60e",
+                    "label": "Dimmer",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 400,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#00ff00",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
+                      },
+                      {
+                        "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                        "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 100,
+                    "id": "c40d2ee5-fafe-4b9e-8c13-4dffe3b2ec53",
+                    "label": "Green",
+                    "lowerLimit": null,
                     "orientation": null,
-                    "type": "frame",
+                    "type": "button",
+                    "upperLimit": null,
                     "valueType": null,
-                    "width": 1255,
-                    "x": 30,
-                    "y": 15
+                    "width": 100,
+                    "x": 100,
+                    "y": 305
+                  },
+                  {
+                    "backgroundColor": "#0000ff",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                        "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 100,
+                    "id": "2d0c57cc-93c8-49cb-9fc2-5ed72451e91d",
+                    "label": "Blue",
+                    "lowerLimit": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": null,
+                    "valueType": null,
+                    "width": 100,
+                    "x": 0,
+                    "y": 405
+                  },
+                  {
+                    "backgroundColor": "#7f00ff",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
+                      },
+                      {
+                        "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                        "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 600,
+                    "foregroundColor": "#ffffff",
+                    "height": 100,
+                    "id": "c4aeb389-6e22-43da-b677-dbfaa1f54c6e",
+                    "label": "UV",
+                    "lowerLimit": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": null,
+                    "valueType": null,
+                    "width": 100,
+                    "x": 100,
+                    "y": 405
+                  },
+                  {
+                    "backgroundColor": "#878787",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
+                      },
+                      {
+                        "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                        "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 100,
+                    "id": "449a1f58-f597-40c2-8724-276a85ec8524",
+                    "label": "Strobe",
+                    "lowerLimit": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": 95,
+                    "valueType": null,
+                    "width": 100,
+                    "x": 200,
+                    "y": 355
                   }
                 ],
                 "fontFamily": "system-ui, sans-serif",
-                "fontSize": 16,
-                "fontWeight": 600,
+                "fontSize": 18,
+                "fontWeight": 700,
                 "foregroundColor": null,
-                "height": 785,
-                "id": "61e08b98-148d-4f46-8ca5-18616956545d",
-                "label": "Frame 1",
+                "height": 645,
+                "id": "fb4f4504-9187-450d-94ab-5c0a8c9a2c1d",
+                "label": "Uplights",
+                "lowerLimit": null,
                 "orientation": null,
                 "type": "frame",
+                "upperLimit": null,
                 "valueType": null,
-                "width": 1450,
-                "x": 15,
-                "y": 15
+                "width": 500,
+                "x": 10,
+                "y": 10
+              },
+              {
+                "backgroundColor": "#1a1b1e",
+                "borderColor": "#ff0000",
+                "borderWidth": 2,
+                "channelBindings": null,
+                "children": [
+                  {
+                    "backgroundColor": "#ff0000",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      },
+                      {
+                        "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "62b16d87-b5b2-4c2d-a2b2-9e8f9565abd9",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "52232b26-8314-4dc2-a67c-52541d2a8541",
+                        "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
+                      },
+                      {
+                        "channelAssignmentPublicId": "52232b26-8314-4dc2-a67c-52541d2a8541",
+                        "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
+                      },
+                      {
+                        "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "62b16d87-b5b2-4c2d-a2b2-9e8f9565abd9",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 100,
+                    "id": "2fd7f22f-7195-49c9-a8f3-b8db727d3b48",
+                    "label": "Red",
+                    "lowerLimit": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": null,
+                    "valueType": null,
+                    "width": 100,
+                    "x": 0,
+                    "y": 305
+                  },
+                  {
+                    "backgroundColor": "#ff0000",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      },
+                      {
+                        "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "62b16d87-b5b2-4c2d-a2b2-9e8f9565abd9",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "52232b26-8314-4dc2-a67c-52541d2a8541",
+                        "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
+                      },
+                      {
+                        "channelAssignmentPublicId": "52232b26-8314-4dc2-a67c-52541d2a8541",
+                        "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
+                      },
+                      {
+                        "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "62b16d87-b5b2-4c2d-a2b2-9e8f9565abd9",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "20f86ee9-f1d2-4592-bd54-7682366b18bc",
+                    "label": "Red",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#00ff00",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "76492f26-02c0-44fd-9629-ef247c0c5ffa",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "aee12557-745f-4163-898f-d9699716f41b",
+                        "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
+                      },
+                      {
+                        "channelAssignmentPublicId": "aee12557-745f-4163-898f-d9699716f41b",
+                        "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "76492f26-02c0-44fd-9629-ef247c0c5ffa",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "c9df92f3-1125-47d1-8bcf-f6b321b29c8e",
+                    "label": "Green",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 80,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#0000ff",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      },
+                      {
+                        "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "b728cdcb-b876-4f38-97c0-e1775b432e8c",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "e35dbcae-a494-4267-a479-2eb701056630",
+                        "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
+                      },
+                      {
+                        "channelAssignmentPublicId": "e35dbcae-a494-4267-a479-2eb701056630",
+                        "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
+                      },
+                      {
+                        "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "b728cdcb-b876-4f38-97c0-e1775b432e8c",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "74e2fa23-c603-45e8-bf93-a278f28b552a",
+                    "label": "Blue",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 160,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#7f00ff",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "20fb5bb7-0ab6-4361-a9fa-4be5de1a38f0",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "20fb5bb7-0ab6-4361-a9fa-4be5de1a38f0",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "a22dcfd9-d76b-47b4-a7f6-7e12b039bb7e",
+                    "label": "UV",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 400,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#878787",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      },
+                      {
+                        "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "897b4a30-0517-4629-9dd2-da7a12cb08e2",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "8c676eab-f1ae-491a-b9c4-35f3235c9d35",
+                        "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
+                      },
+                      {
+                        "channelAssignmentPublicId": "8c676eab-f1ae-491a-b9c4-35f3235c9d35",
+                        "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "897b4a30-0517-4629-9dd2-da7a12cb08e2",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "a5b114fa-ad18-4592-9cce-6ecc4984cd4d",
+                    "label": "Strobe",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 480,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#616161",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "ffa07fb0-d48e-41ea-859b-1fde9aec3548",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "b1755580-6d3a-40f2-ae8a-7a6cbe8fe8fd",
+                        "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
+                      },
+                      {
+                        "channelAssignmentPublicId": "b1755580-6d3a-40f2-ae8a-7a6cbe8fe8fd",
+                        "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
+                      },
+                      {
+                        "channelAssignmentPublicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "ffa07fb0-d48e-41ea-859b-1fde9aec3548",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "7a9bdfcb-c1d6-4bb4-9edc-9a3062c8e4ff",
+                    "label": "Dimmer",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 560,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#00ff00",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "76492f26-02c0-44fd-9629-ef247c0c5ffa",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "aee12557-745f-4163-898f-d9699716f41b",
+                        "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
+                      },
+                      {
+                        "channelAssignmentPublicId": "aee12557-745f-4163-898f-d9699716f41b",
+                        "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "76492f26-02c0-44fd-9629-ef247c0c5ffa",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 100,
+                    "id": "2106bda2-814f-46a7-978d-cb9507505789",
+                    "label": "Green",
+                    "lowerLimit": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": null,
+                    "valueType": null,
+                    "width": 100,
+                    "x": 100,
+                    "y": 305
+                  },
+                  {
+                    "backgroundColor": "#0000ff",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "b728cdcb-b876-4f38-97c0-e1775b432e8c",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "e35dbcae-a494-4267-a479-2eb701056630",
+                        "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
+                      },
+                      {
+                        "channelAssignmentPublicId": "e35dbcae-a494-4267-a479-2eb701056630",
+                        "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
+                      },
+                      {
+                        "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "b728cdcb-b876-4f38-97c0-e1775b432e8c",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 100,
+                    "id": "d97045e8-999c-409b-8af9-c34d47f15914",
+                    "label": "Blue",
+                    "lowerLimit": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": null,
+                    "valueType": null,
+                    "width": 100,
+                    "x": 0,
+                    "y": 405
+                  },
+                  {
+                    "backgroundColor": "#7f00ff",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      },
+                      {
+                        "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "20fb5bb7-0ab6-4361-a9fa-4be5de1a38f0",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "20fb5bb7-0ab6-4361-a9fa-4be5de1a38f0",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 600,
+                    "foregroundColor": "#ffffff",
+                    "height": 100,
+                    "id": "a89421fd-b9e9-494f-b142-048fdfd3e35c",
+                    "label": "UV",
+                    "lowerLimit": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": null,
+                    "valueType": null,
+                    "width": 100,
+                    "x": 100,
+                    "y": 405
+                  },
+                  {
+                    "backgroundColor": "#878787",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      },
+                      {
+                        "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "897b4a30-0517-4629-9dd2-da7a12cb08e2",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "8c676eab-f1ae-491a-b9c4-35f3235c9d35",
+                        "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
+                      },
+                      {
+                        "channelAssignmentPublicId": "8c676eab-f1ae-491a-b9c4-35f3235c9d35",
+                        "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "897b4a30-0517-4629-9dd2-da7a12cb08e2",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 100,
+                    "id": "3d1947bb-6757-4712-8e51-9fbcbe3e4acb",
+                    "label": "Strobe",
+                    "lowerLimit": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": null,
+                    "valueType": null,
+                    "width": 100,
+                    "x": 300,
+                    "y": 355
+                  },
+                  {
+                    "backgroundColor": "#ffbf00",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "0d3a79ba-ac0e-4c3d-b220-196828cfb8be",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "0d3a79ba-ac0e-4c3d-b220-196828cfb8be",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 300,
+                    "id": "bd9b1ba9-c79d-468d-9b9e-ac3cb8892738",
+                    "label": "Amber",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 240,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#ffffff",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      },
+                      {
+                        "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "5d0d51b5-572a-4d03-b5c1-1770dcfa8c2f",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fc2d2a81-e7d1-43d1-b949-ba4547bda485",
+                        "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fc2d2a81-e7d1-43d1-b949-ba4547bda485",
+                        "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
+                      },
+                      {
+                        "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "5d0d51b5-572a-4d03-b5c1-1770dcfa8c2f",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 700,
+                    "foregroundColor": "#000000",
+                    "height": 300,
+                    "id": "69842afe-4b82-4cdc-8f9f-87be99b72cfe",
+                    "label": "White",
+                    "lowerLimit": null,
+                    "orientation": "vertical",
+                    "type": "slider",
+                    "upperLimit": null,
+                    "valueType": "dmx",
+                    "width": 80,
+                    "x": 320,
+                    "y": 0
+                  },
+                  {
+                    "backgroundColor": "#ffbf00",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "0d3a79ba-ac0e-4c3d-b220-196828cfb8be",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "0d3a79ba-ac0e-4c3d-b220-196828cfb8be",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 700,
+                    "foregroundColor": "#ffffff",
+                    "height": 100,
+                    "id": "eb6429f8-7efb-4df0-8ba9-5a14f76ecf24",
+                    "label": "Amber",
+                    "lowerLimit": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": null,
+                    "valueType": null,
+                    "width": 100,
+                    "x": 200,
+                    "y": 305
+                  },
+                  {
+                    "backgroundColor": "#ffffff",
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "channelBindings": [
+                      {
+                        "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                        "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                        "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
+                      },
+                      {
+                        "channelAssignmentPublicId": "5d0d51b5-572a-4d03-b5c1-1770dcfa8c2f",
+                        "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
+                      },
+                      {
+                        "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                        "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
+                      },
+                      {
+                        "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                        "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fc2d2a81-e7d1-43d1-b949-ba4547bda485",
+                        "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
+                      },
+                      {
+                        "channelAssignmentPublicId": "fc2d2a81-e7d1-43d1-b949-ba4547bda485",
+                        "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
+                      },
+                      {
+                        "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                        "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
+                      },
+                      {
+                        "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                        "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
+                      },
+                      {
+                        "channelAssignmentPublicId": "5d0d51b5-572a-4d03-b5c1-1770dcfa8c2f",
+                        "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
+                      },
+                      {
+                        "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                        "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
+                      },
+                      {
+                        "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                        "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
+                      }
+                    ],
+                    "children": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 18,
+                    "fontWeight": 700,
+                    "foregroundColor": "#000000",
+                    "height": 100,
+                    "id": "a8773c62-e663-4e09-b013-05cf3b576a22",
+                    "label": "White",
+                    "lowerLimit": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": null,
+                    "valueType": null,
+                    "width": 100,
+                    "x": 200,
+                    "y": 405
+                  }
+                ],
+                "fontFamily": "system-ui, sans-serif",
+                "fontSize": 18,
+                "fontWeight": 700,
+                "foregroundColor": null,
+                "height": 645,
+                "id": "9218d00b-8d74-4b8e-aa15-3906c642fe6e",
+                "label": "Light Bars",
+                "lowerLimit": null,
+                "orientation": null,
+                "type": "frame",
+                "upperLimit": null,
+                "valueType": null,
+                "width": 730,
+                "x": 515,
+                "y": 10
               }
             ],
             "id": "1b4e1ba9-ae65-4975-9100-45a89d34f008",
@@ -809,6 +2377,7 @@
                 "backgroundColor": "#228be6",
                 "borderColor": null,
                 "borderWidth": null,
+                "channelBindings": null,
                 "children": null,
                 "fontFamily": null,
                 "fontSize": null,
@@ -817,8 +2386,10 @@
                 "height": 40,
                 "id": "9d4403ff-b957-479d-bf80-b8c46a6fafff",
                 "label": "Button",
+                "lowerLimit": null,
                 "orientation": null,
                 "type": "button",
+                "upperLimit": null,
                 "valueType": null,
                 "width": 88,
                 "x": 667,

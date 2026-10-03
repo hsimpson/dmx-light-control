@@ -352,6 +352,7 @@ export class FixtureImportExportService {
             fixtureChannelModeId: modeId,
             fixtureChannelDefinitionId: definitionId,
             channelNumber: assignment.channelNumber,
+            ...optionalPublicId(assignment.publicId),
             ...optionalImportTimestamps(assignment),
           };
         }),

@@ -16,8 +16,11 @@ graphql:
             fixtureChannelAssignments {
               channelNumber
               fixtureChannelDefinition {
+                fixtureChannelRanges
+                name
                 preset
               }
+              publicId
             }
             name
             publicId
@@ -25,6 +28,7 @@ graphql:
           }
           createdAt
           fixture {
+            beamAngle
             createdAt
             fixtureVendor {
               createdAt

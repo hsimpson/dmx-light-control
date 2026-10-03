@@ -3,15 +3,38 @@ import { FixtureChannelPreset } from '@/fixtures/channel-presets';
 import { FixtureVendorDto } from '@/fixtures/dto/fixture-vendor.dto';
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
+import { GraphQLUUID } from 'graphql-scalars';
+
+@ObjectType()
+export class ProjectFixtureChannelRangeDto {
+  @Field(() => Int, { description: 'The DMX start value of the channel range' })
+  public dmxStart: number;
+
+  @Field(() => Int, { description: 'The DMX end value of the channel range' })
+  public dmxEnd: number;
+
+  @Field({ description: 'The description of the channel range' })
+  public description: string;
+}
 
 @ObjectType()
 export class ProjectFixtureChannelDefinitionDto {
+  @Field({ description: 'The name of the channel definition' })
+  public name: string;
+
   @Field(() => FixtureChannelPreset, { description: 'The preset of the channel definition' })
   public preset: FixtureChannelPreset;
+
+  @Type(() => ProjectFixtureChannelRangeDto)
+  @Field(() => [ProjectFixtureChannelRangeDto], { description: 'The DMX value ranges of the channel definition' })
+  public fixtureChannelRanges: ProjectFixtureChannelRangeDto[];
 }
 
 @ObjectType()
 export class ProjectFixtureChannelAssignmentDto {
+  @Field(() => GraphQLUUID, { description: 'The public ID of the channel assignment' })
+  public publicId: string;
+
   @Field(() => Int, { description: 'The 1-based DMX channel number of the assignment' })
   public channelNumber: number;
 
@@ -29,6 +52,9 @@ export class ProjectFixtureFixtureDto extends BaseDto {
 
   @Field(() => String, { nullable: true, description: '3D model path relative to the API origin' })
   public model3dPath?: string | null;
+
+  @Field(() => Float, { description: 'Beam angle in degrees (full opening angle)' })
+  public beamAngle: number;
 
   @Type(() => FixtureVendorDto)
   @Field(() => FixtureVendorDto, { description: 'The vendor of the fixture' })

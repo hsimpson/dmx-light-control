@@ -1,18 +1,30 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { InvalidVirtualConsoleException } from './project.exceptions';
 import {
   VIRTUAL_CONSOLE_CONTROL_TYPE,
   VIRTUAL_CONSOLE_DEFAULT_HEIGHT,
   VIRTUAL_CONSOLE_DEFAULT_WIDTH,
   VIRTUAL_CONSOLE_SCHEMA_VERSION,
+  VirtualConsoleChannelBinding,
   VirtualConsoleDocument,
 } from './virtual-console';
-import { assertValidVirtualConsole, defaultVirtualConsoleDocument } from './virtual-console.validation';
+import {
+  assertValidVirtualConsole,
+  assertVirtualConsoleChannelBindings,
+  defaultVirtualConsoleDocument,
+  enrichVirtualConsoleForExport,
+  remapVirtualConsoleBindingsForImport,
+  sanitizeVirtualConsoleForImport,
+  stripVirtualConsoleBindingHints,
+} from './virtual-console.validation';
 
 const PAGE_ID = '11111111-1111-4111-8111-111111111111';
 const FRAME_ID = '22222222-2222-4222-8222-222222222222';
 const SLIDER_ID = '33333333-3333-4333-8333-333333333333';
 const BUTTON_ID = '44444444-4444-4444-8444-444444444444';
+const FIXTURE_ID = '55555555-5555-4555-8555-555555555555';
+const ASSIGNMENT_ID = '66666666-6666-4666-8666-666666666666';
+const OTHER_ASSIGNMENT_ID = '77777777-7777-4777-8777-777777777777';
 
 function validDocument(overrides: Partial<VirtualConsoleDocument> = {}): VirtualConsoleDocument {
   return {
@@ -255,6 +267,240 @@ describe('assertValidVirtualConsole', () => {
       throw new Error('expected button');
     }
     button.fontSize = 3;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+  });
+
+  it('sanitizes null channelBindings from import documents', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    button.channelBindings = null as unknown as VirtualConsoleChannelBinding[];
+    const sanitized = sanitizeVirtualConsoleForImport(document);
+    expect(sanitized.pages[0]?.controls[1]).not.toHaveProperty('channelBindings');
+    expect(() => {
+      assertValidVirtualConsole(sanitized);
+    }).not.toThrow();
+  });
+
+  it('accepts slider and button channel bindings and an empty list on a frame', () => {
+    const document = validDocument();
+    const frame = document.pages[0]?.controls[0];
+    const slider = frame?.children?.[0];
+    const button = document.pages[0]?.controls[1];
+    if (!frame || !slider || !button) {
+      throw new Error('expected controls');
+    }
+    frame.channelBindings = [];
+    slider.channelBindings = [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID }];
+    button.channelBindings = [
+      { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID },
+      { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: OTHER_ASSIGNMENT_ID },
+    ];
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).not.toThrow();
+  });
+
+  it('rejects channel bindings on a frame', () => {
+    const document = validDocument();
+    const frame = document.pages[0]?.controls[0];
+    if (!frame) {
+      throw new Error('expected frame');
+    }
+    frame.channelBindings = [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID }];
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+  });
+
+  it('rejects a duplicate channel binding on one control', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    const binding = { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID };
+    button.channelBindings = [binding, binding];
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+  });
+
+  it('enriches virtual console bindings with channel metadata on export', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    button.channelBindings = [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID }];
+    const enriched = enrichVirtualConsoleForExport(document, [
+      {
+        publicId: FIXTURE_ID,
+        fixtureChannelMode: {
+          fixtureChannelAssignments: [
+            {
+              publicId: ASSIGNMENT_ID,
+              channelNumber: 2,
+              fixtureChannelDefinition: { publicId: 'def-red' },
+            },
+          ],
+        },
+      },
+    ]);
+    expect(enriched?.pages[0]?.controls[1]?.channelBindings).toEqual([
+      {
+        projectFixturePublicId: FIXTURE_ID,
+        channelAssignmentPublicId: ASSIGNMENT_ID,
+        channelNumber: 2,
+        channelDefinitionPublicId: 'def-red',
+      },
+    ]);
+    expect(stripVirtualConsoleBindingHints(enriched ?? document).pages[0]?.controls[1]?.channelBindings).toEqual([
+      { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID },
+    ]);
+  });
+
+  it('remaps stale channel assignment publicIds using export channelNumber hints', async () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    const staleAssignmentId = '88888888-8888-4888-8888-888888888888';
+    const currentAssignmentId = '99999999-9999-4999-8999-999999999999';
+    button.channelBindings = [
+      {
+        projectFixturePublicId: FIXTURE_ID,
+        channelAssignmentPublicId: staleAssignmentId,
+        channelNumber: 1,
+      },
+    ];
+    const fixtures = [
+      {
+        publicId: FIXTURE_ID,
+        channelAssignmentPublicIds: new Set([currentAssignmentId]),
+        channelAssignmentPublicIdByChannelNumber: new Map([[1, currentAssignmentId]]),
+      },
+    ];
+    const lookup = vi.fn<(assignmentPublicId: string) => Promise<number | undefined>>().mockResolvedValue(undefined);
+    const remapped = await remapVirtualConsoleBindingsForImport(document, fixtures, lookup);
+    expect(remapped.pages[0]?.controls[1]?.channelBindings).toEqual([
+      { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: currentAssignmentId },
+    ]);
+  });
+
+  it('remaps stale channel assignment publicIds by channel number during import', async () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    const staleAssignmentId = '88888888-8888-4888-8888-888888888888';
+    const currentAssignmentId = '99999999-9999-4999-8999-999999999999';
+    button.channelBindings = [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: staleAssignmentId }];
+    const fixtures = [
+      {
+        publicId: FIXTURE_ID,
+        channelAssignmentPublicIds: new Set([currentAssignmentId]),
+        channelAssignmentPublicIdByChannelNumber: new Map([[1, currentAssignmentId]]),
+      },
+    ];
+    const remapped = await remapVirtualConsoleBindingsForImport(
+      document,
+      fixtures,
+      async assignmentPublicId => await Promise.resolve(assignmentPublicId === staleAssignmentId ? 1 : undefined),
+    );
+    expect(remapped.pages[0]?.controls[1]?.channelBindings).toEqual([
+      { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: currentAssignmentId },
+    ]);
+    expect(() => {
+      assertVirtualConsoleChannelBindings(remapped, fixtures);
+    }).not.toThrow();
+  });
+
+  it('accepts a binding that belongs to the fixture mode and rejects one that does not', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('expected button');
+    }
+    const fixtures = [{ publicId: FIXTURE_ID, channelAssignmentPublicIds: new Set([ASSIGNMENT_ID]) }];
+    button.channelBindings = [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID }];
+    expect(() => {
+      assertVirtualConsoleChannelBindings(document, fixtures);
+    }).not.toThrow();
+    button.channelBindings = [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: OTHER_ASSIGNMENT_ID }];
+    expect(() => {
+      assertVirtualConsoleChannelBindings(document, fixtures);
+    }).toThrow(InvalidVirtualConsoleException);
+    button.channelBindings = [
+      { projectFixturePublicId: OTHER_ASSIGNMENT_ID, channelAssignmentPublicId: ASSIGNMENT_ID },
+    ];
+    expect(() => {
+      assertVirtualConsoleChannelBindings(document, fixtures);
+    }).toThrow(InvalidVirtualConsoleException);
+  });
+
+  it('accepts omitted slider and button limits and explicit limits in range', () => {
+    expect(() => {
+      assertValidVirtualConsole(validDocument());
+    }).not.toThrow();
+
+    const document = validDocument();
+    const slider = document.pages[0]?.controls[0]?.children?.[0];
+    const button = document.pages[0]?.controls[1];
+    if (!slider || !button) {
+      throw new Error('expected slider and button');
+    }
+    slider.lowerLimit = 10;
+    slider.upperLimit = 200;
+    button.upperLimit = 128;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).not.toThrow();
+
+    slider.lowerLimit = null;
+    slider.upperLimit = null;
+    button.upperLimit = null;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).not.toThrow();
+  });
+
+  it('rejects slider and button limits outside 0 to 255 and a slider whose lower limit exceeds its upper limit', () => {
+    const document = validDocument();
+    const slider = document.pages[0]?.controls[0]?.children?.[0];
+    const button = document.pages[0]?.controls[1];
+    if (!slider || !button) {
+      throw new Error('expected slider and button');
+    }
+
+    slider.lowerLimit = -1;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+    slider.lowerLimit = 1.5;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+    slider.lowerLimit = 200;
+    slider.upperLimit = 10;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+
+    slider.lowerLimit = 0;
+    slider.upperLimit = 256;
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+
+    slider.upperLimit = 255;
+    button.upperLimit = 256;
     expect(() => {
       assertValidVirtualConsole(document);
     }).toThrow(InvalidVirtualConsoleException);

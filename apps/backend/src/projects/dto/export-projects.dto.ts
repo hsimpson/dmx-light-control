@@ -6,6 +6,18 @@ import { Type } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
 
 @ObjectType()
+export class ProjectExportFixtureChannelAssignmentDto {
+  @Field(() => GraphQLUUID, { description: 'The public ID of the channel assignment at export time' })
+  public publicId: string;
+
+  @Field(() => Int, { description: 'The 1-based channel number within the fixture mode' })
+  public channelNumber: number;
+
+  @Field(() => GraphQLUUID, { description: 'The public ID of the catalog channel definition' })
+  public channelDefinitionPublicId: string;
+}
+
+@ObjectType()
 export class ProjectExportFixtureDto extends ExportTimestampsDto {
   @Field(() => GraphQLUUID, { description: 'The public ID of the project fixture instance' })
   public publicId: string;
@@ -21,6 +33,13 @@ export class ProjectExportFixtureDto extends ExportTimestampsDto {
 
   @Field(() => [Float], { description: 'Column-major 4×4 transform (16 values, translation and rotation only)' })
   public transform: number[];
+
+  @Field(() => [ProjectExportFixtureChannelAssignmentDto], {
+    nullable: true,
+    description: 'Channel assignment snapshot for virtual console import remapping',
+  })
+  @Type(() => ProjectExportFixtureChannelAssignmentDto)
+  public channelAssignments?: ProjectExportFixtureChannelAssignmentDto[];
 }
 
 @ObjectType()

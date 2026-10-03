@@ -13,6 +13,8 @@ const pmremDispose = vi.fn();
 const environmentDispose = vi.fn();
 const setAnimationLoop = vi.fn();
 const rendererDispose = vi.fn();
+const controlsUpdate = vi.fn(() => false);
+const controlsChangeListeners = new Set<() => void>();
 const controlsDispose = vi.fn();
 const rendererRender = vi.fn();
 const rendererClear = vi.fn();
@@ -34,10 +36,12 @@ const createAxisOrientationGizmo = vi.fn(() => ({
 const aoRender = vi.fn();
 const aoSetSize = vi.fn();
 const aoDispose = vi.fn();
+const aoSceneDepth = vi.fn(() => ({ texture: { name: 'scene-depth' }, width: 640, height: 480 }));
 const createSceneAoComposer = vi.fn(() => ({
   render: aoRender,
   setSize: aoSetSize,
   dispose: aoDispose,
+  getSceneDepth: aoSceneDepth,
 }));
 
 vi.mock('./axis-orientation-gizmo', () => ({
@@ -80,12 +84,37 @@ vi.mock('three', async importOriginal => {
       public clearDepth() {
         rendererClearDepth();
       }
+      public getRenderTarget() {
+        return null;
+      }
+      public setRenderTarget() {
+        return undefined;
+      }
+      public getClearColor(target: { set: (color: number) => unknown }) {
+        return target.set(0x000000);
+      }
+      public getClearAlpha() {
+        return 1;
+      }
+      public setClearColor() {
+        return undefined;
+      }
       public getSize(target: { set: (width: number, height: number) => unknown }) {
         rendererGetSize();
         return target.set(640, 480);
       }
+      public getDrawingBufferSize(target: { set: (width: number, height: number) => unknown }) {
+        return target.set(640, 480);
+      }
       public getPixelRatio() {
         return 1;
+      }
+      public getContext() {
+        return {
+          getExtension() {
+            return null;
+          },
+        };
       }
       public setViewport(x: number, y: number, width: number, height: number) {
         rendererSetViewport(x, y, width, height);
@@ -125,7 +154,17 @@ vi.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
       },
     };
     public update() {
-      return undefined;
+      return controlsUpdate();
+    }
+    public addEventListener(type: string, listener: () => void) {
+      if (type === 'change') {
+        controlsChangeListeners.add(listener);
+      }
+    }
+    public removeEventListener(type: string, listener: () => void) {
+      if (type === 'change') {
+        controlsChangeListeners.delete(listener);
+      }
     }
     public dispose() {
       controlsDispose();
@@ -151,6 +190,9 @@ describe('ThreeCanvas', () => {
     pmremDispose.mockClear();
     environmentDispose.mockClear();
     setAnimationLoop.mockReset();
+    controlsUpdate.mockReset();
+    controlsUpdate.mockReturnValue(false);
+    controlsChangeListeners.clear();
     rendererDispose.mockClear();
     controlsDispose.mockClear();
     rendererRender.mockClear();
@@ -167,6 +209,7 @@ describe('ThreeCanvas', () => {
     aoRender.mockClear();
     aoSetSize.mockClear();
     aoDispose.mockClear();
+    aoSceneDepth.mockClear();
     createSceneAoComposer.mockClear();
     vi.stubGlobal('ResizeObserver', ResizeObserverMock);
   });
@@ -229,14 +272,86 @@ describe('ThreeCanvas', () => {
     loop?.();
 
     expect(aoRender).toHaveBeenCalled();
+    expect(rendererRender).toHaveBeenCalled();
     expect(gizmoUpdateFrom).toHaveBeenCalled();
     expect(gizmoRender).toHaveBeenCalled();
-    expect(gizmoRender.mock.invocationCallOrder[0]).toBeGreaterThan(aoRender.mock.invocationCallOrder[0] ?? 0);
+    expect(gizmoRender.mock.invocationCallOrder[0]).toBeGreaterThan(rendererRender.mock.invocationCallOrder[0] ?? 0);
 
     unmount();
 
     expect(gizmoDispose).toHaveBeenCalled();
     expect(setAnimationLoop).toHaveBeenCalledWith(null);
     expect(rendererDispose).toHaveBeenCalled();
+  });
+
+  const latestLoop = () =>
+    [...setAnimationLoop.mock.calls].reverse().find(([callback]) => typeof callback === 'function')?.[0] as
+      ((time: number) => void) | undefined;
+
+  it('draws one frame and then stops while the scene is idle', () => {
+    renderWithProviders(<ThreeCanvas testId="shared-three-canvas" onReady={() => undefined} />);
+    const loop = latestLoop();
+    expect(loop).toEqual(expect.any(Function));
+
+    loop?.(0);
+    expect(aoRender).toHaveBeenCalledTimes(1);
+    expect(setAnimationLoop).toHaveBeenCalledWith(null);
+
+    loop?.(16);
+    expect(aoRender).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps drawing while orbit damping is still moving', () => {
+    controlsUpdate.mockReturnValue(true);
+    renderWithProviders(<ThreeCanvas testId="shared-three-canvas" onReady={() => undefined} />);
+    const loop = latestLoop();
+
+    loop?.(0);
+    loop?.(1000 / 60);
+
+    expect(aoRender).toHaveBeenCalledTimes(2);
+    expect(setAnimationLoop).not.toHaveBeenCalledWith(null);
+  });
+
+  it('skips draws that arrive faster than 60 FPS', () => {
+    controlsUpdate.mockReturnValue(true);
+    renderWithProviders(<ThreeCanvas testId="shared-three-canvas" onReady={() => undefined} />);
+    const loop = latestLoop();
+
+    loop?.(0);
+    loop?.(8);
+
+    expect(aoRender).toHaveBeenCalledTimes(1);
+    expect(setAnimationLoop).not.toHaveBeenCalledWith(null);
+
+    loop?.(1000 / 60);
+    expect(aoRender).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps drawing while onFrame reports an animation in progress', () => {
+    const onFrame = vi.fn(() => true);
+    renderWithProviders(<ThreeCanvas testId="shared-three-canvas" onFrame={onFrame} onReady={() => undefined} />);
+    const loop = latestLoop();
+
+    loop?.(1000);
+    loop?.(1032);
+
+    expect(onFrame).toHaveBeenCalledTimes(2);
+    expect(aoRender).toHaveBeenCalledTimes(2);
+    expect(setAnimationLoop).not.toHaveBeenCalledWith(null);
+  });
+
+  it('draws again after the controls change once the loop has gone idle', () => {
+    renderWithProviders(<ThreeCanvas testId="shared-three-canvas" onReady={() => undefined} />);
+    const loop = latestLoop();
+    loop?.(0);
+    expect(aoRender).toHaveBeenCalledTimes(1);
+
+    for (const listener of controlsChangeListeners) {
+      listener();
+    }
+    latestLoop()?.(32);
+
+    expect(aoRender).toHaveBeenCalledTimes(2);
   });
 });

@@ -28,4 +28,9 @@ describe('linearOrbitDollyScale', () => {
   it('moves a constant world step when zooming out close', () => {
     expect(linearOrbitDollyScale(0.4, 0.95, 'out', 0.05, 40)).toBeCloseTo(1.5);
   });
+
+  it('leaves the radius unchanged when it is not positive', () => {
+    expect(linearOrbitDollyScale(0, 0.95, 'in', 0.05, 40)).toBe(1);
+    expect(linearOrbitDollyScale(-1, 0.95, 'out', 0.05, 40)).toBe(1);
+  });
 });

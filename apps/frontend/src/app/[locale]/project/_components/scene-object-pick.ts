@@ -1,4 +1,5 @@
 import { Box3, type Object3D, type Ray, type Raycaster, Vector3 } from 'three';
+import { isFixtureBeam, setWorldAabbIgnoringBeams } from './selection-bounding-box';
 
 const PICK_PADDING_METERS = 0.15;
 
@@ -16,7 +17,8 @@ export function pickClosestObjectByBoundingBox(ray: Ray, objects: Object3D[]): O
     if (isSelectionHighlight(object)) {
       continue;
     }
-    box.setFromObject(object);
+    box.makeEmpty();
+    setWorldAabbIgnoringBeams(object, box);
     if (box.isEmpty()) {
       continue;
     }
@@ -50,7 +52,7 @@ export function pickClosestSceneObject(raycaster: Raycaster, objects: Object3D[]
   const roots = new Set(objects);
   const meshHits = raycaster.intersectObjects(objects, true);
   for (const hit of meshHits) {
-    if (isSelectionHighlight(hit.object)) {
+    if (isSelectionHighlight(hit.object) || isFixtureBeam(hit.object)) {
       continue;
     }
     const root = findPickRoot(hit.object, roots);

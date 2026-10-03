@@ -33,6 +33,55 @@ const UUID_PATTERN = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{
 const COLOR_PATTERN = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 
 @ObjectType()
+export class VirtualConsoleChannelBindingDto {
+  @Field(() => GraphQLUUID, { description: 'Public id of the patched project fixture' })
+  public projectFixturePublicId: string;
+
+  @Field(() => GraphQLUUID, { description: 'Public id of the channel assignment in the fixture mode' })
+  public channelAssignmentPublicId: string;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: '1-based channel number within the fixture mode (export/import remapping hint)',
+  })
+  public channelNumber?: number;
+
+  @Field(() => GraphQLUUID, {
+    nullable: true,
+    description: 'Catalog channel definition public id (export/import remapping hint)',
+  })
+  public channelDefinitionPublicId?: string;
+}
+
+@InputType()
+export class VirtualConsoleChannelBindingInput {
+  @Field(() => GraphQLUUID, { description: 'Public id of the patched project fixture' })
+  @Matches(UUID_PATTERN, { message: 'projectFixturePublicId must be a UUID' })
+  public projectFixturePublicId: string;
+
+  @Field(() => GraphQLUUID, { description: 'Public id of the channel assignment in the fixture mode' })
+  @Matches(UUID_PATTERN, { message: 'channelAssignmentPublicId must be a UUID' })
+  public channelAssignmentPublicId: string;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: '1-based channel number within the fixture mode (export/import remapping hint)',
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  public channelNumber?: number;
+
+  @Field(() => GraphQLUUID, {
+    nullable: true,
+    description: 'Catalog channel definition public id (export/import remapping hint)',
+  })
+  @IsOptional()
+  @Matches(UUID_PATTERN, { message: 'channelDefinitionPublicId must be a UUID' })
+  public channelDefinitionPublicId?: string;
+}
+
+@ObjectType()
 export class VirtualConsoleControlDto {
   @Field(() => GraphQLUUID, { description: 'Stable id of this control' })
   public id: string;
@@ -85,6 +134,19 @@ export class VirtualConsoleControlDto {
 
   @Field(() => VirtualConsoleSliderValueType, { nullable: true, description: 'Slider value interpretation' })
   public valueType?: VirtualConsoleSliderValueType;
+
+  @Field(() => Int, { nullable: true, description: 'Inclusive lower DMX limit for a slider' })
+  public lowerLimit?: number;
+
+  @Field(() => Int, { nullable: true, description: 'Inclusive upper DMX limit for a slider or button' })
+  public upperLimit?: number;
+
+  @Field(() => [VirtualConsoleChannelBindingDto], {
+    nullable: true,
+    description: 'Fixture channels this slider or button controls',
+  })
+  @Type(() => VirtualConsoleChannelBindingDto)
+  public channelBindings?: VirtualConsoleChannelBindingDto[];
 }
 
 @ObjectType()
@@ -211,6 +273,30 @@ export class VirtualConsoleControlInput {
   @IsOptional()
   @IsEnum(VirtualConsoleSliderValueType)
   public valueType?: VirtualConsoleSliderValueType;
+
+  @Field(() => Int, { nullable: true, description: 'Inclusive lower DMX limit for a slider' })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(255)
+  public lowerLimit?: number;
+
+  @Field(() => Int, { nullable: true, description: 'Inclusive upper DMX limit for a slider or button' })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(255)
+  public upperLimit?: number;
+
+  @Field(() => [VirtualConsoleChannelBindingInput], {
+    nullable: true,
+    description: 'Fixture channels this slider or button controls',
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => VirtualConsoleChannelBindingInput)
+  public channelBindings?: VirtualConsoleChannelBindingInput[];
 }
 
 @InputType()

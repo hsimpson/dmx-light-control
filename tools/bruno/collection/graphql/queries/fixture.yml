@@ -11,6 +11,7 @@ graphql:
     query: |
       query($publicId: UUID!) {
         fixture(publicId: $publicId) {
+          beamAngle
           createdAt
           fixtureChannelDefinitions {
             createdAt

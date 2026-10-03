@@ -38,6 +38,27 @@ describe('scene-object-pose', () => {
     expect(baked.transform[10]).toBe(1);
   });
 
+  it('resets visual scale when any size axis is missing', () => {
+    const visual = new Mesh();
+    visual.scale.set(2, 3, 4);
+    applyVisualSize(visual, { sizeX: null, sizeY: 1, sizeZ: 1 });
+    expect(visual.scale.toArray()).toEqual([1, 1, 1]);
+  });
+
+  it('keeps the selection group at the origin when nothing is selected', () => {
+    const group = new Group();
+    group.position.set(4, 5, 6);
+    placeSelectionGroup(group, []);
+    expect(group.position.toArray()).toEqual([0, 0, 0]);
+  });
+
+  it('parents an instance to the scene when it is outside the selection group', () => {
+    const scene = new Group();
+    const root = new Group();
+    syncInstanceParent(scene, root, null);
+    expect(root.parent).toBe(scene);
+  });
+
   it('clears size when baking a non-scalable object', () => {
     const object = new Group();
     const visual = new Mesh();

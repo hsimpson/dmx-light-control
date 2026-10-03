@@ -25,6 +25,7 @@ type VirtualConsoleControlTreeProperties = {
     handle: VirtualConsoleResizeHandle,
     event: PointerEvent<HTMLDivElement>,
   ) => void;
+  onPlayValue?: (control: VirtualConsoleControl, value: number) => void;
 };
 
 const VirtualConsoleControlTree = ({
@@ -36,6 +37,7 @@ const VirtualConsoleControlTree = ({
   onSelectControl,
   onMovePointerDown,
   onResizePointerDown,
+  onPlayValue,
 }: VirtualConsoleControlTreeProperties) => {
   return (
     <>
@@ -85,12 +87,31 @@ const VirtualConsoleControlTree = ({
                   selectedControlId={selectedControlId}
                   onSelectControl={onSelectControl}
                   onMovePointerDown={onMovePointerDown}
+                  onPlayValue={onPlayValue}
                   onResizePointerDown={onResizePointerDown}
                 />
               </FrameControl>
             ) : null}
-            {control.type === 'slider' ? <SliderControl control={control} mode={mode} selected={selected} /> : null}
-            {control.type === 'button' ? <ButtonControl control={control} mode={mode} selected={selected} /> : null}
+            {control.type === 'slider' ? (
+              <SliderControl
+                control={control}
+                mode={mode}
+                selected={selected}
+                onPlayValue={value => {
+                  onPlayValue?.(control, value);
+                }}
+              />
+            ) : null}
+            {control.type === 'button' ? (
+              <ButtonControl
+                control={control}
+                mode={mode}
+                selected={selected}
+                onPlayValue={value => {
+                  onPlayValue?.(control, value);
+                }}
+              />
+            ) : null}
             {mode === 'edit' && selected ? (
               <ResizeHandles
                 onResizePointerDown={(handle, event) => {

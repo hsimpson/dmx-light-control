@@ -45,6 +45,13 @@ export class CreateFixtureInput {
   @Max(100)
   public height?: number | null;
 
+  @Field(() => Float, { nullable: true, description: 'Beam angle in degrees (full opening angle)' })
+  @IsOptional()
+  @IsNumber()
+  @Min(0.001)
+  @Max(179.999)
+  public beamAngle?: number;
+
   @Field(() => [UpdateFixtureChannelDefinitionInput], {
     nullable: true,
     description: 'Channel definitions to create with the fixture',

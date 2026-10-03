@@ -309,4 +309,38 @@ describe('mapProjectsToExportDocument', () => {
       ],
     });
   });
+
+  it('omits channel assignments that have no public id', () => {
+    const document = mapProjectsToExportDocument([
+      {
+        publicId: 'proj-1',
+        name: 'Show',
+        environmentType: ProjectEnvironmentType.Room,
+        roomWidth: 10,
+        roomLength: 8,
+        roomHeight: 5,
+        projectFixtures: [
+          {
+            publicId: 'inst-1',
+            startAddress: 1,
+            transform: identityTransform(),
+            fixture: { publicId: 'fix-1' },
+            fixtureChannelMode: {
+              publicId: 'mode-1',
+              fixtureChannelAssignments: [
+                { publicId: null, channelNumber: 1, fixtureChannelDefinition: { publicId: 'def-1' } },
+                { publicId: 'asg-1', channelNumber: 2, fixtureChannelDefinition: { publicId: null } },
+              ],
+            },
+            ...timestamps,
+          },
+        ],
+        ...timestamps,
+      },
+    ]);
+
+    expect(document.projects[0]?.projectFixtures[0]?.channelAssignments).toEqual([
+      { publicId: 'asg-1', channelNumber: 2, channelDefinitionPublicId: '' },
+    ]);
+  });
 });

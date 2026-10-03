@@ -1,0 +1,2 @@
+ALTER TABLE "fixtures" ADD COLUMN "beam_angle" double precision DEFAULT 30 NOT NULL;--> statement-breakpoint
+ALTER TABLE "fixtures" ADD CONSTRAINT "fixture_beam_angle_range" CHECK ("beam_angle" > 0 AND "beam_angle" < 180);

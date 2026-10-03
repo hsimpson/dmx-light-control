@@ -60,6 +60,35 @@ describe('setPaddedWorldAabbFromObject', () => {
     expect(target.min.x).toBeCloseTo(unpadded.min.x - pad);
     expect(target.max.x).toBeCloseTo(unpadded.max.x + pad);
   });
+
+  it('returns false and clears the target when the object has no geometry', () => {
+    const target = new Box3(new Vector3(0, 0, 0), new Vector3(1, 1, 1));
+    expect(setPaddedWorldAabbFromObject(new Group(), target)).toBe(false);
+    expect(target.isEmpty()).toBe(true);
+  });
+
+  it('reuses a geometry bounding box that is already computed', () => {
+    const geometry = new BoxGeometry(1, 2, 3);
+    geometry.computeBoundingBox();
+    const object = new Mesh(geometry);
+    const target = new Box3();
+    expect(setPaddedWorldAabbFromObject(object, target)).toBe(true);
+    expect(target.isEmpty()).toBe(false);
+  });
+
+  it('does not grow the AABB to include a beam child', () => {
+    const object = new Group();
+    object.add(new Mesh(new BoxGeometry(0.2, 0.2, 0.2)));
+    const beam = new Mesh(new BoxGeometry(6, 2, 2));
+    beam.userData.isBeam = true;
+    beam.position.set(3, 0, 0);
+    object.add(beam);
+    object.updateMatrixWorld(true);
+
+    const target = new Box3();
+    expect(setPaddedWorldAabbFromObject(object, target)).toBe(true);
+    expect(target.max.x).toBeLessThan(1);
+  });
 });
 
 describe('createSelectionBoxHelper', () => {
@@ -96,5 +125,19 @@ describe('SelectionBoxHighlighter', () => {
 
     highlighter.dispose();
     expect(scene.children.some(child => child.userData.isSelectionHighlight)).toBe(false);
+  });
+
+  it('keeps the existing helper when the same object stays selected', () => {
+    const scene = new Scene();
+    const highlighter = new SelectionBoxHighlighter(scene);
+    const object = new Group();
+    object.add(new Mesh(new BoxGeometry(1, 1, 1)));
+
+    highlighter.setTargets([object]);
+    const helper = scene.children.find(child => child.userData.isSelectionHighlight);
+    highlighter.setTargets([object]);
+
+    expect(scene.children.filter(child => child.userData.isSelectionHighlight)).toEqual([helper]);
+    highlighter.dispose();
   });
 });

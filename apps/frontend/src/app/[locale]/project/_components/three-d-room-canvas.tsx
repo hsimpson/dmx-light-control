@@ -5,12 +5,35 @@ import {
   fixtureAssetDisplayUrl,
 } from '@/app/[locale]/fixture/_components/fixture-asset-url';
 import { prepareFixtureModelForPreview } from '@/app/[locale]/fixture/_components/fixture-model-preview';
+import { dmxStore } from '@/lib/dmx/dmx-store';
+import { fixtureBeamColor, type FixtureBeamInput } from '@/lib/fixtures/fixture-beam-color';
 import { roomGltfUrl, sceneAssetUrl } from '@/lib/graphql/graphql-api-origin';
+import {
+  applyFixtureBeamAppearance,
+  clipFixtureBeamToScene,
+  createFixtureBeamCone,
+  DEFAULT_BEAM_ANGLE_DEG,
+  disposeFixtureBeamCone,
+  positionFixtureBeamFromModel,
+  replaceFixtureBeamConeGeometry,
+  syncFixtureBeamRoomBounds,
+  updateFixtureBeamStrobe,
+} from '@/lib/three/fixture-beam-cone';
 import { applyMeshShadowFlags } from '@/lib/three/mesh-shadow-flags';
 import ThreeCanvas, { type ThreeCanvasContext } from '@/lib/three/three-canvas';
 import { ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { BoxGeometry, Group, Mesh, MeshStandardMaterial, type Object3D, Raycaster, Scene, Vector2 } from 'three';
+import {
+  BoxGeometry,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+  type Object3D,
+  Raycaster,
+  Scene,
+  Vector2,
+  Vector3,
+} from 'three';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { applyRoomDimensions, applySimpleGroundDimensions } from './room-layout';
@@ -43,8 +66,11 @@ export type ThreeDSceneObject = {
 export type ThreeDProjectFixture = {
   publicId: string;
   transform: number[];
+  startAddress?: number;
+  channelMode?: FixtureBeamInput['channelMode'];
   fixture: {
     model3dPath?: string | null;
+    beamAngle?: number;
   };
 };
 
@@ -79,6 +105,77 @@ const EMPTY_PROJECT_FIXTURES: ThreeDProjectFixture[] = [];
 
 const objectInstanceKey = (publicId: string) => `object:${publicId}`;
 const fixtureInstanceKey = (publicId: string) => `fixture:${publicId}`;
+
+const beamMesh = (root: Object3D): Mesh | undefined => {
+  if (root.userData.beam instanceof Mesh) {
+    return root.userData.beam;
+  }
+  return undefined;
+};
+
+const resolveFixtureBeamAngleDeg = (fixture: ThreeDProjectFixture): number => {
+  const angle = fixture.fixture.beamAngle;
+  if (typeof angle === 'number' && Number.isFinite(angle) && angle > 0 && angle < 180) {
+    return angle;
+  }
+  return DEFAULT_BEAM_ANGLE_DEG;
+};
+
+const syncFixtureBeamGeometry = (root: Object3D, fixture: ThreeDProjectFixture): void => {
+  const beam = beamMesh(root);
+  if (!beam) {
+    return;
+  }
+  const beamAngleDeg = resolveFixtureBeamAngleDeg(fixture);
+  if (beam.userData.beamAngleDeg === beamAngleDeg) {
+    return;
+  }
+  replaceFixtureBeamConeGeometry(beam, beamAngleDeg);
+};
+
+const beamAppearanceMatches = (beam: Mesh, color: { r: number; g: number; b: number; strobeHz: number }): boolean => {
+  const material = beam.material as Mesh['material'] & { color?: { r: number; g: number; b: number } };
+  const current = material.color;
+  if (!current) {
+    return false;
+  }
+  const lit = Math.max(color.r, color.g, color.b) > 0;
+  const strobeHz = typeof beam.userData.strobeHz === 'number' ? beam.userData.strobeHz : 0;
+  return (
+    current.r === color.r &&
+    current.g === color.g &&
+    current.b === color.b &&
+    beam.userData.beamLit === lit &&
+    strobeHz === color.strobeHz
+  );
+};
+
+const syncFixtureBeam = (root: Object3D, fixture: ThreeDProjectFixture): boolean => {
+  const beam = beamMesh(root);
+  if (!beam) {
+    return false;
+  }
+  syncFixtureBeamGeometry(root, fixture);
+  const color =
+    fixture.startAddress === undefined || fixture.channelMode === undefined
+      ? { r: 0, g: 0, b: 0, strobeHz: 0 }
+      : fixtureBeamColor(
+          { startAddress: fixture.startAddress, channelMode: fixture.channelMode },
+          dmxStore.getState().channels,
+        );
+  if (beamAppearanceMatches(beam, color)) {
+    return false;
+  }
+  applyFixtureBeamAppearance(beam, color);
+  return true;
+};
+
+const disposeInstanceRoot = (root: Object3D): void => {
+  const beam = beamMesh(root);
+  if (beam) {
+    disposeFixtureBeamCone(beam);
+  }
+};
 
 const ThreeDRoomCanvas = ({
   environmentType,
@@ -126,14 +223,43 @@ const ThreeDRoomCanvas = ({
   const onObjectCommitRef = useRef(onObjectCommit);
   const onFixtureCommitRef = useRef(onFixtureCommit);
   const dimensionsRef = useRef({ roomWidth, roomLength, roomHeight });
+  const environmentTypeRef = useRef(environmentType);
+  const roomBoundsMinRef = useRef(new Vector3());
+  const roomBoundsMaxRef = useRef(new Vector3());
   const frameObjectRef = useRef<ThreeCanvasContext['frameObject'] | null>(null);
+  const invalidateRef = useRef<() => void>(() => undefined);
+  const syncBeamClippingRef = useRef<() => void>(() => undefined);
 
   useEffect(() => {
     onSelectObjectRef.current = onSelectObject;
     onSelectFixtureRef.current = onSelectFixture;
     onObjectCommitRef.current = onObjectCommit;
     onFixtureCommitRef.current = onFixtureCommit;
-  }, [onSelectObject, onSelectFixture, onObjectCommit, onFixtureCommit]);
+    environmentTypeRef.current = environmentType;
+  }, [onSelectObject, onSelectFixture, onObjectCommit, onFixtureCommit, environmentType]);
+
+  useEffect(() => {
+    syncBeamClippingRef.current = () => {
+      const scene = sceneRef.current;
+      if (!scene) {
+        return;
+      }
+      if (environmentTypeRef.current === ProjectEnvironmentType.Room) {
+        const { roomWidth: width, roomLength: length, roomHeight: height } = dimensionsRef.current;
+        roomBoundsMinRef.current.set(-width / 2, 0, -length / 2);
+        roomBoundsMaxRef.current.set(width / 2, height, length / 2);
+        syncFixtureBeamRoomBounds(scene, roomBoundsMinRef.current, roomBoundsMaxRef.current);
+      } else {
+        syncFixtureBeamRoomBounds(scene, null, null);
+      }
+      for (const root of instancesRef.current.values()) {
+        const beam = beamMesh(root);
+        if (beam) {
+          clipFixtureBeamToScene(beam, scene);
+        }
+      }
+    };
+  }, []);
 
   const frameEnvironment = () => {
     if (roomRef.current) {
@@ -145,22 +271,29 @@ const ThreeDRoomCanvas = ({
   };
 
   const onReady = useCallback(
-    ({ host, scene, camera, renderer, controls, frameObject }: ThreeCanvasContext) => {
+    ({ host, scene, camera, renderer, controls, frameObject, invalidate }: ThreeCanvasContext) => {
       sceneRef.current = scene;
       const instanceRoots = instancesRef.current;
       frameObjectRef.current = frameObject;
+      invalidateRef.current = invalidate;
+      const unsubscribeDmx = dmxStore.subscribe(() => {
+        let appearanceChanged = false;
+        for (const root of instanceRoots.values()) {
+          const fixture = root.userData.beamFixture as ThreeDProjectFixture | undefined;
+          if (fixture && syncFixtureBeam(root, fixture)) {
+            appearanceChanged = true;
+          }
+        }
+        if (appearanceChanged) {
+          invalidateRef.current();
+        }
+      });
       const selectionGroup = new Group();
       selectionGroup.userData.isSelectionGroup = true;
       scene.add(selectionGroup);
       selectionGroupRef.current = selectionGroup;
       const selectionHighlighter = new SelectionBoxHighlighter(scene);
       selectionHighlighterRef.current = selectionHighlighter;
-      let highlightFrame = 0;
-      const tickSelectionHighlights = () => {
-        highlightFrame = requestAnimationFrame(tickSelectionHighlights);
-        selectionHighlighter.update();
-      };
-      tickSelectionHighlights();
 
       type GizmoEntry = {
         transformControls: TransformControls;
@@ -280,7 +413,13 @@ const ThreeDRoomCanvas = ({
           skipSelectionOnPointerUp = true;
         }
       };
+      const refreshMovedSelection = () => {
+        selectionHighlighter.update();
+        syncBeamClippingRef.current();
+        invalidateRef.current();
+      };
       const onTranslateObjectChange = () => {
+        refreshMovedSelection();
         syncGizmoPose(translateGizmo.transformControls);
       };
       const onTranslateMouseUp = () => {
@@ -300,6 +439,7 @@ const ThreeDRoomCanvas = ({
         }
       };
       const onRotateObjectChange = () => {
+        refreshMovedSelection();
         syncGizmoPose(rotateGizmo.transformControls);
       };
       const onRotateMouseUp = () => {
@@ -319,8 +459,15 @@ const ThreeDRoomCanvas = ({
         }
       };
       const onScaleObjectChange = () => {
+        refreshMovedSelection();
         syncGizmoPose(scaleGizmo.transformControls);
       };
+      const onGizmoVisualChange = () => {
+        invalidateRef.current();
+      };
+      for (const entry of gizmoEntries) {
+        entry.transformControls.addEventListener('change', onGizmoVisualChange);
+      }
       const onScaleMouseUp = () => {
         commitGizmoPose(scaleGizmo.transformControls);
       };
@@ -349,6 +496,8 @@ const ThreeDRoomCanvas = ({
           roomRef.current = room;
           scene.add(gltf.scene);
           applyDimensions();
+          syncBeamClippingRef.current();
+          invalidateRef.current();
         });
       } else {
         const ground = new Mesh(new BoxGeometry(1, 1, 1), new MeshStandardMaterial({ color: 0x6b7280 }));
@@ -400,8 +549,8 @@ const ThreeDRoomCanvas = ({
       host.addEventListener('pointerup', onPointerUp);
 
       return () => {
+        unsubscribeDmx();
         cancelAnimationFrame(poseSyncFrame);
-        cancelAnimationFrame(highlightFrame);
         selectionHighlighter.dispose();
         selectionHighlighterRef.current = null;
         host.removeEventListener('pointerdown', onPointerDown);
@@ -409,18 +558,21 @@ const ThreeDRoomCanvas = ({
         translateGizmo.transformControls.removeEventListener('dragging-changed', onTranslateDraggingChanged);
         translateGizmo.transformControls.removeEventListener('objectChange', onTranslateObjectChange);
         translateGizmo.transformControls.removeEventListener('mouseUp', onTranslateMouseUp);
+        translateGizmo.transformControls.removeEventListener('change', onGizmoVisualChange);
         translateGizmo.transformControls.detach();
         translateGizmo.transformControls.disconnect();
         scene.remove(translateGizmo.transformHelper);
         rotateGizmo.transformControls.removeEventListener('dragging-changed', onRotateDraggingChanged);
         rotateGizmo.transformControls.removeEventListener('objectChange', onRotateObjectChange);
         rotateGizmo.transformControls.removeEventListener('mouseUp', onRotateMouseUp);
+        rotateGizmo.transformControls.removeEventListener('change', onGizmoVisualChange);
         rotateGizmo.transformControls.detach();
         rotateGizmo.transformControls.disconnect();
         scene.remove(rotateGizmo.transformHelper);
         scaleGizmo.transformControls.removeEventListener('dragging-changed', onScaleDraggingChanged);
         scaleGizmo.transformControls.removeEventListener('objectChange', onScaleObjectChange);
         scaleGizmo.transformControls.removeEventListener('mouseUp', onScaleMouseUp);
+        scaleGizmo.transformControls.removeEventListener('change', onGizmoVisualChange);
         scaleGizmo.transformControls.detach();
         scaleGizmo.transformControls.disconnect();
         scene.remove(scaleGizmo.transformHelper);
@@ -429,6 +581,7 @@ const ThreeDRoomCanvas = ({
           groundRef.current.material.dispose();
         }
         for (const root of instanceRoots.values()) {
+          disposeInstanceRoot(root);
           scene.remove(root);
         }
         instanceRoots.clear();
@@ -443,6 +596,7 @@ const ThreeDRoomCanvas = ({
         selectionGroupRef.current = null;
         sceneRef.current = null;
         frameObjectRef.current = null;
+        invalidateRef.current = () => undefined;
       };
     },
     [environmentType],
@@ -457,6 +611,8 @@ const ThreeDRoomCanvas = ({
       applySimpleGroundDimensions(groundRef.current, roomWidth, roomLength);
     }
     frameEnvironment();
+    syncBeamClippingRef.current();
+    invalidateRef.current();
   }, [roomWidth, roomLength, roomHeight]);
 
   useEffect(() => {
@@ -471,6 +627,7 @@ const ThreeDRoomCanvas = ({
     ]);
     for (const [instanceKey, root] of instancesRef.current) {
       if (!known.has(instanceKey)) {
+        disposeInstanceRoot(root);
         scene.remove(root);
         instancesRef.current.delete(instanceKey);
       }
@@ -506,6 +663,8 @@ const ThreeDRoomCanvas = ({
             gltf.scene.name = 'visual';
             applyMeshShadowFlags(gltf.scene, { castShadow: true, receiveShadow: true });
             capturedRoot.add(gltf.scene);
+            syncBeamClippingRef.current();
+            invalidateRef.current();
           });
         }
       }
@@ -526,6 +685,9 @@ const ThreeDRoomCanvas = ({
       if (!root) {
         root = new Group();
         root.userData.projectFixtureId = fixture.publicId;
+        const beam = createFixtureBeamCone(resolveFixtureBeamAngleDeg(fixture));
+        root.userData.beam = beam;
+        root.add(beam);
         instancesRef.current.set(instanceKey, root);
         const loader = new GLTFLoader();
         const capturedRoot = root;
@@ -537,6 +699,12 @@ const ThreeDRoomCanvas = ({
           gltf.scene.name = 'visual';
           prepareFixtureModelForPreview(gltf.scene);
           capturedRoot.add(gltf.scene);
+          const loadedBeam = beamMesh(capturedRoot);
+          if (loadedBeam) {
+            positionFixtureBeamFromModel(loadedBeam, gltf.scene);
+          }
+          syncBeamClippingRef.current();
+          invalidateRef.current();
         });
       }
       syncInstanceParent(scene, root, selectionGroup);
@@ -544,7 +712,11 @@ const ThreeDRoomCanvas = ({
       if (!(selectionGroup && root.parent === selectionGroup)) {
         applyTransformMatrix(root, fixture.transform);
       }
+      root.userData.beamFixture = fixture;
+      syncFixtureBeam(root, fixture);
     }
+    syncBeamClippingRef.current();
+    invalidateRef.current();
   }, [objects, fixtures, selectedObjectIds, selectedFixtureIds]);
 
   useEffect(() => {
@@ -578,11 +750,13 @@ const ThreeDRoomCanvas = ({
       translateControls.detach();
       rotateControls.detach();
       scaleControls.detach();
+      invalidateRef.current();
       return;
     }
     if (members.length === 1) {
       const selected = members[0];
       if (!selected) {
+        invalidateRef.current();
         return;
       }
       attachPoseGizmo(selected);
@@ -591,14 +765,39 @@ const ThreeDRoomCanvas = ({
       } else {
         scaleControls.detach();
       }
+      invalidateRef.current();
       return;
     }
     placeSelectionGroup(selectionGroup, members);
     attachPoseGizmo(selectionGroup);
     scaleControls.detach();
+    invalidateRef.current();
   }, [selectedObjectIds, selectedFixtureIds, scaleGizmoEnabled, poseGizmoMode, objects, fixtures]);
 
-  return <ThreeCanvas className={classes.host} testId="three-d-room-canvas" showOrientationGizmo onReady={onReady} />;
+  const onFrame = useCallback((timeSec: number) => {
+    let strobing = false;
+    for (const root of instancesRef.current.values()) {
+      const beam = beamMesh(root);
+      if (!beam) {
+        continue;
+      }
+      updateFixtureBeamStrobe(beam, timeSec);
+      if (beam.userData.beamLit === true && typeof beam.userData.strobeHz === 'number' && beam.userData.strobeHz > 0) {
+        strobing = true;
+      }
+    }
+    return strobing;
+  }, []);
+
+  return (
+    <ThreeCanvas
+      className={classes.host}
+      testId="three-d-room-canvas"
+      showOrientationGizmo
+      onFrame={onFrame}
+      onReady={onReady}
+    />
+  );
 };
 
 export default ThreeDRoomCanvas;

@@ -171,6 +171,63 @@ describe('virtual console controls', () => {
     expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('0');
   });
 
+  it('clamps a play-mode slider to configured dmx limits', () => {
+    const onPlayValue = vi.fn();
+    const control = {
+      ...createControl('slider', 0, 0),
+      label: 'Dimmer',
+      lowerLimit: 10,
+      upperLimit: 20,
+    };
+    renderWithProviders(<SliderControl control={control} mode="play" onPlayValue={onPlayValue} />);
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('10');
+    const slider = screen.getByRole('slider', { name: 'Dimmer' });
+    fireEvent.keyDown(slider, { key: 'ArrowDown' });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('10');
+    expect(onPlayValue).toHaveBeenLastCalledWith(10);
+    fireEvent.keyDown(slider, { key: 'ArrowUp' });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('11');
+    expect(onPlayValue).toHaveBeenLastCalledWith(11);
+
+    const rail = screen.getByTestId('virtual-console-slider-rail');
+    mockRailRect(rail, { top: 0, left: 0, width: 40, height: 100 });
+    fireEvent.pointerDown(rail, { clientX: 20, clientY: 0, pointerId: 1 });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('20');
+    expect(onPlayValue).toHaveBeenLastCalledWith(20);
+  });
+
+  it('keeps a percentage slider on 0-100 while limits apply to dmx output', () => {
+    const onPlayValue = vi.fn();
+    const control = {
+      ...createControl('slider', 0, 0),
+      label: 'Master',
+      valueType: 'percentage' as const,
+      lowerLimit: 10,
+      upperLimit: 110,
+    };
+    renderWithProviders(<SliderControl control={control} mode="play" onPlayValue={onPlayValue} />);
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('0%');
+    const rail = screen.getByTestId('virtual-console-slider-rail');
+    mockRailRect(rail, { top: 0, left: 0, width: 40, height: 100 });
+    fireEvent.pointerDown(rail, { clientX: 20, clientY: 0, pointerId: 1 });
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('100%');
+    expect(onPlayValue).toHaveBeenLastCalledWith(100);
+  });
+
+  it('publishes a button upper limit while pressed', () => {
+    const onPlayValue = vi.fn();
+    const control = { ...createControl('button', 0, 0), label: 'Go', upperLimit: 180 };
+    renderWithProviders(<ButtonControl control={control} mode="play" onPlayValue={onPlayValue} />);
+    const button = screen.getByRole('button', { name: 'Go' });
+    fireEvent.pointerDown(button, { pointerId: 1 });
+    expect(onPlayValue).toHaveBeenCalledWith(180);
+    fireEvent.pointerUp(button, { pointerId: 1 });
+    expect(onPlayValue).toHaveBeenLastCalledWith(0);
+    fireEvent.pointerDown(button, { pointerId: 1 });
+    fireEvent.pointerCancel(button);
+    expect(onPlayValue).toHaveBeenLastCalledWith(0);
+  });
+
   it('steps a play-mode slider with arrow keys and ignores other keys', () => {
     const control = { ...createControl('slider', 0, 0), label: 'Dimmer' };
     renderWithProviders(<SliderControl control={control} mode="play" />);
@@ -219,5 +276,38 @@ describe('virtual console controls', () => {
     const button = screen.getByRole('button', { name: 'Go' });
     fireEvent.pointerDown(button, { pointerId: 1 });
     expect(button).not.toHaveAttribute('data-pressed');
+  });
+
+  it('reports play-mode slider and button values and stays quiet in edit mode', () => {
+    const onSlider = vi.fn();
+    const onButton = vi.fn();
+    const slider = { ...createControl('slider', 0, 0), label: 'Dimmer' };
+    const button = { ...createControl('button', 0, 0), label: 'Go' };
+    const { unmount } = renderWithProviders(
+      <>
+        <SliderControl control={slider} mode="play" onPlayValue={onSlider} />
+        <ButtonControl control={button} mode="play" onPlayValue={onButton} />
+      </>,
+    );
+    const rail = screen.getByTestId('virtual-console-slider-rail');
+    mockRailRect(rail, { top: 0, left: 0, width: 40, height: 100 });
+    fireEvent.pointerDown(rail, { clientX: 20, clientY: 0, pointerId: 1 });
+    expect(onSlider).toHaveBeenCalledWith(255);
+    fireEvent.keyDown(screen.getByRole('slider', { name: 'Dimmer' }), { key: 'ArrowDown' });
+    expect(onSlider).toHaveBeenLastCalledWith(254);
+
+    const playButton = screen.getByRole('button', { name: 'Go' });
+    fireEvent.pointerDown(playButton, { pointerId: 1 });
+    expect(onButton).toHaveBeenCalledWith(255);
+    fireEvent.pointerUp(playButton, { pointerId: 1 });
+    expect(onButton).toHaveBeenLastCalledWith(0);
+    unmount();
+
+    const onEdit = vi.fn();
+    renderWithProviders(<SliderControl control={slider} mode="edit" onPlayValue={onEdit} />);
+    const editRail = screen.getByTestId('virtual-console-slider-rail');
+    mockRailRect(editRail, { top: 0, left: 0, width: 40, height: 100 });
+    fireEvent.pointerDown(editRail, { clientX: 20, clientY: 0, pointerId: 1 });
+    expect(onEdit).not.toHaveBeenCalled();
   });
 });

@@ -1,3 +1,9 @@
+import type { VirtualConsoleControlInput, VirtualConsoleInput } from '@/shared/types/graphql/graphql';
+import {
+  VirtualConsoleControlType as GqlVirtualConsoleControlType,
+  VirtualConsoleSliderOrientation as GqlVirtualConsoleSliderOrientation,
+  VirtualConsoleSliderValueType as GqlVirtualConsoleSliderValueType,
+} from '@/shared/types/graphql/graphql';
 import {
   VIRTUAL_CONSOLE_DEFAULT_FONT_FAMILY,
   VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE,
@@ -22,6 +28,11 @@ export type VirtualConsoleControlType = 'frame' | 'slider' | 'button';
 export type VirtualConsoleSliderOrientation = 'vertical' | 'horizontal';
 export type VirtualConsoleSliderValueType = 'dmx' | 'percentage';
 
+export type VirtualConsoleChannelBinding = {
+  projectFixturePublicId: string;
+  channelAssignmentPublicId: string;
+};
+
 export type VirtualConsoleControl = {
   id: string;
   type: VirtualConsoleControlType;
@@ -40,6 +51,9 @@ export type VirtualConsoleControl = {
   fontSize?: number;
   fontWeight?: number;
   valueType?: VirtualConsoleSliderValueType;
+  lowerLimit?: number;
+  upperLimit?: number;
+  channelBindings?: VirtualConsoleChannelBinding[];
 };
 
 export type VirtualConsolePage = {
@@ -109,6 +123,8 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         foregroundColor: '#4dabf7',
         orientation: 'vertical',
         valueType: 'dmx',
+        lowerLimit: 0,
+        upperLimit: 255,
         ...font,
       };
     case 'button':
@@ -122,6 +138,7 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         label: 'Button',
         backgroundColor: '#228be6',
         foregroundColor: '#ffffff',
+        upperLimit: 255,
         ...font,
       };
   }
@@ -136,13 +153,81 @@ const omitGraphqlArtifacts = (value: unknown): unknown => {
   }
   return Object.fromEntries(
     Object.entries(value)
-      .filter(([key, nested]) => key !== '__typename' && nested !== null)
+      .filter(([key, nested]) => key !== '__typename' && nested !== null && nested !== undefined)
       .map(([key, nested]) => [key, omitGraphqlArtifacts(nested)]),
   );
 };
 
 export const cloneVirtualConsoleDocument = (document: VirtualConsoleDocument): VirtualConsoleDocument =>
   omitGraphqlArtifacts(structuredClone(document)) as VirtualConsoleDocument;
+
+const controlTypeToInput = (type: VirtualConsoleControlType): GqlVirtualConsoleControlType => {
+  switch (type) {
+    case 'button':
+      return GqlVirtualConsoleControlType.Button;
+    case 'frame':
+      return GqlVirtualConsoleControlType.Frame;
+    case 'slider':
+      return GqlVirtualConsoleControlType.Slider;
+  }
+};
+
+const sliderOrientationToInput = (orientation: VirtualConsoleSliderOrientation): GqlVirtualConsoleSliderOrientation => {
+  switch (orientation) {
+    case 'horizontal':
+      return GqlVirtualConsoleSliderOrientation.Horizontal;
+    case 'vertical':
+      return GqlVirtualConsoleSliderOrientation.Vertical;
+  }
+};
+
+const sliderValueTypeToInput = (valueType: VirtualConsoleSliderValueType): GqlVirtualConsoleSliderValueType => {
+  switch (valueType) {
+    case 'dmx':
+      return GqlVirtualConsoleSliderValueType.Dmx;
+    case 'percentage':
+      return GqlVirtualConsoleSliderValueType.Percentage;
+  }
+};
+
+const controlToInput = (control: VirtualConsoleControl): VirtualConsoleControlInput => {
+  const { type, orientation, valueType, children, channelBindings, ...rest } = control;
+
+  return {
+    ...rest,
+    type: controlTypeToInput(type),
+    ...(orientation !== undefined ? { orientation: sliderOrientationToInput(orientation) } : {}),
+    ...(valueType !== undefined ? { valueType: sliderValueTypeToInput(valueType) } : {}),
+    ...(children !== undefined ? { children: children.map(controlToInput) } : {}),
+    ...(channelBindings !== undefined && channelBindings.length > 0 ? { channelBindings } : {}),
+  };
+};
+
+export const virtualConsoleDocumentToInput = (document: VirtualConsoleDocument): VirtualConsoleInput => {
+  const cloned = cloneVirtualConsoleDocument(document);
+
+  return {
+    schemaVersion: cloned.schemaVersion,
+    width: cloned.width,
+    height: cloned.height,
+    snap: cloned.snap,
+    pages: cloned.pages.map(page => ({
+      id: page.id,
+      name: page.name,
+      controls: page.controls.map(controlToInput),
+    })),
+  };
+};
+
+const cloneControlWithNewIds = (control: VirtualConsoleControl, relabel: boolean): VirtualConsoleControl => ({
+  ...control,
+  id: crypto.randomUUID(),
+  label: relabel ? `${control.label} (1)` : control.label,
+  ...(control.children ? { children: control.children.map(child => cloneControlWithNewIds(child, false)) } : {}),
+});
+
+export const cloneControlForPaste = (control: VirtualConsoleControl): VirtualConsoleControl =>
+  cloneControlWithNewIds(structuredClone(control), true);
 
 export const resizedControlBounds = (
   start: { x: number; y: number; width: number; height: number },

@@ -33,6 +33,8 @@ export type AddProjectFixtureInput = {
 };
 
 export type CreateFixtureInput = {
+  /** Beam angle in degrees (full opening angle) */
+  beamAngle?: number | null | undefined;
   /** Channel definitions to create with the fixture */
   channelDefinitions?: Array<UpdateFixtureChannelDefinitionInput> | null | undefined;
   /** Channel modes to create with the fixture */
@@ -98,6 +100,8 @@ export type ImportFixtureDefinitionInput = {
 };
 
 export type ImportFixtureInput = {
+  /** Beam angle in degrees (full opening angle) */
+  beamAngle?: number | null | undefined;
   /** The channel definitions of the fixture */
   channelDefinitions: Array<ImportFixtureDefinitionInput>;
   /** The channel modes of the fixture */
@@ -301,6 +305,8 @@ export type UpdateFixtureChannelRangeInput = {
 };
 
 export type UpdateFixtureInput = {
+  /** Beam angle in degrees (full opening angle) */
+  beamAngle?: number | null | undefined;
   /** Rename fixture channel definitions when provided; omit to leave definition names unchanged */
   channelDefinitions?: Array<UpdateFixtureChannelDefinitionInput> | null | undefined;
   /** Replace the fixture channel modes when provided; omit to leave modes unchanged */
@@ -376,6 +382,13 @@ export type UpdateProjectVirtualConsoleInput = {
   virtualConsole: VirtualConsoleInput;
 };
 
+export type VirtualConsoleChannelBindingInput = {
+  /** Public id of the channel assignment in the fixture mode */
+  channelAssignmentPublicId: string;
+  /** Public id of the patched project fixture */
+  projectFixturePublicId: string;
+};
+
 export type VirtualConsoleControlInput = {
   /** Background color as hex */
   backgroundColor: string;
@@ -383,6 +396,8 @@ export type VirtualConsoleControlInput = {
   borderColor?: string | null | undefined;
   /** Frame border width in pixels */
   borderWidth?: number | null | undefined;
+  /** Fixture channels this slider or button controls */
+  channelBindings?: Array<VirtualConsoleChannelBindingInput> | null | undefined;
   /** Nested controls when this is a frame */
   children?: Array<VirtualConsoleControlInput> | null | undefined;
   /** CSS font family */
@@ -399,10 +414,14 @@ export type VirtualConsoleControlInput = {
   id: string;
   /** Display label */
   label: string;
+  /** Inclusive lower DMX limit for a slider */
+  lowerLimit?: number | null | undefined;
   /** Slider orientation */
   orientation?: VirtualConsoleSliderOrientation | null | undefined;
   /** Control kind */
   type: VirtualConsoleControlType;
+  /** Inclusive upper DMX limit for a slider or button */
+  upperLimit?: number | null | undefined;
   /** Slider value interpretation */
   valueType?: VirtualConsoleSliderValueType | null | undefined;
   /** Width in pixels */
@@ -540,6 +559,7 @@ export type FixtureFieldsFragment = {
   width: number | null;
   length: number | null;
   height: number | null;
+  beamAngle: number;
   picturePath: string | null;
   picture2dPath: string | null;
   model3dPath: string | null;
@@ -603,6 +623,7 @@ export type GetFixturesQuery = {
     width: number | null;
     length: number | null;
     height: number | null;
+    beamAngle: number;
     picturePath: string | null;
     picture2dPath: string | null;
     model3dPath: string | null;
@@ -669,6 +690,7 @@ export type GetFixtureQuery = {
     width: number | null;
     length: number | null;
     height: number | null;
+    beamAngle: number;
     picturePath: string | null;
     picture2dPath: string | null;
     model3dPath: string | null;
@@ -735,6 +757,7 @@ export type UpdateFixtureMutation = {
     width: number | null;
     length: number | null;
     height: number | null;
+    beamAngle: number;
     picturePath: string | null;
     picture2dPath: string | null;
     model3dPath: string | null;
@@ -801,6 +824,7 @@ export type CreateFixtureMutation = {
     width: number | null;
     length: number | null;
     height: number | null;
+    beamAngle: number;
     picturePath: string | null;
     picture2dPath: string | null;
     model3dPath: string | null;
@@ -874,6 +898,7 @@ export type ExportFixturesQuery = {
       width: number | null;
       length: number | null;
       height: number | null;
+      beamAngle: number;
       picturePath: string | null;
       picture2dPath: string | null;
       model3dPath: string | null;
@@ -927,6 +952,7 @@ export type ImportFixturesMutation = {
       width: number | null;
       length: number | null;
       height: number | null;
+      beamAngle: number;
       picturePath: string | null;
       picture2dPath: string | null;
       model3dPath: string | null;
@@ -1032,6 +1058,9 @@ export type VirtualConsoleControlFieldsFragment = {
   fontSize: number | null;
   fontWeight: number | null;
   valueType: VirtualConsoleSliderValueType | null;
+  lowerLimit: number | null;
+  upperLimit: number | null;
+  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
 };
 
 export type VirtualConsoleFieldsFragment = {
@@ -1059,6 +1088,8 @@ export type VirtualConsoleFieldsFragment = {
       fontSize: number | null;
       fontWeight: number | null;
       valueType: VirtualConsoleSliderValueType | null;
+      lowerLimit: number | null;
+      upperLimit: number | null;
       children: Array<{
         id: string;
         type: VirtualConsoleControlType;
@@ -1076,6 +1107,8 @@ export type VirtualConsoleFieldsFragment = {
         fontSize: number | null;
         fontWeight: number | null;
         valueType: VirtualConsoleSliderValueType | null;
+        lowerLimit: number | null;
+        upperLimit: number | null;
         children: Array<{
           id: string;
           type: VirtualConsoleControlType;
@@ -1093,6 +1126,8 @@ export type VirtualConsoleFieldsFragment = {
           fontSize: number | null;
           fontWeight: number | null;
           valueType: VirtualConsoleSliderValueType | null;
+          lowerLimit: number | null;
+          upperLimit: number | null;
           children: Array<{
             id: string;
             type: VirtualConsoleControlType;
@@ -1110,6 +1145,8 @@ export type VirtualConsoleFieldsFragment = {
             fontSize: number | null;
             fontWeight: number | null;
             valueType: VirtualConsoleSliderValueType | null;
+            lowerLimit: number | null;
+            upperLimit: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -1127,6 +1164,8 @@ export type VirtualConsoleFieldsFragment = {
               fontSize: number | null;
               fontWeight: number | null;
               valueType: VirtualConsoleSliderValueType | null;
+              lowerLimit: number | null;
+              upperLimit: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -1144,6 +1183,8 @@ export type VirtualConsoleFieldsFragment = {
                 fontSize: number | null;
                 fontWeight: number | null;
                 valueType: VirtualConsoleSliderValueType | null;
+                lowerLimit: number | null;
+                upperLimit: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -1161,6 +1202,8 @@ export type VirtualConsoleFieldsFragment = {
                   fontSize: number | null;
                   fontWeight: number | null;
                   valueType: VirtualConsoleSliderValueType | null;
+                  lowerLimit: number | null;
+                  upperLimit: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -1178,13 +1221,26 @@ export type VirtualConsoleFieldsFragment = {
                     fontSize: number | null;
                     fontWeight: number | null;
                     valueType: VirtualConsoleSliderValueType | null;
+                    lowerLimit: number | null;
+                    upperLimit: number | null;
+                    channelBindings: Array<{
+                      projectFixturePublicId: string;
+                      channelAssignmentPublicId: string;
+                    }> | null;
                   }> | null;
+                  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
                 }> | null;
+                channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
               }> | null;
+              channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
             }> | null;
+            channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
           }> | null;
+          channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
         }> | null;
+        channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
       }> | null;
+      channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
     }>;
   }>;
 };
@@ -1199,14 +1255,20 @@ export type ProjectFixtureFieldsFragment = {
     publicId: string;
     name: string;
     model3dPath: string | null;
+    beamAngle: number;
     fixtureVendor: { publicId: string; name: string };
   };
   channelMode: {
     publicId: string;
     name: string;
     fixtureChannelAssignments: Array<{
+      publicId: string;
       channelNumber: number;
-      fixtureChannelDefinition: { preset: FixtureChannelPreset };
+      fixtureChannelDefinition: {
+        name: string;
+        preset: FixtureChannelPreset;
+        fixtureChannelRanges: Array<{ dmxStart: number; dmxEnd: number; description: string }>;
+      };
     }>;
   };
 };
@@ -1305,6 +1367,8 @@ export type GetProjectQuery = {
           fontSize: number | null;
           fontWeight: number | null;
           valueType: VirtualConsoleSliderValueType | null;
+          lowerLimit: number | null;
+          upperLimit: number | null;
           children: Array<{
             id: string;
             type: VirtualConsoleControlType;
@@ -1322,6 +1386,8 @@ export type GetProjectQuery = {
             fontSize: number | null;
             fontWeight: number | null;
             valueType: VirtualConsoleSliderValueType | null;
+            lowerLimit: number | null;
+            upperLimit: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -1339,6 +1405,8 @@ export type GetProjectQuery = {
               fontSize: number | null;
               fontWeight: number | null;
               valueType: VirtualConsoleSliderValueType | null;
+              lowerLimit: number | null;
+              upperLimit: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -1356,6 +1424,8 @@ export type GetProjectQuery = {
                 fontSize: number | null;
                 fontWeight: number | null;
                 valueType: VirtualConsoleSliderValueType | null;
+                lowerLimit: number | null;
+                upperLimit: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -1373,6 +1443,8 @@ export type GetProjectQuery = {
                   fontSize: number | null;
                   fontWeight: number | null;
                   valueType: VirtualConsoleSliderValueType | null;
+                  lowerLimit: number | null;
+                  upperLimit: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -1390,6 +1462,8 @@ export type GetProjectQuery = {
                     fontSize: number | null;
                     fontWeight: number | null;
                     valueType: VirtualConsoleSliderValueType | null;
+                    lowerLimit: number | null;
+                    upperLimit: number | null;
                     children: Array<{
                       id: string;
                       type: VirtualConsoleControlType;
@@ -1407,6 +1481,8 @@ export type GetProjectQuery = {
                       fontSize: number | null;
                       fontWeight: number | null;
                       valueType: VirtualConsoleSliderValueType | null;
+                      lowerLimit: number | null;
+                      upperLimit: number | null;
                       children: Array<{
                         id: string;
                         type: VirtualConsoleControlType;
@@ -1424,13 +1500,32 @@ export type GetProjectQuery = {
                         fontSize: number | null;
                         fontWeight: number | null;
                         valueType: VirtualConsoleSliderValueType | null;
+                        lowerLimit: number | null;
+                        upperLimit: number | null;
+                        channelBindings: Array<{
+                          projectFixturePublicId: string;
+                          channelAssignmentPublicId: string;
+                        }> | null;
+                      }> | null;
+                      channelBindings: Array<{
+                        projectFixturePublicId: string;
+                        channelAssignmentPublicId: string;
                       }> | null;
                     }> | null;
+                    channelBindings: Array<{
+                      projectFixturePublicId: string;
+                      channelAssignmentPublicId: string;
+                    }> | null;
                   }> | null;
+                  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
                 }> | null;
+                channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
               }> | null;
+              channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
             }> | null;
+            channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
           }> | null;
+          channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
         }>;
       }>;
     };
@@ -1444,14 +1539,20 @@ export type GetProjectQuery = {
         publicId: string;
         name: string;
         model3dPath: string | null;
+        beamAngle: number;
         fixtureVendor: { publicId: string; name: string };
       };
       channelMode: {
         publicId: string;
         name: string;
         fixtureChannelAssignments: Array<{
+          publicId: string;
           channelNumber: number;
-          fixtureChannelDefinition: { preset: FixtureChannelPreset };
+          fixtureChannelDefinition: {
+            name: string;
+            preset: FixtureChannelPreset;
+            fixtureChannelRanges: Array<{ dmxStart: number; dmxEnd: number; description: string }>;
+          };
         }>;
       };
     }>;
@@ -1552,14 +1653,20 @@ export type AddProjectFixtureMutation = {
       publicId: string;
       name: string;
       model3dPath: string | null;
+      beamAngle: number;
       fixtureVendor: { publicId: string; name: string };
     };
     channelMode: {
       publicId: string;
       name: string;
       fixtureChannelAssignments: Array<{
+        publicId: string;
         channelNumber: number;
-        fixtureChannelDefinition: { preset: FixtureChannelPreset };
+        fixtureChannelDefinition: {
+          name: string;
+          preset: FixtureChannelPreset;
+          fixtureChannelRanges: Array<{ dmxStart: number; dmxEnd: number; description: string }>;
+        };
       }>;
     };
   };
@@ -1580,14 +1687,20 @@ export type UpdateProjectFixtureMutation = {
       publicId: string;
       name: string;
       model3dPath: string | null;
+      beamAngle: number;
       fixtureVendor: { publicId: string; name: string };
     };
     channelMode: {
       publicId: string;
       name: string;
       fixtureChannelAssignments: Array<{
+        publicId: string;
         channelNumber: number;
-        fixtureChannelDefinition: { preset: FixtureChannelPreset };
+        fixtureChannelDefinition: {
+          name: string;
+          preset: FixtureChannelPreset;
+          fixtureChannelRanges: Array<{ dmxStart: number; dmxEnd: number; description: string }>;
+        };
       }>;
     };
   };
@@ -1723,6 +1836,8 @@ export type ExportProjectsQuery = {
             fontSize: number | null;
             fontWeight: number | null;
             valueType: VirtualConsoleSliderValueType | null;
+            lowerLimit: number | null;
+            upperLimit: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -1740,6 +1855,8 @@ export type ExportProjectsQuery = {
               fontSize: number | null;
               fontWeight: number | null;
               valueType: VirtualConsoleSliderValueType | null;
+              lowerLimit: number | null;
+              upperLimit: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -1757,6 +1874,8 @@ export type ExportProjectsQuery = {
                 fontSize: number | null;
                 fontWeight: number | null;
                 valueType: VirtualConsoleSliderValueType | null;
+                lowerLimit: number | null;
+                upperLimit: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -1774,6 +1893,8 @@ export type ExportProjectsQuery = {
                   fontSize: number | null;
                   fontWeight: number | null;
                   valueType: VirtualConsoleSliderValueType | null;
+                  lowerLimit: number | null;
+                  upperLimit: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -1791,6 +1912,8 @@ export type ExportProjectsQuery = {
                     fontSize: number | null;
                     fontWeight: number | null;
                     valueType: VirtualConsoleSliderValueType | null;
+                    lowerLimit: number | null;
+                    upperLimit: number | null;
                     children: Array<{
                       id: string;
                       type: VirtualConsoleControlType;
@@ -1808,6 +1931,8 @@ export type ExportProjectsQuery = {
                       fontSize: number | null;
                       fontWeight: number | null;
                       valueType: VirtualConsoleSliderValueType | null;
+                      lowerLimit: number | null;
+                      upperLimit: number | null;
                       children: Array<{
                         id: string;
                         type: VirtualConsoleControlType;
@@ -1825,6 +1950,8 @@ export type ExportProjectsQuery = {
                         fontSize: number | null;
                         fontWeight: number | null;
                         valueType: VirtualConsoleSliderValueType | null;
+                        lowerLimit: number | null;
+                        upperLimit: number | null;
                         children: Array<{
                           id: string;
                           type: VirtualConsoleControlType;
@@ -1842,13 +1969,35 @@ export type ExportProjectsQuery = {
                           fontSize: number | null;
                           fontWeight: number | null;
                           valueType: VirtualConsoleSliderValueType | null;
+                          lowerLimit: number | null;
+                          upperLimit: number | null;
+                          channelBindings: Array<{
+                            projectFixturePublicId: string;
+                            channelAssignmentPublicId: string;
+                          }> | null;
+                        }> | null;
+                        channelBindings: Array<{
+                          projectFixturePublicId: string;
+                          channelAssignmentPublicId: string;
                         }> | null;
                       }> | null;
+                      channelBindings: Array<{
+                        projectFixturePublicId: string;
+                        channelAssignmentPublicId: string;
+                      }> | null;
+                    }> | null;
+                    channelBindings: Array<{
+                      projectFixturePublicId: string;
+                      channelAssignmentPublicId: string;
                     }> | null;
                   }> | null;
+                  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
                 }> | null;
+                channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
               }> | null;
+              channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
             }> | null;
+            channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
           }>;
         }>;
       } | null;
@@ -2120,6 +2269,7 @@ export const FixtureFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -2319,6 +2469,19 @@ export const VirtualConsoleControlFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'lowerLimit' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'upperLimit' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelBindings' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -2479,6 +2642,19 @@ export const VirtualConsoleFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'lowerLimit' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'upperLimit' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelBindings' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -2506,6 +2682,7 @@ export const ProjectFixtureFieldsFragmentDoc = {
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },
@@ -2534,13 +2711,29 @@ export const ProjectFixtureFieldsFragmentDoc = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'fixtureChannelDefinition' },
                         selectionSet: {
                           kind: 'SelectionSet',
-                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                ],
+                              },
+                            },
+                          ],
                         },
                       },
                     ],
@@ -2748,6 +2941,7 @@ export const GetFixturesDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -2946,6 +3140,7 @@ export const GetFixtureDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -3147,6 +3342,7 @@ export const UpdateFixtureDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -3348,6 +3544,7 @@ export const CreateFixtureDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -3464,6 +3661,7 @@ export const ExportFixturesDocument = {
                       { kind: 'Field', name: { kind: 'Name', value: 'width' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'length' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -3727,6 +3925,7 @@ export const ImportFixturesDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'width' } },
           { kind: 'Field', name: { kind: 'Name', value: 'length' } },
           { kind: 'Field', name: { kind: 'Name', value: 'height' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picturePath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'picture2dPath' } },
           { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
@@ -4057,6 +4256,19 @@ export const GetProjectDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'lowerLimit' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'upperLimit' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelBindings' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -4226,6 +4438,7 @@ export const GetProjectDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },
@@ -4254,13 +4467,29 @@ export const GetProjectDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'fixtureChannelDefinition' },
                         selectionSet: {
                           kind: 'SelectionSet',
-                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                ],
+                              },
+                            },
+                          ],
                         },
                       },
                     ],
@@ -4590,6 +4819,7 @@ export const AddProjectFixtureDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },
@@ -4618,13 +4848,29 @@ export const AddProjectFixtureDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'fixtureChannelDefinition' },
                         selectionSet: {
                           kind: 'SelectionSet',
-                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                ],
+                              },
+                            },
+                          ],
                         },
                       },
                     ],
@@ -4697,6 +4943,7 @@ export const UpdateProjectFixtureDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'model3dPath' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'beamAngle' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'fixtureVendor' },
@@ -4725,13 +4972,29 @@ export const UpdateProjectFixtureDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
                       {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'fixtureChannelDefinition' },
                         selectionSet: {
                           kind: 'SelectionSet',
-                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'preset' } }],
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'preset' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'fixtureChannelRanges' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxStart' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'dmxEnd' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                ],
+                              },
+                            },
+                          ],
                         },
                       },
                     ],
@@ -5089,6 +5352,19 @@ export const ExportProjectsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'fontSize' } },
           { kind: 'Field', name: { kind: 'Name', value: 'fontWeight' } },
           { kind: 'Field', name: { kind: 'Name', value: 'valueType' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'lowerLimit' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'upperLimit' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'channelBindings' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+              ],
+            },
+          },
         ],
       },
     },

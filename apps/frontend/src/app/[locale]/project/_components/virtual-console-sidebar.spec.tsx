@@ -207,7 +207,13 @@ describe('virtual console sidebar', () => {
     await user.type(screen.getByLabelText('X'), '4');
     expect(onControlPatch).toHaveBeenCalled();
 
-    const slider = { ...createControl('slider', 0, 0), orientation: undefined, valueType: undefined };
+    const slider = {
+      ...createControl('slider', 0, 0),
+      orientation: undefined,
+      valueType: undefined,
+      lowerLimit: undefined,
+      upperLimit: undefined,
+    };
     rerender(
       <VirtualConsoleSidebar
         document={document}
@@ -231,6 +237,77 @@ describe('virtual console sidebar', () => {
     await user.click(screen.getByRole('combobox', { name: 'Value type' }));
     await user.click(await screen.findByText('Percentage'));
     expect(onControlPatch).toHaveBeenCalledWith({ valueType: 'percentage' });
+
+    const frameAgain = createControl('frame', 0, 0);
+    rerender(
+      <VirtualConsoleSidebar
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={vi.fn()}
+        onControlPatch={onControlPatch}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={frameAgain}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'control', controlId: frameAgain.id }}
+      />,
+    );
+    expect(screen.queryByLabelText('Lower limit')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Upper limit')).not.toBeInTheDocument();
+
+    rerender(
+      <VirtualConsoleSidebar
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={vi.fn()}
+        onControlPatch={onControlPatch}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={slider}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'control', controlId: slider.id }}
+      />,
+    );
+    const lowerLimit = screen.getByLabelText('Lower limit');
+    const upperLimit = screen.getByLabelText('Upper limit');
+    expect(lowerLimit).toHaveValue('0');
+    expect(upperLimit).toHaveValue('255');
+    await user.clear(lowerLimit);
+    await user.type(lowerLimit, '12');
+    expect(onControlPatch).toHaveBeenCalledWith({ lowerLimit: 12 });
+    await user.clear(upperLimit);
+    await user.type(upperLimit, '200');
+    expect(onControlPatch).toHaveBeenCalledWith({ upperLimit: 200 });
+
+    const button = { ...createControl('button', 0, 0), upperLimit: undefined };
+    rerender(
+      <VirtualConsoleSidebar
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={vi.fn()}
+        onControlPatch={onControlPatch}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={button}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'control', controlId: button.id }}
+      />,
+    );
+    expect(screen.queryByLabelText('Lower limit')).not.toBeInTheDocument();
+    const buttonUpper = screen.getByLabelText('Upper limit');
+    expect(buttonUpper).toHaveValue('255');
+    await user.clear(buttonUpper);
+    await user.type(buttonUpper, '180');
+    expect(onControlPatch).toHaveBeenCalledWith({ upperLimit: 180 });
   });
 
   it('shows a custom font family when the value is not in the catalog', () => {

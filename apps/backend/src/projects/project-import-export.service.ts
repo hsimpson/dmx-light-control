@@ -1,7 +1,7 @@
 import { InjectDb } from '@/db/drizzle-db/drizzle-db.provider';
 import { optionalImportTimestamps } from '@/db/import-timestamps.input';
 import { relations } from '@/db/relations';
-import { fixture, fixtureChannelMode } from '@/fixtures/entities';
+import { fixture, fixtureChannelAssignment, fixtureChannelMode } from '@/fixtures/entities';
 import { ImportProject3dObjectInput, ImportProjectsInput } from '@/projects/dto/import-projects.dto';
 import { project, project3dObject, projectFixture, sceneObjectType } from '@/projects/entities';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from '@/projects/project-3d-object-name';
@@ -21,7 +21,16 @@ import { optionalRoomDimensions } from '@/projects/project-room-dimensions';
 import { ProjectImportConflictException } from '@/projects/project.exceptions';
 import { ProjectFixtureRepository } from '@/projects/repositories/project-fixture.repository';
 import { ProjectRepository } from '@/projects/repositories/project.repository';
-import { assertValidVirtualConsole } from '@/projects/virtual-console.validation';
+import {
+  assertValidVirtualConsole,
+  assertVirtualConsoleChannelBindings,
+  remapVirtualConsoleBindingsForImport,
+  sanitizeVirtualConsoleForImport,
+  stripVirtualConsoleBindingHints,
+  type VirtualConsoleBindingFixture,
+  type VirtualConsoleImportBindingHints,
+} from '@/projects/virtual-console.validation';
+import { VirtualConsoleDocument } from '@/projects/virtual-console';
 import { Injectable } from '@nestjs/common';
 import { eq, InferSelectModel } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
@@ -51,28 +60,24 @@ function optionalPublicId(publicId?: string): { publicId: string } | Record<stri
   return publicId ? { publicId } : {};
 }
 
-function validatedVirtualConsole(
-  virtualConsole: NonNullable<ImportProjectsInput['projects'][number]['virtualConsole']>,
-) {
-  assertValidVirtualConsole(virtualConsole);
-  return virtualConsole;
-}
-
-function virtualConsolePatchForUpdate(virtualConsole: ImportProjectsInput['projects'][number]['virtualConsole']) {
-  if (virtualConsole === null || virtualConsole === undefined) {
-    return { virtualConsole: null };
-  }
-  return { virtualConsole: validatedVirtualConsole(virtualConsole) };
-}
-
-function virtualConsolePatchForInsert(virtualConsole: ImportProjectsInput['projects'][number]['virtualConsole']) {
+function virtualConsolePatchForUpdate(virtualConsole: VirtualConsoleDocument | null | undefined) {
   if (virtualConsole === undefined) {
     return {};
   }
   if (virtualConsole === null) {
     return { virtualConsole: null };
   }
-  return { virtualConsole: validatedVirtualConsole(virtualConsole) };
+  return { virtualConsole };
+}
+
+function virtualConsolePatchForInsert(virtualConsole: VirtualConsoleDocument | null | undefined) {
+  if (virtualConsole === undefined) {
+    return {};
+  }
+  if (virtualConsole === null) {
+    return { virtualConsole: null };
+  }
+  return { virtualConsole };
 }
 
 @Injectable()
@@ -123,6 +128,8 @@ export class ProjectImportExportService {
       );
     }
 
+    const preparedVirtualConsole = await this.prepareVirtualConsoleForImport(tx, incoming);
+
     const existing = byPublicId ?? byName;
     if (existing) {
       const existingId = existing.id;
@@ -136,7 +143,7 @@ export class ProjectImportExportService {
           ...optionalEnvironmentType(incoming),
           ...optionalRoomDimensions(incoming),
           ...optionalImportTimestamps(incoming),
-          ...virtualConsolePatchForUpdate(incoming.virtualConsole),
+          ...virtualConsolePatchForUpdate(preparedVirtualConsole),
         })
         .where(eq(project.id, existingId))
         .returning();
@@ -156,7 +163,7 @@ export class ProjectImportExportService {
           ...optionalPublicId(incoming.publicId),
           ...optionalRoomDimensions(incoming),
           ...optionalImportTimestamps(incoming),
-          ...virtualConsolePatchForInsert(incoming.virtualConsole),
+          ...virtualConsolePatchForInsert(preparedVirtualConsole),
         })
         .returning();
       const row = inserted[0];
@@ -314,6 +321,103 @@ export class ProjectImportExportService {
   private async findFixtureByPublicId(tx: Tx, publicId: string) {
     const rows = await tx.select().from(fixture).where(eq(fixture.publicId, publicId)).limit(1);
     return rows[0];
+  }
+
+  private async prepareVirtualConsoleForImport(
+    tx: Tx,
+    incoming: ImportProjectsInput['projects'][number],
+  ): Promise<VirtualConsoleDocument | null | undefined> {
+    const virtualConsole = incoming.virtualConsole;
+    if (virtualConsole === null || virtualConsole === undefined) {
+      return virtualConsole;
+    }
+    const bindingFixtures = await this.bindingFixturesForImport(tx, incoming);
+    const importHints = this.importBindingHints(incoming);
+    const sanitized = sanitizeVirtualConsoleForImport(virtualConsole);
+    const remapped = await remapVirtualConsoleBindingsForImport(
+      sanitized,
+      bindingFixtures,
+      async assignmentPublicId => await this.findAssignmentChannelNumber(tx, assignmentPublicId),
+      importHints,
+    );
+    const stored = stripVirtualConsoleBindingHints(remapped);
+    assertValidVirtualConsole(stored);
+    assertVirtualConsoleChannelBindings(stored, bindingFixtures);
+    return stored;
+  }
+
+  private importBindingHints(incoming: ImportProjectsInput['projects'][number]): VirtualConsoleImportBindingHints {
+    const hints = new Map<string, Map<string, { channelNumber: number; channelDefinitionPublicId?: string }>>();
+    for (const instance of incoming.projectFixtures ?? []) {
+      if (!instance.publicId) {
+        continue;
+      }
+      const byAssignment = new Map<string, { channelNumber: number; channelDefinitionPublicId?: string }>();
+      for (const assignment of instance.channelAssignments ?? []) {
+        byAssignment.set(assignment.publicId, {
+          channelNumber: assignment.channelNumber,
+          ...(assignment.channelDefinitionPublicId
+            ? { channelDefinitionPublicId: assignment.channelDefinitionPublicId }
+            : {}),
+        });
+      }
+      if (byAssignment.size > 0) {
+        hints.set(instance.publicId, byAssignment);
+      }
+    }
+    return hints;
+  }
+
+  private async bindingFixturesForImport(
+    tx: Tx,
+    incoming: ImportProjectsInput['projects'][number],
+  ): Promise<VirtualConsoleBindingFixture[]> {
+    const fixtures: VirtualConsoleBindingFixture[] = [];
+    for (const instance of incoming.projectFixtures ?? []) {
+      if (!instance.publicId) {
+        continue;
+      }
+      const modeRow = await this.findChannelModeByPublicId(tx, instance.channelModePublicId);
+      const modeWithAssignments = modeRow?.id
+        ? await tx.query.fixtureChannelMode.findFirst({
+            where: { id: modeRow.id },
+            with: {
+              fixtureChannelAssignments: {
+                with: { fixtureChannelDefinition: true },
+              },
+            },
+          })
+        : undefined;
+      const assignments = modeWithAssignments?.fixtureChannelAssignments ?? [];
+      fixtures.push({
+        publicId: instance.publicId,
+        channelAssignmentPublicIds: new Set(
+          assignments.flatMap(assignment => (assignment.publicId ? [assignment.publicId] : [])),
+        ),
+        channelAssignmentPublicIdByChannelNumber: new Map(
+          assignments.flatMap(assignment =>
+            assignment.publicId ? [[assignment.channelNumber, assignment.publicId] as const] : [],
+          ),
+        ),
+        channelAssignmentPublicIdByDefinitionPublicId: new Map(
+          assignments.flatMap(assignment =>
+            assignment.publicId && assignment.fixtureChannelDefinition?.publicId
+              ? [[assignment.fixtureChannelDefinition.publicId, assignment.publicId] as const]
+              : [],
+          ),
+        ),
+      });
+    }
+    return fixtures;
+  }
+
+  private async findAssignmentChannelNumber(tx: Tx, publicId: string): Promise<number | undefined> {
+    const rows = await tx
+      .select({ channelNumber: fixtureChannelAssignment.channelNumber })
+      .from(fixtureChannelAssignment)
+      .where(eq(fixtureChannelAssignment.publicId, publicId))
+      .limit(1);
+    return rows[0]?.channelNumber;
   }
 
   private async findChannelModeByPublicId(tx: Tx, publicId: string) {

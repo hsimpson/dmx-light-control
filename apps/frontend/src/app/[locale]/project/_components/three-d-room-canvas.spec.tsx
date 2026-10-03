@@ -1,4 +1,6 @@
-import { ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
+import { dmxStore, resetDmxStore } from '@/lib/dmx/dmx-store';
+import { BEAM_LENGTH_M } from '@/lib/three/fixture-beam-cone';
+import { FixtureChannelPreset, ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { fireEvent, screen } from '@testing-library/react';
 import { PCFShadowMap } from 'three';
@@ -23,7 +25,13 @@ const {
   frameCameraOnObject: vi.fn(),
   capturedThreeCanvasProps: { current: undefined as { showOrientationGizmo?: boolean } | undefined },
   capturedRenderer: { current: undefined as { shadowMap: { enabled: boolean; type: number } } | undefined },
-  createdMeshes: [] as { name: string; castShadow: boolean; receiveShadow: boolean }[],
+  createdMeshes: [] as {
+    name: string;
+    castShadow: boolean;
+    receiveShadow: boolean;
+    visible: boolean;
+    userData: Record<string, unknown>;
+  }[],
   createdBox3Helpers: [] as { color: unknown; userData: Record<string, unknown>; disposed?: boolean }[],
 }));
 
@@ -83,7 +91,13 @@ vi.mock('@/lib/three/scene-ao-composer', () => ({
 
 vi.mock('three', () => {
   class Position {
-    public set(_x: number, _y: number, _z: number) {
+    public x = 0;
+    public y = 0;
+    public z = 0;
+    public set(x: number, y: number, z: number) {
+      this.x = x;
+      this.y = y;
+      this.z = z;
       return this;
     }
   }
@@ -98,6 +112,9 @@ vi.mock('three', () => {
     }
     public getObjectByName() {
       return this;
+    }
+    public traverse() {
+      return undefined;
     }
   }
 
@@ -154,6 +171,15 @@ vi.mock('three', () => {
       public setFromObject() {
         return this;
       }
+      public makeEmpty() {
+        return this;
+      }
+      public union() {
+        return this;
+      }
+      public applyMatrix4() {
+        return this;
+      }
       public isEmpty() {
         return false;
       }
@@ -205,6 +231,36 @@ vi.mock('three', () => {
         this.z = z;
         return this;
       }
+      public copy(other: { x: number; y: number; z: number }) {
+        return this.set(other.x, other.y, other.z);
+      }
+      public setFromMatrixColumn(matrix: { elements?: number[] }, index: number) {
+        const elements = matrix.elements;
+        if (!elements) {
+          return this.set(1, 0, 0);
+        }
+        const offset = index * 4;
+        return this.set(elements[offset] ?? 1, elements[offset + 1] ?? 0, elements[offset + 2] ?? 0);
+      }
+      public lengthSq() {
+        return this.x * this.x + this.y * this.y + this.z * this.z;
+      }
+      public normalize() {
+        const length = Math.sqrt(this.lengthSq());
+        if (length < 1e-8) {
+          return this.set(1, 0, 0);
+        }
+        return this.set(this.x / length, this.y / length, this.z / length);
+      }
+      public dot(other: { x: number; y: number; z: number }) {
+        return this.x * other.x + this.y * other.y + this.z * other.z;
+      }
+      public sub(other: { x: number; y: number; z: number }) {
+        return this.set(this.x - other.x, this.y - other.y, this.z - other.z);
+      }
+      public addScaledVector(other: { x: number; y: number; z: number }, scale: number) {
+        return this.set(this.x + other.x * scale, this.y + other.y * scale, this.z + other.z * scale);
+      }
       public distanceToSquared() {
         return Number.POSITIVE_INFINITY;
       }
@@ -214,14 +270,27 @@ vi.mock('three', () => {
       public isMesh = true;
       public castShadow = false;
       public receiveShadow = false;
+      public visible = true;
+      public userData: Record<string, unknown> = {};
       public position = new Position();
       public scale = new Position();
+      public rotation = { x: 0, y: 0, z: 0 };
+      public layers = {
+        set() {
+          return undefined;
+        },
+      };
       public geometry = {
         dispose() {
           return undefined;
         },
       };
       public material = {
+        color: {
+          setRGB() {
+            return undefined;
+          },
+        },
         dispose() {
           return undefined;
         },
@@ -229,16 +298,64 @@ vi.mock('three', () => {
       public constructor() {
         createdMeshes.push(this);
       }
+      public raycast() {
+        return undefined;
+      }
     },
     MeshStandardMaterial: class {
       public dispose() {
         return undefined;
       }
     },
+    MeshBasicMaterial: class {
+      public color = {
+        setRGB() {
+          return undefined;
+        },
+      };
+      public constructor(public readonly parameters?: Record<string, unknown>) {}
+      public dispose() {
+        return undefined;
+      }
+    },
+    ShaderMaterial: class {
+      public color = {
+        setRGB() {
+          return undefined;
+        },
+      };
+      public uniforms: Record<string, { value: unknown }> = {};
+      public userData: Record<string, unknown> = {};
+      public constructor(parameters?: { uniforms?: Record<string, { value: unknown }> }) {
+        this.uniforms = parameters?.uniforms ?? {};
+      }
+      public dispose() {
+        return undefined;
+      }
+    },
+    Matrix4: class {
+      public copy() {
+        return this;
+      }
+      public invert() {
+        return this;
+      }
+    },
+    BackSide: 1,
+    CylinderGeometry: class {
+      public dispose() {
+        return undefined;
+      }
+    },
+    AdditiveBlending: 2,
+    DoubleSide: 2,
     Group: class {
       public userData: Record<string, unknown> = {};
       public children: unknown[] = [];
       public parent: unknown = null;
+      public matrixWorld = {
+        elements: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      };
       public position = new Position();
       public quaternion = {
         identity() {
@@ -255,6 +372,12 @@ vi.mock('three', () => {
       }
       public updateMatrixWorld() {
         return undefined;
+      }
+      public updateWorldMatrix() {
+        return undefined;
+      }
+      public worldToLocal<T>(vector: T): T {
+        return vector;
       }
       public getObjectByName() {
         return null;
@@ -400,6 +523,12 @@ vi.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
     public maxDistance = 0;
     public enableDamping = false;
     public update() {
+      return undefined;
+    }
+    public addEventListener() {
+      return undefined;
+    }
+    public removeEventListener() {
       return undefined;
     }
     public dispose() {
@@ -831,17 +960,80 @@ describe('ThreeDRoomCanvas', () => {
     expect(String(load.mock.calls.at(-1)?.[0])).toContain('/assets/fixtures/acme/par/model.glb');
     expect(transformControlsConstruct.mock.calls.length).toBeGreaterThanOrEqual(2);
     const onLoad = load.mock.calls.at(-1)?.[1] as
-      ((gltf: { scene: { name?: string; traverse: (cb: (object: unknown) => void) => void } }) => void) | undefined;
+      | ((gltf: {
+          scene: {
+            name?: string;
+            traverse: (cb: (object: unknown) => void) => void;
+            getObjectByName?: (name: string) => unknown;
+          };
+        }) => void)
+      | undefined;
     const instanceMesh = { isMesh: true, castShadow: false, receiveShadow: false, material: {} };
     onLoad?.({
       scene: {
         traverse(callback: (object: unknown) => void) {
           callback(instanceMesh);
         },
+        getObjectByName: () => undefined,
       },
     });
     expect(instanceMesh.castShadow).toBe(true);
     expect(instanceMesh.receiveShadow).toBe(true);
+  });
+
+  it('places the beam apex on the model BeamOrigin without moving the fixture pivot', () => {
+    load.mockClear();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 5, 0, 0, 1],
+            fixture: { model3dPath: '/assets/fixtures/acme/par/model.glb' },
+          },
+        ]}
+      />,
+    );
+    const onLoad = load.mock.calls.at(-1)?.[1] as
+      | ((gltf: {
+          scene: {
+            traverse: (cb: (object: unknown) => void) => void;
+            getObjectByName: (name: string) => unknown;
+            updateWorldMatrix: () => void;
+            worldToLocal: (vector: unknown) => unknown;
+          };
+        }) => void)
+      | undefined;
+    const marker = {
+      getWorldPosition(target: { set: (x: number, y: number, z: number) => unknown }) {
+        target.set(0.0735, 0.118, 0);
+        return target;
+      },
+    };
+    onLoad?.({
+      scene: {
+        matrixWorld: {
+          elements: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        },
+        traverse() {
+          return undefined;
+        },
+        getObjectByName: name => (name === 'BeamOrigin' ? marker : undefined),
+        updateWorldMatrix() {
+          return undefined;
+        },
+        worldToLocal(vector) {
+          return vector;
+        },
+      },
+    });
+    const beam = createdMeshes.find(mesh => mesh.userData.isBeam === true);
+    expect(beam?.position).toMatchObject({ x: 0.0735 + BEAM_LENGTH_M / 2, y: 0.118, z: 0 });
   });
 
   it('selects a fixture from a bounding-box pick', () => {
@@ -961,5 +1153,41 @@ describe('ThreeDRoomCanvas', () => {
       />,
     );
     expect(createdBox3Helpers).toHaveLength(3);
+  });
+
+  it('shows one beam per fixture when its DMX channels light up', () => {
+    resetDmxStore();
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+    renderWithProviders(
+      <ThreeDRoomCanvas
+        environmentType={ProjectEnvironmentType.SimpleGround}
+        roomWidth={10}
+        roomLength={8}
+        roomHeight={5}
+        fixtures={[
+          {
+            publicId: 'pf-1',
+            transform: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            startAddress: 1,
+            channelMode: {
+              fixtureChannelAssignments: [
+                {
+                  channelNumber: 1,
+                  fixtureChannelDefinition: { preset: FixtureChannelPreset.IntensityRed },
+                },
+              ],
+            },
+            fixture: { model3dPath: null },
+          },
+        ]}
+      />,
+    );
+    const beams = createdMeshes.filter(mesh => mesh.userData.isBeam === true);
+    expect(beams).toHaveLength(1);
+    expect(beams[0]?.visible).toBe(false);
+
+    dmxStore.getState().applyDelta([{ channel: 1, value: 255 }]);
+    expect(beams[0]?.visible).toBe(true);
+    resetDmxStore();
   });
 });

@@ -56,11 +56,13 @@ describe('mapFixturesToExportDocument', () => {
             ...timestamps,
             fixtureChannelAssignments: [
               {
+                publicId: 'assign-dimmer',
                 channelNumber: 2,
                 fixtureChannelDefinition: { publicId: 'def-dimmer' },
                 ...timestamps,
               },
               {
+                publicId: 'assign-red',
                 channelNumber: 1,
                 fixtureChannelDefinition: { publicId: 'def-red' },
                 ...timestamps,
@@ -81,6 +83,7 @@ describe('mapFixturesToExportDocument', () => {
         width: null,
         length: null,
         height: null,
+        beamAngle: 30,
         picturePath: null,
         picture2dPath: null,
         model3dPath: null,
@@ -127,11 +130,13 @@ describe('mapFixturesToExportDocument', () => {
             ...timestamps,
             assignments: [
               {
+                publicId: 'assign-red',
                 channelNumber: 1,
                 channelDefinitionPublicId: 'def-red',
                 ...timestamps,
               },
               {
+                publicId: 'assign-dimmer',
                 channelNumber: 2,
                 channelDefinitionPublicId: 'def-dimmer',
                 ...timestamps,
@@ -175,5 +180,56 @@ describe('mapFixturesToExportDocument', () => {
       { publicId: 'vendor-1', name: 'Acme', ...timestamps },
       { publicId: 'vendor-2', name: 'eurolite', ...timestamps },
     ]);
+  });
+
+  it('sorts vendors that share a name by publicId and fills missing ids', () => {
+    const document = mapFixturesToExportDocument(
+      [
+        {
+          publicId: null,
+          name: 'Bare',
+          createdAt: null,
+          updatedAt: null,
+          weight: null,
+          fixtureChannelDefinitions: [
+            {
+              publicId: null,
+              name: 'Dimmer',
+              order: 1,
+              preset: FixtureChannelPreset.IntensityDimmer,
+              createdAt: null,
+              updatedAt: null,
+            },
+          ],
+          fixtureChannelModes: [
+            {
+              publicId: null,
+              name: '1ch',
+              order: 1,
+              createdAt: null,
+              updatedAt: null,
+              fixtureChannelAssignments: [
+                {
+                  channelNumber: 1,
+                  createdAt: null,
+                  updatedAt: null,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      [
+        { publicId: 'b', name: 'Acme', createdAt: new Date(0), updatedAt: new Date(0) },
+        { publicId: 'a', name: 'Acme', createdAt: new Date(0), updatedAt: new Date(0) },
+      ],
+    );
+
+    expect(document.vendors.map(vendor => vendor.publicId)).toEqual(['a', 'b']);
+    expect(document.fixtures[0]?.publicId).toBe('');
+    expect(document.fixtures[0]?.channelDefinitions[0]?.publicId).toBe('');
+    expect(document.fixtures[0]?.channelDefinitions[0]?.ranges).toEqual([]);
+    expect(document.fixtures[0]?.channelModes[0]?.assignments[0]?.channelDefinitionPublicId).toBe('');
+    expect(document.fixtures[0]?.createdAt).toEqual(new Date(0));
   });
 });

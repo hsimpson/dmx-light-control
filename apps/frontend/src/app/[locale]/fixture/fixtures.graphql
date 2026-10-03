@@ -55,6 +55,7 @@ fragment FixtureFields on FixtureDto {
   width
   length
   height
+  beamAngle
   picturePath
   picture2dPath
   model3dPath
@@ -122,6 +123,7 @@ query ExportFixtures {
       width
       length
       height
+      beamAngle
       picturePath
       picture2dPath
       model3dPath

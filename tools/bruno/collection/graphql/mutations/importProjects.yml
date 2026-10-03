@@ -48,6 +48,7 @@ graphql:
               }
               createdAt
               fixture {
+                beamAngle
                 createdAt
                 fixtureVendor
                 model3dPath

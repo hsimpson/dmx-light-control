@@ -3,7 +3,7 @@ import { fixture } from './entities';
 
 export type FixturePropertyPatch = Pick<
   InferInsertModel<typeof fixture>,
-  'weight' | 'width' | 'length' | 'height' | 'picturePath' | 'picture2dPath' | 'model3dPath'
+  'weight' | 'width' | 'length' | 'height' | 'beamAngle' | 'picturePath' | 'picture2dPath' | 'model3dPath'
 >;
 
 export type FixturePropertyInput = {
@@ -11,6 +11,7 @@ export type FixturePropertyInput = {
   width?: number | null;
   length?: number | null;
   height?: number | null;
+  beamAngle?: number;
   picturePath?: string | null;
   picture2dPath?: string | null;
   model3dPath?: string | null;
@@ -30,6 +31,9 @@ export function fixtureDimensionPatch(input: FixturePropertyInput): Partial<Fixt
   if (input.height !== undefined) {
     patch.height = input.height;
   }
+  if (input.beamAngle !== undefined) {
+    patch.beamAngle = input.beamAngle;
+  }
   return patch;
 }
 
@@ -40,6 +44,7 @@ export function fixturePropertyPatch(input: FixturePropertyInput): FixtureProper
     width: input.width ?? null,
     length: input.length ?? null,
     height: input.height ?? null,
+    beamAngle: input.beamAngle ?? 30,
     picturePath: input.picturePath ?? null,
     picture2dPath: input.picture2dPath ?? null,
     model3dPath: input.model3dPath ?? null,

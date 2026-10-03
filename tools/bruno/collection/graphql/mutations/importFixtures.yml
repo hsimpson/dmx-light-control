@@ -12,6 +12,7 @@ graphql:
       mutation($document: ImportFixturesInput!) {
         importFixtures(document: $document) {
           fixtures {
+            beamAngle
             createdAt
             fixtureChannelDefinitions {
               createdAt

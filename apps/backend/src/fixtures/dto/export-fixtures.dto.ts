@@ -40,6 +40,9 @@ export class FixtureExportDefinitionDto extends ExportTimestampsDto {
 
 @ObjectType()
 export class FixtureExportAssignmentDto extends ExportTimestampsDto {
+  @Field(() => GraphQLUUID, { description: 'The public ID of the channel assignment' })
+  public publicId: string;
+
   @Field(() => Int, { description: 'The 1-based DMX channel number of the assignment' })
   public channelNumber: number;
 
@@ -91,6 +94,9 @@ export class FixtureExportFixtureDto extends ExportTimestampsDto {
 
   @Field(() => Float, { nullable: true, description: 'Fixture height in meters' })
   public height?: number | null;
+
+  @Field(() => Float, { description: 'Beam angle in degrees (full opening angle)' })
+  public beamAngle: number;
 
   @Field(() => String, { nullable: true, description: 'Product photo path relative to the API origin' })
   public picturePath?: string | null;

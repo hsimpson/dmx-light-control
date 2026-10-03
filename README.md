@@ -4,7 +4,7 @@
 
 - Install Docker and Docker Compose for running the local database. It doesn't matter which docker engine you use, as long as it supports `docker` and `docker compose`.
 - Install Node.js **24.21.0** (see `package.json` `engines`).
-- Install pnpm **12.5.1** (pinned in `package.json` `packageManager` / `devEngines`; Corepack and Dependabot require an exact version).
+- Install pnpm **12.9.0** (pinned in `package.json` `packageManager` / `devEngines`; Corepack and Dependabot require an exact version).
 - Install project dependencies:
 
 ```bash
@@ -15,6 +15,14 @@ Nx is provided by the workspace — run `nx` commands directly (no global instal
 
 - Copy root `.env.example` to `.env` and fill in the required environment variables (`BACKEND_PORT` and `POSTGRES_*` have no in-code defaults).
 - Copy `apps/frontend/.env.example` to `apps/frontend/.env` (`NEXT_PUBLIC_GRAPHQL_API_URL`).
+
+### Update pnpm
+
+To update pnpm to the latest version, run:
+Change the pinned version in `package.json`, `README.md`, `AGENTS.md` and run:
+
+```bash
+pnpm install
 
 ## Nx monorepo
 
@@ -31,3 +39,4 @@ Read all sub projects documentation carefully for more details.
 - [frontend](apps/frontend/README.md) - Next.js UI for catalog, vendors, projects (patch, universe, 3D), and related views.
 - [bruno](tools/bruno/README.md) - Regenerates the Bruno GraphQL collection from a running backend schema.
 - [blender](blender/README.md) - Authoring `.blend` files; re-export runtime GLB/GLTF under `apps/backend/src/assets/`.
+```

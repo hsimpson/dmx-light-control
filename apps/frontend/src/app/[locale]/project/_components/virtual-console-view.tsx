@@ -3,20 +3,32 @@
 import { Loading } from '@/components/loading';
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import {
-  GetProjectDocument,
-  UpdateProjectVirtualConsoleDocument,
-  type VirtualConsoleInput,
-} from '@/shared/types/graphql/graphql';
+import { GetProjectDocument, UpdateProjectVirtualConsoleDocument } from '@/shared/types/graphql/graphql';
 import { useMutation, useQuery } from '@apollo/client/react';
 import { ActionIcon, Box, Group, Tabs } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ArrowsOutIcon, PlusIcon, XIcon } from '@phosphor-icons/react';
 import { useParams } from 'next/navigation';
 import { KeyboardEvent, PointerEvent, useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
+import { publishVirtualConsoleValue } from './virtual-console-channel-output';
+import VirtualConsoleChannelSidebar from './virtual-console-channel-sidebar';
+import {
+  clearVirtualConsoleDraft,
+  isVirtualConsoleDraftMessage,
+  publishVirtualConsoleDraft,
+  readVirtualConsoleDraft,
+  virtualConsoleDraftChannel,
+} from './virtual-console-draft-sync';
+import {
+  notifyVirtualConsoleSaved,
+  reloadVirtualConsolePlayWindow,
+  virtualConsoleReloadChannel,
+} from './virtual-console-reload';
 import VirtualConsoleControlTree from './virtual-console-control-tree';
 import {
+  cloneControlForPaste,
   cloneVirtualConsoleDocument,
+  virtualConsoleDocumentToInput,
   createControl,
   createDefaultVirtualConsoleDocument,
   extractControl,
@@ -33,6 +45,7 @@ import {
   updateControlInTree,
   VIRTUAL_CONSOLE_DEFAULT_SNAP,
   VIRTUAL_CONSOLE_PALETTE_MIME,
+  type VirtualConsoleControl,
   type VirtualConsoleDocument,
   type VirtualConsoleResizeHandle,
 } from './virtual-console-document';
@@ -44,11 +57,12 @@ type VirtualConsoleViewProperties = {
   mode?: 'edit' | 'play';
 };
 
-const PAGES_FR = 4;
-const SIDEBAR_FR = 1;
-const SPLIT_TOTAL_FR = PAGES_FR + SIDEBAR_FR;
 const SPLITTER_PX = 6;
-const MIN_PANE_RATIO = 0.2;
+const DEFAULT_SIDEBAR_PX = 320;
+const MIN_PANE_PX = 220;
+const MIN_CANVAS_PX = 160;
+
+type VirtualConsoleSplitPane = 'channel' | 'sidebar';
 
 const documentsEqual = (left: VirtualConsoleDocument, right: VirtualConsoleDocument) =>
   JSON.stringify(left) === JSON.stringify(right);
@@ -67,10 +81,12 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
   const { t } = useTranslation();
   const params = useParams<{ locale?: string }>();
   const canvasRef = useRef<HTMLDivElement>(null);
+  const clipboardRef = useRef<VirtualConsoleControl | null>(null);
+  const pastePointerRef = useRef<{ x: number; y: number } | null>(null);
   const splitRef = useRef<HTMLDivElement>(null);
-  const splitDraggingRef = useRef(false);
-  const [pagesFr, setPagesFr] = useState(PAGES_FR);
-  const [sidebarFr, setSidebarFr] = useState(SIDEBAR_FR);
+  const splitDraggingRef = useRef<VirtualConsoleSplitPane | null>(null);
+  const [channelWidth, setChannelWidth] = useState(DEFAULT_SIDEBAR_PX);
+  const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_PX);
   const { data, loading, refetch } = useQuery(GetProjectDocument, {
     variables: { publicId: projectPublicId },
     skip: !projectPublicId,
@@ -83,7 +99,9 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     () => toDocument(data?.project?.virtualConsole as VirtualConsoleDocument | null | undefined),
     [data?.project?.virtualConsole],
   );
-  const [edits, setEdits] = useState<VirtualConsoleDocument | null>(null);
+  const [edits, setEdits] = useState<VirtualConsoleDocument | null>(() =>
+    mode === 'play' ? readVirtualConsoleDraft(projectPublicId) : null,
+  );
   const draft = edits ?? saved;
   const [selection, setSelection] = useState<VirtualConsoleSelection>({ kind: 'canvas' });
   const [saving, setSaving] = useState(false);
@@ -132,6 +150,46 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [mode, refetch]);
+
+  useEffect(() => {
+    if (mode !== 'play' || typeof BroadcastChannel === 'undefined') {
+      return;
+    }
+    const channel = new BroadcastChannel(virtualConsoleReloadChannel(projectPublicId));
+    channel.onmessage = () => {
+      reloadVirtualConsolePlayWindow();
+    };
+    return () => {
+      channel.close();
+    };
+  }, [mode, projectPublicId]);
+
+  useEffect(() => {
+    if (mode !== 'play' || typeof BroadcastChannel === 'undefined') {
+      return;
+    }
+    const channel = new BroadcastChannel(virtualConsoleDraftChannel(projectPublicId));
+    channel.onmessage = event => {
+      if (isVirtualConsoleDraftMessage(event.data)) {
+        setEdits(event.data.document);
+      }
+    };
+    return () => {
+      channel.close();
+    };
+  }, [mode, projectPublicId]);
+
+  useEffect(() => {
+    if (mode !== 'edit') {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      publishVirtualConsoleDraft(projectPublicId, draftRef.current);
+    }, 200);
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [mode, draft, projectPublicId]);
 
   const activePage = draft.pages.find(page => page.id === activePageId) ?? draft.pages[0];
   const selectedControl =
@@ -374,20 +432,56 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     setSelection({ kind: 'canvas' });
   };
 
+  const handlePaste = () => {
+    const source = clipboardRef.current;
+    if (mode !== 'edit' || !activePage || !source) {
+      return false;
+    }
+    const parentId = selectedControl?.type === 'frame' ? selectedControl.id : null;
+    const origin = findFrameOrigin(activePage.controls, parentId);
+    const pointer = pastePointerRef.current;
+    const localX = pointer ? pointer.x - origin.x : 0;
+    const localY = pointer ? pointer.y - origin.y : 0;
+    const snap = draft.snap ?? VIRTUAL_CONSOLE_DEFAULT_SNAP;
+    const pasted = {
+      ...cloneControlForPaste(source),
+      x: snapToGrid(localX, snap),
+      y: snapToGrid(localY, snap),
+    };
+    patchActivePageControls(insertControlInTree(activePage.controls, parentId, pasted));
+    setSelection({ kind: 'control', controlId: pasted.id });
+    return true;
+  };
+
   useEffect(() => {
     if (mode !== 'edit') {
       return;
     }
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.key !== 'Delete' && event.key !== 'Backspace') {
-        return;
-      }
       const target = event.target;
       if (target instanceof HTMLElement) {
         const tag = target.tagName;
         if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) {
           return;
         }
+      }
+      const command = event.ctrlKey || event.metaKey;
+      if (command && (event.key === 'c' || event.key === 'C')) {
+        if (!selectedControl) {
+          return;
+        }
+        event.preventDefault();
+        clipboardRef.current = structuredClone(selectedControl);
+        return;
+      }
+      if (command && (event.key === 'v' || event.key === 'V')) {
+        if (handlePaste()) {
+          event.preventDefault();
+        }
+        return;
+      }
+      if (event.key !== 'Delete' && event.key !== 'Backspace') {
+        return;
       }
       if (selection.kind !== 'control') {
         return;
@@ -419,11 +513,13 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
         variables: {
           input: {
             publicId: projectPublicId,
-            virtualConsole: cloneVirtualConsoleDocument(draft) as VirtualConsoleInput,
+            virtualConsole: virtualConsoleDocumentToInput(draft),
           },
         },
       });
       setEdits(null);
+      clearVirtualConsoleDraft(projectPublicId);
+      notifyVirtualConsoleSaved(projectPublicId);
       notifications.show({
         color: 'green',
         title: t(globalMessages.success),
@@ -441,42 +537,56 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
   };
 
   const handlePopOut = () => {
+    publishVirtualConsoleDraft(projectPublicId, draft);
     const locale = params.locale ?? 'de';
     window.open(`/${locale}/project/${projectPublicId}/console/popout`, 'virtual-console', 'noopener,noreferrer');
   };
 
-  const applySplitFromClientX = (clientX: number) => {
+  const showChannelSidebar = selectedControl?.type === 'button' || selectedControl?.type === 'slider';
+
+  const applyPaneWidth = (pane: VirtualConsoleSplitPane, clientX: number) => {
     const split = splitRef.current;
     if (!split) {
       return;
     }
     const rect = split.getBoundingClientRect();
-    if (rect.width <= SPLITTER_PX) {
+    const other = pane === 'sidebar' ? (showChannelSidebar ? channelWidth : 0) : sidebarWidth;
+    const splitters = (showChannelSidebar ? 2 : 1) * SPLITTER_PX;
+    const max = Math.max(MIN_PANE_PX, rect.width - other - splitters - MIN_CANVAS_PX);
+    const next = pane === 'sidebar' ? rect.right - clientX : rect.right - clientX - sidebarWidth - SPLITTER_PX;
+    const width = clamp(next, MIN_PANE_PX, max);
+    if (pane === 'sidebar') {
+      setSidebarWidth(width);
       return;
     }
-    const ratio = clamp((clientX - rect.left) / rect.width, MIN_PANE_RATIO, 1 - MIN_PANE_RATIO);
-    setPagesFr(ratio * SPLIT_TOTAL_FR);
-    setSidebarFr((1 - ratio) * SPLIT_TOTAL_FR);
+    setChannelWidth(width);
   };
+
+  const paneFromEvent = (event: { currentTarget: EventTarget | null }): VirtualConsoleSplitPane =>
+    event.currentTarget instanceof HTMLElement && event.currentTarget.dataset.pane === 'channel'
+      ? 'channel'
+      : 'sidebar';
 
   const handleSplitterPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
-    splitDraggingRef.current = true;
+    const pane = paneFromEvent(event);
+    splitDraggingRef.current = pane;
     if (typeof event.currentTarget.setPointerCapture === 'function') {
       event.currentTarget.setPointerCapture(event.pointerId);
     }
-    applySplitFromClientX(event.clientX);
+    applyPaneWidth(pane, event.clientX);
   };
 
   const handleSplitterPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (!splitDraggingRef.current) {
+    const pane = paneFromEvent(event);
+    if (splitDraggingRef.current !== pane) {
       return;
     }
-    applySplitFromClientX(event.clientX);
+    applyPaneWidth(pane, event.clientX);
   };
 
   const handleSplitterPointerUp = () => {
-    splitDraggingRef.current = false;
+    splitDraggingRef.current = null;
   };
 
   const handleSplitterKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -488,9 +598,12 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     if (!split) {
       return;
     }
+    const pane = paneFromEvent(event);
     const rect = split.getBoundingClientRect();
     const delta = event.key === 'ArrowLeft' ? -16 : 16;
-    applySplitFromClientX(rect.left + (pagesFr / SPLIT_TOTAL_FR) * rect.width + delta);
+    const currentX =
+      pane === 'sidebar' ? rect.right - sidebarWidth : rect.right - sidebarWidth - SPLITTER_PX - channelWidth;
+    applyPaneWidth(pane, currentX + delta);
   };
 
   if (loading && !data) {
@@ -570,6 +683,16 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
           data-drop-target={canvasIsDropTarget ? 'true' : undefined}
           data-testid="virtual-console-canvas"
           style={{ height: draft.height, minHeight: '100%', minWidth: '100%', width: draft.width }}
+          onPointerMove={event => {
+            if (!canvasRef.current) {
+              return;
+            }
+            const bounds = canvasRef.current.getBoundingClientRect();
+            pastePointerRef.current = {
+              x: event.clientX - bounds.left,
+              y: event.clientY - bounds.top,
+            };
+          }}
           onClick={() => {
             if (mode === 'edit') {
               setSelection({ kind: 'canvas' });
@@ -606,6 +729,12 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
                 setSelection({ kind: 'control', controlId: id });
               }}
               onMovePointerDown={handleMovePointerDown}
+              onPlayValue={(control, rawValue) => {
+                if (mode !== 'play') {
+                  return;
+                }
+                publishVirtualConsoleValue(control, rawValue, data?.project?.projectFixtures ?? []);
+              }}
               onResizePointerDown={handleResizePointerDown}
             />
           ) : null}
@@ -613,6 +742,15 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       </div>
     </div>
   );
+
+  const channelControl =
+    selectedControl?.type === 'button' || selectedControl?.type === 'slider' ? selectedControl : undefined;
+  const patchSelectedControl = (patch: Partial<VirtualConsoleControl>) => {
+    if (!activePage || selection.kind !== 'control') {
+      return;
+    }
+    patchActivePageControls(updateControlInTree(activePage.controls, selection.controlId, patch));
+  };
 
   return (
     <Box
@@ -630,16 +768,48 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
           ref={splitRef}
           className={classes.split}
           data-testid="virtual-console-split"
-          style={{ gridTemplateColumns: `${pagesFr}fr ${SPLITTER_PX}px ${sidebarFr}fr` }}
+          style={{
+            gridTemplateColumns: channelControl
+              ? `minmax(0, 1fr) ${SPLITTER_PX}px ${channelWidth}px ${SPLITTER_PX}px ${sidebarWidth}px`
+              : `minmax(0, 1fr) ${SPLITTER_PX}px ${sidebarWidth}px`,
+          }}
         >
           {pagesPane}
+          {channelControl ? (
+            <div
+              aria-label={t({
+                id: 'ProjectDetail.virtualConsole.resizeChannelSidebar',
+                defaultMessage: 'Resize channel sidebar',
+              })}
+              aria-orientation="vertical"
+              aria-valuemax={2000}
+              aria-valuemin={MIN_PANE_PX}
+              aria-valuenow={channelWidth}
+              className={classes.splitter}
+              data-pane="channel"
+              role="separator"
+              tabIndex={0}
+              onKeyDown={handleSplitterKeyDown}
+              onPointerDown={handleSplitterPointerDown}
+              onPointerMove={handleSplitterPointerMove}
+              onPointerUp={handleSplitterPointerUp}
+            />
+          ) : null}
+          {channelControl ? (
+            <VirtualConsoleChannelSidebar
+              control={channelControl}
+              fixtures={data?.project?.projectFixtures ?? []}
+              onPatch={patchSelectedControl}
+            />
+          ) : null}
           <div
             aria-label={t({ id: 'ProjectDetail.virtualConsole.resizePanels', defaultMessage: 'Resize panels' })}
             aria-orientation="vertical"
-            aria-valuemax={80}
-            aria-valuemin={20}
-            aria-valuenow={Math.round((pagesFr / SPLIT_TOTAL_FR) * 100)}
+            aria-valuemax={2000}
+            aria-valuemin={MIN_PANE_PX}
+            aria-valuenow={sidebarWidth}
             className={classes.splitter}
+            data-pane="sidebar"
             role="separator"
             tabIndex={0}
             onKeyDown={handleSplitterKeyDown}
@@ -657,12 +827,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
             onCanvasSizeChange={(field, value) => {
               setDraft(current => ({ ...current, [field]: value }));
             }}
-            onControlPatch={patch => {
-              if (!activePage || selection.kind !== 'control') {
-                return;
-              }
-              patchActivePageControls(updateControlInTree(activePage.controls, selection.controlId, patch));
-            }}
+            onControlPatch={patchSelectedControl}
             onDeleteControl={handleDeleteControl}
             onPageNameChange={name => {
               if (!selectedPage) {

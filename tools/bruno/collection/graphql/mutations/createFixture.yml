@@ -11,6 +11,7 @@ graphql:
     query: |
       mutation($input: CreateFixtureInput!) {
         createFixture(input: $input) {
+          beamAngle
           createdAt
           fixtureChannelDefinitions {
             createdAt
@@ -88,6 +89,7 @@ graphql:
     variables: |
       {
         "input": {
+          "beamAngle": null,
           "channelDefinitions": [],
           "channelModes": [],
           "height": null,

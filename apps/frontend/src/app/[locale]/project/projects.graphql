@@ -26,6 +26,14 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
   fontSize
   fontWeight
   valueType
+  lowerLimit
+  upperLimit
+  channelBindings {
+    projectFixturePublicId
+    channelAssignmentPublicId
+    channelNumber
+    channelDefinitionPublicId
+  }
 }
 
 fragment VirtualConsoleFields on VirtualConsoleDto {
@@ -71,6 +79,7 @@ fragment ProjectFixtureFields on ProjectFixtureDto {
     publicId
     name
     model3dPath
+    beamAngle
     fixtureVendor {
       publicId
       name
@@ -80,9 +89,16 @@ fragment ProjectFixtureFields on ProjectFixtureDto {
     publicId
     name
     fixtureChannelAssignments {
+      publicId
       channelNumber
       fixtureChannelDefinition {
+        name
         preset
+        fixtureChannelRanges {
+          dmxStart
+          dmxEnd
+          description
+        }
       }
     }
   }
@@ -232,6 +248,11 @@ query ExportProjects {
         transform
         createdAt
         updatedAt
+        channelAssignments {
+          publicId
+          channelNumber
+          channelDefinitionPublicId
+        }
       }
       project3dObjects {
         publicId
