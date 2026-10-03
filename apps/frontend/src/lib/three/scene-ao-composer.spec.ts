@@ -55,6 +55,9 @@ vi.mock('three/examples/jsm/postprocessing/GTAOPass.js', () => {
 
     public output = GTAOPass.OUTPUT.Off;
     public blendIntensity = 1;
+    public depthTexture = { name: 'gtao-depth' };
+    public width = 512;
+    public height = 512;
     public updateGtaoMaterial = updateGtaoMaterial;
     public updatePdMaterial = updatePdMaterial;
     public dispose = gtaoDispose;
@@ -114,6 +117,12 @@ describe('createSceneAoComposer', () => {
     expect(addPass.mock.calls[3]?.[0]).toEqual(expect.objectContaining({ kind: 'output' }));
     expect(updateGtaoMaterial).toHaveBeenCalledWith(SCENE_GTAO_PARAMETERS);
     expect(updatePdMaterial).toHaveBeenCalledWith(SCENE_GTAO_DENOISE_PARAMETERS);
+    const gtaoPass = addPass.mock.calls[1]?.[0] as { depthTexture: unknown; width: number; height: number };
+    expect(composer.getSceneDepth()).toEqual({
+      texture: gtaoPass.depthTexture,
+      width: 512,
+      height: 512,
+    });
 
     composer.setSize(800, 600);
     composer.render();

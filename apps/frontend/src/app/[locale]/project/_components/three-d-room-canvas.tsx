@@ -10,17 +10,29 @@ import { fixtureBeamColor, type FixtureBeamInput } from '@/lib/fixtures/fixture-
 import { roomGltfUrl, sceneAssetUrl } from '@/lib/graphql/graphql-api-origin';
 import {
   applyFixtureBeamAppearance,
+  clipFixtureBeamToScene,
   createFixtureBeamCone,
   DEFAULT_BEAM_ANGLE_DEG,
   disposeFixtureBeamCone,
   replaceFixtureBeamConeGeometry,
+  syncFixtureBeamRoomBounds,
   updateFixtureBeamStrobe,
 } from '@/lib/three/fixture-beam-cone';
 import { applyMeshShadowFlags } from '@/lib/three/mesh-shadow-flags';
 import ThreeCanvas, { type ThreeCanvasContext } from '@/lib/three/three-canvas';
 import { ProjectEnvironmentType, SceneObjectGeometryKind } from '@/shared/types/graphql/graphql';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { BoxGeometry, Group, Mesh, MeshStandardMaterial, type Object3D, Raycaster, Scene, Vector2 } from 'three';
+import {
+  BoxGeometry,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+  type Object3D,
+  Raycaster,
+  Scene,
+  Vector2,
+  Vector3,
+} from 'three';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { applyRoomDimensions, applySimpleGroundDimensions } from './room-layout';
@@ -203,6 +215,10 @@ const ThreeDRoomCanvas = ({
   const onObjectCommitRef = useRef(onObjectCommit);
   const onFixtureCommitRef = useRef(onFixtureCommit);
   const dimensionsRef = useRef({ roomWidth, roomLength, roomHeight });
+  const environmentTypeRef = useRef(environmentType);
+  const roomBoundsMin = useRef(new Vector3());
+  const roomBoundsMax = useRef(new Vector3());
+  environmentTypeRef.current = environmentType;
   const frameObjectRef = useRef<ThreeCanvasContext['frameObject'] | null>(null);
 
   useEffect(() => {
@@ -687,9 +703,23 @@ const ThreeDRoomCanvas = ({
   }, [selectedObjectIds, selectedFixtureIds, scaleGizmoEnabled, poseGizmoMode, objects, fixtures]);
 
   const onFrame = useCallback((timeSec: number) => {
+    const scene = sceneRef.current;
+    if (scene) {
+      if (environmentTypeRef.current === ProjectEnvironmentType.Room) {
+        const { roomWidth: width, roomLength: length, roomHeight: height } = dimensionsRef.current;
+        roomBoundsMin.current.set(-width / 2, 0, -length / 2);
+        roomBoundsMax.current.set(width / 2, height, length / 2);
+        syncFixtureBeamRoomBounds(scene, roomBoundsMin.current, roomBoundsMax.current);
+      } else {
+        syncFixtureBeamRoomBounds(scene, null, null);
+      }
+    }
     for (const root of instancesRef.current.values()) {
       const beam = beamMesh(root);
       if (beam) {
+        if (scene) {
+          clipFixtureBeamToScene(beam, scene);
+        }
         updateFixtureBeamStrobe(beam, timeSec);
       }
     }

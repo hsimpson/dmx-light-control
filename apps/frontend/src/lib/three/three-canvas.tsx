@@ -7,6 +7,7 @@ import {
   Color,
   DirectionalLight,
   HemisphereLight,
+  MeshBasicMaterial,
   type Object3D,
   PCFShadowMap,
   PerspectiveCamera,
@@ -18,7 +19,7 @@ import {
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { createAxisOrientationGizmo } from './axis-orientation-gizmo';
-import { FIXTURE_BEAM_LAYER } from './fixture-beam-cone';
+import { FIXTURE_BEAM_LAYER, syncFixtureBeamSceneDepth } from './fixture-beam-cone';
 import { frameCameraOnObject } from './frame-camera';
 import { orbitPanSpeedForDistance, applyLinearOrbitDolly } from './orbit-pan-speed';
 import { createSceneAoComposer } from './scene-ao-composer';
@@ -131,6 +132,11 @@ const ThreeCanvas = ({
 
     const orientationGizmo = showOrientationGizmo ? createAxisOrientationGizmo() : undefined;
     const aoComposer = createSceneAoComposer(renderer, scene, camera);
+    const depthPrepassMaterial = new MeshBasicMaterial({
+      colorWrite: false,
+      depthWrite: true,
+      depthTest: true,
+    });
 
     const resize = () => {
       const width = host.clientWidth;
@@ -150,17 +156,32 @@ const ThreeCanvas = ({
       controls.update();
       onFrameRef.current?.(time / 1000);
       aoComposer.render();
+      const sceneDepth = aoComposer.getSceneDepth();
+      syncFixtureBeamSceneDepth(
+        scene,
+        sceneDepth.texture,
+        sceneDepth.width,
+        sceneDepth.height,
+        camera.near,
+        camera.far,
+      );
       const previousAutoClear = renderer.autoClear;
       const previousLayerMask = camera.layers.mask;
       const previousBackground = scene.background;
       renderer.autoClear = false;
       // A Color background forces a clear even when autoClear is false, which would erase the composer frame.
       scene.background = null;
-      camera.layers.set(FIXTURE_BEAM_LAYER);
       try {
+        // Depth of the room only. Beams then reject themselves when their front is behind that surface.
         renderer.clearDepth();
+        camera.layers.disable(FIXTURE_BEAM_LAYER);
+        scene.overrideMaterial = depthPrepassMaterial;
+        renderer.render(scene, camera);
+        scene.overrideMaterial = null;
+        camera.layers.set(FIXTURE_BEAM_LAYER);
         renderer.render(scene, camera);
       } finally {
+        scene.overrideMaterial = null;
         scene.background = previousBackground;
         camera.layers.mask = previousLayerMask;
         renderer.autoClear = previousAutoClear;
@@ -181,6 +202,7 @@ const ThreeCanvas = ({
       renderer.setAnimationLoop(null);
       controls.dispose();
       aoComposer.dispose();
+      depthPrepassMaterial.dispose();
       environmentMap.dispose();
       pmrem.dispose();
       renderer.dispose();

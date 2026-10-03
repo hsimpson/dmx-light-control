@@ -278,6 +278,30 @@ vi.mock('three', () => {
         return undefined;
       }
     },
+    ShaderMaterial: class {
+      public color = {
+        setRGB() {
+          return undefined;
+        },
+      };
+      public uniforms: Record<string, { value: unknown }> = {};
+      public userData: Record<string, unknown> = {};
+      public constructor(parameters?: { uniforms?: Record<string, { value: unknown }> }) {
+        this.uniforms = parameters?.uniforms ?? {};
+      }
+      public dispose() {
+        return undefined;
+      }
+    },
+    Matrix4: class {
+      public copy() {
+        return this;
+      }
+      public invert() {
+        return this;
+      }
+    },
+    BackSide: 1,
     CylinderGeometry: class {
       public dispose() {
         return undefined;

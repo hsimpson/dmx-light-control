@@ -34,10 +34,12 @@ const createAxisOrientationGizmo = vi.fn(() => ({
 const aoRender = vi.fn();
 const aoSetSize = vi.fn();
 const aoDispose = vi.fn();
+const aoSceneDepth = vi.fn(() => ({ texture: { name: 'scene-depth' }, width: 640, height: 480 }));
 const createSceneAoComposer = vi.fn(() => ({
   render: aoRender,
   setSize: aoSetSize,
   dispose: aoDispose,
+  getSceneDepth: aoSceneDepth,
 }));
 
 vi.mock('./axis-orientation-gizmo', () => ({
@@ -80,12 +82,37 @@ vi.mock('three', async importOriginal => {
       public clearDepth() {
         rendererClearDepth();
       }
+      public getRenderTarget() {
+        return null;
+      }
+      public setRenderTarget() {
+        return undefined;
+      }
+      public getClearColor(target: { set: (color: number) => unknown }) {
+        return target.set(0x000000);
+      }
+      public getClearAlpha() {
+        return 1;
+      }
+      public setClearColor() {
+        return undefined;
+      }
       public getSize(target: { set: (width: number, height: number) => unknown }) {
         rendererGetSize();
         return target.set(640, 480);
       }
+      public getDrawingBufferSize(target: { set: (width: number, height: number) => unknown }) {
+        return target.set(640, 480);
+      }
       public getPixelRatio() {
         return 1;
+      }
+      public getContext() {
+        return {
+          getExtension() {
+            return null;
+          },
+        };
       }
       public setViewport(x: number, y: number, width: number, height: number) {
         rendererSetViewport(x, y, width, height);
@@ -167,6 +194,7 @@ describe('ThreeCanvas', () => {
     aoRender.mockClear();
     aoSetSize.mockClear();
     aoDispose.mockClear();
+    aoSceneDepth.mockClear();
     createSceneAoComposer.mockClear();
     vi.stubGlobal('ResizeObserver', ResizeObserverMock);
   });
@@ -229,9 +257,10 @@ describe('ThreeCanvas', () => {
     loop?.();
 
     expect(aoRender).toHaveBeenCalled();
+    expect(rendererRender).toHaveBeenCalled();
     expect(gizmoUpdateFrom).toHaveBeenCalled();
     expect(gizmoRender).toHaveBeenCalled();
-    expect(gizmoRender.mock.invocationCallOrder[0]).toBeGreaterThan(aoRender.mock.invocationCallOrder[0] ?? 0);
+    expect(gizmoRender.mock.invocationCallOrder[0]).toBeGreaterThan(rendererRender.mock.invocationCallOrder[0] ?? 0);
 
     unmount();
 

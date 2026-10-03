@@ -1,4 +1,11 @@
-import { type Camera, HalfFloatType, type Scene, type WebGLRenderer, WebGLRenderTarget } from 'three';
+import {
+  type Camera,
+  type DepthTexture,
+  HalfFloatType,
+  type Scene,
+  type WebGLRenderer,
+  WebGLRenderTarget,
+} from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { GTAOPass } from 'three/examples/jsm/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
@@ -29,10 +36,18 @@ export const SCENE_GTAO_DENOISE_PARAMETERS = {
   samples: 16,
 } as const;
 
+export type SceneDepthTarget = {
+  texture: DepthTexture;
+  width: number;
+  height: number;
+};
+
 export type SceneAoComposer = {
   render: () => void;
   setSize: (width: number, height: number) => void;
   dispose: () => void;
+  /** Scene depth from the GTAO g-buffer. Same projection as the beauty camera, raw window depth. */
+  getSceneDepth: () => SceneDepthTarget;
 };
 
 export const createSceneAoComposer = (renderer: WebGLRenderer, scene: Scene, camera: Camera): SceneAoComposer => {
@@ -69,5 +84,10 @@ export const createSceneAoComposer = (renderer: WebGLRenderer, scene: Scene, cam
       outputPass.dispose();
       composer.dispose();
     },
+    getSceneDepth: () => ({
+      texture: gtaoPass.depthTexture,
+      width: gtaoPass.width,
+      height: gtaoPass.height,
+    }),
   };
 };
