@@ -3,6 +3,7 @@ import {
   BackSide,
   Box3,
   BoxGeometry,
+  CylinderGeometry,
   Group,
   Mesh,
   MeshBasicMaterial,

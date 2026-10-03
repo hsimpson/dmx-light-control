@@ -118,6 +118,12 @@ vi.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
     public update() {
       return undefined;
     }
+    public addEventListener() {
+      return undefined;
+    }
+    public removeEventListener() {
+      return undefined;
+    }
     public dispose() {
       return undefined;
     }

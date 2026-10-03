@@ -31,6 +31,8 @@ export type ThreeCanvasContext = {
   renderer: WebGLRenderer;
   controls: OrbitControls;
   frameObject: (object: Object3D) => void;
+  /** Draw again after a scene-graph change. Calls in the same frame collapse into one draw. */
+  invalidate: () => void;
 };
 
 const KEY_SHADOW_MAP_SIZE = 2048;
@@ -40,13 +42,16 @@ const KEY_SHADOW_CAMERA_FAR_M = 50;
 const KEY_SHADOW_BIAS = -0.0002;
 const KEY_SHADOW_NORMAL_BIAS_M = 0.04;
 const KEY_SHADOW_RADIUS = 4;
+const MAX_FRAME_RATE = 60;
+const MIN_FRAME_INTERVAL_MS = 1000 / MAX_FRAME_RATE;
 
 export type ThreeCanvasProperties = {
   className?: string;
   style?: CSSProperties;
   testId?: string;
   showOrientationGizmo?: boolean;
-  onFrame?: (timeSec: number) => void;
+  /** Return true while something in the scene is still changing (for example a strobe). */
+  onFrame?: (timeSec: number) => boolean | undefined;
   onReady: (ctx: ThreeCanvasContext) => (() => void) | undefined;
 };
 
@@ -117,8 +122,91 @@ const ThreeCanvas = ({
     controls.enableDamping = true;
     applyLinearOrbitDolly(controls);
 
+    const orientationGizmo = showOrientationGizmo ? createAxisOrientationGizmo() : undefined;
+    const aoComposer = createSceneAoComposer(renderer, scene, camera);
+    const depthPrepassMaterial = new MeshBasicMaterial({
+      colorWrite: false,
+      depthWrite: true,
+      depthTest: true,
+    });
+
+    let loopInstalled = false;
+    let renderQueued = false;
+    let lastFrameTimeMs = Number.NEGATIVE_INFINITY;
+    const requestRender = () => {
+      renderQueued = true;
+      if (loopInstalled) {
+        return;
+      }
+      loopInstalled = true;
+      renderer.setAnimationLoop(time => {
+        // setAnimationLoop schedules the next tick before this callback. Drop that tick once idle
+        // so a static scene does not keep running the shadow map and AO composer.
+        if (!renderQueued) {
+          loopInstalled = false;
+          renderer.setAnimationLoop(null);
+          return;
+        }
+        // Display refresh can be faster than 60 Hz. Skip the shadow map and AO until a 60 FPS slot.
+        if (time - lastFrameTimeMs < MIN_FRAME_INTERVAL_MS) {
+          return;
+        }
+        lastFrameTimeMs = time;
+        renderQueued = false;
+        controls.panSpeed = orbitPanSpeedForDistance(camera.position.distanceTo(controls.target));
+        const controlsMoving = controls.update();
+        const keepAnimating = onFrameRef.current?.(time / 1000) === true;
+        aoComposer.render();
+        const sceneDepth = aoComposer.getSceneDepth();
+        syncFixtureBeamSceneDepth(
+          scene,
+          sceneDepth.texture,
+          sceneDepth.width,
+          sceneDepth.height,
+          camera.near,
+          camera.far,
+        );
+        const previousAutoClear = renderer.autoClear;
+        const previousLayerMask = camera.layers.mask;
+        const previousBackground = scene.background;
+        renderer.autoClear = false;
+        // A Color background forces a clear even when autoClear is false, which would erase the composer frame.
+        scene.background = null;
+        try {
+          // Depth of the room only. Beams then reject themselves when their front is behind that surface.
+          renderer.clearDepth();
+          camera.layers.disable(FIXTURE_BEAM_LAYER);
+          scene.overrideMaterial = depthPrepassMaterial;
+          renderer.render(scene, camera);
+          scene.overrideMaterial = null;
+          camera.layers.set(FIXTURE_BEAM_LAYER);
+          renderer.render(scene, camera);
+        } finally {
+          scene.overrideMaterial = null;
+          scene.background = previousBackground;
+          camera.layers.mask = previousLayerMask;
+          renderer.autoClear = previousAutoClear;
+        }
+        if (orientationGizmo) {
+          const gizmoAutoClear = renderer.autoClear;
+          renderer.autoClear = false;
+          orientationGizmo.updateFrom(camera);
+          orientationGizmo.render(renderer, host.clientWidth, Math.max(host.clientHeight, 1));
+          renderer.autoClear = gizmoAutoClear;
+        }
+        if (controlsMoving || keepAnimating) {
+          renderQueued = true;
+        }
+        if (!renderQueued) {
+          loopInstalled = false;
+          renderer.setAnimationLoop(null);
+        }
+      });
+    };
+
     const frameObject = (object: Object3D) => {
       frameCameraOnObject(camera, controls, object);
+      requestRender();
     };
 
     const extraCleanup = onReady({
@@ -128,14 +216,7 @@ const ThreeCanvas = ({
       renderer,
       controls,
       frameObject,
-    });
-
-    const orientationGizmo = showOrientationGizmo ? createAxisOrientationGizmo() : undefined;
-    const aoComposer = createSceneAoComposer(renderer, scene, camera);
-    const depthPrepassMaterial = new MeshBasicMaterial({
-      colorWrite: false,
-      depthWrite: true,
-      depthTest: true,
+      invalidate: requestRender,
     });
 
     const resize = () => {
@@ -145,60 +226,19 @@ const ThreeCanvas = ({
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
       aoComposer.setSize(width, height);
+      requestRender();
     };
 
+    controls.addEventListener('change', requestRender);
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(host);
     resize();
-
-    renderer.setAnimationLoop(time => {
-      controls.panSpeed = orbitPanSpeedForDistance(camera.position.distanceTo(controls.target));
-      controls.update();
-      onFrameRef.current?.(time / 1000);
-      aoComposer.render();
-      const sceneDepth = aoComposer.getSceneDepth();
-      syncFixtureBeamSceneDepth(
-        scene,
-        sceneDepth.texture,
-        sceneDepth.width,
-        sceneDepth.height,
-        camera.near,
-        camera.far,
-      );
-      const previousAutoClear = renderer.autoClear;
-      const previousLayerMask = camera.layers.mask;
-      const previousBackground = scene.background;
-      renderer.autoClear = false;
-      // A Color background forces a clear even when autoClear is false, which would erase the composer frame.
-      scene.background = null;
-      try {
-        // Depth of the room only. Beams then reject themselves when their front is behind that surface.
-        renderer.clearDepth();
-        camera.layers.disable(FIXTURE_BEAM_LAYER);
-        scene.overrideMaterial = depthPrepassMaterial;
-        renderer.render(scene, camera);
-        scene.overrideMaterial = null;
-        camera.layers.set(FIXTURE_BEAM_LAYER);
-        renderer.render(scene, camera);
-      } finally {
-        scene.overrideMaterial = null;
-        scene.background = previousBackground;
-        camera.layers.mask = previousLayerMask;
-        renderer.autoClear = previousAutoClear;
-      }
-      if (orientationGizmo) {
-        const gizmoAutoClear = renderer.autoClear;
-        renderer.autoClear = false;
-        orientationGizmo.updateFrom(camera);
-        orientationGizmo.render(renderer, host.clientWidth, Math.max(host.clientHeight, 1));
-        renderer.autoClear = gizmoAutoClear;
-      }
-    });
 
     return () => {
       extraCleanup?.();
       orientationGizmo?.dispose();
       resizeObserver.disconnect();
+      controls.removeEventListener('change', requestRender);
       renderer.setAnimationLoop(null);
       controls.dispose();
       aoComposer.dispose();

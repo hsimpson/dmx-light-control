@@ -113,6 +113,9 @@ vi.mock('three', () => {
     public getObjectByName() {
       return this;
     }
+    public traverse() {
+      return undefined;
+    }
   }
 
   class PerspectiveCamera {
@@ -231,6 +234,33 @@ vi.mock('three', () => {
       public copy(other: { x: number; y: number; z: number }) {
         return this.set(other.x, other.y, other.z);
       }
+      public setFromMatrixColumn(matrix: { elements?: number[] }, index: number) {
+        const elements = matrix.elements;
+        if (!elements) {
+          return this.set(1, 0, 0);
+        }
+        const offset = index * 4;
+        return this.set(elements[offset] ?? 1, elements[offset + 1] ?? 0, elements[offset + 2] ?? 0);
+      }
+      public lengthSq() {
+        return this.x * this.x + this.y * this.y + this.z * this.z;
+      }
+      public normalize() {
+        const length = Math.sqrt(this.lengthSq());
+        if (length < 1e-8) {
+          return this.set(1, 0, 0);
+        }
+        return this.set(this.x / length, this.y / length, this.z / length);
+      }
+      public dot(other: { x: number; y: number; z: number }) {
+        return this.x * other.x + this.y * other.y + this.z * other.z;
+      }
+      public sub(other: { x: number; y: number; z: number }) {
+        return this.set(this.x - other.x, this.y - other.y, this.z - other.z);
+      }
+      public addScaledVector(other: { x: number; y: number; z: number }, scale: number) {
+        return this.set(this.x + other.x * scale, this.y + other.y * scale, this.z + other.z * scale);
+      }
       public distanceToSquared() {
         return Number.POSITIVE_INFINITY;
       }
@@ -323,6 +353,9 @@ vi.mock('three', () => {
       public userData: Record<string, unknown> = {};
       public children: unknown[] = [];
       public parent: unknown = null;
+      public matrixWorld = {
+        elements: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      };
       public position = new Position();
       public quaternion = {
         identity() {
@@ -490,6 +523,12 @@ vi.mock('three/examples/jsm/controls/OrbitControls.js', () => ({
     public maxDistance = 0;
     public enableDamping = false;
     public update() {
+      return undefined;
+    }
+    public addEventListener() {
+      return undefined;
+    }
+    public removeEventListener() {
       return undefined;
     }
     public dispose() {
@@ -978,6 +1017,9 @@ describe('ThreeDRoomCanvas', () => {
     };
     onLoad?.({
       scene: {
+        matrixWorld: {
+          elements: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        },
         traverse() {
           return undefined;
         },

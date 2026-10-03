@@ -234,6 +234,20 @@ type FixtureBeamUniforms = {
 
 type FixtureBeamMaterial = ShaderMaterial & { color: Color; uniforms: FixtureBeamUniforms };
 
+type FixtureBeamMeshUserData = {
+  isBeam: boolean;
+  beamLit: boolean;
+  strobeHz: number;
+  beamAngleDeg: number;
+  beamLengthM: number;
+  beamSourceRadiusM: number;
+  beamOriginOffset: Vector3;
+};
+
+function fixtureBeamMeshUserData(mesh: Mesh): FixtureBeamMeshUserData {
+  return mesh.userData as FixtureBeamMeshUserData;
+}
+
 function createFixtureBeamMaterial(beamAngleDeg: number): FixtureBeamMaterial {
   const color = new Color(0xffffff);
   const inverseModelMatrix = new Matrix4();
@@ -310,17 +324,18 @@ export function replaceFixtureBeamConeGeometry(mesh: Mesh, beamAngleDeg: number)
 }
 
 function beamLengthM(mesh: Mesh): number {
-  const length = mesh.userData.beamLengthM;
-  return typeof length === 'number' && Number.isFinite(length) ? length : BEAM_LENGTH_M;
+  const length = fixtureBeamMeshUserData(mesh).beamLengthM;
+  return Number.isFinite(length) ? length : BEAM_LENGTH_M;
 }
 
 function storedBeamAngleDeg(mesh: Mesh): number {
-  return typeof mesh.userData.beamAngleDeg === 'number' ? mesh.userData.beamAngleDeg : DEFAULT_BEAM_ANGLE_DEG;
+  const angleDeg = fixtureBeamMeshUserData(mesh).beamAngleDeg;
+  return typeof angleDeg === 'number' ? angleDeg : DEFAULT_BEAM_ANGLE_DEG;
 }
 
 function beamSourceRadiusM(mesh: Mesh): number {
-  const radius = mesh.userData.beamSourceRadiusM;
-  return typeof radius === 'number' && Number.isFinite(radius) ? Math.max(0, radius) : DEFAULT_BEAM_SOURCE_RADIUS_M;
+  const radius = fixtureBeamMeshUserData(mesh).beamSourceRadiusM;
+  return Number.isFinite(radius) ? Math.max(0, radius) : DEFAULT_BEAM_SOURCE_RADIUS_M;
 }
 
 function syncBeamShapeUniforms(mesh: Mesh): void {
@@ -382,16 +397,13 @@ const lensBox = new Box3();
 /** Radius of the lens cluster around the beam origin, in the plane perpendicular to +X. */
 export function measureFixtureBeamSourceRadius(model: Object3D, originWorld: Vector3): number {
   const axis = new Vector3(1, 0, 0);
-  if (model.matrixWorld) {
-    axis.setFromMatrixColumn(model.matrixWorld, 0);
-    if (axis.lengthSq() < 1e-8) {
-      axis.set(1, 0, 0);
-    } else {
-      axis.normalize();
-    }
+  axis.setFromMatrixColumn(model.matrixWorld, 0);
+  if (axis.lengthSq() < 1e-8) {
+    axis.set(1, 0, 0);
+  } else {
+    axis.normalize();
   }
   let maxRadial = 0;
-  let found = false;
   model.traverse(object => {
     if (!/lens/i.test(object.name) || !isMeshObject(object)) {
       return;
@@ -400,7 +412,6 @@ export function measureFixtureBeamSourceRadius(model: Object3D, originWorld: Vec
     if (lensBox.isEmpty()) {
       return;
     }
-    found = true;
     const { min, max } = lensBox;
     for (const x of [min.x, max.x]) {
       for (const y of [min.y, max.y]) {
@@ -414,7 +425,7 @@ export function measureFixtureBeamSourceRadius(model: Object3D, originWorld: Vec
       }
     }
   });
-  return found ? maxRadial : DEFAULT_BEAM_SOURCE_RADIUS_M;
+  return maxRadial > 0 ? maxRadial : DEFAULT_BEAM_SOURCE_RADIUS_M;
 }
 
 const isMeshObject = (object: Object3D): object is Mesh => 'isMesh' in object && object.isMesh === true;
@@ -503,11 +514,10 @@ export function clipFixtureBeamToScene(mesh: Mesh, scene: Object3D): void {
   beamDirection.normalize();
   let length = BEAM_LENGTH_M;
   scene.traverse(object => {
-    const candidate = object as Mesh;
-    if (candidate.isMesh !== true || !acceptsBeamOcclusion(candidate, root)) {
+    if (!isMeshObject(object) || !acceptsBeamOcclusion(object, root)) {
       return;
     }
-    const distance = occluderDistance(candidate, beamOrigin, beamDirection);
+    const distance = occluderDistance(object, beamOrigin, beamDirection);
     if (distance !== undefined && distance < length) {
       length = Math.max(MIN_BEAM_LENGTH_M, distance - BEAM_SURFACE_GAP_M);
     }
