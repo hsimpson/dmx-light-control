@@ -50,6 +50,11 @@ describe('project-fixture.validation', () => {
     }).not.toThrow();
   });
 
+  it('dmxRangesOverlap is false when either footprint is empty', () => {
+    expect(dmxRangesOverlap(1, 0, 1, 3)).toBe(false);
+    expect(dmxRangesOverlap(1, 3, 1, 0)).toBe(false);
+  });
+
   it('dmxRangesOverlap is false for adjacent footprints', () => {
     expect(dmxRangesOverlap(1, 3, 4, 3)).toBe(false);
   });

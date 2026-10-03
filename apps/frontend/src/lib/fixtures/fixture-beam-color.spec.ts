@@ -221,6 +221,49 @@ describe('fixtureBeamColor', () => {
     expect(fixtureBeamColor(patched, channels({ 1: 255, 2: 255, 3: 255 }))).toMatchObject({ r: 0, g: 0, b: 1 });
   });
 
+  it('treats a missing, non-finite, or out-of-universe channel as zero', () => {
+    const patched = fixture([assignment(1, FixtureChannelPreset.IntensityRed)]);
+    const sparse = [] as number[];
+    sparse[0] = Number.NaN;
+    expect(fixtureBeamColor(patched, sparse)).toMatchObject({ r: 0, g: 0, b: 0 });
+
+    const outOfUniverse = fixture([assignment(2, FixtureChannelPreset.IntensityRed)], 512);
+    expect(fixtureBeamColor(outOfUniverse, channels({ 512: 255 }))).toMatchObject({ r: 0, g: 0, b: 0 });
+  });
+
+  it('keeps white when a color macro value falls outside every range', () => {
+    const patched = fixture([
+      assignment(1, FixtureChannelPreset.IntensityDimmer),
+      assignment(2, FixtureChannelPreset.ColorMacro, [{ dmxStart: 10, dmxEnd: 20, description: 'Red' }]),
+    ]);
+    expect(fixtureBeamColor(patched, channels({ 1: 255, 2: 0 }))).toMatchObject({ r: 1, g: 1, b: 1 });
+  });
+
+  it('opens a shutter that has no ranges only while its value is above zero', () => {
+    const patched = fixture([
+      assignment(1, FixtureChannelPreset.IntensityRed),
+      assignment(2, FixtureChannelPreset.ShutterStrobeSlowFast),
+    ]);
+    expect(fixtureBeamColor(patched, channels({ 1: 255, 2: 0 }))).toMatchObject({ r: 0, g: 0, b: 0, strobeHz: 0 });
+    expect(fixtureBeamColor(patched, channels({ 1: 255, 2: 255 }))).toMatchObject({ r: 1, g: 0, b: 0, strobeHz: 0 });
+  });
+
+  it('stays open when the shutter value is outside every range', () => {
+    const patched = fixture([
+      assignment(1, FixtureChannelPreset.IntensityRed),
+      assignment(2, FixtureChannelPreset.ShutterStrobeSlowFast, [{ dmxStart: 10, dmxEnd: 20, description: 'LED Off' }]),
+    ]);
+    expect(fixtureBeamColor(patched, channels({ 1: 255, 2: 5 }))).toMatchObject({ r: 1, g: 0, b: 0, strobeHz: 0 });
+  });
+
+  it('uses the slow strobe rate when a strobe band has no span', () => {
+    const patched = fixture([
+      assignment(1, FixtureChannelPreset.IntensityRed),
+      assignment(2, FixtureChannelPreset.ShutterStrobeSlowFast, [{ dmxStart: 10, dmxEnd: 10, description: 'Strobe' }]),
+    ]);
+    expect(fixtureBeamColor(patched, channels({ 1: 255, 2: 10 })).strobeHz).toBeCloseTo(1);
+  });
+
   it('reads the universe from the start address', () => {
     const patched = fixture([assignment(1, FixtureChannelPreset.IntensityGreen)], 10);
     expect(fixtureBeamColor(patched, channels({ 10: 255 }))).toMatchObject({ r: 0, g: 1, b: 0 });

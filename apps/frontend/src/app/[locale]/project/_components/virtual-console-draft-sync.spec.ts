@@ -1,11 +1,12 @@
 import { createDefaultVirtualConsoleDocument } from './virtual-console-document';
 import {
   clearVirtualConsoleDraft,
+  isVirtualConsoleDraftMessage,
   publishVirtualConsoleDraft,
   readVirtualConsoleDraft,
   virtualConsoleDraftStorageKey,
 } from './virtual-console-draft-sync';
-import { describe, expect, it, beforeEach } from 'vitest';
+import { afterEach, describe, expect, it, beforeEach, vi } from 'vitest';
 
 describe('virtual-console-draft-sync', () => {
   beforeEach(() => {
@@ -23,5 +24,31 @@ describe('virtual-console-draft-sync', () => {
     publishVirtualConsoleDraft('proj-1', createDefaultVirtualConsoleDocument());
     clearVirtualConsoleDraft('proj-1');
     expect(readVirtualConsoleDraft('proj-1')).toBeNull();
+  });
+
+  it('accepts only draft messages that carry a document object', () => {
+    const document = createDefaultVirtualConsoleDocument();
+    expect(isVirtualConsoleDraftMessage('nope')).toBe(false);
+    expect(isVirtualConsoleDraftMessage(null)).toBe(false);
+    expect(isVirtualConsoleDraftMessage({ type: 'other', document })).toBe(false);
+    expect(isVirtualConsoleDraftMessage({ type: 'draft', document: 'x' })).toBe(false);
+    expect(isVirtualConsoleDraftMessage({ type: 'draft', document: null })).toBe(false);
+    expect(isVirtualConsoleDraftMessage({ type: 'draft', document })).toBe(true);
+  });
+});
+
+describe('virtual-console-draft-sync without browser storage', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('skips storage and broadcast when those APIs are missing', () => {
+    vi.stubGlobal('sessionStorage', undefined);
+    vi.stubGlobal('BroadcastChannel', undefined);
+    const document = createDefaultVirtualConsoleDocument();
+
+    expect(() => publishVirtualConsoleDraft('proj-1', document)).not.toThrow();
+    expect(readVirtualConsoleDraft('proj-1')).toBeNull();
+    expect(() => clearVirtualConsoleDraft('proj-1')).not.toThrow();
   });
 });

@@ -93,6 +93,10 @@ describe('resolveSerialPath', () => {
     });
   });
 
+  it('returns null on other platforms when nothing matches', () => {
+    expect(resolveSerialPath({ platform: 'win32', ports: [{ path: 'COM3' }] })).toBeNull();
+  });
+
   it('returns null on Darwin when nothing matches', () => {
     expect(resolveSerialPath({ platform: 'darwin', ports: [] })).toBeNull();
   });

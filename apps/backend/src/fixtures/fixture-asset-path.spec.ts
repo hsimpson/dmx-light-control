@@ -1,5 +1,14 @@
+import { mkdirSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { fixtureAssetServedPath, isFixtureAssetKind, slugifyAssetSegment } from './fixture-asset-path';
+import {
+  fixtureAssetColumn,
+  fixtureAssetServedPath,
+  isFixtureAssetKind,
+  resolveAssetsRoot,
+  slugifyAssetSegment,
+} from './fixture-asset-path';
 
 describe('slugifyAssetSegment', () => {
   it('slugifies vendor and fixture display names', () => {
@@ -19,6 +28,23 @@ describe('fixtureAssetServedPath', () => {
     expect(fixtureAssetServedPath('Acme', 'Spot 250', 'picture.webp')).toBe(
       '/assets/fixtures/acme/spot-250/picture.webp',
     );
+  });
+});
+
+describe('fixtureAssetColumn', () => {
+  it('maps each asset kind to its fixture column', () => {
+    expect(fixtureAssetColumn('picture')).toBe('picturePath');
+    expect(fixtureAssetColumn('picture2d')).toBe('picture2dPath');
+    expect(fixtureAssetColumn('model3d')).toBe('model3dPath');
+  });
+});
+
+describe('resolveAssetsRoot', () => {
+  it('uses the source asset tree when that directory exists', () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'fixture-assets-'));
+    const srcAssets = join(cwd, 'apps/backend/src/assets');
+    mkdirSync(srcAssets, { recursive: true });
+    expect(resolveAssetsRoot(cwd, '/compiled/assets')).toBe(srcAssets);
   });
 });
 

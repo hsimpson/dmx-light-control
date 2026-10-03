@@ -181,4 +181,55 @@ describe('mapFixturesToExportDocument', () => {
       { publicId: 'vendor-2', name: 'eurolite', ...timestamps },
     ]);
   });
+
+  it('sorts vendors that share a name by publicId and fills missing ids', () => {
+    const document = mapFixturesToExportDocument(
+      [
+        {
+          publicId: null,
+          name: 'Bare',
+          createdAt: null,
+          updatedAt: null,
+          weight: null,
+          fixtureChannelDefinitions: [
+            {
+              publicId: null,
+              name: 'Dimmer',
+              order: 1,
+              preset: FixtureChannelPreset.IntensityDimmer,
+              createdAt: null,
+              updatedAt: null,
+            },
+          ],
+          fixtureChannelModes: [
+            {
+              publicId: null,
+              name: '1ch',
+              order: 1,
+              createdAt: null,
+              updatedAt: null,
+              fixtureChannelAssignments: [
+                {
+                  channelNumber: 1,
+                  createdAt: null,
+                  updatedAt: null,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      [
+        { publicId: 'b', name: 'Acme', createdAt: null, updatedAt: null },
+        { publicId: 'a', name: 'Acme', createdAt: null, updatedAt: null },
+      ],
+    );
+
+    expect(document.vendors.map(vendor => vendor.publicId)).toEqual(['a', 'b']);
+    expect(document.fixtures[0]?.publicId).toBe('');
+    expect(document.fixtures[0]?.channelDefinitions[0]?.publicId).toBe('');
+    expect(document.fixtures[0]?.channelDefinitions[0]?.ranges).toEqual([]);
+    expect(document.fixtures[0]?.channelModes[0]?.assignments[0]?.channelDefinitionPublicId).toBe('');
+    expect(document.fixtures[0]?.createdAt).toEqual(new Date(0));
+  });
 });

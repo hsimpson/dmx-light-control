@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assertImportDocument } from './fixture-import.validator';
+import { assertImportDocument, resolveDefinitionRef } from './fixture-import.validator';
 import { FixtureImportInvalidException } from './fixture.exceptions';
 
 const validDocument = {
@@ -72,5 +72,25 @@ describe('assertImportDocument', () => {
         ],
       });
     }).not.toThrow();
+  });
+});
+
+describe('resolveDefinitionRef', () => {
+  const dimmer = { publicId: 'def-1', name: 'Dimmer' };
+
+  it('falls through a missing public id to the definition name', () => {
+    const byPublicId = new Map<string, typeof dimmer>();
+    const byName = new Map([['Dimmer', dimmer]]);
+    expect(
+      resolveDefinitionRef(
+        { channelNumber: 1, channelDefinitionPublicId: 'missing', channelDefinitionName: 'Dimmer' },
+        byPublicId,
+        byName,
+      ),
+    ).toBe(dimmer);
+  });
+
+  it('returns undefined when neither ref matches', () => {
+    expect(resolveDefinitionRef({ channelNumber: 1 }, new Map(), new Map())).toBeUndefined();
   });
 });

@@ -108,6 +108,12 @@ describe('SerialSendService', () => {
     expect(global.setInterval).toHaveBeenCalledTimes(1);
   });
 
+  it('stopSendingLoop does nothing to the interval when the loop is idle', () => {
+    const { service } = build();
+    service.stopSendingLoop();
+    expect(global.clearInterval).not.toHaveBeenCalled();
+  });
+
   it('stopSendingLoop clears interval', async () => {
     const { service } = build();
     await service.onModuleInit();
@@ -147,6 +153,54 @@ describe('SerialSendService', () => {
     ]);
     expect(warnSpy).toHaveBeenCalledTimes(2);
     expect(service.dmxFrame[0]).toBe(0);
+  });
+
+  it('starts the loop when values arrive on an open idle port', async () => {
+    const { service, eventEmitter } = build();
+    await service.onModuleInit();
+    service.stopSendingLoop();
+    service.port.isOpen = true;
+    const listener = eventEmitter.on.mock.calls[0]?.[1] as (values: DmxValue[]) => void;
+    listener([{ channel: 1, value: 10 }]);
+    expect(service.isSending).toBe(true);
+  });
+
+  it('stays idle when values arrive and the port is closed', async () => {
+    const { service, eventEmitter } = build();
+    await service.onModuleInit();
+    service.stopSendingLoop();
+    service.port.isOpen = false;
+    const listener = eventEmitter.on.mock.calls[0]?.[1] as (values: DmxValue[]) => void;
+    listener([{ channel: 1, value: 10 }]);
+    expect(service.isSending).toBe(false);
+  });
+
+  it('warns with a non-Error when listing serial ports fails', async () => {
+    listMock.mockRejectedValueOnce('adapter missing');
+    const { service } = build();
+    const warnSpy = vi.spyOn(service.logger, 'warn').mockImplementation(() => undefined);
+    await service.onModuleInit();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('adapter missing'));
+  });
+
+  it('drops a frame whose BREAK outlives the sending loop', async () => {
+    const { service } = build();
+    await service.onModuleInit();
+    service.port.isOpen = true;
+    service.isSending = true;
+    service.sendDmxFrame();
+    service.isSending = false;
+    vi.advanceTimersByTime(1);
+    expect(fakePort.write).not.toHaveBeenCalled();
+  });
+
+  it('skips the frame write when the port is gone after BREAK', () => {
+    const { service } = build();
+    (service as { port?: unknown }).port = undefined;
+    expect(() => {
+      service.flushFrame(null);
+    }).not.toThrow();
+    expect(fakePort.write).not.toHaveBeenCalled();
   });
 
   it('sendDmxFrame returns early when port not open', async () => {
