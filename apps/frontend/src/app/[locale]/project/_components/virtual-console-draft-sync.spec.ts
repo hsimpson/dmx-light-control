@@ -47,8 +47,12 @@ describe('virtual-console-draft-sync without browser storage', () => {
     vi.stubGlobal('BroadcastChannel', undefined);
     const document = createDefaultVirtualConsoleDocument();
 
-    expect(() => publishVirtualConsoleDraft('proj-1', document)).not.toThrow();
+    expect(() => {
+      publishVirtualConsoleDraft('proj-1', document);
+    }).not.toThrow();
     expect(readVirtualConsoleDraft('proj-1')).toBeNull();
-    expect(() => clearVirtualConsoleDraft('proj-1')).not.toThrow();
+    expect(() => {
+      clearVirtualConsoleDraft('proj-1');
+    }).not.toThrow();
   });
 });

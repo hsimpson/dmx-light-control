@@ -220,8 +220,8 @@ describe('mapFixturesToExportDocument', () => {
         },
       ],
       [
-        { publicId: 'b', name: 'Acme', createdAt: null, updatedAt: null },
-        { publicId: 'a', name: 'Acme', createdAt: null, updatedAt: null },
+        { publicId: 'b', name: 'Acme', createdAt: new Date(0), updatedAt: new Date(0) },
+        { publicId: 'a', name: 'Acme', createdAt: new Date(0), updatedAt: new Date(0) },
       ],
     );
 

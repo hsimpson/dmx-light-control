@@ -6,9 +6,14 @@ import { FixtureNotFoundException } from './fixture.exceptions';
 describe('FixtureAssetController', () => {
   it('rejects an upload that has no file', async () => {
     const controller = new FixtureAssetController({ upload: vi.fn(), remove: vi.fn() } as never);
-    await expect(controller.upload('fix-1', 'picture', { file: async () => undefined })).rejects.toBeInstanceOf(
-      BadRequestException,
-    );
+    await expect(
+      controller.upload('fix-1', 'picture', {
+        file: async () => {
+          await Promise.resolve();
+          return undefined;
+        },
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('maps a missing fixture on upload to not found and rethrows other errors', async () => {
@@ -18,11 +23,17 @@ describe('FixtureAssetController', () => {
       .mockRejectedValueOnce(new Error('disk full'));
     const controller = new FixtureAssetController({ upload, remove: vi.fn() } as never);
     const request = {
-      file: async () => ({
-        filename: 'picture.webp',
-        mimetype: 'image/webp',
-        toBuffer: async () => Buffer.from('img'),
-      }),
+      file: async () => {
+        await Promise.resolve();
+        return {
+          filename: 'picture.webp',
+          mimetype: 'image/webp',
+          toBuffer: async () => {
+            await Promise.resolve();
+            return Buffer.from('img');
+          },
+        };
+      },
     };
 
     await expect(controller.upload('fix-1', 'picture', request)).rejects.toBeInstanceOf(NotFoundException);
