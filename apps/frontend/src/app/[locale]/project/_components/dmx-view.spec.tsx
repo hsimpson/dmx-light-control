@@ -1,5 +1,6 @@
 import { dmxStore } from '@/lib/dmx/dmx-store';
 import { FixtureChannelPreset, GetProjectDocument } from '@/shared/types/graphql/graphql';
+import { mockGetProjectResult } from '@/testhelpers/mock-project-dto';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
@@ -64,23 +65,12 @@ const projectFixture = {
 };
 
 function projectResult(projectFixtures: (typeof projectFixture)[]) {
-  return {
-    data: {
-      project: {
-        __typename: 'ProjectDto' as const,
-        publicId: 'proj-1',
-        name: 'Test project',
-        environmentType: 'SimpleGround',
-        roomWidth: 10,
-        roomLength: 8,
-        roomHeight: 5,
-        createdAt: now,
-        updatedAt: now,
-        projectFixtures,
-        project3dObjects: [],
-      },
-    },
-  };
+  return mockGetProjectResult({
+    name: 'Test project',
+    createdAt: now,
+    updatedAt: now,
+    projectFixtures,
+  });
 }
 
 describe('DmxView', () => {
