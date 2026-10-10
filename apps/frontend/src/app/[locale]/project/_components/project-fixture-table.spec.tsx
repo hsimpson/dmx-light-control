@@ -6,6 +6,7 @@ import {
   GetProjectDocument,
   UpdateProjectFixtureDocument,
 } from '@/shared/types/graphql/graphql';
+import { mockGetProjectResult, mockProjectDto } from '@/testhelpers/mock-project-dto';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { notifications } from '@mantine/notifications';
 import { screen, waitFor, within } from '@testing-library/react';
@@ -120,23 +121,7 @@ describe('ProjectFixtureTable', () => {
       apolloMocks: [
         {
           request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
-          result: {
-            data: {
-              project: {
-                __typename: 'ProjectDto',
-                publicId: 'proj-1',
-                name: 'Main Show',
-                environmentType: 'SimpleGround',
-                roomWidth: 10,
-                roomLength: 8,
-                roomHeight: 5,
-                createdAt: now,
-                updatedAt: now,
-                projectFixtures: [],
-                project3dObjects: [],
-              },
-            },
-          },
+          result: mockGetProjectResult({ createdAt: now, updatedAt: now }),
         },
         {
           request: { query: GetFixturesDocument },
@@ -161,27 +146,15 @@ describe('ProjectFixtureTable', () => {
       apolloMocks: [
         {
           request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
-          result: {
-            data: {
-              project: {
-                __typename: 'ProjectDto',
-                publicId: 'proj-1',
-                name: 'Main Show',
-                environmentType: 'SimpleGround',
-                roomWidth: 10,
-                roomLength: 8,
-                roomHeight: 5,
-                createdAt: now,
-                updatedAt: now,
-                projectFixtures: [
-                  projectFixture({ publicId: 'pf-a', name: 'PAR 64', startAddress: 10 }),
-                  projectFixture({ publicId: 'pf-b', name: 'Spot', startAddress: 1 }),
-                  projectFixture({ publicId: 'pf-c', name: 'Wash', startAddress: 20 }),
-                ],
-                project3dObjects: [],
-              },
-            },
-          },
+          result: mockGetProjectResult({
+            createdAt: now,
+            updatedAt: now,
+            projectFixtures: [
+              projectFixture({ publicId: 'pf-a', name: 'PAR 64', startAddress: 10 }),
+              projectFixture({ publicId: 'pf-b', name: 'Spot', startAddress: 1 }),
+              projectFixture({ publicId: 'pf-c', name: 'Wash', startAddress: 20 }),
+            ],
+          }),
         },
         {
           request: { query: GetFixturesDocument },
@@ -224,23 +197,11 @@ describe('ProjectFixtureTable', () => {
       apolloMocks: [
         {
           request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
-          result: {
-            data: {
-              project: {
-                __typename: 'ProjectDto',
-                publicId: 'proj-1',
-                name: 'Main Show',
-                environmentType: 'SimpleGround',
-                roomWidth: 10,
-                roomLength: 8,
-                roomHeight: 5,
-                createdAt: now,
-                updatedAt: now,
-                projectFixtures: [projectFixture({ publicId: 'pf-a', name: 'PAR 64', startAddress: 1 })],
-                project3dObjects: [],
-              },
-            },
-          },
+          result: mockGetProjectResult({
+            createdAt: now,
+            updatedAt: now,
+            projectFixtures: [projectFixture({ publicId: 'pf-a', name: 'PAR 64', startAddress: 1 })],
+          }),
         },
         {
           request: { query: GetFixturesDocument },
@@ -368,19 +329,11 @@ const catalogFixture = {
   ],
 };
 
-const emptyProject = {
-  __typename: 'ProjectDto' as const,
-  publicId: 'proj-1',
-  name: 'Main Show',
-  environmentType: 'SimpleGround' as const,
-  roomWidth: 10,
-  roomLength: 8,
-  roomHeight: 5,
+const emptyProject = mockProjectDto({
   createdAt: now,
   updatedAt: now,
   projectFixtures: [] as ReturnType<typeof projectFixture>[],
-  project3dObjects: [],
-};
+});
 
 describe('ProjectFixtureTable mutations', () => {
   beforeEach(() => {

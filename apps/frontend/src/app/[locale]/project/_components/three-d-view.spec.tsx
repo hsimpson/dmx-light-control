@@ -9,6 +9,7 @@ import {
   UpdateProjectDocument,
   UpdateProjectFixtureDocument,
 } from '@/shared/types/graphql/graphql';
+import { mockProjectDto } from '@/testhelpers/mock-project-dto';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { CombinedGraphQLErrors } from '@apollo/client';
 import { notifications } from '@mantine/notifications';
@@ -88,17 +89,13 @@ const projectFixture = {
 };
 
 const project = {
-  __typename: 'ProjectDto' as const,
-  publicId: 'proj-1',
-  name: 'Main Show',
-  environmentType: ProjectEnvironmentType.SimpleGround,
-  roomWidth: 10,
-  roomLength: 8,
-  roomHeight: 5,
-  createdAt: now,
-  updatedAt: now,
-  projectFixtures: [],
-  project3dObjects: [],
+  ...mockProjectDto({
+    environmentType: ProjectEnvironmentType.SimpleGround,
+    createdAt: now,
+    updatedAt: now,
+  }),
+  projectFixtures: [] as (typeof projectFixture)[],
+  project3dObjects: [] as (typeof project3dObject)[],
 };
 
 describe('ThreeDView', () => {

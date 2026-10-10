@@ -1,4 +1,5 @@
 import { FixtureChannelPreset, GetProjectDocument } from '@/shared/types/graphql/graphql';
+import { mockGetProjectResult } from '@/testhelpers/mock-project-dto';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
@@ -69,23 +70,11 @@ describe('UniverseView', () => {
       apolloMocks: [
         {
           request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
-          result: {
-            data: {
-              project: {
-                __typename: 'ProjectDto',
-                publicId: 'proj-1',
-                name: 'Test project',
-                environmentType: 'SimpleGround',
-                roomWidth: 10,
-                roomLength: 8,
-                roomHeight: 5,
-                createdAt: now,
-                updatedAt: now,
-                projectFixtures: [],
-                project3dObjects: [],
-              },
-            },
-          },
+          result: mockGetProjectResult({
+            name: 'Test project',
+            createdAt: now,
+            updatedAt: now,
+          }),
         },
       ],
     });
@@ -101,23 +90,12 @@ describe('UniverseView', () => {
       apolloMocks: [
         {
           request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
-          result: {
-            data: {
-              project: {
-                __typename: 'ProjectDto',
-                publicId: 'proj-1',
-                name: 'Test project',
-                environmentType: 'SimpleGround',
-                roomWidth: 10,
-                roomLength: 8,
-                roomHeight: 5,
-                createdAt: now,
-                updatedAt: now,
-                projectFixtures: [projectFixture],
-                project3dObjects: [],
-              },
-            },
-          },
+          result: mockGetProjectResult({
+            name: 'Test project',
+            createdAt: now,
+            updatedAt: now,
+            projectFixtures: [projectFixture],
+          }),
         },
       ],
     });
@@ -146,23 +124,12 @@ describe('UniverseView', () => {
       apolloMocks: [
         {
           request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
-          result: {
-            data: {
-              project: {
-                __typename: 'ProjectDto',
-                publicId: 'proj-1',
-                name: 'Test project',
-                environmentType: 'SimpleGround',
-                roomWidth: 10,
-                roomLength: 8,
-                roomHeight: 5,
-                createdAt: now,
-                updatedAt: now,
-                projectFixtures: [secondFixture, projectFixture],
-                project3dObjects: [],
-              },
-            },
-          },
+          result: mockGetProjectResult({
+            name: 'Test project',
+            createdAt: now,
+            updatedAt: now,
+            projectFixtures: [secondFixture, projectFixture],
+          }),
         },
       ],
     });
