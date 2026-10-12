@@ -64,6 +64,10 @@ describe('GraphQL schema generation', () => {
     expect(schema.getMutationType()?.getFields().addProject3dObject).toBeDefined();
     expect(schema.getMutationType()?.getFields().updateProject3dObject).toBeDefined();
     expect(schema.getMutationType()?.getFields().deleteProject3dObject).toBeDefined();
+    expect(schema.getMutationType()?.getFields().addProjectFunction).toBeDefined();
+    expect(schema.getMutationType()?.getFields().updateProjectFunction).toBeDefined();
+    expect(schema.getMutationType()?.getFields().deleteProjectFunction).toBeDefined();
+    expect(schema.getType('ProjectFunctionType')).toBeDefined();
     expect(schema.getType('SceneObjectGeometryKind')).toBeDefined();
 
     await moduleRef.close();

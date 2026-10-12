@@ -55,6 +55,14 @@ export const relations = defineRelations(schema, r => ({
   project: {
     projectFixtures: r.many.projectFixture(),
     project3dObjects: r.many.project3dObject(),
+    projectFunctions: r.many.projectFunction(),
+  },
+
+  projectFunction: {
+    project: r.one.project({
+      from: r.projectFunction.projectId,
+      to: r.project.id,
+    }),
   },
 
   sceneObjectType: {

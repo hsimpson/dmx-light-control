@@ -89,7 +89,7 @@ Harness maintenance is part of **done**, not optional docs.
 ### Backend (`apps/backend/src/`)
 
 - NestJS + Apollo GraphQL on Fastify (`autoSchemaFile: true`)
-- Domain modules: `FixturesModule`, `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`. `UsbModule` exists under `io/usb/` but is not imported (live DMX output is `SerialSendService` on the FTDI UART, not WebUSB). `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
+- Domain modules: `FixturesModule`, `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`, `FunctionPlaybackModule`. `UsbModule` exists under `io/usb/` but is not imported (live DMX output is `SerialSendService` on the FTDI UART, not WebUSB). `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
 - Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). Import/export is Resolver → `FixtureImportExportService` / `ProjectImportExportService` (`InjectDb()` + repositories + transactions). IO resolvers may emit events or call services without repositories.
 - Tests: Vitest unit/integration (`src/**/*.spec.ts`); e2e in `src/e2e-tests/` (GraphQL, REST fixture assets, DMX/MIDI IO); Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
 - Repositories use `InjectDb()` for typed Drizzle connection
@@ -100,7 +100,7 @@ Harness maintenance is part of **done**, not optional docs.
 - Static files: Fastify serves `apps/backend/src/assets` at `/assets/` when that directory exists (`nx serve`), otherwise Rspack-copied `dist/.../assets`. 3D models live under `apps/backend/src/assets/3d/` (e.g. `room.gltf`, `light_stand.glb`). Fixture catalog assets live under `apps/backend/src/assets/fixtures/$VENDOR/$FIXTURE_NAME` with generic defaults in `_defaults/` (`model.glb`, `picture.webp`, `picture-2d.svg`).
 - Fixture asset uploads: REST multipart `POST/DELETE /fixtures/:publicId/assets/:kind` (`picture` \| `picture2d` \| `model3d`); GraphQL stores relative `/assets/...` paths and dimensions (`weight` kg, `width`/`length`/`height` in meters).
 - Blender sources (`blender/`) are the authoring files; runtime GLB/GLTF under `apps/backend/src/assets/` is what the app serves. After editing a `.blend`, re-export the matching runtime file (do not leave the GLB stale). Mapping: `blender/fixtures/_defaults/led_par_can.blend` → `apps/backend/src/assets/fixtures/_defaults/model.glb`; `blender/rig/light_stand.blend` → `apps/backend/src/assets/3d/light_stand.glb`. Fixture models must face **+X**: the beam / throw axis and the front (lenses) point along world +X in Blender (identity in the app; do not compensate with loader rotations). Each fixture GLB includes a `BeamOrigin` empty at the LED-cluster center on the lens face. The room placement pivot stays the group origin; the loader offsets only the beam to that empty and opens the near cap to the lens-cluster radius. Export with the Cursor Blender MCP (`uvx blender-mcp` in `.cursor/mcp.json`): open the source `.blend` if needed (`bpy.ops.wm.open_mainfile`), then `bpy.ops.export_scene.gltf(filepath=<runtime glb>, export_format='GLB', use_visible=True, export_cameras=False, export_lights=False, export_apply=True)`.
-- IO layer: `io/dmx/` (GraphQL `setChannelValues` plus Fastify WebSocket `/dmx` for the live 512-channel universe), `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
+- IO layer: `io/dmx/` (GraphQL `setChannelValues` plus Fastify WebSocket `/dmx` for the live 512-channel universe; client messages `set`, `functionStart`, `functionStop`; server broadcasts `functionState`), `io/function-playback/` (sequence playback layers merged HTP into the universe), `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
 
 ### Domain module structure (e.g. `fixtures/`, `projects/`)
 
@@ -175,7 +175,7 @@ fixtures/
 ### Drizzle ORM
 
 - `d.snakeCase.table()`, helpers `pk` + `timestamps` from `@/db/columns.helpers`
-- Relations in `relations.ts`; repositories for entity CRUD; fixture and project import/export also use `InjectDb()` and transactions; `project_fixtures` links a project to catalog fixture + channel mode + DMX start address
+- Relations in `relations.ts`; repositories for entity CRUD; fixture and project import/export also use `InjectDb()` and transactions; `project_fixtures` links a project to catalog fixture + channel mode + DMX start address; `project_functions` stores project-scoped functions (type `Sequence`, jsonb `properties`)
 
 ### React
 

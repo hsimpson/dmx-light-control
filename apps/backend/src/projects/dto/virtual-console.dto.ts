@@ -8,6 +8,7 @@ import {
   VIRTUAL_CONSOLE_SIZE_MIN,
   VIRTUAL_CONSOLE_SNAP_MAX,
   VIRTUAL_CONSOLE_SNAP_MIN,
+  VirtualConsoleButtonMode,
   VirtualConsoleControlTypeEnum,
   VirtualConsoleSliderOrientation,
   VirtualConsoleSliderValueType,
@@ -147,6 +148,21 @@ export class VirtualConsoleControlDto {
   })
   @Type(() => VirtualConsoleChannelBindingDto)
   public channelBindings?: VirtualConsoleChannelBindingDto[];
+
+  @Field(() => VirtualConsoleButtonMode, {
+    nullable: true,
+    description: 'Whether a button latches (toggle) or runs only while held (flash)',
+  })
+  public buttonMode?: VirtualConsoleButtonMode;
+
+  @Field(() => GraphQLUUID, {
+    nullable: true,
+    description: 'Project function started by this button',
+  })
+  public functionPublicId?: string;
+
+  @Field({ nullable: true, description: 'Function name used to remap a button binding on import' })
+  public functionName?: string;
 }
 
 @ObjectType()
@@ -297,6 +313,28 @@ export class VirtualConsoleControlInput {
   @ValidateNested({ each: true })
   @Type(() => VirtualConsoleChannelBindingInput)
   public channelBindings?: VirtualConsoleChannelBindingInput[];
+
+  @Field(() => VirtualConsoleButtonMode, {
+    nullable: true,
+    description: 'Whether a button latches (toggle) or runs only while held (flash)',
+  })
+  @IsOptional()
+  @IsEnum(VirtualConsoleButtonMode)
+  public buttonMode?: VirtualConsoleButtonMode;
+
+  @Field(() => GraphQLUUID, {
+    nullable: true,
+    description: 'Project function started by this button',
+  })
+  @IsOptional()
+  @Matches(UUID_PATTERN, { message: 'functionPublicId must be a UUID' })
+  public functionPublicId?: string;
+
+  @Field({ nullable: true, description: 'Function name used to remap a button binding on import' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  public functionName?: string;
 }
 
 @InputType()

@@ -51,6 +51,16 @@ export enum VirtualConsoleSliderValueType {
   percentage = 'percentage',
 }
 
+export enum VirtualConsoleButtonMode {
+  flash = 'flash',
+  toggle = 'toggle',
+}
+
+registerEnumType(VirtualConsoleButtonMode, {
+  name: 'VirtualConsoleButtonMode',
+  description: 'Whether a virtual console button latches or runs only while held',
+});
+
 registerEnumType(VirtualConsoleSliderValueType, {
   name: 'VirtualConsoleSliderValueType',
   description: 'How a slider value is interpreted',
@@ -86,6 +96,10 @@ export type VirtualConsoleControl = {
   lowerLimit?: number | null;
   upperLimit?: number | null;
   channelBindings?: VirtualConsoleChannelBinding[];
+  buttonMode?: `${VirtualConsoleButtonMode}`;
+  functionPublicId?: string;
+  /** Present in export documents to remap a function binding after re-import. */
+  functionName?: string;
 };
 
 export type VirtualConsolePage = {

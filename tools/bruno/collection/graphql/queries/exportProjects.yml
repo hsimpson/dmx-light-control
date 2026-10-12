@@ -28,12 +28,29 @@ graphql:
               updatedAt
             }
             projectFixtures {
+              channelAssignments {
+                channelDefinitionPublicId
+                channelNumber
+                publicId
+              }
               channelModePublicId
               createdAt
               fixturePublicId
               publicId
               startAddress
               transform
+              updatedAt
+            }
+            projectFunctions {
+              createdAt
+              name
+              publicId
+              sequence {
+                direction
+                runOrder
+                steps
+              }
+              type
               updatedAt
             }
             publicId

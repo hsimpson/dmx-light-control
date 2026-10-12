@@ -1,7 +1,9 @@
 import { ImportTimestampsInput } from '@/db/import-timestamps.input';
+import { SequencePropertiesInput } from '@/projects/dto/project-function.dto';
 import { ProjectDto } from '@/projects/dto/project.dto';
 import { VirtualConsoleInput } from '@/projects/dto/virtual-console.dto';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
+import { ProjectFunctionType } from '@/projects/project-function';
 import { ROOM_DIMENSION_MAX, ROOM_DIMENSION_MIN } from '@/projects/project-room-dimensions';
 import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
@@ -210,6 +212,42 @@ export class ImportProjectInput extends ImportTimestampsInput {
   @ValidateNested({ each: true })
   @Type(() => ImportProject3dObjectInput)
   public project3dObjects?: ImportProject3dObjectInput[];
+
+  @Field(() => [ImportProjectFunctionInput], {
+    nullable: true,
+    description: 'The functions configured in this project',
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ImportProjectFunctionInput)
+  public projectFunctions?: ImportProjectFunctionInput[];
+}
+
+@InputType()
+export class ImportProjectFunctionInput extends ImportTimestampsInput {
+  @Field(() => GraphQLUUID, { nullable: true, description: 'The public ID of the project function' })
+  @IsOptional()
+  @Matches(IMPORT_PROJECT_PUBLIC_ID_PATTERN, { message: 'publicId must be a UUID' })
+  public publicId?: string;
+
+  @Field({ description: 'Unique name within the project' })
+  @IsString()
+  @Length(1, 255)
+  public name: string;
+
+  @Field(() => ProjectFunctionType, { description: 'The function type' })
+  @IsEnum(ProjectFunctionType)
+  public type: ProjectFunctionType;
+
+  @Field(() => SequencePropertiesInput, {
+    nullable: true,
+    description: 'Sequence properties, required when type is Sequence',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SequencePropertiesInput)
+  public sequence?: SequencePropertiesInput;
 }
 
 @InputType()

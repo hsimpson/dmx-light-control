@@ -1,8 +1,10 @@
+import { AppEventEmitter } from '@/events/app-event-emitter';
 import { ChannelModeNotFoundException, FixtureNotFoundException } from '@/fixtures/fixture.exceptions';
 import { FixtureChannelModeRepository } from '@/fixtures/repositories/fixture-channel-mode.repository';
 import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
 import { Injectable } from '@nestjs/common';
 import { AddProject3dObjectInput } from './dto/add-project-3d-object.dto';
+import { AddProjectFunctionInput, UpdateProjectFunctionInput } from './dto/project-function.dto';
 import { AddProjectFixtureInput } from './dto/add-project-fixture.dto';
 import { CreateProjectInput } from './dto/create-project.dto';
 import { UpdateProject3dObjectInput } from './dto/update-project-3d-object.dto';
@@ -13,6 +15,7 @@ import { nextUniqueSceneObjectName, normalizeSceneObjectName } from './project-3
 import { defaultTransformForObject, identityTransform } from './project-3d-object.transform';
 import { assertValidTransform, resolveSizesForType } from './project-3d-object.validation';
 import { optionalEnvironmentType } from './project-environment';
+import { buildProjectFunctionProperties } from './project-function.validation';
 import {
   assertChannelModeBelongsToFixture,
   assertNoPatchOverlap,
@@ -26,10 +29,13 @@ import {
   Project3dObjectNotFoundException,
   ProjectAlreadyExistsException,
   ProjectFixtureNotFoundException,
+  ProjectFunctionNameExistsException,
+  ProjectFunctionNotFoundException,
   ProjectNotFoundException,
   SceneObjectTypeNotFoundException,
 } from './project.exceptions';
 import { Project3dObjectRepository } from './repositories/project-3d-object.repository';
+import { ProjectFunctionRepository } from './repositories/project-function.repository';
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
 import { LoadedProject, ProjectRepository } from './repositories/project.repository';
 import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
@@ -37,6 +43,7 @@ import { VirtualConsoleDocument } from './virtual-console';
 import {
   assertValidVirtualConsole,
   assertVirtualConsoleChannelBindings,
+  assertVirtualConsoleFunctionBindings,
   normalizeVirtualConsole,
   VirtualConsoleBindingFixture,
 } from './virtual-console.validation';
@@ -60,6 +67,7 @@ function isPostgresUniqueViolation(error: unknown): boolean {
 
 type LoadedProjectFixture = NonNullable<LoadedProject['projectFixtures']>[number];
 type LoadedProject3dObject = NonNullable<LoadedProject['project3dObjects']>[number];
+type LoadedProjectFunction = NonNullable<LoadedProject['projectFunctions']>[number];
 
 function occupiedPatchesFromFixtures(
   fixtures: {
@@ -188,8 +196,23 @@ function withVirtualConsole<T extends { virtualConsole?: VirtualConsoleDocument 
   };
 }
 
+function sortProjectFunctions(functions: LoadedProjectFunction[]): LoadedProjectFunction[] {
+  return [...functions].sort((left, right) => left.name.localeCompare(right.name));
+}
+
+function mapProjectFunctionToDto(fn: LoadedProjectFunction) {
+  return {
+    publicId: fn.publicId,
+    createdAt: fn.createdAt,
+    updatedAt: fn.updatedAt,
+    name: fn.name,
+    type: fn.type,
+    sequence: fn.properties.sequence,
+  };
+}
+
 function emptyProjectExtras() {
-  return { projectFixtures: [], project3dObjects: [] };
+  return { projectFixtures: [], project3dObjects: [], projectFunctions: [] };
 }
 
 function mapProjectToDto(project: LoadedProject | undefined) {
@@ -200,6 +223,7 @@ function mapProjectToDto(project: LoadedProject | undefined) {
     ...project,
     projectFixtures: sortProjectFixtures(project.projectFixtures).map(mapProjectFixtureToDto),
     project3dObjects: sortProject3dObjects(project.project3dObjects).map(mapProject3dObjectToDto),
+    projectFunctions: sortProjectFunctions(project.projectFunctions).map(mapProjectFunctionToDto),
   });
 }
 
@@ -209,7 +233,9 @@ export class ProjectService {
     private readonly projectRepository: ProjectRepository,
     private readonly projectFixtureRepository: ProjectFixtureRepository,
     private readonly project3dObjectRepository: Project3dObjectRepository,
+    private readonly projectFunctionRepository: ProjectFunctionRepository,
     private readonly sceneObjectTypeRepository: SceneObjectTypeRepository,
+    private readonly eventEmitter: AppEventEmitter,
     private readonly fixtureRepository: FixtureRepository,
     private readonly fixtureChannelModeRepository: FixtureChannelModeRepository,
   ) {}
@@ -270,6 +296,10 @@ export class ProjectService {
       throw new ProjectNotFoundException(input.publicId);
     }
     assertVirtualConsoleChannelBindings(input.virtualConsole, bindingFixturesFromProject(project.projectFixtures));
+    assertVirtualConsoleFunctionBindings(
+      input.virtualConsole,
+      new Set(project.projectFunctions.flatMap(fn => (fn.publicId ? [fn.publicId] : []))),
+    );
     const updated = await this.projectRepository.updateOneByPublicId(input.publicId, {
       virtualConsole: input.virtualConsole,
     });
@@ -490,6 +520,68 @@ export class ProjectService {
 
   public async deleteProject3dObjectByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {
     const deleted = await this.project3dObjectRepository.deleteOneByPublicId(publicId);
+    return { publicId, deleted };
+  }
+
+  public async addProjectFunction(input: AddProjectFunctionInput) {
+    const project = await this.projectRepository.findOneByPublicId(input.projectPublicId);
+    if (!project?.id) {
+      throw new ProjectNotFoundException(input.projectPublicId);
+    }
+    const name = input.name.trim();
+    const properties = buildProjectFunctionProperties(input.type, input.sequence);
+    let created;
+    try {
+      created = await this.projectFunctionRepository.createOne({
+        projectId: project.id,
+        name,
+        type: input.type,
+        properties,
+      });
+    } catch (error) {
+      if (isPostgresUniqueViolation(error)) {
+        throw new ProjectFunctionNameExistsException(name);
+      }
+      throw error;
+    }
+    if (!created?.publicId) {
+      throw new ProjectFunctionNotFoundException(input.projectPublicId);
+    }
+    return mapProjectFunctionToDto(created);
+  }
+
+  public async updateProjectFunction(input: UpdateProjectFunctionInput) {
+    const existing = await this.projectFunctionRepository.findOneByPublicId(input.publicId);
+    if (!existing?.publicId) {
+      throw new ProjectFunctionNotFoundException(input.publicId);
+    }
+    const updatePayload: { name?: string; properties?: typeof existing.properties } = {};
+    if (input.name !== undefined) {
+      updatePayload.name = input.name.trim();
+    }
+    if (input.sequence !== undefined) {
+      updatePayload.properties = buildProjectFunctionProperties(existing.type, input.sequence);
+    }
+    let updated;
+    try {
+      updated = await this.projectFunctionRepository.updateOneByPublicId(input.publicId, updatePayload);
+    } catch (error) {
+      if (isPostgresUniqueViolation(error)) {
+        throw new ProjectFunctionNameExistsException(updatePayload.name ?? existing.name);
+      }
+      throw error;
+    }
+    if (!updated?.publicId) {
+      throw new ProjectFunctionNotFoundException(input.publicId);
+    }
+    return mapProjectFunctionToDto(updated);
+  }
+
+  public async deleteProjectFunctionByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {
+    const deleted = await this.projectFunctionRepository.deleteByPublicIdAndUnbind(publicId);
+    if (deleted) {
+      this.eventEmitter.emit('function.deleted', { functionPublicId: publicId });
+    }
     return { publicId, deleted };
   }
 

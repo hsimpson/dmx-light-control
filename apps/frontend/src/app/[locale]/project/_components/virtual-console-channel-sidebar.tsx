@@ -3,7 +3,7 @@
 import { FixturePresetIcon } from '@/lib/fixtures/fixture-preset-icon';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
-import { Accordion, Badge, Button, Checkbox, Group, Paper, Stack, Text } from '@mantine/core';
+import { Accordion, Badge, Button, Checkbox, Group, Paper, Select, Stack, Text } from '@mantine/core';
 import type { VirtualConsoleChannelBinding, VirtualConsoleControl } from './virtual-console-document';
 import classes from './virtual-console-view.module.css';
 
@@ -21,16 +21,29 @@ export type VirtualConsoleAssignableFixture = {
   };
 };
 
+type VirtualConsoleFunctionOption = {
+  publicId: string;
+  name: string;
+};
+
 type VirtualConsoleChannelSidebarProperties = {
   control: VirtualConsoleControl;
   fixtures: VirtualConsoleAssignableFixture[];
+  functions?: VirtualConsoleFunctionOption[];
   onPatch: (patch: Partial<VirtualConsoleControl>) => void;
 };
+
+const emptyFunctions: VirtualConsoleFunctionOption[] = [];
 
 const bindingKey = (binding: VirtualConsoleChannelBinding) =>
   `${binding.projectFixturePublicId}:${binding.channelAssignmentPublicId}`;
 
-const VirtualConsoleChannelSidebar = ({ control, fixtures, onPatch }: VirtualConsoleChannelSidebarProperties) => {
+const VirtualConsoleChannelSidebar = ({
+  control,
+  fixtures,
+  functions = emptyFunctions,
+  onPatch,
+}: VirtualConsoleChannelSidebarProperties) => {
   const { t } = useTranslation();
   const bindings = control.channelBindings ?? [];
   const known = new Set(
@@ -57,98 +70,142 @@ const VirtualConsoleChannelSidebar = ({ control, fixtures, onPatch }: VirtualCon
   return (
     <Paper className={classes.panel} data-testid="virtual-console-channel-sidebar" p="md" withBorder>
       <Stack gap="sm">
-        <Text size="sm" fw={600}>
-          {t({ id: 'ProjectDetail.virtualConsole.channels', defaultMessage: 'Channels' })}
-        </Text>
-        <Button
-          disabled={bindings.length === 0}
-          variant="light"
-          onClick={() => {
-            writeBindings([]);
-          }}
-        >
-          {t({ id: 'ProjectDetail.virtualConsole.clearAssignments', defaultMessage: 'Clear assignments' })}
-        </Button>
-        {sortedFixtures.length === 0 ? (
-          <Text size="sm" c="dimmed">
-            {t({ id: 'ProjectDetail.virtualConsole.channelsEmpty', defaultMessage: 'No patched fixtures' })}
-          </Text>
-        ) : (
-          <Accordion multiple transitionDuration={0} variant="contained">
-            {sortedFixtures.map((fixture, fixtureIndex) => {
-              const assignedCount = fixture.channelMode.fixtureChannelAssignments.filter(assignment =>
-                bindings.some(
-                  current =>
-                    bindingKey(current) ===
-                    bindingKey({
-                      projectFixturePublicId: fixture.publicId,
-                      channelAssignmentPublicId: assignment.publicId,
-                    }),
-                ),
-              ).length;
-              return (
-                <Accordion.Item key={fixture.publicId} value={fixture.publicId}>
-                  <Accordion.Control>
-                    <Group justify="space-between" wrap="nowrap">
-                      <Text size="xs" fw={600}>
-                        {fixture.fixture.name} [{fixtureIndex + 1}]
-                      </Text>
-                      <Badge variant="light">
-                        {assignedCount}/{fixture.channelMode.fixtureChannelAssignments.length}
-                      </Badge>
-                    </Group>
-                  </Accordion.Control>
-                  <Accordion.Panel>
-                    <Stack gap={4}>
-                      {[...fixture.channelMode.fixtureChannelAssignments]
-                        .sort((left, right) => left.channelNumber - right.channelNumber)
-                        .map(assignment => {
-                          const binding = {
-                            projectFixturePublicId: fixture.publicId,
-                            channelAssignmentPublicId: assignment.publicId,
-                          };
-                          const absolute = fixture.startAddress + assignment.channelNumber - 1;
-                          return (
-                            <Checkbox
-                              key={assignment.publicId}
-                              checked={bindings.some(current => bindingKey(current) === bindingKey(binding))}
-                              label={
-                                <Group gap={6} wrap="nowrap">
-                                  <span data-testid={`virtual-console-channel-icon-${assignment.publicId}`}>
-                                    <FixturePresetIcon preset={assignment.fixtureChannelDefinition.preset} />
-                                  </span>
-                                  {`${absolute} · ${assignment.fixtureChannelDefinition.name}`}
-                                </Group>
-                              }
-                              onChange={event => {
-                                toggle(binding, event.currentTarget.checked);
-                              }}
-                            />
-                          );
-                        })}
-                    </Stack>
-                  </Accordion.Panel>
-                </Accordion.Item>
-              );
-            })}
-          </Accordion>
-        )}
-        {unavailable.map(binding => (
-          <Group key={bindingKey(binding)} justify="space-between">
-            <Text size="xs" c="dimmed">
-              {t({ id: 'ProjectDetail.virtualConsole.channelUnavailable', defaultMessage: 'Unavailable' })}
+        {control.type === 'button' ? (
+          <Select
+            allowDeselect={false}
+            label={t({ id: 'ProjectDetail.virtualConsole.bindingKind', defaultMessage: 'Binding' })}
+            data={[
+              {
+                value: 'channels',
+                label: t({ id: 'ProjectDetail.virtualConsole.bindChannels', defaultMessage: 'Channels' }),
+              },
+              {
+                value: 'function',
+                label: t({ id: 'ProjectDetail.virtualConsole.bindFunction', defaultMessage: 'Function' }),
+              },
+            ]}
+            value={control.functionPublicId ? 'function' : 'channels'}
+            onChange={value => {
+              if (value === 'function') {
+                onPatch({
+                  channelBindings: undefined,
+                  functionPublicId: functions[0]?.publicId,
+                });
+                return;
+              }
+              onPatch({ functionPublicId: undefined });
+            }}
+          />
+        ) : null}
+        {control.type === 'button' && control.functionPublicId ? (
+          <Select
+            allowDeselect={false}
+            label={t({ id: 'ProjectDetail.virtualConsole.function', defaultMessage: 'Function' })}
+            data={functions.map(fn => ({ value: fn.publicId, label: fn.name }))}
+            value={control.functionPublicId}
+            onChange={value => {
+              if (value) {
+                onPatch({ functionPublicId: value, channelBindings: undefined });
+              }
+            }}
+          />
+        ) : null}
+        {control.type === 'button' && control.functionPublicId ? null : (
+          <>
+            <Text size="sm" fw={600}>
+              {t({ id: 'ProjectDetail.virtualConsole.channels', defaultMessage: 'Channels' })}
             </Text>
             <Button
-              size="compact-xs"
-              variant="subtle"
+              disabled={bindings.length === 0}
+              variant="light"
               onClick={() => {
-                writeBindings(bindings.filter(current => bindingKey(current) !== bindingKey(binding)));
+                writeBindings([]);
               }}
             >
-              {t({ id: 'ProjectDetail.virtualConsole.channelRemove', defaultMessage: 'Remove' })}
+              {t({ id: 'ProjectDetail.virtualConsole.clearAssignments', defaultMessage: 'Clear assignments' })}
             </Button>
-          </Group>
-        ))}
+            {sortedFixtures.length === 0 ? (
+              <Text size="sm" c="dimmed">
+                {t({ id: 'ProjectDetail.virtualConsole.channelsEmpty', defaultMessage: 'No patched fixtures' })}
+              </Text>
+            ) : (
+              <Accordion multiple transitionDuration={0} variant="contained">
+                {sortedFixtures.map((fixture, fixtureIndex) => {
+                  const assignedCount = fixture.channelMode.fixtureChannelAssignments.filter(assignment =>
+                    bindings.some(
+                      current =>
+                        bindingKey(current) ===
+                        bindingKey({
+                          projectFixturePublicId: fixture.publicId,
+                          channelAssignmentPublicId: assignment.publicId,
+                        }),
+                    ),
+                  ).length;
+                  return (
+                    <Accordion.Item key={fixture.publicId} value={fixture.publicId}>
+                      <Accordion.Control>
+                        <Group justify="space-between" wrap="nowrap">
+                          <Text size="xs" fw={600}>
+                            {fixture.fixture.name} [{fixtureIndex + 1}]
+                          </Text>
+                          <Badge variant="light">
+                            {assignedCount}/{fixture.channelMode.fixtureChannelAssignments.length}
+                          </Badge>
+                        </Group>
+                      </Accordion.Control>
+                      <Accordion.Panel>
+                        <Stack gap={4}>
+                          {[...fixture.channelMode.fixtureChannelAssignments]
+                            .sort((left, right) => left.channelNumber - right.channelNumber)
+                            .map(assignment => {
+                              const binding = {
+                                projectFixturePublicId: fixture.publicId,
+                                channelAssignmentPublicId: assignment.publicId,
+                              };
+                              const absolute = fixture.startAddress + assignment.channelNumber - 1;
+                              return (
+                                <Checkbox
+                                  key={assignment.publicId}
+                                  checked={bindings.some(current => bindingKey(current) === bindingKey(binding))}
+                                  label={
+                                    <Group gap={6} wrap="nowrap">
+                                      <span data-testid={`virtual-console-channel-icon-${assignment.publicId}`}>
+                                        <FixturePresetIcon preset={assignment.fixtureChannelDefinition.preset} />
+                                      </span>
+                                      {`${absolute} · ${assignment.fixtureChannelDefinition.name}`}
+                                    </Group>
+                                  }
+                                  onChange={event => {
+                                    toggle(binding, event.currentTarget.checked);
+                                  }}
+                                />
+                              );
+                            })}
+                        </Stack>
+                      </Accordion.Panel>
+                    </Accordion.Item>
+                  );
+                })}
+              </Accordion>
+            )}
+            {unavailable.map(binding => (
+              <Group key={bindingKey(binding)} justify="space-between">
+                <Text size="xs" c="dimmed">
+                  {t({ id: 'ProjectDetail.virtualConsole.channelUnavailable', defaultMessage: 'Unavailable' })}
+                </Text>
+                <Button
+                  size="compact-xs"
+                  variant="subtle"
+                  onClick={() => {
+                    writeBindings(bindings.filter(current => bindingKey(current) !== bindingKey(binding)));
+                  }}
+                >
+                  {t({ id: 'ProjectDetail.virtualConsole.channelRemove', defaultMessage: 'Remove' })}
+                </Button>
+              </Group>
+            ))}
+          </>
+        )}
       </Stack>
     </Paper>
   );

@@ -2,7 +2,12 @@ import { AppEventEmitter } from '@/events/app-event-emitter';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { DmxUniverseService } from './dmx-universe.service';
 import { type DmxWsSocket, setDmxWebsocketConnectionHandler } from './dmx-websocket.connection';
-import { dmxWsDeltaMessage, dmxWsSnapshotMessage, parseDmxWsSetMessage } from './dmx-ws.protocol';
+import {
+  dmxWsDeltaMessage,
+  dmxWsFunctionStateMessage,
+  dmxWsSnapshotMessage,
+  parseDmxWsClientMessage,
+} from './dmx-ws.protocol';
 
 function rawDataToString(raw: Buffer | string): string {
   return typeof raw === 'string' ? raw : raw.toString('utf8');
@@ -24,6 +29,9 @@ export class DmxWebsocketService implements OnModuleInit, OnModuleDestroy {
     this.eventEmitter.on('dmx.channelValues', values => {
       this.broadcastDelta(values);
     });
+    this.eventEmitter.on('function.state', payload => {
+      this.broadcast(JSON.stringify(dmxWsFunctionStateMessage(payload.running)));
+    });
   }
 
   public onModuleDestroy(): void {
@@ -37,6 +45,7 @@ export class DmxWebsocketService implements OnModuleInit, OnModuleDestroy {
   private addClient(socket: DmxWsSocket): void {
     this.sockets.add(socket);
     socket.send(JSON.stringify(dmxWsSnapshotMessage(this.universe.snapshot())));
+    this.eventEmitter.emit('function.state.request');
     socket.on('message', raw => {
       this.onSocketMessage(raw);
     });
@@ -46,19 +55,33 @@ export class DmxWebsocketService implements OnModuleInit, OnModuleDestroy {
   }
 
   private onSocketMessage(raw: Buffer | string): void {
-    const parsed = parseDmxWsSetMessage(rawDataToString(raw));
+    const parsed = parseDmxWsClientMessage(rawDataToString(raw));
     if (!parsed) {
       return;
     }
-    const applied = this.universe.apply(parsed);
-    this.eventEmitter.emit('dmx.channelValues', applied);
+    switch (parsed.type) {
+      case 'functionStart':
+      case 'functionStop':
+        this.eventEmitter.emit(parsed.type === 'functionStart' ? 'function.start' : 'function.stop', {
+          functionPublicId: parsed.functionPublicId,
+        });
+        return;
+      case 'set': {
+        const applied = this.universe.apply(parsed.values);
+        this.eventEmitter.emit('dmx.channelValues', applied);
+        return;
+      }
+    }
   }
 
   private broadcastDelta(values: { channel: number; value: number }[]): void {
     if (values.length === 0) {
       return;
     }
-    const payload = JSON.stringify(dmxWsDeltaMessage(values));
+    this.broadcast(JSON.stringify(dmxWsDeltaMessage(values)));
+  }
+
+  private broadcast(payload: string): void {
     for (const socket of this.sockets) {
       if (socket.readyState === socket.OPEN) {
         socket.send(payload);

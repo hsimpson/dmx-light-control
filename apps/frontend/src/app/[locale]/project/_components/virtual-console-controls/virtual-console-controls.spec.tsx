@@ -1,4 +1,6 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
+import * as dmxSocketConnector from '@/lib/dmx/dmx-socket-connector';
+import { dmxStore } from '@/lib/dmx/dmx-store';
 import { fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { createControl } from '../virtual-console-document';
@@ -226,6 +228,38 @@ describe('virtual console controls', () => {
     fireEvent.pointerDown(button, { pointerId: 1 });
     fireEvent.pointerCancel(button);
     expect(onPlayValue).toHaveBeenLastCalledWith(0);
+  });
+
+  it('latches a toggle button and starts a bound function', () => {
+    const onPlayValue = vi.fn();
+    const toggle = { ...createControl('button', 0, 0), label: 'Latch', buttonMode: 'toggle' as const, upperLimit: 90 };
+    renderWithProviders(<ButtonControl control={toggle} mode="play" onPlayValue={onPlayValue} />);
+    const latch = screen.getByRole('button', { name: 'Latch' });
+    fireEvent.pointerDown(latch, { pointerId: 1 });
+    fireEvent.pointerUp(latch, { pointerId: 1 });
+    expect(onPlayValue).toHaveBeenLastCalledWith(90);
+    fireEvent.pointerDown(latch, { pointerId: 1 });
+    expect(onPlayValue).toHaveBeenLastCalledWith(0);
+
+    const startFunction = vi.fn();
+    const stopFunction = vi.fn();
+    vi.spyOn(dmxSocketConnector, 'getDmxWebsocketClient').mockReturnValue({
+      startFunction,
+      stopFunction,
+    } as unknown as ReturnType<typeof dmxSocketConnector.getDmxWebsocketClient>);
+    dmxStore.getState().setRunningFunctionIds([]);
+    const bound = {
+      ...createControl('button', 0, 0),
+      label: 'Run',
+      buttonMode: 'flash' as const,
+      functionPublicId: 'fn-1',
+    };
+    renderWithProviders(<ButtonControl control={bound} mode="play" />);
+    const run = screen.getByRole('button', { name: 'Run' });
+    fireEvent.pointerDown(run, { pointerId: 1 });
+    expect(startFunction).toHaveBeenCalledWith('fn-1');
+    fireEvent.pointerUp(run, { pointerId: 1 });
+    expect(stopFunction).toHaveBeenCalledWith('fn-1');
   });
 
   it('steps a play-mode slider with arrow keys and ignores other keys', () => {

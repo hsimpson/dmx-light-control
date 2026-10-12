@@ -52,6 +52,15 @@ describe('DmxWebsocketClient', () => {
 
     socket?.receive({ type: 'delta', values: [{ channel: 2, value: 99 }] });
     expect(store.getState().channels[1]).toBe(99);
+
+    socket?.receive({ type: 'functionState', running: ['fn-1'] });
+    expect(store.getState().runningFunctionIds).toEqual(['fn-1']);
+    client.startFunction('fn-1');
+    client.stopFunction('fn-2');
+    expect(socket?.sent).toEqual([
+      JSON.stringify({ type: 'functionStart', functionPublicId: 'fn-1' }),
+      JSON.stringify({ type: 'functionStop', functionPublicId: 'fn-2' }),
+    ]);
   });
 
   it('queues set until a snapshot arrives, then flushes automatically', () => {

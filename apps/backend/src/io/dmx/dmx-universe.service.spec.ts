@@ -24,4 +24,23 @@ describe('DmxUniverseService', () => {
     expect(universe.snapshot()[4]).toBe(128);
     expect(universe.getFrame()[5]).toBe(128);
   });
+
+  it('merges layers with highest-takes-precedence and restores the manual level when a layer is cleared', () => {
+    const universe = new DmxUniverseService();
+    universe.apply([{ channel: 1, value: 40 }]);
+    universe.setLayer('fn', [
+      { channel: 1, value: 200 },
+      { channel: 2, value: 10 },
+    ]);
+    expect(universe.snapshot()[0]).toBe(200);
+    expect(universe.snapshot()[1]).toBe(10);
+
+    const cleared = universe.clearLayer('fn');
+    expect(universe.snapshot()[0]).toBe(40);
+    expect(universe.snapshot()[1]).toBe(0);
+    expect(cleared).toEqual([
+      { channel: 1, value: 40 },
+      { channel: 2, value: 0 },
+    ]);
+  });
 });

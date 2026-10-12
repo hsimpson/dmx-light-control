@@ -173,6 +173,36 @@ export class ProjectFixtureAddressOverlapException extends BaseDomainError {
   }
 }
 
+export class ProjectFunctionNotFoundException extends BaseDomainError {
+  public readonly code = 'PROJECT_FUNCTION_NOT_FOUND';
+  public override readonly statusCode = HttpStatus.NOT_FOUND;
+
+  public constructor(projectFunctionId: string) {
+    super(`Project function with ID ${projectFunctionId} could not be found.`);
+    this.name = 'ProjectFunctionNotFoundError';
+  }
+}
+
+export class ProjectFunctionNameExistsException extends BaseDomainError {
+  public readonly code = 'PROJECT_FUNCTION_NAME_EXISTS';
+  public override readonly statusCode = HttpStatus.CONFLICT;
+
+  public constructor(name: string) {
+    super(`Function with name ${name} already exists in this project.`);
+    this.name = 'ProjectFunctionNameExistsError';
+  }
+}
+
+export class ProjectFunctionPropertiesException extends BaseDomainError {
+  public readonly code = 'PROJECT_FUNCTION_PROPERTIES_INVALID';
+  public override readonly statusCode = HttpStatus.BAD_REQUEST;
+
+  public constructor(message: string) {
+    super(message);
+    this.name = 'ProjectFunctionPropertiesError';
+  }
+}
+
 export class InvalidVirtualConsoleException extends BaseDomainError {
   public readonly code = 'INVALID_VIRTUAL_CONSOLE';
   public override readonly statusCode = HttpStatus.BAD_REQUEST;

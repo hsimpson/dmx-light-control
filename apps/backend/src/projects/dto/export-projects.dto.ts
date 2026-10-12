@@ -1,6 +1,8 @@
 import { ExportTimestampsDto } from '@/db/export-timestamps.dto';
+import { SequencePropertiesDto } from '@/projects/dto/project-function.dto';
 import { VirtualConsoleDto } from '@/projects/dto/virtual-console.dto';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
+import { ProjectFunctionType } from '@/projects/project-function';
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { GraphQLUUID } from 'graphql-scalars';
@@ -109,6 +111,29 @@ export class ProjectExportProjectDto extends ExportTimestampsDto {
   })
   @Type(() => ProjectExport3dObjectDto)
   public project3dObjects: ProjectExport3dObjectDto[];
+
+  @Field(() => [ProjectExportFunctionDto], {
+    description: 'The functions configured in this project',
+    defaultValue: [],
+  })
+  @Type(() => ProjectExportFunctionDto)
+  public projectFunctions: ProjectExportFunctionDto[];
+}
+
+@ObjectType()
+export class ProjectExportFunctionDto extends ExportTimestampsDto {
+  @Field(() => GraphQLUUID, { description: 'The public ID of the project function' })
+  public publicId: string;
+
+  @Field({ description: 'The unique name of this function within the project' })
+  public name: string;
+
+  @Field(() => ProjectFunctionType, { description: 'The function type' })
+  public type: ProjectFunctionType;
+
+  @Field(() => SequencePropertiesDto, { description: 'Sequence properties, including steps and DMX values' })
+  @Type(() => SequencePropertiesDto)
+  public sequence: SequencePropertiesDto;
 }
 
 @ObjectType()

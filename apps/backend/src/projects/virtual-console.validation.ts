@@ -144,6 +144,7 @@ function assertControl(control: VirtualConsoleControl, ids: Set<string>, depth: 
   }
   assertTypography(control);
   assertChannelBindings(control);
+  assertFunctionBinding(control);
 
   switch (control.type) {
     case VIRTUAL_CONSOLE_CONTROL_TYPE.Frame:
@@ -272,6 +273,22 @@ function assertButton(control: VirtualConsoleControl): void {
   assertColor(control.foregroundColor, 'foregroundColor');
 }
 
+function assertFunctionBinding(control: VirtualConsoleControl): void {
+  const hasFunction = control.functionPublicId !== undefined || control.functionName !== undefined;
+  if (!hasFunction && control.buttonMode === undefined) {
+    return;
+  }
+  if (control.type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Button) {
+    throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have a function binding.`);
+  }
+  if (control.functionPublicId !== undefined && !UUID_PATTERN.test(control.functionPublicId)) {
+    throw new InvalidVirtualConsoleException('Button functionPublicId must be a UUID.');
+  }
+  if (control.functionPublicId !== undefined && (control.channelBindings?.length ?? 0) > 0) {
+    throw new InvalidVirtualConsoleException('A button cannot bind both channels and a function.');
+  }
+}
+
 export type VirtualConsoleBindingFixture = {
   publicId: string;
   channelAssignmentPublicIds: ReadonlySet<string>;
@@ -298,6 +315,7 @@ export function enrichVirtualConsoleForExport(
       }[];
     } | null;
   }[],
+  functions: readonly { publicId: string | null; name: string }[] = [],
 ): VirtualConsoleDocument | null {
   if (!virtualConsole) {
     return null;
@@ -320,8 +338,12 @@ export function enrichVirtualConsoleForExport(
     }
   }
 
+  const functionNameById = new Map(functions.flatMap(fn => (fn.publicId ? [[fn.publicId, fn.name] as const] : [])));
+
   const enrichControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
-    const bindings = control.channelBindings?.map(binding => {
+    const functionName = control.functionPublicId ? functionNameById.get(control.functionPublicId) : undefined;
+    const withFunctionName: VirtualConsoleControl = functionName ? { ...control, functionName } : control;
+    const bindings = withFunctionName.channelBindings?.map(binding => {
       const metadata = metadataByKey.get(`${binding.projectFixturePublicId}:${binding.channelAssignmentPublicId}`);
       if (!metadata) {
         return binding;
@@ -334,9 +356,11 @@ export function enrichVirtualConsoleForExport(
           : {}),
       };
     });
-    const next: VirtualConsoleControl = bindings ? { ...control, channelBindings: bindings } : control;
-    if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && control.children) {
-      return { ...next, children: control.children.map(enrichControl) };
+    const next: VirtualConsoleControl = bindings
+      ? { ...withFunctionName, channelBindings: bindings }
+      : withFunctionName;
+    if (withFunctionName.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && withFunctionName.children) {
+      return { ...next, children: withFunctionName.children.map(enrichControl) };
     }
     return next;
   };
@@ -356,10 +380,11 @@ export function stripVirtualConsoleBindingHints(document: VirtualConsoleDocument
       projectFixturePublicId: binding.projectFixturePublicId,
       channelAssignmentPublicId: binding.channelAssignmentPublicId,
     }));
+    const { functionName: _functionName, ...withoutFunctionName } = control;
     const next: VirtualConsoleControl =
       bindings && bindings.length > 0
-        ? { ...control, channelBindings: bindings }
-        : { ...control, channelBindings: undefined };
+        ? { ...withoutFunctionName, channelBindings: bindings }
+        : { ...withoutFunctionName, channelBindings: undefined };
     if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && control.children) {
       return { ...next, children: control.children.map(stripControl) };
     }
@@ -373,6 +398,83 @@ export function stripVirtualConsoleBindingHints(document: VirtualConsoleDocument
       controls: page.controls.map(stripControl),
     })),
   };
+}
+
+export function remapVirtualConsoleFunctionsForImport(
+  document: VirtualConsoleDocument,
+  functions: readonly { publicId: string; name: string }[],
+): VirtualConsoleDocument {
+  const ids = new Set(functions.map(fn => fn.publicId));
+  const idByName = new Map(functions.map(fn => [fn.name, fn.publicId]));
+
+  const remapControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
+    const { functionName, functionPublicId, children, ...rest } = control;
+    let next: VirtualConsoleControl = { ...rest };
+    if (functionPublicId && ids.has(functionPublicId)) {
+      next = { ...next, functionPublicId };
+    } else if (functionName) {
+      const remapped = idByName.get(functionName);
+      if (remapped) {
+        next = { ...next, functionPublicId: remapped };
+      }
+    }
+    if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && children) {
+      next = { ...next, children: children.map(remapControl) };
+    }
+    return next;
+  };
+
+  return {
+    ...document,
+    pages: document.pages.map(page => ({
+      ...page,
+      controls: page.controls.map(remapControl),
+    })),
+  };
+}
+
+export function removeFunctionBindings(
+  document: VirtualConsoleDocument,
+  functionPublicId: string,
+): VirtualConsoleDocument {
+  const stripControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
+    const { functionPublicId: boundId, children, ...rest } = control;
+    let next: VirtualConsoleControl = { ...rest };
+    if (boundId && boundId !== functionPublicId) {
+      next = { ...next, functionPublicId: boundId };
+    }
+    if (children) {
+      next = { ...next, children: children.map(stripControl) };
+    }
+    return next;
+  };
+
+  return {
+    ...document,
+    pages: document.pages.map(page => ({
+      ...page,
+      controls: page.controls.map(stripControl),
+    })),
+  };
+}
+
+export function assertVirtualConsoleFunctionBindings(
+  document: VirtualConsoleDocument,
+  functionPublicIds: ReadonlySet<string>,
+): void {
+  const assertControlFunction = (control: VirtualConsoleControl): void => {
+    if (control.functionPublicId && !functionPublicIds.has(control.functionPublicId)) {
+      throw new InvalidVirtualConsoleException(`Function ${control.functionPublicId} does not belong to this project.`);
+    }
+    for (const child of control.children ?? []) {
+      assertControlFunction(child);
+    }
+  };
+  for (const page of document.pages) {
+    for (const control of page.controls) {
+      assertControlFunction(control);
+    }
+  }
 }
 
 export async function remapVirtualConsoleBindingsForImport(

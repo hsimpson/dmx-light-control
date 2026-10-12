@@ -1,9 +1,10 @@
 import { ExportTimestamps, ExportTimestampSource, mapExportTimestamps } from '@/db/export-timestamps';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
+import { ProjectFunctionType, SequenceProperties } from '@/projects/project-function';
 import { VirtualConsoleDocument } from '@/projects/virtual-console';
 import { enrichVirtualConsoleForExport } from '@/projects/virtual-console.validation';
 
-export const PROJECT_EXPORT_SCHEMA_VERSION = 9;
+export const PROJECT_EXPORT_SCHEMA_VERSION = 10;
 
 export type ProjectExportFixtureChannelAssignment = {
   publicId: string;
@@ -31,6 +32,13 @@ export type ProjectExport3dObject = {
   transform: number[];
 } & ExportTimestamps;
 
+export type ProjectExportFunction = {
+  publicId: string;
+  name: string;
+  type: ProjectFunctionType;
+  sequence: SequenceProperties;
+} & ExportTimestamps;
+
 export type ProjectExportProject = {
   publicId: string;
   name: string;
@@ -41,6 +49,7 @@ export type ProjectExportProject = {
   virtualConsole: VirtualConsoleDocument | null;
   projectFixtures: ProjectExportFixture[];
   project3dObjects: ProjectExport3dObject[];
+  projectFunctions: ProjectExportFunction[];
 } & ExportTimestamps;
 
 export type ProjectExportDocument = {
@@ -73,6 +82,13 @@ export type ProjectExport3dObjectSource = {
   sceneObjectType: { publicId: string | null; name: string } | null;
 } & ExportTimestampSource;
 
+export type ProjectExportFunctionSource = {
+  publicId: string | null;
+  name: string;
+  type: ProjectFunctionType;
+  properties: { sequence: SequenceProperties };
+} & ExportTimestampSource;
+
 export type ProjectExportSource = {
   publicId: string | null;
   name: string;
@@ -83,6 +99,7 @@ export type ProjectExportSource = {
   virtualConsole?: VirtualConsoleDocument | null;
   projectFixtures?: ProjectExportFixtureSource[];
   project3dObjects?: ProjectExport3dObjectSource[];
+  projectFunctions?: ProjectExportFunctionSource[];
 } & ExportTimestampSource;
 
 function mapProjectFixtureToExport(fixture: ProjectExportFixtureSource): ProjectExportFixture {
@@ -107,6 +124,16 @@ function mapProjectFixtureToExport(fixture: ProjectExportFixtureSource): Project
     transform: [...fixture.transform],
     ...(assignments.length > 0 ? { channelAssignments: assignments } : {}),
     ...mapExportTimestamps(fixture),
+  };
+}
+
+function mapProjectFunctionToExport(fn: ProjectExportFunctionSource): ProjectExportFunction {
+  return {
+    publicId: fn.publicId ?? '',
+    name: fn.name,
+    type: fn.type,
+    sequence: fn.properties.sequence,
+    ...mapExportTimestamps(fn),
   };
 }
 
@@ -135,13 +162,20 @@ export function mapProjectsToExportDocument(projects: ProjectExportSource[]): Pr
         roomWidth: project.roomWidth,
         roomLength: project.roomLength,
         roomHeight: project.roomHeight,
-        virtualConsole: enrichVirtualConsoleForExport(project.virtualConsole, project.projectFixtures ?? []),
+        virtualConsole: enrichVirtualConsoleForExport(
+          project.virtualConsole,
+          project.projectFixtures ?? [],
+          project.projectFunctions ?? [],
+        ),
         projectFixtures: [...(project.projectFixtures ?? [])]
           .map(mapProjectFixtureToExport)
           .sort((left, right) => left.startAddress - right.startAddress || left.publicId.localeCompare(right.publicId)),
         project3dObjects: [...(project.project3dObjects ?? [])]
           .map(mapProject3dObjectToExport)
           .sort((left, right) => left.publicId.localeCompare(right.publicId)),
+        projectFunctions: [...(project.projectFunctions ?? [])]
+          .map(mapProjectFunctionToExport)
+          .sort((left, right) => left.name.localeCompare(right.name) || left.publicId.localeCompare(right.publicId)),
         ...mapExportTimestamps(project),
       }))
       .sort((left, right) => left.name.localeCompare(right.name) || left.publicId.localeCompare(right.publicId)),

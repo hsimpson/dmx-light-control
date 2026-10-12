@@ -20,6 +20,7 @@ import {
 import { ProjectService } from './project.service';
 import { Project3dObjectRepository } from './repositories/project-3d-object.repository';
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
+import { ProjectFunctionRepository } from './repositories/project-function.repository';
 import { ProjectRepository } from './repositories/project.repository';
 import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
 
@@ -56,11 +57,21 @@ function build() {
     findOneByPublicId: vi.fn(),
     findOneByIdWithAssignments: vi.fn(),
   };
+  const projectFunctionRepository = {
+    createOne: vi.fn(),
+    findOneByPublicId: vi.fn(),
+    updateOneByPublicId: vi.fn(),
+    deleteByPublicIdAndUnbind: vi.fn(),
+    listByProjectId: vi.fn().mockResolvedValue([]),
+  };
+  const eventEmitter = { emit: vi.fn(), on: vi.fn() };
   const service = new ProjectService(
     projectRepository as unknown as ProjectRepository,
     projectFixtureRepository as unknown as ProjectFixtureRepository,
     project3dObjectRepository as unknown as Project3dObjectRepository,
+    projectFunctionRepository as unknown as ProjectFunctionRepository,
     sceneObjectTypeRepository as unknown as SceneObjectTypeRepository,
+    eventEmitter as never,
     fixtureRepository as unknown as FixtureRepository,
     fixtureChannelModeRepository as unknown as FixtureChannelModeRepository,
   );
@@ -92,6 +103,7 @@ describe('ProjectService', () => {
       name: 'x',
       projectFixtures: [],
       project3dObjects: [],
+      projectFunctions: [],
     });
     expect(await service.getProjectByPublicId('id')).toMatchObject({
       publicId: 'p',
@@ -154,7 +166,11 @@ describe('ProjectService', () => {
       height: 720,
       pages: [{ id: '11111111-1111-4111-8111-111111111111', name: 'Page 1', controls: [] }],
     };
-    projectRepository.findOneByPublicIdWithFixtures.mockResolvedValue({ publicId: 'p', projectFixtures: [] });
+    projectRepository.findOneByPublicIdWithFixtures.mockResolvedValue({
+      publicId: 'p',
+      projectFixtures: [],
+      projectFunctions: [],
+    });
     projectRepository.updateOneByPublicId.mockResolvedValue({ publicId: 'p', virtualConsole });
     const result = await service.updateProjectVirtualConsole({ publicId: 'p', virtualConsole });
     expect(projectRepository.updateOneByPublicId).toHaveBeenCalledWith('p', { virtualConsole });
@@ -163,6 +179,7 @@ describe('ProjectService', () => {
       virtualConsole,
       projectFixtures: [],
       project3dObjects: [],
+      projectFunctions: [],
     });
   });
 
@@ -204,6 +221,7 @@ describe('ProjectService', () => {
           fixtureChannelMode: { fixtureChannelAssignments: [{ publicId: assignmentId }] },
         },
       ],
+      projectFunctions: [],
     });
     projectRepository.updateOneByPublicId.mockResolvedValue({ publicId: 'p', virtualConsole });
     await expect(service.updateProjectVirtualConsole({ publicId: 'p', virtualConsole })).resolves.toMatchObject({
@@ -484,6 +502,7 @@ describe('ProjectService', () => {
         },
       ],
       project3dObjects: [],
+      projectFunctions: [],
     });
     expect(await service.getProjectByPublicId('p')).toMatchObject({
       projectFixtures: [

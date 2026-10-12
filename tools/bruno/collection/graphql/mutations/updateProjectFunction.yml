@@ -1,0 +1,52 @@
+info:
+  name: updateProjectFunction
+  type: graphql
+  seq: 22
+
+graphql:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body:
+    query: |
+      mutation($input: UpdateProjectFunctionInput!) {
+        updateProjectFunction(input: $input) {
+          createdAt
+          name
+          publicId
+          sequence {
+            direction
+            runOrder
+            steps {
+              dmxValues {
+                channel
+                value
+              }
+              fadeIn
+              fadeOut
+              hold
+              order
+            }
+          }
+          type
+          updatedAt
+        }
+      }
+    variables: |
+      {
+        "input": {
+          "name": null,
+          "publicId": null,
+          "sequence": {
+            "direction": null,
+            "runOrder": null,
+            "steps": []
+          }
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

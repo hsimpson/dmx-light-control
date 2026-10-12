@@ -19,6 +19,6 @@ import { DmxResolver } from './dmx.resolver';
     DmxWebsocketService,
     SerialSendService,
   ],
-  exports: [DmxSnifferCommand],
+  exports: [DmxSnifferCommand, DmxUniverseService],
 })
 export class DmxModule {}

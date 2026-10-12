@@ -34,6 +34,7 @@ graphql:
                 channelDefinitionPublicId
                 channelNumber
                 createdAt
+                publicId
                 updatedAt
               }
               createdAt

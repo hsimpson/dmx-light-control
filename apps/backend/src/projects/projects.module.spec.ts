@@ -6,6 +6,7 @@ import { ProjectService } from './project.service';
 import { ProjectsModule } from './projects.module';
 import { Project3dObjectRepository } from './repositories/project-3d-object.repository';
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
+import { ProjectFunctionRepository } from './repositories/project-function.repository';
 import { ProjectRepository } from './repositories/project.repository';
 import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
 
@@ -19,11 +20,12 @@ describe('ProjectsModule', () => {
     expect(providers).toContain(ProjectRepository);
     expect(providers).toContain(ProjectFixtureRepository);
     expect(providers).toContain(Project3dObjectRepository);
+    expect(providers).toContain(ProjectFunctionRepository);
     expect(providers).toContain(SceneObjectTypeRepository);
     expect(providers).toContain(ProjectService);
     expect(providers).toContain(ProjectImportExportService);
     expect(providers).toContain(ProjectResolver);
     expect(imports).toBeDefined();
-    expect(exports).toBeUndefined();
+    expect(exports).toEqual([ProjectFunctionRepository]);
   });
 });

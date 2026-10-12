@@ -44,6 +44,14 @@ export class DmxWebsocketClient {
     this.store.getState().setStatus('idle');
   }
 
+  public startFunction(functionPublicId: string): void {
+    this.send({ type: 'functionStart', functionPublicId });
+  }
+
+  public stopFunction(functionPublicId: string): void {
+    this.send({ type: 'functionStop', functionPublicId });
+  }
+
   public setChannels(values: DmxChannelUpdate[]): void {
     if (values.length === 0) {
       return;
@@ -98,7 +106,7 @@ export class DmxWebsocketClient {
     if (typeof parsed !== 'object' || parsed === null) {
       return;
     }
-    const message = parsed as { type?: unknown; channels?: unknown; values?: unknown };
+    const message = parsed as { type?: unknown; channels?: unknown; values?: unknown; running?: unknown };
     if (message.type === 'snapshot' && Array.isArray(message.channels)) {
       this.store.getState().applySnapshot(message.channels as number[]);
       this.sawSnapshot = true;
@@ -107,7 +115,18 @@ export class DmxWebsocketClient {
     }
     if (message.type === 'delta' && Array.isArray(message.values)) {
       this.store.getState().applyDelta(message.values as DmxChannelUpdate[]);
+      return;
     }
+    if (message.type === 'functionState' && Array.isArray(message.running)) {
+      this.store.getState().setRunningFunctionIds(message.running.filter((id): id is string => typeof id === 'string'));
+    }
+  }
+
+  private send(payload: unknown): void {
+    if (this.socket?.readyState !== OPEN) {
+      return;
+    }
+    this.socket.send(JSON.stringify(payload));
   }
 
   private onDisconnected(): void {

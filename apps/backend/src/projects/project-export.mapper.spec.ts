@@ -36,7 +36,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 9,
+      schemaVersion: 10,
       projects: [
         {
           publicId: 'a',
@@ -48,6 +48,7 @@ describe('mapProjectsToExportDocument', () => {
           virtualConsole: null,
           projectFixtures: [],
           project3dObjects: [],
+          projectFunctions: [],
           ...timestamps,
         },
         {
@@ -60,6 +61,7 @@ describe('mapProjectsToExportDocument', () => {
           virtualConsole: null,
           projectFixtures: [],
           project3dObjects: [],
+          projectFunctions: [],
           ...timestamps,
         },
       ],
@@ -102,7 +104,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 9,
+      schemaVersion: 10,
       projects: [
         {
           publicId: '',
@@ -135,6 +137,7 @@ describe('mapProjectsToExportDocument', () => {
               ...timestamps,
             },
           ],
+          projectFunctions: [],
           ...timestamps,
         },
       ],
@@ -252,7 +255,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 9,
+      schemaVersion: 10,
       projects: [
         {
           publicId: 'p',
@@ -304,6 +307,7 @@ describe('mapProjectsToExportDocument', () => {
               ...timestamps,
             },
           ],
+          projectFunctions: [],
           ...timestamps,
         },
       ],

@@ -1,5 +1,6 @@
 import { BaseDto } from '@/db/base.dto';
 import { Project3dObjectDto } from '@/projects/dto/project-3d-object.dto';
+import { ProjectFunctionDto } from '@/projects/dto/project-function.dto';
 import { ProjectFixtureDto } from '@/projects/dto/project-fixture.dto';
 import { VirtualConsoleDto } from '@/projects/dto/virtual-console.dto';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
@@ -40,4 +41,11 @@ export class ProjectDto extends BaseDto {
   })
   @Type(() => Project3dObjectDto)
   public project3dObjects: Project3dObjectDto[];
+
+  @Field(() => [ProjectFunctionDto], {
+    description: 'The functions configured in this project',
+    defaultValue: [],
+  })
+  @Type(() => ProjectFunctionDto)
+  public projectFunctions: ProjectFunctionDto[];
 }

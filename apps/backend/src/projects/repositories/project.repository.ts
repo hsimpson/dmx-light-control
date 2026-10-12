@@ -14,6 +14,7 @@ export const projectRelations = {
   project3dObjects: {
     with: project3dObjectRelations,
   },
+  projectFunctions: true,
 } as const;
 
 export type LoadedProject = NonNullable<Awaited<ReturnType<ProjectRepository['findOneByPublicIdWithFixtures']>>>;
