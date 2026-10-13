@@ -17,7 +17,6 @@ function assertNonNegativeInt(value: number, field: string): void {
 }
 
 function assertStep(step: SequenceStep, index: number): void {
-  assertNonNegativeInt(step.order, `Step ${index} order`);
   assertNonNegativeInt(step.fadeIn, `Step ${index} fadeIn`);
   assertNonNegativeInt(step.hold, `Step ${index} hold`);
   assertNonNegativeInt(step.fadeOut, `Step ${index} fadeOut`);
@@ -46,12 +45,6 @@ export function assertSequenceProperties(sequence: SequenceProperties): void {
   sequence.steps.forEach((step, index) => {
     assertStep(step, index);
   });
-  const orders = sequence.steps.map(step => step.order).sort((left, right) => left - right);
-  for (let index = 0; index < orders.length; index += 1) {
-    if (orders[index] !== index) {
-      throw new ProjectFunctionPropertiesException('Step order must be the consecutive integers 0..n-1.');
-    }
-  }
 }
 
 export function buildProjectFunctionProperties(
@@ -67,15 +60,12 @@ export function buildProjectFunctionProperties(
     sequence: {
       direction: sequence.direction,
       runOrder: sequence.runOrder,
-      steps: [...sequence.steps]
-        .sort((left, right) => left.order - right.order)
-        .map(step => ({
-          order: step.order,
-          fadeIn: step.fadeIn,
-          hold: step.hold,
-          fadeOut: step.fadeOut,
-          dmxValues: step.dmxValues.map(entry => ({ channel: entry.channel, value: entry.value })),
-        })),
+      steps: sequence.steps.map(step => ({
+        fadeIn: step.fadeIn,
+        hold: step.hold,
+        fadeOut: step.fadeOut,
+        dmxValues: step.dmxValues.map(entry => ({ channel: entry.channel, value: entry.value })),
+      })),
     },
   };
 }

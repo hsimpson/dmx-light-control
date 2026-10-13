@@ -36,7 +36,6 @@ export type SequenceStepDmxValue = {
 };
 
 export type SequenceStep = {
-  order: number;
   fadeIn: number;
   hold: number;
   fadeOut: number;

@@ -562,6 +562,18 @@ describe('assertValidVirtualConsole', () => {
     }).toThrow(/both channels and a function/);
   });
 
+  it('accepts null function fields on a frame from an export', () => {
+    const document = validDocument();
+    const frame = document.pages[0]?.controls[0];
+    if (!frame) {
+      throw new Error('missing frame');
+    }
+    Object.assign(frame, { functionPublicId: null, functionName: null, buttonMode: null });
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).not.toThrow();
+  });
+
   it('rejects a function binding on a slider', () => {
     const document = validDocument();
     const slider = document.pages[0]?.controls[0]?.children?.[0];

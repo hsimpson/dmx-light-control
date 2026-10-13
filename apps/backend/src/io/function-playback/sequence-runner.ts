@@ -21,7 +21,7 @@ function stepDuration(step: SequenceStep): number {
 }
 
 function orderedSteps(sequence: SequenceProperties): SequenceStep[] {
-  const steps = [...sequence.steps].sort((left, right) => left.order - right.order);
+  const steps = [...sequence.steps];
   return sequence.direction === SequenceDirection.Backward ? steps.reverse() : steps;
 }
 
@@ -44,9 +44,7 @@ function lerp(from: LevelMap, to: LevelMap, ratio: number): LevelMap {
     const start = from.get(channel) ?? 0;
     const end = to.get(channel) ?? 0;
     const value = Math.round(start + (end - start) * ratio);
-    if (value > 0) {
-      result.set(channel, Math.min(255, value));
-    }
+    result.set(channel, Math.min(255, Math.max(0, value)));
   }
   return result;
 }
@@ -72,7 +70,6 @@ function sample(step: SequenceStep, from: LevelMap, elapsed: number): LevelMap {
 
 function toList(levels: LevelMap): SequenceChannelValue[] {
   return [...levels.entries()]
-    .filter(([, value]) => value > 0)
     .sort((left, right) => left[0] - right[0])
     .map(([channel, value]) => ({ channel, value }));
 }

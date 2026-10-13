@@ -1,3 +1,42 @@
+export type SequenceFixtureChannel = {
+  publicId: string;
+  startAddress: number;
+  name: string;
+  channels: { channelNumber: number; name: string }[];
+};
+
+export const absoluteDmxChannel = (startAddress: number, channelNumber: number): number =>
+  startAddress + channelNumber - 1;
+
+export const sortedSequenceFixtures = (fixtures: SequenceFixtureChannel[]): SequenceFixtureChannel[] =>
+  [...fixtures].sort(
+    (left, right) => left.startAddress - right.startAddress || left.publicId.localeCompare(right.publicId),
+  );
+
+export const fixtureForAbsoluteChannel = (
+  fixtures: SequenceFixtureChannel[],
+  channel: number,
+): SequenceFixtureChannel | undefined =>
+  sortedSequenceFixtures(fixtures).find(fixture =>
+    fixture.channels.some(item => absoluteDmxChannel(fixture.startAddress, item.channelNumber) === channel),
+  );
+
+export const firstUnusedAbsoluteChannel = (
+  fixtures: SequenceFixtureChannel[],
+  used: readonly number[],
+): number | undefined => {
+  for (const fixture of sortedSequenceFixtures(fixtures)) {
+    const channels = [...fixture.channels].sort((left, right) => left.channelNumber - right.channelNumber);
+    for (const channel of channels) {
+      const absolute = absoluteDmxChannel(fixture.startAddress, channel.channelNumber);
+      if (!used.includes(absolute)) {
+        return absolute;
+      }
+    }
+  }
+  return undefined;
+};
+
 export type SequenceDmxDraft = {
   key: string;
   channel: number;
@@ -5,7 +44,7 @@ export type SequenceDmxDraft = {
 };
 
 export type SequenceStepDraft = {
-  order: number;
+  key: string;
   fadeIn: number;
   hold: number;
   fadeOut: number;
@@ -18,16 +57,13 @@ export const newSequenceDmxValue = (channel = 1, value = 0): SequenceDmxDraft =>
   value,
 });
 
-export const emptySequenceStep = (order: number): SequenceStepDraft => ({
-  order,
+export const emptySequenceStep = (): SequenceStepDraft => ({
+  key: crypto.randomUUID(),
   fadeIn: 0,
   hold: 0,
   fadeOut: 0,
   dmxValues: [],
 });
-
-export const renumberSequenceSteps = (steps: SequenceStepDraft[]): SequenceStepDraft[] =>
-  steps.map((step, order) => ({ ...step, order }));
 
 export const moveSequenceStep = (
   steps: SequenceStepDraft[],
@@ -43,5 +79,5 @@ export const moveSequenceStep = (
     return steps;
   }
   next.splice(toIndex, 0, moved);
-  return renumberSequenceSteps(next);
+  return next;
 };

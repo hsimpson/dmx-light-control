@@ -2100,11 +2100,6 @@ type SequenceStepDto {
   Hold time in milliseconds
   """
   hold: Int!
-
-  """
-  Zero-based consecutive position in the sequence
-  """
-  order: Int!
 }
 
 input SequenceStepInput {
@@ -2127,11 +2122,6 @@ input SequenceStepInput {
   Hold time in milliseconds
   """
   hold: Int!
-
-  """
-  Zero-based consecutive position in the sequence
-  """
-  order: Int!
 }
 
 """

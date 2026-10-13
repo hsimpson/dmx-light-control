@@ -4,7 +4,7 @@ import { useTranslation } from '@/lib/i18n/use-translation';
 import { Button, Group, Modal, Select, Stack, TextInput } from '@mantine/core';
 import { useState } from 'react';
 import SequenceStepsEditor from './sequence-steps-editor';
-import { emptySequenceStep, type SequenceStepDraft } from './sequence-steps';
+import { emptySequenceStep, type SequenceFixtureChannel, type SequenceStepDraft } from './sequence-steps';
 
 export type ProjectFunctionDraft = {
   name: string;
@@ -16,13 +16,22 @@ export type ProjectFunctionDraft = {
 type ProjectFunctionModalProperties = {
   opened: boolean;
   title: string;
+  fixtures: SequenceFixtureChannel[];
   initial: ProjectFunctionDraft;
   saving: boolean;
   onClose: () => void;
   onSave: (draft: ProjectFunctionDraft) => void;
 };
 
-const ProjectFunctionModal = ({ opened, title, initial, saving, onClose, onSave }: ProjectFunctionModalProperties) => {
+const ProjectFunctionModal = ({
+  opened,
+  title,
+  fixtures,
+  initial,
+  saving,
+  onClose,
+  onSave,
+}: ProjectFunctionModalProperties) => {
   const { t } = useTranslation();
   const [draft, setDraft] = useState<ProjectFunctionDraft>(initial);
 
@@ -75,6 +84,7 @@ const ProjectFunctionModal = ({ opened, title, initial, saving, onClose, onSave 
           }}
         />
         <SequenceStepsEditor
+          fixtures={fixtures}
           steps={draft.steps}
           onChange={steps => {
             setDraft({ ...draft, steps });
@@ -102,7 +112,7 @@ export const newFunctionDraft = (): ProjectFunctionDraft => ({
   name: '',
   direction: 'forward',
   runOrder: 'loop',
-  steps: [emptySequenceStep(0)],
+  steps: [emptySequenceStep()],
 });
 
 export default ProjectFunctionModal;

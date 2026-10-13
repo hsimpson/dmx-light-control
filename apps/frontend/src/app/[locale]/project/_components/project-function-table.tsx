@@ -20,7 +20,7 @@ import { PencilSimpleIcon, PlusCircleIcon, TrashIcon } from '@phosphor-icons/rea
 import { DataTable } from 'mantine-datatable';
 import { useState } from 'react';
 import ProjectFunctionModal, { newFunctionDraft, type ProjectFunctionDraft } from './project-function-modal';
-import { newSequenceDmxValue } from './sequence-steps';
+import { newSequenceDmxValue, type SequenceFixtureChannel } from './sequence-steps';
 import { findFunctionBindings } from './virtual-console-document';
 
 type ProjectFunctionRow = NonNullable<GetProjectQuery['project']>['projectFunctions'][number];
@@ -53,7 +53,7 @@ const toDraft = (fn: ProjectFunctionRow): ProjectFunctionDraft => ({
         ? 'pingPong'
         : 'loop',
   steps: (fn.sequence?.steps ?? []).map(step => ({
-    order: step.order,
+    key: crypto.randomUUID(),
     fadeIn: step.fadeIn,
     hold: step.hold,
     fadeOut: step.fadeOut,
@@ -65,7 +65,6 @@ const sequenceInput = (draft: ProjectFunctionDraft) => ({
   direction: directionToEnum(draft.direction),
   runOrder: runOrderToEnum(draft.runOrder),
   steps: draft.steps.map(step => ({
-    order: step.order,
     fadeIn: step.fadeIn,
     hold: step.hold,
     fadeOut: step.fadeOut,
@@ -90,6 +89,15 @@ const ProjectFunctionTable = ({ projectPublicId }: ProjectFunctionTablePropertie
   }
 
   const functions = data?.project?.projectFunctions ?? [];
+  const fixtures: SequenceFixtureChannel[] = (data?.project?.projectFixtures ?? []).map(fixture => ({
+    publicId: fixture.publicId,
+    startAddress: fixture.startAddress,
+    name: fixture.fixture.name,
+    channels: fixture.channelMode.fixtureChannelAssignments.map(assignment => ({
+      channelNumber: assignment.channelNumber,
+      name: assignment.fixtureChannelDefinition.name,
+    })),
+  }));
   const bindings = functionToDelete
     ? findFunctionBindings(data?.project?.virtualConsole, functionToDelete.publicId)
     : [];
@@ -198,6 +206,7 @@ const ProjectFunctionTable = ({ projectPublicId }: ProjectFunctionTablePropertie
               ? t({ id: 'ProjectFunction.editTitle', defaultMessage: 'Edit function' })
               : t({ id: 'ProjectFunction.addTitle', defaultMessage: 'Add function' })
           }
+          fixtures={fixtures}
           initial={editor.draft}
           saving={adding || updating}
           onClose={() => {

@@ -25,7 +25,6 @@ graphql:
               fadeIn
               fadeOut
               hold
-              order
             }
           }
           type

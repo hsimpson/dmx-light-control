@@ -274,17 +274,20 @@ function assertButton(control: VirtualConsoleControl): void {
 }
 
 function assertFunctionBinding(control: VirtualConsoleControl): void {
-  const hasFunction = control.functionPublicId !== undefined || control.functionName !== undefined;
-  if (!hasFunction && control.buttonMode === undefined) {
+  const functionPublicId = control.functionPublicId ?? undefined;
+  const functionName = control.functionName ?? undefined;
+  const buttonMode = control.buttonMode ?? undefined;
+  const hasFunction = functionPublicId !== undefined || functionName !== undefined;
+  if (!hasFunction && buttonMode === undefined) {
     return;
   }
   if (control.type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Button) {
     throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have a function binding.`);
   }
-  if (control.functionPublicId !== undefined && !UUID_PATTERN.test(control.functionPublicId)) {
+  if (functionPublicId !== undefined && !UUID_PATTERN.test(functionPublicId)) {
     throw new InvalidVirtualConsoleException('Button functionPublicId must be a UUID.');
   }
-  if (control.functionPublicId !== undefined && (control.channelBindings?.length ?? 0) > 0) {
+  if (functionPublicId !== undefined && (control.channelBindings?.length ?? 0) > 0) {
     throw new InvalidVirtualConsoleException('A button cannot bind both channels and a function.');
   }
 }

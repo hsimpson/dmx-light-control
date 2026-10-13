@@ -42,9 +42,6 @@ export class SequenceStepDmxValueInput {
 
 @ObjectType()
 export class SequenceStepDto {
-  @Field(() => Int, { description: 'Zero-based consecutive position in the sequence' })
-  public order: number;
-
   @Field(() => Int, { description: 'Fade-in time in milliseconds' })
   public fadeIn: number;
 
@@ -61,11 +58,6 @@ export class SequenceStepDto {
 
 @InputType()
 export class SequenceStepInput {
-  @Field(() => Int, { description: 'Zero-based consecutive position in the sequence' })
-  @IsInt()
-  @Min(0)
-  public order: number;
-
   @Field(() => Int, { description: 'Fade-in time in milliseconds' })
   @IsInt()
   @Min(0)

@@ -179,7 +179,6 @@ fragment ProjectFunctionFields on ProjectFunctionDto {
     direction
     runOrder
     steps {
-      order
       fadeIn
       hold
       fadeOut
@@ -302,7 +301,6 @@ query ExportProjects {
           direction
           runOrder
           steps {
-            order
             fadeIn
             hold
             fadeOut

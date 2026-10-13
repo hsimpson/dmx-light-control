@@ -38,7 +38,7 @@ describe('IoBridgeService', () => {
       .mockImplementation(() => undefined);
     listener?.([144, 99, 100]); // note 99 not in mapping
     expect(warnSpy).toHaveBeenCalled();
-    expect(eventEmitter.emit).not.toHaveBeenCalledWith('dmx.channelValues', expect.anything());
+    expect(eventEmitter.emit).not.toHaveBeenCalledWith('dmx.manualValues', expect.anything());
     warnSpy.mockRestore();
   });
 
@@ -47,7 +47,7 @@ describe('IoBridgeService', () => {
     service.onModuleInit();
     const listener = eventEmitterMock.on.mock.calls.find(c => c[0] === 'midi.inputMessage')?.[1];
     listener?.([144, 0, 127]); // note 0 -> channel 1, value 127 -> 255
-    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.channelValues', [{ channel: 1, value: 255 }]);
+    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.manualValues', [{ channel: 1, value: 255 }]);
   });
 
   it('maps Note Off to zero', () => {
@@ -55,7 +55,7 @@ describe('IoBridgeService', () => {
     service.onModuleInit();
     const listener = eventEmitterMock.on.mock.calls.find(c => c[0] === 'midi.inputMessage')?.[1];
     listener?.([128, 1, 100]); // note 1 -> channel 2
-    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.channelValues', [{ channel: 2, value: 0 }]);
+    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.manualValues', [{ channel: 2, value: 0 }]);
   });
 
   it('maps Poly Key Pressure and Control Change', () => {
@@ -64,8 +64,8 @@ describe('IoBridgeService', () => {
     const listener = eventEmitterMock.on.mock.calls.find(c => c[0] === 'midi.inputMessage')?.[1];
     listener?.([160, 2, 64]); // note 2 -> channel 3, value 64 -> round((64/127)*255)=129
     listener?.([176, 3, 64]); // note 3 -> channel 4, value 64 -> 129
-    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.channelValues', [{ channel: 3, value: 129 }]);
-    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.channelValues', [{ channel: 4, value: 129 }]);
+    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.manualValues', [{ channel: 3, value: 129 }]);
+    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.manualValues', [{ channel: 4, value: 129 }]);
   });
 
   it('maps fader notes to multiple channels', () => {
@@ -73,8 +73,8 @@ describe('IoBridgeService', () => {
     service.onModuleInit();
     const listener = eventEmitterMock.on.mock.calls.find(c => c[0] === 'midi.inputMessage')?.[1];
     listener?.([144, 48, 127]); // note 48 -> channels [1,10]
-    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.channelValues', [{ channel: 1, value: 255 }]);
-    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.channelValues', [{ channel: 10, value: 255 }]);
+    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.manualValues', [{ channel: 1, value: 255 }]);
+    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.manualValues', [{ channel: 10, value: 255 }]);
   });
 
   it('handles status bytes outside the handled ranges as zero value', () => {
@@ -82,6 +82,6 @@ describe('IoBridgeService', () => {
     service.onModuleInit();
     const listener = eventEmitterMock.on.mock.calls.find(c => c[0] === 'midi.inputMessage')?.[1];
     listener?.([192, 0, 0]); // Program Change: note 0 -> channel 1, status outside ranges -> dmxValue 0
-    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.channelValues', [{ channel: 1, value: 0 }]);
+    expect(eventEmitter.emit).toHaveBeenCalledWith('dmx.manualValues', [{ channel: 1, value: 0 }]);
   });
 });

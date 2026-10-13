@@ -1,7 +1,9 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
+import { DmxSendService } from '@/io/dmx/dmx-send.service';
 import { DmxUniverseService } from '@/io/dmx/dmx-universe.service';
 import { ProjectFunctionType, SequenceDirection, SequenceRunOrder } from '@/projects/project-function';
 import { ProjectFunctionRepository } from '@/projects/repositories/project-function.repository';
+import { EventEmitter2 } from 'eventemitter2';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FunctionPlaybackService } from './function-playback.service';
 
@@ -16,7 +18,7 @@ function sequenceRow(runOrder: SequenceRunOrder, hold = 1000) {
       sequence: {
         direction: SequenceDirection.Forward,
         runOrder,
-        steps: [{ order: 0, fadeIn: 0, hold, fadeOut: 0, dmxValues: [{ channel: 4, value: 80 }] }],
+        steps: [{ fadeIn: 0, hold, fadeOut: 0, dmxValues: [{ channel: 4, value: 80 }] }],
       },
     },
   };
@@ -87,6 +89,80 @@ describe('FunctionPlaybackService', () => {
     listeners.get('function.deleted')?.({ functionPublicId: FUNCTION_ID } as never);
     expect(service.runningIds()).toEqual([]);
     expect(universe.getFrame()[4]).toBe(0);
+  });
+
+  it('loops a step that sets a channel back to 0', async () => {
+    const { service, functions, universe } = build();
+    functions.findOneByPublicId.mockResolvedValue({
+      publicId: FUNCTION_ID,
+      type: ProjectFunctionType.Sequence,
+      properties: {
+        type: ProjectFunctionType.Sequence,
+        sequence: {
+          direction: SequenceDirection.Forward,
+          runOrder: SequenceRunOrder.Loop,
+          steps: [
+            { fadeIn: 0, hold: 55, fadeOut: 0, dmxValues: [{ channel: 3, value: 255 }] },
+            { fadeIn: 0, hold: 55, fadeOut: 0, dmxValues: [{ channel: 3, value: 0 }] },
+          ],
+        },
+      },
+    });
+    await service.start(FUNCTION_ID);
+    expect(universe.getFrame()[3]).toBe(255);
+
+    await vi.advanceTimersByTimeAsync(80);
+    expect(universe.getFrame()[3]).toBe(0);
+    expect(service.runningIds()).toEqual([FUNCTION_ID]);
+
+    await vi.advanceTimersByTimeAsync(50);
+    expect(universe.getFrame()[3]).toBe(255);
+  });
+
+  it('lets a later step replace the first step when manual updates share the universe', async () => {
+    vi.useFakeTimers();
+    const functions = { findOneByPublicId: vi.fn() };
+    const universe = new DmxUniverseService();
+    const eventEmitter = new AppEventEmitter(new EventEmitter2());
+    const service = new FunctionPlaybackService(
+      functions as unknown as ProjectFunctionRepository,
+      universe,
+      eventEmitter,
+    );
+    const manual = new DmxSendService(eventEmitter, universe);
+    service.onModuleInit();
+    manual.onModuleInit();
+    functions.findOneByPublicId.mockResolvedValue({
+      publicId: FUNCTION_ID,
+      type: ProjectFunctionType.Sequence,
+      properties: {
+        type: ProjectFunctionType.Sequence,
+        sequence: {
+          direction: SequenceDirection.Forward,
+          runOrder: SequenceRunOrder.Loop,
+          steps: [
+            {
+              fadeIn: 0,
+              hold: 55,
+              fadeOut: 0,
+              dmxValues: [
+                { channel: 3, value: 255 },
+                { channel: 6, value: 255 },
+              ],
+            },
+            { fadeIn: 0, hold: 55, fadeOut: 0, dmxValues: [{ channel: 3, value: 0 }] },
+          ],
+        },
+      },
+    });
+
+    await service.start(FUNCTION_ID);
+    expect(universe.getFrame()[3]).toBe(255);
+    expect(universe.getFrame()[6]).toBe(255);
+
+    await vi.advanceTimersByTimeAsync(80);
+    expect(universe.getFrame()[3]).toBe(0);
+    expect(universe.getFrame()[6]).toBe(0);
   });
 
   it('answers a state request with the running ids', async () => {

@@ -19,18 +19,19 @@ describe('DmxSendService', () => {
     vi.restoreAllMocks();
   });
 
-  it('registers a dmx.channelValues listener on init', () => {
+  it('registers a dmx.manualValues listener on init', () => {
     const { service, eventEmitterMock } = build();
     service.onModuleInit();
-    expect(eventEmitterMock.on).toHaveBeenCalledWith('dmx.channelValues', expect.any(Function));
+    expect(eventEmitterMock.on).toHaveBeenCalledWith('dmx.manualValues', expect.any(Function));
   });
 
-  it('applies channel values to the universe without claiming USB', () => {
+  it('applies manual values to the universe and republishes the applied deltas', () => {
     const { service, eventEmitterMock, universe } = build();
     service.onModuleInit();
     const listener = eventEmitterMock.on.mock.calls[0]?.[1];
     listener?.([{ channel: 5, value: 128 }]);
     expect(universe.getFrame()[5]).toBe(128);
+    expect(eventEmitterMock.emit).toHaveBeenCalledWith('dmx.channelValues', [{ channel: 5, value: 128 }]);
   });
 
   it('setChannelValues ignores out-of-range channel and value', () => {

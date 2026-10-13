@@ -12,7 +12,7 @@ type AddFunctionMutation = {
     publicId: string;
     name: string;
     type: string;
-    sequence: { direction: string; steps: { order: number }[] };
+    sequence: { direction: string };
   };
 };
 type ProjectQuery = { project: { projectFunctions: { name: string; sequence: { runOrder: string } }[] } | null };
@@ -78,9 +78,6 @@ describe('Project functions', () => {
             type
             sequence {
               direction
-              steps {
-                order
-              }
             }
           }
         }
@@ -94,7 +91,7 @@ describe('Project functions', () => {
             sequence: {
               direction: 'Forward',
               runOrder: 'Loop',
-              steps: [{ order: 0, fadeIn: 0, hold: 5000, fadeOut: 0, dmxValues: [{ channel: 7, value: 200 }] }],
+              steps: [{ fadeIn: 0, hold: 5000, fadeOut: 0, dmxValues: [{ channel: 7, value: 200 }] }],
             },
           },
         },
@@ -122,7 +119,7 @@ describe('Project functions', () => {
             sequence: {
               direction: 'Backward',
               runOrder: 'SingleShot',
-              steps: [{ order: 0, fadeIn: 0, hold: 5000, fadeOut: 0, dmxValues: [{ channel: 7, value: 180 }] }],
+              steps: [{ fadeIn: 0, hold: 5000, fadeOut: 0, dmxValues: [{ channel: 7, value: 180 }] }],
             },
           },
         },

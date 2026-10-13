@@ -350,8 +350,6 @@ export type SequenceStepInput = {
   fadeOut: number;
   /** Hold time in milliseconds */
   hold: number;
-  /** Zero-based consecutive position in the sequence */
-  order: number;
 };
 
 export type UpdateFixtureChannelAssignmentInput = {
@@ -1823,7 +1821,6 @@ export type GetProjectQuery = {
         direction: SequenceDirection;
         runOrder: SequenceRunOrder;
         steps: Array<{
-          order: number;
           fadeIn: number;
           hold: number;
           fadeOut: number;
@@ -1842,7 +1839,6 @@ export type ProjectFunctionFieldsFragment = {
     direction: SequenceDirection;
     runOrder: SequenceRunOrder;
     steps: Array<{
-      order: number;
       fadeIn: number;
       hold: number;
       fadeOut: number;
@@ -2096,7 +2092,6 @@ export type ExportProjectsQuery = {
           direction: SequenceDirection;
           runOrder: SequenceRunOrder;
           steps: Array<{
-            order: number;
             fadeIn: number;
             hold: number;
             fadeOut: number;
@@ -2363,7 +2358,6 @@ export type AddProjectFunctionMutation = {
       direction: SequenceDirection;
       runOrder: SequenceRunOrder;
       steps: Array<{
-        order: number;
         fadeIn: number;
         hold: number;
         fadeOut: number;
@@ -2386,7 +2380,6 @@ export type UpdateProjectFunctionMutation = {
       direction: SequenceDirection;
       runOrder: SequenceRunOrder;
       steps: Array<{
-        order: number;
         fadeIn: number;
         hold: number;
         fadeOut: number;
@@ -3225,7 +3218,6 @@ export const ProjectFunctionFieldsFragmentDoc = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'order' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
@@ -5037,7 +5029,6 @@ export const GetProjectDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'order' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
@@ -5868,7 +5859,6 @@ export const ExportProjectsDocument = {
                                     selectionSet: {
                                       kind: 'SelectionSet',
                                       selections: [
-                                        { kind: 'Field', name: { kind: 'Name', value: 'order' } },
                                         { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
                                         { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
                                         { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
@@ -6148,7 +6138,6 @@ export const AddProjectFunctionDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'order' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
@@ -6236,7 +6225,6 @@ export const UpdateProjectFunctionDocument = {
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'order' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
                       { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
