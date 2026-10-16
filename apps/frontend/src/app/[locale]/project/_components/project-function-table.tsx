@@ -7,10 +7,7 @@ import {
   AddProjectFunctionDocument,
   DeleteProjectFunctionDocument,
   GetProjectDocument,
-  GetProjectQuery,
   ProjectFunctionType,
-  SequenceDirection,
-  SequenceRunOrder,
   UpdateProjectFunctionDocument,
 } from '@/shared/types/graphql/graphql';
 import { useMutation, useQuery } from '@apollo/client/react';
@@ -19,58 +16,20 @@ import { notifications } from '@mantine/notifications';
 import { PencilSimpleIcon, PlusCircleIcon, TrashIcon } from '@phosphor-icons/react';
 import { DataTable } from 'mantine-datatable';
 import { useState } from 'react';
-import ProjectFunctionModal, { newFunctionDraft, type ProjectFunctionDraft } from './project-function-modal';
-import { newSequenceDmxValue, type SequenceFixtureChannel } from './sequence-steps';
+import {
+  draftToSequenceInput,
+  functionToDraft,
+  newFunctionDraft,
+  projectSequenceFixtures,
+  type ProjectFunctionDraft,
+  type ProjectFunctionRow,
+} from './project-function-mapping';
+import ProjectFunctionModal from './project-function-modal';
 import { findFunctionBindings } from './virtual-console-document';
-
-type ProjectFunctionRow = NonNullable<GetProjectQuery['project']>['projectFunctions'][number];
 
 type ProjectFunctionTableProperties = {
   projectPublicId: string;
 };
-
-const directionToEnum = (direction: ProjectFunctionDraft['direction']) =>
-  direction === 'backward' ? SequenceDirection.Backward : SequenceDirection.Forward;
-
-const runOrderToEnum = (runOrder: ProjectFunctionDraft['runOrder']) => {
-  switch (runOrder) {
-    case 'singleShot':
-      return SequenceRunOrder.SingleShot;
-    case 'pingPong':
-      return SequenceRunOrder.PingPong;
-    case 'loop':
-      return SequenceRunOrder.Loop;
-  }
-};
-
-const toDraft = (fn: ProjectFunctionRow): ProjectFunctionDraft => ({
-  name: fn.name,
-  direction: fn.sequence?.direction === SequenceDirection.Backward ? 'backward' : 'forward',
-  runOrder:
-    fn.sequence?.runOrder === SequenceRunOrder.SingleShot
-      ? 'singleShot'
-      : fn.sequence?.runOrder === SequenceRunOrder.PingPong
-        ? 'pingPong'
-        : 'loop',
-  steps: (fn.sequence?.steps ?? []).map(step => ({
-    key: crypto.randomUUID(),
-    fadeIn: step.fadeIn,
-    hold: step.hold,
-    fadeOut: step.fadeOut,
-    dmxValues: step.dmxValues.map(entry => newSequenceDmxValue(entry.channel, entry.value)),
-  })),
-});
-
-const sequenceInput = (draft: ProjectFunctionDraft) => ({
-  direction: directionToEnum(draft.direction),
-  runOrder: runOrderToEnum(draft.runOrder),
-  steps: draft.steps.map(step => ({
-    fadeIn: step.fadeIn,
-    hold: step.hold,
-    fadeOut: step.fadeOut,
-    dmxValues: step.dmxValues.map(({ channel, value }) => ({ channel, value })),
-  })),
-});
 
 const ProjectFunctionTable = ({ projectPublicId }: ProjectFunctionTableProperties) => {
   const { t } = useTranslation();
@@ -89,21 +48,13 @@ const ProjectFunctionTable = ({ projectPublicId }: ProjectFunctionTablePropertie
   }
 
   const functions = data?.project?.projectFunctions ?? [];
-  const fixtures: SequenceFixtureChannel[] = (data?.project?.projectFixtures ?? []).map(fixture => ({
-    publicId: fixture.publicId,
-    startAddress: fixture.startAddress,
-    name: fixture.fixture.name,
-    channels: fixture.channelMode.fixtureChannelAssignments.map(assignment => ({
-      channelNumber: assignment.channelNumber,
-      name: assignment.fixtureChannelDefinition.name,
-    })),
-  }));
+  const fixtures = projectSequenceFixtures(data?.project);
   const bindings = functionToDelete
     ? findFunctionBindings(data?.project?.virtualConsole, functionToDelete.publicId)
     : [];
 
   const save = async (draft: ProjectFunctionDraft) => {
-    const sequence = sequenceInput(draft);
+    const sequence = draftToSequenceInput(draft);
     try {
       if (editor?.publicId) {
         await updateProjectFunction({
@@ -177,7 +128,7 @@ const ProjectFunctionTable = ({ projectPublicId }: ProjectFunctionTablePropertie
                   variant="subtle"
                   aria-label={t({ id: 'ProjectFunction.edit', defaultMessage: 'Edit function' })}
                   onClick={() => {
-                    setEditor({ publicId: fn.publicId, draft: toDraft(fn) });
+                    setEditor({ publicId: fn.publicId, draft: functionToDraft(fn) });
                   }}
                 >
                   <PencilSimpleIcon />

@@ -3,15 +3,9 @@
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { Button, Group, Modal, Select, Stack, TextInput } from '@mantine/core';
 import { useState } from 'react';
+import type { ProjectFunctionDraft } from './project-function-mapping';
 import SequenceStepsEditor from './sequence-steps-editor';
-import { emptySequenceStep, type SequenceFixtureChannel, type SequenceStepDraft } from './sequence-steps';
-
-export type ProjectFunctionDraft = {
-  name: string;
-  direction: 'forward' | 'backward';
-  runOrder: 'loop' | 'singleShot' | 'pingPong';
-  steps: SequenceStepDraft[];
-};
+import type { SequenceFixtureChannel } from './sequence-steps';
 
 type ProjectFunctionModalProperties = {
   opened: boolean;
@@ -107,12 +101,4 @@ const ProjectFunctionModal = ({
     </Modal>
   );
 };
-
-export const newFunctionDraft = (): ProjectFunctionDraft => ({
-  name: '',
-  direction: 'forward',
-  runOrder: 'loop',
-  steps: [emptySequenceStep()],
-});
-
 export default ProjectFunctionModal;
