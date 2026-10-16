@@ -2189,6 +2189,8 @@ The extract step prunes the keys the deleted files used (`addDmxValue`, `addTitl
 Run: `nx run-many --targets typecheck,lint --projects frontend && nx test frontend && nx e2e frontend`
 Expected: all PASS. The new e2e test passes, and the existing `project-detail` e2e tests still pass.
 
+The workspace-root `.env` sets `NODE_ENV=development`, and `next build` then fails while prerendering `/_global-error`. Run the e2e target with `NODE_ENV=production nx e2e frontend`. If a dev server already holds port 3001, run `pnpm exec playwright test` in `apps/frontend` instead; it reuses that server.
+
 - [ ] **Step 11: Commit**
 
 ```bash

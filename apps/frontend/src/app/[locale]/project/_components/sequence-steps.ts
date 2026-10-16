@@ -13,30 +13,6 @@ export const sortedSequenceFixtures = (fixtures: SequenceFixtureChannel[]): Sequ
     (left, right) => left.startAddress - right.startAddress || left.publicId.localeCompare(right.publicId),
   );
 
-export const fixtureForAbsoluteChannel = (
-  fixtures: SequenceFixtureChannel[],
-  channel: number,
-): SequenceFixtureChannel | undefined =>
-  sortedSequenceFixtures(fixtures).find(fixture =>
-    fixture.channels.some(item => absoluteDmxChannel(fixture.startAddress, item.channelNumber) === channel),
-  );
-
-export const firstUnusedAbsoluteChannel = (
-  fixtures: SequenceFixtureChannel[],
-  used: readonly number[],
-): number | undefined => {
-  for (const fixture of sortedSequenceFixtures(fixtures)) {
-    const channels = [...fixture.channels].sort((left, right) => left.channelNumber - right.channelNumber);
-    for (const channel of channels) {
-      const absolute = absoluteDmxChannel(fixture.startAddress, channel.channelNumber);
-      if (!used.includes(absolute)) {
-        return absolute;
-      }
-    }
-  }
-  return undefined;
-};
-
 export type SequenceDmxDraft = {
   key: string;
   channel: number;

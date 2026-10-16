@@ -113,12 +113,51 @@ type MockedProjectFixture = {
   };
 };
 
+type MockedSequenceInput = {
+  direction: string;
+  runOrder: string;
+  steps: { fadeIn: number; hold: number; fadeOut: number; dmxValues: { channel: number; value: number }[] }[];
+};
+
+type MockedProjectFunction = {
+  __typename: 'ProjectFunctionDto';
+  publicId: string;
+  name: string;
+  type: 'Sequence';
+  sequence: {
+    __typename: 'SequencePropertiesDto';
+    direction: string;
+    runOrder: string;
+    steps: {
+      __typename: 'SequenceStepDto';
+      fadeIn: number;
+      hold: number;
+      fadeOut: number;
+      dmxValues: { __typename: 'SequenceStepDmxValueDto'; channel: number; value: number }[];
+    }[];
+  };
+};
+
+const toMockedSequence = (sequence: MockedSequenceInput): MockedProjectFunction['sequence'] => ({
+  __typename: 'SequencePropertiesDto',
+  direction: sequence.direction,
+  runOrder: sequence.runOrder,
+  steps: sequence.steps.map(step => ({
+    __typename: 'SequenceStepDto',
+    fadeIn: step.fadeIn,
+    hold: step.hold,
+    fadeOut: step.fadeOut,
+    dmxValues: step.dmxValues.map(entry => ({ __typename: 'SequenceStepDmxValueDto', ...entry })),
+  })),
+});
+
 export const mockGraphql = async (page: Page) => {
   const fixtures = [mockedFixture];
   const projects: (typeof mockedProject)[] = [{ ...mockedProject }];
   const projectFixtures: Record<string, MockedProjectFixture[]> = {
     [mockedProject.publicId]: [],
   };
+  const projectFunctions: Record<string, MockedProjectFunction[]> = { [mockedProject.publicId]: [] };
 
   await page.route('**/graphql', async route => {
     if (route.request().method() === 'OPTIONS') {
@@ -145,6 +184,7 @@ export const mockGraphql = async (page: Page) => {
           startAddress?: number;
           transform?: number[];
           channelModePublicId?: string;
+          sequence?: MockedSequenceInput;
         };
         document?: { schemaVersion: number; projects: { publicId?: string; name: string }[] };
       };
@@ -214,11 +254,37 @@ export const mockGraphql = async (page: Page) => {
             ? {
                 ...project,
                 projectFixtures: projectFixtures[publicId] ?? [],
+                projectFunctions: projectFunctions[publicId] ?? [],
                 project3dObjects: [],
               }
             : null,
         },
       };
+    } else if (postData.operationName === 'AddProjectFunction') {
+      const input = postData.variables?.input;
+      const projectPublicId = input?.projectPublicId ?? mockedProject.publicId;
+      const list = (projectFunctions[projectPublicId] ??= []);
+      const created: MockedProjectFunction = {
+        __typename: 'ProjectFunctionDto',
+        publicId: `fn-${list.length + 1}`,
+        name: input?.name ?? '',
+        type: 'Sequence',
+        sequence: toMockedSequence(input?.sequence ?? { direction: 'Forward', runOrder: 'Loop', steps: [] }),
+      };
+      list.push(created);
+      body = { data: { addProjectFunction: created } };
+    } else if (postData.operationName === 'UpdateProjectFunction') {
+      const input = postData.variables?.input;
+      const existing = Object.values(projectFunctions)
+        .flat()
+        .find(fn => fn.publicId === input?.publicId);
+      if (existing && input?.name !== undefined) {
+        existing.name = input.name;
+      }
+      if (existing && input?.sequence) {
+        existing.sequence = toMockedSequence(input.sequence);
+      }
+      body = { data: { updateProjectFunction: existing ?? null } };
     } else if (postData.operationName === 'CreateProject' || postData.query?.includes('createProject')) {
       const name = postData.variables?.name ?? 'New Project';
       const created: typeof mockedProject = {
