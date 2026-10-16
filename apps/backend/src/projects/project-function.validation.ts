@@ -66,6 +66,7 @@ export function buildProjectFunctionProperties(
         fadeOut: step.fadeOut,
         dmxValues: step.dmxValues.map(entry => ({ channel: entry.channel, value: entry.value })),
       })),
+      ...(sequence.fixturePublicIds ? { fixturePublicIds: [...new Set(sequence.fixturePublicIds)] } : {}),
     },
   };
 }

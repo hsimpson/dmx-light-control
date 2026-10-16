@@ -2020,6 +2020,11 @@ type SequencePropertiesDto {
   direction: SequenceDirection!
 
   """
+  Public IDs of the project fixtures edited by this sequence. Null when never stored.
+  """
+  fixturePublicIds: [UUID!]
+
+  """
   How the sequence repeats
   """
   runOrder: SequenceRunOrder!
@@ -2035,6 +2040,11 @@ input SequencePropertiesInput {
   Direction the sequence walks its steps
   """
   direction: SequenceDirection!
+
+  """
+  Public IDs of the project fixtures edited by this sequence. Omit to leave unset.
+  """
+  fixturePublicIds: [UUID!]
 
   """
   How the sequence repeats

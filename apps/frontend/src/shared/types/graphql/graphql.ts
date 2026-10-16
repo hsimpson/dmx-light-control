@@ -321,6 +321,8 @@ export const enum SequenceDirection {
 export type SequencePropertiesInput = {
   /** Direction the sequence walks its steps */
   direction: SequenceDirection;
+  /** Public IDs of the project fixtures edited by this sequence. Omit to leave unset. */
+  fixturePublicIds?: Array<string> | null | undefined;
   /** How the sequence repeats */
   runOrder: SequenceRunOrder;
   /** Steps in order */
@@ -1820,6 +1822,7 @@ export type GetProjectQuery = {
       sequence: {
         direction: SequenceDirection;
         runOrder: SequenceRunOrder;
+        fixturePublicIds: Array<string> | null;
         steps: Array<{
           fadeIn: number;
           hold: number;
@@ -1838,6 +1841,7 @@ export type ProjectFunctionFieldsFragment = {
   sequence: {
     direction: SequenceDirection;
     runOrder: SequenceRunOrder;
+    fixturePublicIds: Array<string> | null;
     steps: Array<{
       fadeIn: number;
       hold: number;
@@ -2091,6 +2095,7 @@ export type ExportProjectsQuery = {
         sequence: {
           direction: SequenceDirection;
           runOrder: SequenceRunOrder;
+          fixturePublicIds: Array<string> | null;
           steps: Array<{
             fadeIn: number;
             hold: number;
@@ -2357,6 +2362,7 @@ export type AddProjectFunctionMutation = {
     sequence: {
       direction: SequenceDirection;
       runOrder: SequenceRunOrder;
+      fixturePublicIds: Array<string> | null;
       steps: Array<{
         fadeIn: number;
         hold: number;
@@ -2379,6 +2385,7 @@ export type UpdateProjectFunctionMutation = {
     sequence: {
       direction: SequenceDirection;
       runOrder: SequenceRunOrder;
+      fixturePublicIds: Array<string> | null;
       steps: Array<{
         fadeIn: number;
         hold: number;
@@ -3212,6 +3219,7 @@ export const ProjectFunctionFieldsFragmentDoc = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'direction' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'runOrder' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicIds' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'steps' },
@@ -5023,6 +5031,7 @@ export const GetProjectDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'direction' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'runOrder' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicIds' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'steps' },
@@ -5853,6 +5862,7 @@ export const ExportProjectsDocument = {
                                 selections: [
                                   { kind: 'Field', name: { kind: 'Name', value: 'direction' } },
                                   { kind: 'Field', name: { kind: 'Name', value: 'runOrder' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicIds' } },
                                   {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'steps' },
@@ -6132,6 +6142,7 @@ export const AddProjectFunctionDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'direction' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'runOrder' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicIds' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'steps' },
@@ -6219,6 +6230,7 @@ export const UpdateProjectFunctionDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'direction' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'runOrder' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicIds' } },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'steps' },

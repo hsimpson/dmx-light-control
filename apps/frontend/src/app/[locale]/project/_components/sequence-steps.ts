@@ -13,6 +13,9 @@ export const sortedSequenceFixtures = (fixtures: SequenceFixtureChannel[]): Sequ
     (left, right) => left.startAddress - right.startAddress || left.publicId.localeCompare(right.publicId),
   );
 
+export const fixtureAbsoluteChannels = (fixture: SequenceFixtureChannel): number[] =>
+  fixture.channels.map(channel => absoluteDmxChannel(fixture.startAddress, channel.channelNumber));
+
 export type SequenceDmxDraft = {
   key: string;
   channel: number;
@@ -40,6 +43,9 @@ export const emptySequenceStep = (): SequenceStepDraft => ({
   fadeOut: 0,
   dmxValues: [],
 });
+
+export const removeChannelValues = (steps: SequenceStepDraft[], channels: ReadonlySet<number>): SequenceStepDraft[] =>
+  steps.map(step => ({ ...step, dmxValues: step.dmxValues.filter(entry => !channels.has(entry.channel)) }));
 
 export const moveSequenceStep = (
   steps: SequenceStepDraft[],

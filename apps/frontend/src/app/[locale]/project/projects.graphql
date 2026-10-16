@@ -178,6 +178,7 @@ fragment ProjectFunctionFields on ProjectFunctionDto {
   sequence {
     direction
     runOrder
+    fixturePublicIds
     steps {
       fadeIn
       hold
@@ -300,6 +301,7 @@ query ExportProjects {
         sequence {
           direction
           runOrder
+          fixturePublicIds
           steps {
             fadeIn
             hold

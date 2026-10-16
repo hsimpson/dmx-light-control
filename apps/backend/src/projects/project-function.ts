@@ -46,6 +46,7 @@ export type SequenceProperties = {
   direction: SequenceDirection;
   runOrder: SequenceRunOrder;
   steps: SequenceStep[];
+  fixturePublicIds?: string[];
 };
 
 export type ProjectFunctionProperties = {

@@ -85,7 +85,7 @@ const SequenceEditorPage = ({ projectPublicId, functionPublicId }: SequenceEdito
     <SequenceEditor
       key={functionPublicId ?? 'new'}
       fixtures={fixtures}
-      initial={existing ? functionToDraft(existing) : newFunctionDraft()}
+      initial={existing ? functionToDraft(existing, fixtures) : newFunctionDraft()}
       saving={adding || updating}
       onSave={save}
       onLeave={() => {

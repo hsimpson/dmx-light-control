@@ -117,6 +117,7 @@ type MockedSequenceInput = {
   direction: string;
   runOrder: string;
   steps: { fadeIn: number; hold: number; fadeOut: number; dmxValues: { channel: number; value: number }[] }[];
+  fixturePublicIds?: string[];
 };
 
 type MockedProjectFunction = {
@@ -135,6 +136,7 @@ type MockedProjectFunction = {
       fadeOut: number;
       dmxValues: { __typename: 'SequenceStepDmxValueDto'; channel: number; value: number }[];
     }[];
+    fixturePublicIds: string[] | null;
   };
 };
 
@@ -149,6 +151,7 @@ const toMockedSequence = (sequence: MockedSequenceInput): MockedProjectFunction[
     fadeOut: step.fadeOut,
     dmxValues: step.dmxValues.map(entry => ({ __typename: 'SequenceStepDmxValueDto', ...entry })),
   })),
+  fixturePublicIds: sequence.fixturePublicIds ?? null,
 });
 
 export const mockGraphql = async (page: Page) => {

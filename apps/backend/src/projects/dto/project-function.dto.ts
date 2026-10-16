@@ -91,6 +91,12 @@ export class SequencePropertiesDto {
   @Field(() => [SequenceStepDto], { description: 'Steps in order' })
   @Type(() => SequenceStepDto)
   public steps: SequenceStepDto[];
+
+  @Field(() => [GraphQLUUID], {
+    nullable: true,
+    description: 'Public IDs of the project fixtures edited by this sequence. Null when never stored.',
+  })
+  public fixturePublicIds?: string[] | null;
 }
 
 @InputType()
@@ -108,6 +114,15 @@ export class SequencePropertiesInput {
   @ValidateNested({ each: true })
   @Type(() => SequenceStepInput)
   public steps: SequenceStepInput[];
+
+  @Field(() => [GraphQLUUID], {
+    nullable: true,
+    description: 'Public IDs of the project fixtures edited by this sequence. Omit to leave unset.',
+  })
+  @IsOptional()
+  @IsArray()
+  @IsUUID('4', { each: true })
+  public fixturePublicIds?: string[];
 }
 
 @ObjectType()

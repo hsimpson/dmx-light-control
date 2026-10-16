@@ -78,4 +78,17 @@ describe('project function validation', () => {
       buildProjectFunctionProperties(ProjectFunctionType.Sequence, undefined);
     }).toThrow(/requires sequence properties/);
   });
+
+  it('stores fixture public IDs without duplicates and leaves them unset when omitted', () => {
+    const fixtureId = '0b9a7c55-3f3e-4f8e-9d43-2f6f0c1a2b3c';
+    expect(
+      buildProjectFunctionProperties(
+        ProjectFunctionType.Sequence,
+        sequence({ fixturePublicIds: [fixtureId, fixtureId] }),
+      ).sequence.fixturePublicIds,
+    ).toEqual([fixtureId]);
+    expect(buildProjectFunctionProperties(ProjectFunctionType.Sequence, sequence()).sequence).not.toHaveProperty(
+      'fixturePublicIds',
+    );
+  });
 });

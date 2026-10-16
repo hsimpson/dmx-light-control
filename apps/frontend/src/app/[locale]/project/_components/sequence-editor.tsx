@@ -2,7 +2,20 @@
 
 import { useDmxStore } from '@/lib/dmx/dmx-store';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { ActionIcon, Badge, Box, Button, Group, Modal, Select, Stack, Switch, Text, TextInput } from '@mantine/core';
+import {
+  ActionIcon,
+  Badge,
+  Box,
+  Button,
+  Group,
+  Modal,
+  MultiSelect,
+  Select,
+  Stack,
+  Switch,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ArrowLeftIcon } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
@@ -10,7 +23,12 @@ import type { ProjectFunctionDraft } from './project-function-mapping';
 import { appendCapturedStep, mergeCapturedIntoStep } from './sequence-capture';
 import SequenceMatrix from './sequence-matrix';
 import type { MatrixRange } from './sequence-matrix-model';
-import { absoluteDmxChannel, type SequenceFixtureChannel } from './sequence-steps';
+import {
+  fixtureAbsoluteChannels,
+  removeChannelValues,
+  sortedSequenceFixtures,
+  type SequenceFixtureChannel,
+} from './sequence-steps';
 import { useSequenceCapture } from './use-sequence-capture';
 import { useSequenceLivePreview } from './use-sequence-live-preview';
 
@@ -30,6 +48,7 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
   const [baseline, setBaseline] = useState(initial);
   const [range, setRange] = useState(initialRange);
   const [confirmLeave, setConfirmLeave] = useState(false);
+  const [pendingFixtureIds, setPendingFixtureIds] = useState<string[] | null>(null);
   const dirty = JSON.stringify(draft) !== JSON.stringify(baseline);
   const selectedStep =
     draft.steps.length > 0 ? Math.min(Math.max(range.focus.column, 0), draft.steps.length - 1) : undefined;
@@ -42,15 +61,18 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
       }),
     });
   });
-  const patchedChannels = useMemo(
-    () =>
-      new Set(
-        fixtures.flatMap(fixture =>
-          fixture.channels.map(channel => absoluteDmxChannel(fixture.startAddress, channel.channelNumber)),
-        ),
-      ),
-    [fixtures],
+  const selectedFixtures = useMemo(
+    () => fixtures.filter(fixture => draft.fixturePublicIds.includes(fixture.publicId)),
+    [fixtures, draft.fixturePublicIds],
   );
+  const patchedChannels = useMemo(() => new Set(selectedFixtures.flatMap(fixtureAbsoluteChannels)), [selectedFixtures]);
+  const fixtureOptions = sortedSequenceFixtures(fixtures).map(fixture => {
+    const channels = fixtureAbsoluteChannels(fixture);
+    return {
+      value: fixture.publicId,
+      label: `${fixture.name} · DMX ${Math.min(fixture.startAddress, ...channels)}–${Math.max(fixture.startAddress, ...channels)}`,
+    };
+  });
   const capture = useSequenceCapture(patchedChannels, livePreview.sentValues);
   const functionsRunning = useDmxStore(state => state.runningFunctionIds.length > 0);
 
@@ -64,6 +86,29 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
     const cell = { row: range.focus.row, column: steps.length - 1 };
     setRange({ anchor: cell, focus: cell });
     capture.clear();
+  };
+
+  const removedChannels = (fixturePublicIds: string[]) =>
+    new Set(
+      selectedFixtures.filter(fixture => !fixturePublicIds.includes(fixture.publicId)).flatMap(fixtureAbsoluteChannels),
+    );
+
+  const applyFixtures = (fixturePublicIds: string[]) => {
+    const channels = removedChannels(fixturePublicIds);
+    setDraft(current => ({ ...current, fixturePublicIds, steps: removeChannelValues(current.steps, channels) }));
+    if (channels.size > 0) {
+      const cell = { row: 0, column: range.focus.column };
+      setRange({ anchor: cell, focus: cell });
+    }
+  };
+
+  const changeFixtures = (fixturePublicIds: string[]) => {
+    const channels = removedChannels(fixturePublicIds);
+    if (draft.steps.some(step => step.dmxValues.some(entry => channels.has(entry.channel)))) {
+      setPendingFixtureIds(fixturePublicIds);
+    } else {
+      applyFixtures(fixturePublicIds);
+    }
   };
 
   const updateStep = () => {
@@ -211,8 +256,23 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
           {t({ id: 'ProjectFunction.save', defaultMessage: 'Save' })}
         </Button>
       </Group>
+      <MultiSelect
+        searchable
+        clearable
+        hidePickedOptions
+        label={t({ id: 'ProjectFunction.fixtures', defaultMessage: 'Fixtures' })}
+        placeholder={
+          draft.fixturePublicIds.length === 0
+            ? t({ id: 'ProjectFunction.fixturesPlaceholder', defaultMessage: 'Add fixtures to edit their channels' })
+            : undefined
+        }
+        nothingFoundMessage={t({ id: 'ProjectFunction.fixturesNothingFound', defaultMessage: 'No fixtures found' })}
+        data={fixtureOptions}
+        value={draft.fixturePublicIds}
+        onChange={changeFixtures}
+      />
       <SequenceMatrix
-        fixtures={fixtures}
+        fixtures={selectedFixtures}
         steps={draft.steps}
         range={range}
         onChange={steps => {
@@ -220,6 +280,43 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
         }}
         onRangeChange={setRange}
       />
+      <Modal
+        opened={pendingFixtureIds !== null}
+        title={t({ id: 'ProjectFunction.removeFixturesTitle', defaultMessage: 'Remove fixtures' })}
+        onClose={() => {
+          setPendingFixtureIds(null);
+        }}
+      >
+        <Stack>
+          <Text>
+            {t({
+              id: 'ProjectFunction.removeFixturesMessage',
+              defaultMessage: 'The removed fixtures have values in this sequence. Delete their values from all steps?',
+            })}
+          </Text>
+          <Group justify="flex-end">
+            <Button
+              variant="default"
+              onClick={() => {
+                setPendingFixtureIds(null);
+              }}
+            >
+              {t({ id: 'ProjectFunction.cancel', defaultMessage: 'Cancel' })}
+            </Button>
+            <Button
+              color="red"
+              onClick={() => {
+                if (pendingFixtureIds) {
+                  applyFixtures(pendingFixtureIds);
+                }
+                setPendingFixtureIds(null);
+              }}
+            >
+              {t({ id: 'ProjectFunction.removeFixtures', defaultMessage: 'Remove' })}
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
       <Modal
         opened={confirmLeave}
         title={t({ id: 'ProjectFunction.unsavedTitle', defaultMessage: 'Unsaved changes' })}

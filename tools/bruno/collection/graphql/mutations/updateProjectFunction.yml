@@ -16,6 +16,7 @@ graphql:
           publicId
           sequence {
             direction
+            fixturePublicIds
             runOrder
             steps {
               dmxValues {
@@ -38,6 +39,7 @@ graphql:
           "publicId": null,
           "sequence": {
             "direction": null,
+            "fixturePublicIds": [],
             "runOrder": null,
             "steps": []
           }

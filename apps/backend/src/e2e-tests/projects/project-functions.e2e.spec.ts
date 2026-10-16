@@ -12,7 +12,7 @@ type AddFunctionMutation = {
     publicId: string;
     name: string;
     type: string;
-    sequence: { direction: string };
+    sequence: { direction: string; fixturePublicIds: string[] | null };
   };
 };
 type ProjectQuery = { project: { projectFunctions: { name: string; sequence: { runOrder: string } }[] } | null };
@@ -78,6 +78,7 @@ describe('Project functions', () => {
             type
             sequence {
               direction
+              fixturePublicIds
             }
           }
         }
@@ -100,14 +101,19 @@ describe('Project functions', () => {
     expect(added.errors).toBeUndefined();
     const functionPublicId = added.data?.addProjectFunction.publicId;
     expect(added.data?.addProjectFunction.sequence.direction).toBe('Forward');
+    expect(added.data?.addProjectFunction.sequence.fixturePublicIds).toBeNull();
 
-    const updated = await graphqlQuery<{ updateProjectFunction: { sequence: { runOrder: string } } }>(
+    const fixturePublicId = '0b9a7c55-3f3e-4f8e-9d43-2f6f0c1a2b3c';
+    const updated = await graphqlQuery<{
+      updateProjectFunction: { sequence: { runOrder: string; fixturePublicIds: string[] | null } };
+    }>(
       server,
       gql`
         mutation ($input: UpdateProjectFunctionInput!) {
           updateProjectFunction(input: $input) {
             sequence {
               runOrder
+              fixturePublicIds
             }
           }
         }
@@ -120,6 +126,7 @@ describe('Project functions', () => {
               direction: 'Backward',
               runOrder: 'SingleShot',
               steps: [{ fadeIn: 0, hold: 5000, fadeOut: 0, dmxValues: [{ channel: 7, value: 180 }] }],
+              fixturePublicIds: [fixturePublicId],
             },
           },
         },
@@ -127,6 +134,7 @@ describe('Project functions', () => {
     );
     expect(updated.errors).toBeUndefined();
     expect(updated.data?.updateProjectFunction.sequence.runOrder).toBe('SingleShot');
+    expect(updated.data?.updateProjectFunction.sequence.fixturePublicIds).toEqual([fixturePublicId]);
 
     const loaded = await graphqlQuery<ProjectQuery>(
       server,

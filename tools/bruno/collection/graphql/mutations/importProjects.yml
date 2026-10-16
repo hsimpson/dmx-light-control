@@ -67,6 +67,7 @@ graphql:
               publicId
               sequence {
                 direction
+                fixturePublicIds
                 runOrder
                 steps
               }

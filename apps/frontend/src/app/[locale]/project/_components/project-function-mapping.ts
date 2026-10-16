@@ -1,6 +1,7 @@
 import { type GetProjectQuery, SequenceDirection, SequenceRunOrder } from '@/shared/types/graphql/graphql';
 import {
   emptySequenceStep,
+  fixtureAbsoluteChannels,
   newSequenceDmxValue,
   type SequenceFixtureChannel,
   type SequenceStepDraft,
@@ -15,6 +16,7 @@ export type ProjectFunctionDraft = {
   direction: 'forward' | 'backward';
   runOrder: 'loop' | 'singleShot' | 'pingPong';
   steps: SequenceStepDraft[];
+  fixturePublicIds: string[];
 };
 
 export const newFunctionDraft = (): ProjectFunctionDraft => ({
@@ -22,6 +24,7 @@ export const newFunctionDraft = (): ProjectFunctionDraft => ({
   direction: 'forward',
   runOrder: 'loop',
   steps: [emptySequenceStep()],
+  fixturePublicIds: [],
 });
 
 const directionToEnum = (direction: ProjectFunctionDraft['direction']) =>
@@ -38,7 +41,17 @@ const runOrderToEnum = (runOrder: ProjectFunctionDraft['runOrder']) => {
   }
 };
 
-export const functionToDraft = (fn: ProjectFunctionRow): ProjectFunctionDraft => ({
+const draftFixturePublicIds = (fn: ProjectFunctionRow, fixtures: SequenceFixtureChannel[]): string[] => {
+  const stored = fn.sequence?.fixturePublicIds;
+  const used = new Set(fn.sequence?.steps.flatMap(step => step.dmxValues.map(entry => entry.channel)) ?? []);
+  return fixtures
+    .filter(fixture =>
+      stored ? stored.includes(fixture.publicId) : fixtureAbsoluteChannels(fixture).some(channel => used.has(channel)),
+    )
+    .map(fixture => fixture.publicId);
+};
+
+export const functionToDraft = (fn: ProjectFunctionRow, fixtures: SequenceFixtureChannel[]): ProjectFunctionDraft => ({
   name: fn.name,
   direction: fn.sequence?.direction === SequenceDirection.Backward ? 'backward' : 'forward',
   runOrder:
@@ -54,6 +67,7 @@ export const functionToDraft = (fn: ProjectFunctionRow): ProjectFunctionDraft =>
     fadeOut: step.fadeOut,
     dmxValues: step.dmxValues.map(entry => newSequenceDmxValue(entry.channel, entry.value)),
   })),
+  fixturePublicIds: draftFixturePublicIds(fn, fixtures),
 });
 
 export const draftToSequenceInput = (draft: ProjectFunctionDraft) => ({
@@ -65,6 +79,7 @@ export const draftToSequenceInput = (draft: ProjectFunctionDraft) => ({
     fadeOut: step.fadeOut,
     dmxValues: step.dmxValues.map(({ channel, value }) => ({ channel, value })),
   })),
+  fixturePublicIds: draft.fixturePublicIds,
 });
 
 export const projectSequenceFixtures = (
