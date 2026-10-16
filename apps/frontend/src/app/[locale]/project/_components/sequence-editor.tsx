@@ -1,13 +1,15 @@
 'use client';
 
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { ActionIcon, Box, Button, Group, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Group, Modal, Select, Stack, Switch, Text, TextInput } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { ArrowLeftIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import type { ProjectFunctionDraft } from './project-function-mapping';
 import SequenceMatrix from './sequence-matrix';
 import type { MatrixRange } from './sequence-matrix-model';
 import type { SequenceFixtureChannel } from './sequence-steps';
+import { useSequenceLivePreview } from './use-sequence-live-preview';
 
 const initialRange: MatrixRange = { anchor: { row: 0, column: 0 }, focus: { row: 0, column: 0 } };
 
@@ -26,6 +28,17 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
   const [range, setRange] = useState(initialRange);
   const [confirmLeave, setConfirmLeave] = useState(false);
   const dirty = JSON.stringify(draft) !== JSON.stringify(baseline);
+  const selectedStep =
+    draft.steps.length > 0 ? Math.min(Math.max(range.focus.column, 0), draft.steps.length - 1) : undefined;
+  const livePreview = useSequenceLivePreview(draft.steps, selectedStep, () => {
+    notifications.show({
+      color: 'orange',
+      message: t({
+        id: 'ProjectFunction.liveDisconnected',
+        defaultMessage: 'Live preview stopped because the DMX connection was lost.',
+      }),
+    });
+  });
 
   useEffect(() => {
     if (!dirty) {
@@ -103,6 +116,21 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
             }
           }}
         />
+        <Group gap="xs" pb={6}>
+          <Switch
+            label={t({ id: 'ProjectFunction.live', defaultMessage: 'Live' })}
+            checked={livePreview.live}
+            disabled={!livePreview.canGoLive && !livePreview.live}
+            onChange={event => {
+              livePreview.setLive(event.currentTarget.checked);
+            }}
+          />
+          {livePreview.live ? (
+            <Badge color="red" variant="filled">
+              {t({ id: 'ProjectFunction.liveBadge', defaultMessage: 'LIVE' })}
+            </Badge>
+          ) : null}
+        </Group>
         <Box flex={1} />
         <Button
           loading={saving}

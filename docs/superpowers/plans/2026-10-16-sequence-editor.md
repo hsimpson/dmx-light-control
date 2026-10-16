@@ -2460,7 +2460,7 @@ export const useSequenceLivePreview = (
   const live = enabled && open && step !== undefined;
 
   useEffect(() => {
-    if (!live || !step) {
+    if (!live) {
       return;
     }
     restoreRef.current = snapshotChannels(dmxStore.getState().channels, stepChannels(steps), restoreRef.current);

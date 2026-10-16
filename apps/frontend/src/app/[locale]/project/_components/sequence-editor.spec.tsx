@@ -1,3 +1,4 @@
+import { resetDmxStore } from '@/lib/dmx/dmx-store';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -19,6 +20,7 @@ const initial = (): ProjectFunctionDraft => ({
 describe('SequenceEditor', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => undefined;
+    resetDmxStore();
   });
 
   it('saves the edited draft', async () => {
@@ -37,6 +39,13 @@ describe('SequenceEditor', () => {
         steps: [expect.objectContaining({ dmxValues: [expect.objectContaining({ channel: 1, value: 200 })] })],
       }),
     );
+  });
+
+  it('disables Live while the DMX socket is not connected', () => {
+    renderWithProviders(
+      <SequenceEditor fixtures={fixtures} initial={initial()} saving={false} onSave={vi.fn()} onLeave={vi.fn()} />,
+    );
+    expect(screen.getByRole('switch', { name: 'Live' })).toBeDisabled();
   });
 
   it('leaves immediately when there are no changes', async () => {
