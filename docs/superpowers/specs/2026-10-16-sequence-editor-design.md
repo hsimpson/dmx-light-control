@@ -36,7 +36,7 @@ Sequence functions are edited in `ProjectFunctionModal` (`size="lg"`) via `Seque
 - Live toggle (section 2), capture counter with Store as step, Update step, and Clear (section 2).
 - Save and Back.
 - Save is explicit. It creates (`addProjectFunction`) or updates (`updateProjectFunction`) using the current mapping in `project-function-table.tsx`, which moves into a shared helper module. After creating, the page replaces the URL with the new function's `publicId`.
-- Leaving the page with unsaved changes (Back, in-app navigation, tab close via `beforeunload`) asks for confirmation.
+- Leaving the page with unsaved changes asks for confirmation: the Back button opens a confirmation modal, and closing or reloading the tab triggers the browser's `beforeunload` prompt. Other in-app links (navbar) are not intercepted, because the Next.js App Router has no route-change blocking API.
 - Validation matches today's behaviour: the name is trimmed, and backend errors are shown as a red notification.
 
 ### Matrix layout
@@ -48,7 +48,7 @@ Sequence functions are edited in `ProjectFunctionModal` (`size="lg"`) via `Seque
 - Each channel row label shows the channel name and absolute address, e.g. "Red · 3".
 - Channel values from steps that match no patched fixture are shown in a final "Unpatched" group with one row per absolute channel. They are kept on save.
 - The label column and the timing rows stay fixed while the grid scrolls in both directions.
-- Rows are virtualised so large patches stay responsive.
+- Cells render as plain text, and only the cell being edited holds an `<input>`, so a full 512-channel patch stays cheap to render. Row virtualisation is deferred until a measured performance problem justifies a new dependency.
 
 ### Cells
 
@@ -58,11 +58,11 @@ Sequence functions are edited in `ProjectFunctionModal` (`size="lg"`) via `Seque
 - Arrow keys move the selection, and Tab or Shift+Tab move horizontally.
 - Shift+click or Shift+arrows extend a rectangular selection.
 - Ctrl+Enter after typing a value fills every selected cell with it.
-- Ctrl+C copies the selection as tab-separated text, with empty cells as empty strings. Ctrl+V pastes a tab-separated block at the anchor cell and clips it to the grid bounds.
+- Ctrl+C copies the selection as tab-separated text, with empty cells as empty strings. Ctrl+V pastes a tab-separated block at the top-left cell of the selection and clips it to the grid bounds.
 
 ### Step column actions
 
-The column header menu offers Duplicate, Insert before, Insert after, and Delete. Columns can be dragged to reorder them, reusing `@dnd-kit/react` and `moveSequenceStep`. An "Add step" control after the last column appends an empty step.
+The column header menu offers Duplicate, Insert before, Insert after, and Delete. Columns can be dragged to reorder them, reusing `@dnd-kit/react` and `moveSequenceStep`. An "Add step" button in the matrix toolbar appends an empty step.
 
 ### Filter
 
@@ -84,7 +84,7 @@ A text input filters channel rows by case-insensitive substring on the fixture o
 
 ### Live toggle
 
-- Live is disabled while no step column is selected. Deleting the selected step while Live is on switches Live off and restores.
+- Live is disabled while the sequence has no steps or the DMX socket is not open. Deleting the selected step moves the selection to the neighbouring step, and Live follows it. Deleting the last step stops Live output and restores.
 - When Live is switched on, the editor snapshots the current universe values of every channel used by any step (the "restore set"). It then sends the selected step column with `setChannels`.
 - While Live is on, any edit to the selected column, a change of selected column, or a structural change (a new channel enters the restore set) re-sends the selected column. A channel newly used by a step is added to the restore set with its value at that moment. A channel the selected step does not include is sent at its restore value.
 - When Live is switched off, the editor writes the restore set back with `setChannels` and clears it. The same happens when the page unmounts.
