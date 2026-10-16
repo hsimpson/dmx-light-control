@@ -4,7 +4,7 @@
 
 **Goal:** Replace the modal Sequence function editor with a full-page step × channel matrix editor, adding live preview and capture from the live universe.
 
-**Architecture:** A new page in the `(bare)` route group (no project tab bar) hosts `SequenceEditor`. `SequenceEditor` owns the draft, renders a header (name, direction, run order, Live, capture, Save, Back) and a `SequenceMatrix` grid. Pure helpers (`sequence-matrix.ts`, `sequence-live-preview.ts`, `sequence-capture.ts`) hold all the data logic and are unit-tested. Two hooks connect the editor to the existing DMX zustand store and WebSocket client. There are no backend changes.
+**Architecture:** A new page in the `(bare)` route group (no project tab bar) hosts `SequenceEditor`. `SequenceEditor` owns the draft, renders a header (name, direction, run order, Live, capture, Save, Back) and a `SequenceMatrix` grid. Pure helpers (`sequence-matrix-model.ts`, `sequence-live-preview.ts`, `sequence-capture.ts`) hold all the data logic and are unit-tested. Two hooks connect the editor to the existing DMX zustand store and WebSocket client. There are no backend changes.
 
 **Tech Stack:** Next.js 16 App Router, React 19, Mantine v9, Apollo Client v4, zustand (`dmxStore`), `@dnd-kit/react`, react-intl, Vitest + Testing Library, Playwright.
 
@@ -36,7 +36,7 @@
 | File                                                                                                 | Responsibility                                                                            |
 | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | `project-function-mapping.ts` (create)                                                               | `ProjectFunctionDraft` type, GraphQL ↔ draft mapping, fixture extraction                  |
-| `sequence-matrix.ts` (create)                                                                        | Pure matrix model: groups, rows, cells, ranges, fill, TSV, step insert/duplicate/remove   |
+| `sequence-matrix-model.ts` (create)                                                                  | Pure matrix model: groups, rows, cells, ranges, fill, TSV, step insert/duplicate/remove   |
 | `sequence-matrix.module.css` (create)                                                                | Sticky grid styles                                                                        |
 | `sequence-matrix.tsx` (create)                                                                       | Grid component: render, selection, editing, keyboard, clipboard, filter, collapse         |
 | `sequence-matrix-step-header.tsx` (create)                                                           | Sortable column header with the step action menu                                          |
@@ -250,8 +250,8 @@ git commit -m "refactor(frontend): extract project function draft mapping"
 
 **Files:**
 
-- Create: `apps/frontend/src/app/[locale]/project/_components/sequence-matrix.ts`
-- Create: `apps/frontend/src/app/[locale]/project/_components/sequence-matrix.spec.ts`
+- Create: `apps/frontend/src/app/[locale]/project/_components/sequence-matrix-model.ts`
+- Create: `apps/frontend/src/app/[locale]/project/_components/sequence-matrix-model.spec.ts`
 
 **Interfaces:**
 
@@ -277,7 +277,7 @@ git commit -m "refactor(frontend): extract project function draft mapping"
 
 - [ ] **Step 1: Write the failing tests**
 
-`sequence-matrix.spec.ts`:
+`sequence-matrix-model.spec.ts`:
 
 ```ts
 import { describe, expect, it } from 'vitest';
@@ -298,7 +298,7 @@ import {
   visibleMatrixRows,
   type MatrixChannelRow,
   type MatrixRow,
-} from './sequence-matrix';
+} from './sequence-matrix-model';
 import type { SequenceFixtureChannel, SequenceStepDraft } from './sequence-steps';
 
 const par: SequenceFixtureChannel = {
@@ -418,11 +418,11 @@ describe('sequence matrix model', () => {
 - [ ] **Step 2: Run the tests to verify they fail**
 
 Run: `nx test frontend -- sequence-matrix.spec`
-Expected: FAIL, because `./sequence-matrix` cannot be resolved.
+Expected: FAIL, because `./sequence-matrix-model` cannot be resolved.
 
 - [ ] **Step 3: Implement**
 
-`sequence-matrix.ts`:
+`sequence-matrix-model.ts`:
 
 ```ts
 import {
@@ -658,8 +658,8 @@ Expected: PASS (7 tests).
 - [ ] **Step 5: Commit**
 
 ```bash
-pnpm exec prettier --write "apps/frontend/src/app/[locale]/project/_components/sequence-matrix.ts" "apps/frontend/src/app/[locale]/project/_components/sequence-matrix.spec.ts"
-git add "apps/frontend/src/app/[locale]/project/_components/sequence-matrix.ts" "apps/frontend/src/app/[locale]/project/_components/sequence-matrix.spec.ts"
+pnpm exec prettier --write "apps/frontend/src/app/[locale]/project/_components/sequence-matrix-model.ts" "apps/frontend/src/app/[locale]/project/_components/sequence-matrix-model.spec.ts"
+git add "apps/frontend/src/app/[locale]/project/_components/sequence-matrix-model.ts" "apps/frontend/src/app/[locale]/project/_components/sequence-matrix-model.spec.ts"
 git commit -m "feat(frontend): add sequence matrix model helpers"
 ```
 
@@ -689,9 +689,9 @@ git commit -m "feat(frontend): add sequence matrix model helpers"
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen } from '@testing-library/react';
 import { useState } from 'react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import SequenceMatrix from './sequence-matrix';
-import type { MatrixRange } from './sequence-matrix';
+import type { MatrixRange } from './sequence-matrix-model';
 import type { SequenceFixtureChannel, SequenceStepDraft } from './sequence-steps';
 
 const fixtures: SequenceFixtureChannel[] = [
@@ -711,14 +711,24 @@ const initialSteps = (): SequenceStepDraft[] => [
   { key: 's2', fadeIn: 0, hold: 0, fadeOut: 0, dmxValues: [] },
 ];
 
-let latestSteps: SequenceStepDraft[] = [];
+const onStepsChange = vi.fn<(steps: SequenceStepDraft[]) => void>();
+
+const latestSteps = (): SequenceStepDraft[] => onStepsChange.mock.lastCall?.[0] ?? [];
 
 const Harness = () => {
   const [steps, setSteps] = useState(initialSteps);
   const [range, setRange] = useState<MatrixRange>({ anchor: { row: 0, column: 0 }, focus: { row: 0, column: 0 } });
-  latestSteps = steps;
   return (
-    <SequenceMatrix fixtures={fixtures} steps={steps} range={range} onChange={setSteps} onRangeChange={setRange} />
+    <SequenceMatrix
+      fixtures={fixtures}
+      steps={steps}
+      range={range}
+      onChange={next => {
+        onStepsChange(next);
+        setSteps(next);
+      }}
+      onRangeChange={setRange}
+    />
   );
 };
 
@@ -727,6 +737,7 @@ const cell = (name: string) => screen.getByRole('gridcell', { name });
 describe('SequenceMatrix', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => undefined;
+    onStepsChange.mockClear();
   });
 
   it('renders steps as columns and channels grouped by fixture', () => {
@@ -743,7 +754,7 @@ describe('SequenceMatrix', () => {
     await user.click(cell('Red · 11, Step 2'));
     await user.keyboard('128{Enter}');
     expect(cell('Red · 11, Step 2')).toHaveTextContent('128');
-    expect(latestSteps[1]?.dmxValues).toMatchObject([{ channel: 11, value: 128 }]);
+    expect(latestSteps()[1]?.dmxValues).toMatchObject([{ channel: 11, value: 128 }]);
   });
 
   it('clears the selection with Delete and moves with arrow keys', async () => {
@@ -940,7 +951,7 @@ import {
   type MatrixRange,
   type MatrixRow,
   type TimingField,
-} from './sequence-matrix';
+} from './sequence-matrix-model';
 import classes from './sequence-matrix.module.css';
 import { emptySequenceStep, type SequenceFixtureChannel, type SequenceStepDraft } from './sequence-steps';
 
@@ -961,7 +972,7 @@ const SequenceMatrix = ({ fixtures, steps, range, onChange, onRangeChange }: Seq
   const inputRef = useRef<HTMLInputElement>(null);
   const editFinishedRef = useRef(false);
   const [query, setQuery] = useState('');
-  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set());
+  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => new Set());
   const [editing, setEditing] = useState<string | null>(null);
   const isEditing = editing !== null;
 
@@ -1388,16 +1399,16 @@ it('duplicates, inserts and removes steps from the column menu', async () => {
   await user.click(screen.getByRole('button', { name: 'Step 1 actions' }));
   await user.click(await screen.findByRole('menuitem', { name: 'Duplicate step' }));
   expect(cell('Dimmer · 10, Step 2')).toHaveTextContent('50');
-  expect(latestSteps).toHaveLength(3);
+  expect(latestSteps()).toHaveLength(3);
 
   await user.click(screen.getByRole('button', { name: 'Step 1 actions' }));
   await user.click(await screen.findByRole('menuitem', { name: 'Insert step before' }));
   expect(cell('Dimmer · 10, Step 1')).toHaveTextContent('');
-  expect(latestSteps).toHaveLength(4);
+  expect(latestSteps()).toHaveLength(4);
 
   await user.click(screen.getByRole('button', { name: 'Step 1 actions' }));
   await user.click(await screen.findByRole('menuitem', { name: 'Remove step' }));
-  expect(latestSteps).toHaveLength(3);
+  expect(latestSteps()).toHaveLength(3);
   expect(cell('Dimmer · 10, Step 1')).toHaveTextContent('50');
 });
 ```
@@ -1513,7 +1524,7 @@ export default SequenceMatrixStepHeader;
      import SequenceMatrixStepHeader from './sequence-matrix-step-header';
      ```
 
-     Add `duplicateStep`, `insertEmptyStep` and `removeStep` to the `./sequence-matrix` import. Add `moveSequenceStep` to the `./sequence-steps` import.
+     Add `duplicateStep`, `insertEmptyStep` and `removeStep` to the `./sequence-matrix-model` import. Add `moveSequenceStep` to the `./sequence-steps` import.
 
   2. Add this module-level helper below the constants:
 
@@ -1727,7 +1738,7 @@ import { ArrowLeftIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import type { ProjectFunctionDraft } from './project-function-mapping';
 import SequenceMatrix from './sequence-matrix';
-import type { MatrixRange } from './sequence-matrix';
+import type { MatrixRange } from './sequence-matrix-model';
 import type { SequenceFixtureChannel } from './sequence-steps';
 
 const initialRange: MatrixRange = { anchor: { row: 0, column: 0 }, focus: { row: 0, column: 0 } };
@@ -2668,7 +2679,7 @@ Expected: FAIL, because the modules cannot be resolved.
 
 ```ts
 import type { DmxChannelUpdate } from '@/lib/dmx/dmx-store';
-import { setCellValue } from './sequence-matrix';
+import { setCellValue } from './sequence-matrix-model';
 import { emptySequenceStep, newSequenceDmxValue, type SequenceStepDraft } from './sequence-steps';
 
 export const appendCapturedStep = (

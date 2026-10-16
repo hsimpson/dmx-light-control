@@ -16,7 +16,7 @@ import {
   visibleMatrixRows,
   type MatrixChannelRow,
   type MatrixRow,
-} from './sequence-matrix';
+} from './sequence-matrix-model';
 import type { SequenceFixtureChannel, SequenceStepDraft } from './sequence-steps';
 
 const par: SequenceFixtureChannel = {

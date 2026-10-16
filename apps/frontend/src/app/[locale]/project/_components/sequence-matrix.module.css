@@ -1,0 +1,108 @@
+.scroller {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-sm);
+}
+
+.grid {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--mantine-font-size-sm);
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+
+.grid th,
+.grid td {
+  height: 30px;
+  padding: 0 8px;
+  white-space: nowrap;
+  border-right: 1px solid var(--mantine-color-default-border);
+  border-bottom: 1px solid var(--mantine-color-default-border);
+  background: var(--mantine-color-body);
+}
+
+.corner,
+.stepHeader {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.corner {
+  left: 0;
+  z-index: 5;
+}
+
+.stepHeader {
+  min-width: 72px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.activeColumn {
+  color: var(--mantine-color-blue-filled);
+}
+
+.rowLabel {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  min-width: 200px;
+  font-weight: 400;
+  text-align: left;
+}
+
+.timingLabel {
+  z-index: 4;
+  font-weight: 600;
+}
+
+.timingCell {
+  position: sticky;
+  z-index: 1;
+}
+
+.cell {
+  min-width: 72px;
+  text-align: right;
+  cursor: cell;
+  user-select: none;
+}
+
+.grid .cell[aria-selected='true'] {
+  background: var(--mantine-color-blue-light);
+}
+
+.focused {
+  outline: 2px solid var(--mantine-color-blue-filled);
+  outline-offset: -2px;
+}
+
+.empty {
+  color: var(--mantine-color-dimmed);
+}
+
+.grid .groupRow th {
+  padding: 0;
+  background: var(--mantine-color-default-hover);
+}
+
+.groupLabel {
+  position: sticky;
+  left: 0;
+  width: max-content;
+  padding: 0 8px;
+}
+
+.cellInput {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  text-align: right;
+}
