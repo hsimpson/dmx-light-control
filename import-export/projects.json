@@ -1589,7 +1589,23 @@
                     "value": 255
                   },
                   {
+                    "channel": 5,
+                    "value": 47
+                  },
+                  {
+                    "channel": 6,
+                    "value": 255
+                  },
+                  {
                     "channel": 12,
+                    "value": 255
+                  },
+                  {
+                    "channel": 14,
+                    "value": 47
+                  },
+                  {
+                    "channel": 15,
                     "value": 255
                   },
                   {
@@ -1597,7 +1613,23 @@
                     "value": 255
                   },
                   {
+                    "channel": 23,
+                    "value": 47
+                  },
+                  {
+                    "channel": 24,
+                    "value": 255
+                  },
+                  {
                     "channel": 30,
+                    "value": 255
+                  },
+                  {
+                    "channel": 32,
+                    "value": 47
+                  },
+                  {
+                    "channel": 33,
                     "value": 255
                   }
                 ],
@@ -1612,7 +1644,23 @@
                     "value": 0
                   },
                   {
+                    "channel": 5,
+                    "value": 0
+                  },
+                  {
+                    "channel": 6,
+                    "value": 0
+                  },
+                  {
                     "channel": 12,
+                    "value": 0
+                  },
+                  {
+                    "channel": 14,
+                    "value": 0
+                  },
+                  {
+                    "channel": 15,
                     "value": 0
                   },
                   {
@@ -1620,8 +1668,299 @@
                     "value": 0
                   },
                   {
+                    "channel": 23,
+                    "value": 0
+                  },
+                  {
+                    "channel": 24,
+                    "value": 0
+                  },
+                  {
                     "channel": 30,
                     "value": 0
+                  },
+                  {
+                    "channel": 32,
+                    "value": 0
+                  },
+                  {
+                    "channel": 33,
+                    "value": 0
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "hold": 45
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 3,
+                    "value": 255
+                  },
+                  {
+                    "channel": 5,
+                    "value": 47
+                  },
+                  {
+                    "channel": 6,
+                    "value": 255
+                  },
+                  {
+                    "channel": 12,
+                    "value": 255
+                  },
+                  {
+                    "channel": 14,
+                    "value": 47
+                  },
+                  {
+                    "channel": 15,
+                    "value": 255
+                  },
+                  {
+                    "channel": 21,
+                    "value": 255
+                  },
+                  {
+                    "channel": 23,
+                    "value": 47
+                  },
+                  {
+                    "channel": 24,
+                    "value": 255
+                  },
+                  {
+                    "channel": 30,
+                    "value": 255
+                  },
+                  {
+                    "channel": 32,
+                    "value": 47
+                  },
+                  {
+                    "channel": 33,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "hold": 55
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 3,
+                    "value": 0
+                  },
+                  {
+                    "channel": 5,
+                    "value": 0
+                  },
+                  {
+                    "channel": 6,
+                    "value": 0
+                  },
+                  {
+                    "channel": 12,
+                    "value": 0
+                  },
+                  {
+                    "channel": 14,
+                    "value": 0
+                  },
+                  {
+                    "channel": 15,
+                    "value": 0
+                  },
+                  {
+                    "channel": 21,
+                    "value": 0
+                  },
+                  {
+                    "channel": 23,
+                    "value": 0
+                  },
+                  {
+                    "channel": 24,
+                    "value": 0
+                  },
+                  {
+                    "channel": 30,
+                    "value": 0
+                  },
+                  {
+                    "channel": 32,
+                    "value": 0
+                  },
+                  {
+                    "channel": 33,
+                    "value": 0
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "hold": 45
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 3,
+                    "value": 255
+                  },
+                  {
+                    "channel": 5,
+                    "value": 47
+                  },
+                  {
+                    "channel": 6,
+                    "value": 255
+                  },
+                  {
+                    "channel": 12,
+                    "value": 255
+                  },
+                  {
+                    "channel": 14,
+                    "value": 47
+                  },
+                  {
+                    "channel": 15,
+                    "value": 255
+                  },
+                  {
+                    "channel": 21,
+                    "value": 255
+                  },
+                  {
+                    "channel": 23,
+                    "value": 47
+                  },
+                  {
+                    "channel": 24,
+                    "value": 255
+                  },
+                  {
+                    "channel": 30,
+                    "value": 255
+                  },
+                  {
+                    "channel": 32,
+                    "value": 47
+                  },
+                  {
+                    "channel": 33,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "hold": 55
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 3,
+                    "value": 0
+                  },
+                  {
+                    "channel": 5,
+                    "value": 0
+                  },
+                  {
+                    "channel": 6,
+                    "value": 0
+                  },
+                  {
+                    "channel": 12,
+                    "value": 0
+                  },
+                  {
+                    "channel": 14,
+                    "value": 0
+                  },
+                  {
+                    "channel": 15,
+                    "value": 0
+                  },
+                  {
+                    "channel": 21,
+                    "value": 0
+                  },
+                  {
+                    "channel": 23,
+                    "value": 0
+                  },
+                  {
+                    "channel": 24,
+                    "value": 0
+                  },
+                  {
+                    "channel": 30,
+                    "value": 0
+                  },
+                  {
+                    "channel": 32,
+                    "value": 0
+                  },
+                  {
+                    "channel": 33,
+                    "value": 0
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "hold": 135
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 37,
+                    "value": 255
+                  },
+                  {
+                    "channel": 41,
+                    "value": 47
+                  },
+                  {
+                    "channel": 42,
+                    "value": 255
+                  },
+                  {
+                    "channel": 46,
+                    "value": 255
+                  },
+                  {
+                    "channel": 50,
+                    "value": 47
+                  },
+                  {
+                    "channel": 51,
+                    "value": 255
+                  },
+                  {
+                    "channel": 55,
+                    "value": 255
+                  },
+                  {
+                    "channel": 59,
+                    "value": 47
+                  },
+                  {
+                    "channel": 60,
+                    "value": 255
+                  },
+                  {
+                    "channel": 64,
+                    "value": 255
+                  },
+                  {
+                    "channel": 68,
+                    "value": 47
+                  },
+                  {
+                    "channel": 69,
+                    "value": 255
                   }
                 ],
                 "fadeIn": 0,
@@ -1632,6 +1971,69 @@
                 "dmxValues": [
                   {
                     "channel": 37,
+                    "value": 0
+                  },
+                  {
+                    "channel": 41,
+                    "value": 0
+                  },
+                  {
+                    "channel": 42,
+                    "value": 0
+                  },
+                  {
+                    "channel": 46,
+                    "value": 0
+                  },
+                  {
+                    "channel": 50,
+                    "value": 0
+                  },
+                  {
+                    "channel": 51,
+                    "value": 0
+                  },
+                  {
+                    "channel": 55,
+                    "value": 0
+                  },
+                  {
+                    "channel": 59,
+                    "value": 0
+                  },
+                  {
+                    "channel": 60,
+                    "value": 0
+                  },
+                  {
+                    "channel": 64,
+                    "value": 0
+                  },
+                  {
+                    "channel": 68,
+                    "value": 0
+                  },
+                  {
+                    "channel": 69,
+                    "value": 0
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "hold": 45
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 37,
+                    "value": 255
+                  },
+                  {
+                    "channel": 41,
+                    "value": 47
+                  },
+                  {
+                    "channel": 42,
                     "value": 255
                   },
                   {
@@ -1639,11 +2041,35 @@
                     "value": 255
                   },
                   {
+                    "channel": 50,
+                    "value": 47
+                  },
+                  {
+                    "channel": 51,
+                    "value": 255
+                  },
+                  {
                     "channel": 55,
                     "value": 255
                   },
                   {
+                    "channel": 59,
+                    "value": 47
+                  },
+                  {
+                    "channel": 60,
+                    "value": 255
+                  },
+                  {
                     "channel": 64,
+                    "value": 255
+                  },
+                  {
+                    "channel": 68,
+                    "value": 47
+                  },
+                  {
+                    "channel": 69,
                     "value": 255
                   }
                 ],
@@ -1658,7 +2084,23 @@
                     "value": 0
                   },
                   {
+                    "channel": 41,
+                    "value": 0
+                  },
+                  {
+                    "channel": 42,
+                    "value": 0
+                  },
+                  {
                     "channel": 46,
+                    "value": 0
+                  },
+                  {
+                    "channel": 50,
+                    "value": 0
+                  },
+                  {
+                    "channel": 51,
                     "value": 0
                   },
                   {
@@ -1666,13 +2108,139 @@
                     "value": 0
                   },
                   {
+                    "channel": 59,
+                    "value": 0
+                  },
+                  {
+                    "channel": 60,
+                    "value": 0
+                  },
+                  {
                     "channel": 64,
+                    "value": 0
+                  },
+                  {
+                    "channel": 68,
+                    "value": 0
+                  },
+                  {
+                    "channel": 69,
                     "value": 0
                   }
                 ],
                 "fadeIn": 0,
                 "fadeOut": 0,
+                "hold": 45
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 37,
+                    "value": 255
+                  },
+                  {
+                    "channel": 41,
+                    "value": 47
+                  },
+                  {
+                    "channel": 42,
+                    "value": 255
+                  },
+                  {
+                    "channel": 46,
+                    "value": 255
+                  },
+                  {
+                    "channel": 50,
+                    "value": 47
+                  },
+                  {
+                    "channel": 51,
+                    "value": 255
+                  },
+                  {
+                    "channel": 55,
+                    "value": 255
+                  },
+                  {
+                    "channel": 59,
+                    "value": 47
+                  },
+                  {
+                    "channel": 60,
+                    "value": 255
+                  },
+                  {
+                    "channel": 64,
+                    "value": 255
+                  },
+                  {
+                    "channel": 68,
+                    "value": 47
+                  },
+                  {
+                    "channel": 69,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 0,
                 "hold": 55
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 37,
+                    "value": 0
+                  },
+                  {
+                    "channel": 41,
+                    "value": 0
+                  },
+                  {
+                    "channel": 42,
+                    "value": 0
+                  },
+                  {
+                    "channel": 46,
+                    "value": 0
+                  },
+                  {
+                    "channel": 50,
+                    "value": 0
+                  },
+                  {
+                    "channel": 51,
+                    "value": 0
+                  },
+                  {
+                    "channel": 55,
+                    "value": 0
+                  },
+                  {
+                    "channel": 59,
+                    "value": 0
+                  },
+                  {
+                    "channel": 60,
+                    "value": 0
+                  },
+                  {
+                    "channel": 64,
+                    "value": 0
+                  },
+                  {
+                    "channel": 68,
+                    "value": 0
+                  },
+                  {
+                    "channel": 69,
+                    "value": 0
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 0,
+                "hold": 135
               }
             ]
           },
