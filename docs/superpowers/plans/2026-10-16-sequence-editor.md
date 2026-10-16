@@ -2162,7 +2162,7 @@ test.describe('project functions', () => {
     await page.getByRole('button', { name: 'Schritt hinzufügen' }).click();
     await expect(page.getByRole('columnheader', { name: /Schritt 2/ })).toBeVisible();
 
-    await page.getByRole('button', { name: 'Speichern' }).click();
+    await page.getByRole('button', { name: 'Speichern', exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/de/project/${mockedProject.publicId}/functions/fn-1$`));
 
     await page.getByRole('button', { name: 'Zurück' }).click();
