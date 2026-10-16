@@ -2735,7 +2735,7 @@ export const useSequenceCapture = (
   patchedChannels: ReadonlySet<number>,
   sentValues: RefObject<Map<number, number>>,
 ): SequenceCapture => {
-  const [touched, setTouched] = useState<ReadonlySet<number>>(new Set());
+  const [touched, setTouched] = useState<ReadonlySet<number>>(() => new Set());
 
   useEffect(
     () =>

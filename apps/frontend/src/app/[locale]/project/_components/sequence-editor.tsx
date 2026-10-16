@@ -1,14 +1,17 @@
 'use client';
 
+import { useDmxStore } from '@/lib/dmx/dmx-store';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { ActionIcon, Badge, Box, Button, Group, Modal, Select, Stack, Switch, Text, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ArrowLeftIcon } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { ProjectFunctionDraft } from './project-function-mapping';
+import { appendCapturedStep, mergeCapturedIntoStep } from './sequence-capture';
 import SequenceMatrix from './sequence-matrix';
 import type { MatrixRange } from './sequence-matrix-model';
-import type { SequenceFixtureChannel } from './sequence-steps';
+import { absoluteDmxChannel, type SequenceFixtureChannel } from './sequence-steps';
+import { useSequenceCapture } from './use-sequence-capture';
 import { useSequenceLivePreview } from './use-sequence-live-preview';
 
 const initialRange: MatrixRange = { anchor: { row: 0, column: 0 }, focus: { row: 0, column: 0 } };
@@ -39,6 +42,38 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
       }),
     });
   });
+  const patchedChannels = useMemo(
+    () =>
+      new Set(
+        fixtures.flatMap(fixture =>
+          fixture.channels.map(channel => absoluteDmxChannel(fixture.startAddress, channel.channelNumber)),
+        ),
+      ),
+    [fixtures],
+  );
+  const capture = useSequenceCapture(patchedChannels, livePreview.sentValues);
+  const functionsRunning = useDmxStore(state => state.runningFunctionIds.length > 0);
+
+  const storeAsStep = () => {
+    const steps = appendCapturedStep(
+      draft.steps,
+      capture.capturedValues(),
+      selectedStep === undefined ? undefined : draft.steps[selectedStep],
+    );
+    setDraft(current => ({ ...current, steps }));
+    const cell = { row: range.focus.row, column: steps.length - 1 };
+    setRange({ anchor: cell, focus: cell });
+    capture.clear();
+  };
+
+  const updateStep = () => {
+    if (selectedStep === undefined) {
+      return;
+    }
+    const steps = mergeCapturedIntoStep(draft.steps, selectedStep, capture.capturedValues());
+    setDraft(current => ({ ...current, steps }));
+    capture.clear();
+  };
 
   useEffect(() => {
     if (!dirty) {
@@ -131,6 +166,41 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
             </Badge>
           ) : null}
         </Group>
+        <Stack gap={2} pb={6}>
+          <Group gap="xs">
+            <Text size="sm">
+              {t(
+                {
+                  id: 'ProjectFunction.capture.count',
+                  defaultMessage: '{count, plural, one {# channel} other {# channels}} captured',
+                },
+                { count: capture.touchedCount },
+              )}
+            </Text>
+            <Button size="xs" variant="light" disabled={capture.touchedCount === 0} onClick={storeAsStep}>
+              {t({ id: 'ProjectFunction.capture.storeAsStep', defaultMessage: 'Store as step' })}
+            </Button>
+            <Button
+              size="xs"
+              variant="light"
+              disabled={capture.touchedCount === 0 || selectedStep === undefined}
+              onClick={updateStep}
+            >
+              {t({ id: 'ProjectFunction.capture.updateStep', defaultMessage: 'Update step' })}
+            </Button>
+            <Button size="xs" variant="subtle" disabled={capture.touchedCount === 0} onClick={capture.clear}>
+              {t({ id: 'ProjectFunction.capture.clear', defaultMessage: 'Clear' })}
+            </Button>
+          </Group>
+          {functionsRunning ? (
+            <Text size="xs" c="orange">
+              {t({
+                id: 'ProjectFunction.capture.runningWarning',
+                defaultMessage: 'Running functions also change captured channels.',
+              })}
+            </Text>
+          ) : null}
+        </Stack>
         <Box flex={1} />
         <Button
           loading={saving}

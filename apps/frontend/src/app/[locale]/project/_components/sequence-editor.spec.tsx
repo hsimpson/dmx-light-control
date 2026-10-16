@@ -1,6 +1,6 @@
-import { resetDmxStore } from '@/lib/dmx/dmx-store';
+import { dmxStore, resetDmxStore } from '@/lib/dmx/dmx-store';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ProjectFunctionDraft } from './project-function-mapping';
 import SequenceEditor from './sequence-editor';
@@ -46,6 +46,19 @@ describe('SequenceEditor', () => {
       <SequenceEditor fixtures={fixtures} initial={initial()} saving={false} onSave={vi.fn()} onLeave={vi.fn()} />,
     );
     expect(screen.getByRole('switch', { name: 'Live' })).toBeDisabled();
+  });
+
+  it('stores captured live values as a new step', async () => {
+    const { user } = renderWithProviders(
+      <SequenceEditor fixtures={fixtures} initial={initial()} saving={false} onSave={vi.fn()} onLeave={vi.fn()} />,
+    );
+    act(() => {
+      dmxStore.getState().applyDelta([{ channel: 1, value: 180 }]);
+    });
+    expect(screen.getByText('1 channel captured')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Store as step' }));
+    expect(screen.getByRole('gridcell', { name: 'Dimmer · 1, Step 2' })).toHaveTextContent('180');
+    expect(screen.getByText('0 channels captured')).toBeInTheDocument();
   });
 
   it('leaves immediately when there are no changes', async () => {
