@@ -1,5 +1,5 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import SequenceMatrix from './sequence-matrix';
@@ -102,6 +102,29 @@ describe('SequenceMatrix', () => {
     await user.clear(screen.getByRole('textbox', { name: 'Filter channels' }));
     await user.click(screen.getByRole('button', { name: 'Toggle PAR [1] · DMX 10–11' }));
     expect(screen.queryByRole('gridcell', { name: 'Red · 11, Step 1' })).not.toBeInTheDocument();
+  });
+
+  it('duplicates, inserts and removes steps from the column menu', async () => {
+    const { user } = renderWithProviders(<Harness />);
+    const chooseStepAction = async (action: string) => {
+      await user.click(screen.getByRole('button', { name: 'Step 1 actions' }));
+      await user.click(await screen.findByRole('menuitem', { name: action }));
+      await waitFor(() => {
+        expect(screen.queryByRole('menu', { hidden: true })).not.toBeInTheDocument();
+      });
+    };
+
+    await chooseStepAction('Duplicate step');
+    expect(cell('Dimmer · 10, Step 2')).toHaveTextContent('50');
+    expect(latestSteps()).toHaveLength(3);
+
+    await chooseStepAction('Insert step before');
+    expect(cell('Dimmer · 10, Step 1')).toHaveTextContent('');
+    expect(latestSteps()).toHaveLength(4);
+
+    await chooseStepAction('Remove step');
+    expect(latestSteps()).toHaveLength(3);
+    expect(cell('Dimmer · 10, Step 1')).toHaveTextContent('50');
   });
 
   it('adds a step from the toolbar', async () => {

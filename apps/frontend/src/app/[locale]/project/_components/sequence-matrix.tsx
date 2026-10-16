@@ -1,22 +1,27 @@
 'use client';
 
 import { useTranslation } from '@/lib/i18n/use-translation';
+import { DragDropProvider } from '@dnd-kit/react';
 import { ActionIcon, Button, Group, Stack, Text, TextInput } from '@mantine/core';
 import { CaretDownIcon, CaretRightIcon, MagnifyingGlassIcon, PlusIcon } from '@phosphor-icons/react';
 import clsx from 'clsx';
 import { Fragment, useEffect, useMemo, useRef, useState, type ClipboardEvent, type KeyboardEvent } from 'react';
 import classes from './sequence-matrix.module.css';
+import SequenceMatrixStepHeader from './sequence-matrix-step-header';
 import {
   buildMatrixGroups,
+  duplicateStep,
   fillRange,
   filterMatrixGroups,
   getCellValue,
   groupRowOffsets,
+  insertEmptyStep,
   isCellInRange,
   parseCellInput,
   pasteTsv,
   rangeBounds,
   rangeToTsv,
+  removeStep,
   setCellValue,
   TIMING_FIELDS,
   UNPATCHED_GROUP_KEY,
@@ -26,10 +31,26 @@ import {
   type MatrixRow,
   type TimingField,
 } from './sequence-matrix-model';
-import { emptySequenceStep, type SequenceFixtureChannel, type SequenceStepDraft } from './sequence-steps';
+import {
+  emptySequenceStep,
+  moveSequenceStep,
+  type SequenceFixtureChannel,
+  type SequenceStepDraft,
+} from './sequence-steps';
 
 const HEADER_HEIGHT = 40;
 const ROW_HEIGHT = 30;
+
+function isSortableSource(source: unknown): source is { initialIndex: number; index: number } {
+  return (
+    typeof source === 'object' &&
+    source !== null &&
+    'initialIndex' in source &&
+    'index' in source &&
+    typeof source.initialIndex === 'number' &&
+    typeof source.index === 'number'
+  );
+}
 
 export type SequenceMatrixProperties = {
   fixtures: SequenceFixtureChannel[];
@@ -329,89 +350,114 @@ const SequenceMatrix = ({ fixtures, steps, range, onChange, onRangeChange }: Seq
           {t({ id: 'ProjectFunction.matrix.noSteps', defaultMessage: 'No steps yet. Add a step to start.' })}
         </Text>
       ) : (
-        <div className={classes.scroller}>
-          <table
-            ref={gridRef}
-            role="grid"
-            tabIndex={0}
-            aria-label={t({ id: 'ProjectFunction.matrix.label', defaultMessage: 'Sequence steps' })}
-            className={classes.grid}
-            onKeyDown={onGridKeyDown}
-            onCopy={onCopy}
-            onPaste={onPaste}
-          >
-            <thead>
-              <tr>
-                <th scope="col" className={classes.corner} style={{ height: HEADER_HEIGHT }} />
-                {steps.map((step, column) => (
-                  <th
-                    key={step.key}
-                    scope="col"
-                    className={clsx(classes.stepHeader, column === focus.column && classes.activeColumn)}
-                    style={{ height: HEADER_HEIGHT }}
-                  >
-                    {stepLabel(column)}
-                  </th>
-                ))}
-              </tr>
-              {TIMING_FIELDS.map((field, index) => {
-                const top = HEADER_HEIGHT + index * ROW_HEIGHT;
-                const row: MatrixRow = { kind: 'timing', field };
-                return (
-                  <tr key={field}>
-                    <th scope="row" className={clsx(classes.rowLabel, classes.timingLabel)} style={{ top }}>
-                      {timingLabel(field)}
-                    </th>
-                    {steps.map((step, column) => renderCell(row, index, step, column, top))}
-                  </tr>
-                );
-              })}
-            </thead>
-            <tbody>
-              {groups.map((group, groupIndex) => {
-                const isCollapsed = collapsed.has(group.key);
-                const offset = offsets[groupIndex] ?? 0;
-                return (
-                  <Fragment key={group.key}>
-                    <tr className={classes.groupRow}>
-                      <th scope="colgroup" colSpan={steps.length + 1}>
-                        <Group gap={4} wrap="nowrap" className={classes.groupLabel}>
-                          <ActionIcon
-                            size="sm"
-                            variant="subtle"
-                            aria-expanded={!isCollapsed}
-                            aria-label={t(
-                              { id: 'ProjectFunction.matrix.toggleGroup', defaultMessage: 'Toggle {name}' },
-                              { name: group.label },
-                            )}
-                            onClick={() => {
-                              toggleGroup(group.key);
-                            }}
-                          >
-                            {isCollapsed ? <CaretRightIcon /> : <CaretDownIcon />}
-                          </ActionIcon>
-                          <Text size="sm" fw={600}>
-                            {group.label}
-                          </Text>
-                        </Group>
+        <DragDropProvider
+          onDragEnd={event => {
+            if (event.operation.canceled) {
+              return;
+            }
+            const source = event.operation.source;
+            if (!isSortableSource(source) || source.initialIndex === source.index) {
+              return;
+            }
+            onChange(moveSequenceStep(steps, source.initialIndex, source.index));
+          }}
+        >
+          <div className={classes.scroller}>
+            <table
+              ref={gridRef}
+              role="grid"
+              tabIndex={0}
+              aria-label={t({ id: 'ProjectFunction.matrix.label', defaultMessage: 'Sequence steps' })}
+              className={classes.grid}
+              onKeyDown={onGridKeyDown}
+              onCopy={onCopy}
+              onPaste={onPaste}
+            >
+              <thead>
+                <tr>
+                  <th scope="col" className={classes.corner} style={{ height: HEADER_HEIGHT }} />
+                  {steps.map((step, column) => (
+                    <SequenceMatrixStepHeader
+                      key={step.key}
+                      stepKey={step.key}
+                      index={column}
+                      label={stepLabel(column)}
+                      active={column === focus.column}
+                      height={HEADER_HEIGHT}
+                      onDuplicate={() => {
+                        onChange(duplicateStep(steps, column));
+                      }}
+                      onInsertBefore={() => {
+                        onChange(insertEmptyStep(steps, column));
+                      }}
+                      onInsertAfter={() => {
+                        onChange(insertEmptyStep(steps, column + 1));
+                      }}
+                      onRemove={() => {
+                        onChange(removeStep(steps, column));
+                      }}
+                    />
+                  ))}
+                </tr>
+                {TIMING_FIELDS.map((field, index) => {
+                  const top = HEADER_HEIGHT + index * ROW_HEIGHT;
+                  const row: MatrixRow = { kind: 'timing', field };
+                  return (
+                    <tr key={field}>
+                      <th scope="row" className={clsx(classes.rowLabel, classes.timingLabel)} style={{ top }}>
+                        {timingLabel(field)}
                       </th>
+                      {steps.map((step, column) => renderCell(row, index, step, column, top))}
                     </tr>
-                    {isCollapsed
-                      ? null
-                      : group.rows.map((row, rowInGroup) => (
-                          <tr key={`${group.key}-${row.channel}`}>
-                            <th scope="row" className={classes.rowLabel}>
-                              {row.label}
-                            </th>
-                            {steps.map((step, column) => renderCell(row, offset + rowInGroup, step, column))}
-                          </tr>
-                        ))}
-                  </Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                  );
+                })}
+              </thead>
+              <tbody>
+                {groups.map((group, groupIndex) => {
+                  const isCollapsed = collapsed.has(group.key);
+                  const offset = offsets[groupIndex] ?? 0;
+                  return (
+                    <Fragment key={group.key}>
+                      <tr className={classes.groupRow}>
+                        <th scope="colgroup" colSpan={steps.length + 1}>
+                          <Group gap={4} wrap="nowrap" className={classes.groupLabel}>
+                            <ActionIcon
+                              size="sm"
+                              variant="subtle"
+                              aria-expanded={!isCollapsed}
+                              aria-label={t(
+                                { id: 'ProjectFunction.matrix.toggleGroup', defaultMessage: 'Toggle {name}' },
+                                { name: group.label },
+                              )}
+                              onClick={() => {
+                                toggleGroup(group.key);
+                              }}
+                            >
+                              {isCollapsed ? <CaretRightIcon /> : <CaretDownIcon />}
+                            </ActionIcon>
+                            <Text size="sm" fw={600}>
+                              {group.label}
+                            </Text>
+                          </Group>
+                        </th>
+                      </tr>
+                      {isCollapsed
+                        ? null
+                        : group.rows.map((row, rowInGroup) => (
+                            <tr key={`${group.key}-${row.channel}`}>
+                              <th scope="row" className={classes.rowLabel}>
+                                {row.label}
+                              </th>
+                              {steps.map((step, column) => renderCell(row, offset + rowInGroup, step, column))}
+                            </tr>
+                          ))}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </DragDropProvider>
       )}
     </Stack>
   );

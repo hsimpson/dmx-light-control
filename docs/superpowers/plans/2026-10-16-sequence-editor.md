@@ -1396,22 +1396,29 @@ git commit -m "feat(frontend): add sequence step matrix grid"
 ```tsx
 it('duplicates, inserts and removes steps from the column menu', async () => {
   const { user } = renderWithProviders(<Harness />);
-  await user.click(screen.getByRole('button', { name: 'Step 1 actions' }));
-  await user.click(await screen.findByRole('menuitem', { name: 'Duplicate step' }));
+  const chooseStepAction = async (action: string) => {
+    await user.click(screen.getByRole('button', { name: 'Step 1 actions' }));
+    await user.click(await screen.findByRole('menuitem', { name: action }));
+    await waitFor(() => {
+      expect(screen.queryByRole('menu', { hidden: true })).not.toBeInTheDocument();
+    });
+  };
+
+  await chooseStepAction('Duplicate step');
   expect(cell('Dimmer · 10, Step 2')).toHaveTextContent('50');
   expect(latestSteps()).toHaveLength(3);
 
-  await user.click(screen.getByRole('button', { name: 'Step 1 actions' }));
-  await user.click(await screen.findByRole('menuitem', { name: 'Insert step before' }));
+  await chooseStepAction('Insert step before');
   expect(cell('Dimmer · 10, Step 1')).toHaveTextContent('');
   expect(latestSteps()).toHaveLength(4);
 
-  await user.click(screen.getByRole('button', { name: 'Step 1 actions' }));
-  await user.click(await screen.findByRole('menuitem', { name: 'Remove step' }));
+  await chooseStepAction('Remove step');
   expect(latestSteps()).toHaveLength(3);
   expect(cell('Dimmer · 10, Step 1')).toHaveTextContent('50');
 });
 ```
+
+Add `waitFor` to the `@testing-library/react` import. Waiting for the menu to unmount matters: the previous dropdown keeps fading out for 150 ms and belongs to a column whose index has shifted. The header's `Menu` sets `hideDetached={false}`, because jsdom has zero-size layout and Mantine otherwise marks the dropdown `display: none`.
 
 - [ ] **Step 2: Run the tests to verify the new test fails**
 
@@ -1479,7 +1486,7 @@ const SequenceMatrixStepHeader = ({
         <Text size="sm" fw={600}>
           {label}
         </Text>
-        <Menu position="bottom-end" withinPortal>
+        <Menu position="bottom-end" withinPortal hideDetached={false}>
           <Menu.Target>
             <ActionIcon
               size="sm"
