@@ -42,7 +42,7 @@
     "@rspack/core": "^2.2.8",
     "@swc-node/register": "~1.12.1",
     "@swc/cli": "~0.8.1",
-    "@swc/core": "~1.16.13",
+    "@swc/core": "~1.16.18",
     "@swc/helpers": "~0.5.23",
     "@testcontainers/postgresql": "^12.2.0",
     "@testing-library/jest-dom": "^7.0.1",
