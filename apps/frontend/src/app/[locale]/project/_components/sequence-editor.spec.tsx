@@ -68,8 +68,7 @@ describe('SequenceEditor', () => {
       <SequenceEditor fixtures={fixtures} initial={initial()} saving={false} onSave={vi.fn()} onLeave={vi.fn()} />,
     );
     expect(screen.queryByRole('gridcell', { name: 'Intensity · 5, Step 1' })).not.toBeInTheDocument();
-    await user.click(screen.getByLabelText('Fixtures', { selector: 'input' }));
-    await user.click(await screen.findByText('Wash · DMX 5–5'));
+    await user.click(screen.getByRole('checkbox', { name: 'Wash · DMX 5–5' }));
     expect(screen.getByRole('gridcell', { name: 'Intensity · 5, Step 1' })).toBeInTheDocument();
   });
 
@@ -80,8 +79,7 @@ describe('SequenceEditor', () => {
     );
     await user.click(screen.getByRole('gridcell', { name: 'Dimmer · 1, Step 1' }));
     await user.keyboard('200{Enter}');
-    await user.click(screen.getByLabelText('Fixtures', { selector: 'input' }));
-    await user.keyboard('{Backspace}');
+    await user.click(screen.getByRole('checkbox', { name: 'PAR · DMX 1–1' }));
     await user.click(await screen.findByRole('button', { name: 'Remove' }));
     expect(screen.queryByRole('gridcell', { name: 'Dimmer · 1, Step 1' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Save' }));

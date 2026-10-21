@@ -2,33 +2,16 @@
 
 import { useDmxStore } from '@/lib/dmx/dmx-store';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import {
-  ActionIcon,
-  Badge,
-  Box,
-  Button,
-  Group,
-  Modal,
-  MultiSelect,
-  Select,
-  Stack,
-  Switch,
-  Text,
-  TextInput,
-} from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Group, Modal, Select, Stack, Switch, Text, TextInput } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ArrowLeftIcon } from '@phosphor-icons/react';
 import { useEffect, useMemo, useState } from 'react';
 import type { ProjectFunctionDraft } from './project-function-mapping';
 import { appendCapturedStep, mergeCapturedIntoStep } from './sequence-capture';
+import SequenceFixtureList from './sequence-fixture-list';
 import SequenceMatrix from './sequence-matrix';
 import type { MatrixRange } from './sequence-matrix-model';
-import {
-  fixtureAbsoluteChannels,
-  removeChannelValues,
-  sortedSequenceFixtures,
-  type SequenceFixtureChannel,
-} from './sequence-steps';
+import { fixtureAbsoluteChannels, removeChannelValues, type SequenceFixtureChannel } from './sequence-steps';
 import { useSequenceCapture } from './use-sequence-capture';
 import { useSequenceLivePreview } from './use-sequence-live-preview';
 
@@ -66,13 +49,6 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
     [fixtures, draft.fixturePublicIds],
   );
   const patchedChannels = useMemo(() => new Set(selectedFixtures.flatMap(fixtureAbsoluteChannels)), [selectedFixtures]);
-  const fixtureOptions = sortedSequenceFixtures(fixtures).map(fixture => {
-    const channels = fixtureAbsoluteChannels(fixture);
-    return {
-      value: fixture.publicId,
-      label: `${fixture.name} · DMX ${Math.min(fixture.startAddress, ...channels)}–${Math.max(fixture.startAddress, ...channels)}`,
-    };
-  });
   const capture = useSequenceCapture(patchedChannels, livePreview.sentValues);
   const functionsRunning = useDmxStore(state => state.runningFunctionIds.length > 0);
 
@@ -256,21 +232,7 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
           {t({ id: 'ProjectFunction.save', defaultMessage: 'Save' })}
         </Button>
       </Group>
-      <MultiSelect
-        searchable
-        clearable
-        hidePickedOptions
-        label={t({ id: 'ProjectFunction.fixtures', defaultMessage: 'Fixtures' })}
-        placeholder={
-          draft.fixturePublicIds.length === 0
-            ? t({ id: 'ProjectFunction.fixturesPlaceholder', defaultMessage: 'Add fixtures to edit their channels' })
-            : undefined
-        }
-        nothingFoundMessage={t({ id: 'ProjectFunction.fixturesNothingFound', defaultMessage: 'No fixtures found' })}
-        data={fixtureOptions}
-        value={draft.fixturePublicIds}
-        onChange={changeFixtures}
-      />
+      <SequenceFixtureList fixtures={fixtures} selectedIds={draft.fixturePublicIds} onChange={changeFixtures} />
       <SequenceMatrix
         fixtures={selectedFixtures}
         steps={draft.steps}
