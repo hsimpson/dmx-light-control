@@ -3,7 +3,7 @@
 import { Loading } from '@/components/loading';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { FixtureChannelPreset, GetProjectDocument, GetProjectQuery } from '@/shared/types/graphql/graphql';
-import { useQuery } from '@apollo/client/react';
+import { skipToken, useQuery } from '@apollo/client/react';
 import { useMemo, type CSSProperties } from 'react';
 import UniverseChannelSquare, { DMX_CHANNELS_PER_ROW, DMX_UNIVERSE_SIZE } from './universe-channel-square';
 import classes from './universe-view.module.css';
@@ -67,10 +67,10 @@ function buildChannelOccupancy(projectFixtures: ProjectFixture[]): Map<number, C
 
 const UniverseView = ({ projectPublicId }: UniverseViewProperties) => {
   const { t } = useTranslation();
-  const { data, loading } = useQuery(GetProjectDocument, {
-    variables: { publicId: projectPublicId },
-    skip: !projectPublicId,
-  });
+  const { data, loading } = useQuery(
+    GetProjectDocument,
+    projectPublicId ? { variables: { publicId: projectPublicId } } : skipToken,
+  );
 
   const projectFixtures = useMemo(() => data?.project?.projectFixtures ?? [], [data?.project?.projectFixtures]);
 

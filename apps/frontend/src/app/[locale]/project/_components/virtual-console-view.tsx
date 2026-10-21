@@ -4,7 +4,7 @@ import { Loading } from '@/components/loading';
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { GetProjectDocument, UpdateProjectVirtualConsoleDocument } from '@/shared/types/graphql/graphql';
-import { useMutation, useQuery } from '@apollo/client/react';
+import { skipToken, useMutation, useQuery } from '@apollo/client/react';
 import { ActionIcon, Box, Group, Tabs } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { ArrowsOutIcon, PlusIcon, XIcon } from '@phosphor-icons/react';
@@ -87,10 +87,10 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
   const splitDraggingRef = useRef<VirtualConsoleSplitPane | null>(null);
   const [channelWidth, setChannelWidth] = useState(DEFAULT_SIDEBAR_PX);
   const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_PX);
-  const { data, loading, refetch } = useQuery(GetProjectDocument, {
-    variables: { publicId: projectPublicId },
-    skip: !projectPublicId,
-  });
+  const { data, loading, refetch } = useQuery(
+    GetProjectDocument,
+    projectPublicId ? { variables: { publicId: projectPublicId } } : skipToken,
+  );
   const [updateVirtualConsole] = useMutation(UpdateProjectVirtualConsoleDocument, {
     refetchQueries: [{ query: GetProjectDocument, variables: { publicId: projectPublicId } }],
   });

@@ -12,7 +12,7 @@ import {
   GetProjectQuery,
   UpdateProjectFixtureDocument,
 } from '@/shared/types/graphql/graphql';
-import { useMutation, useQuery } from '@apollo/client/react';
+import { skipToken, useMutation, useQuery } from '@apollo/client/react';
 import { ActionIcon, Button, Group, Modal, NumberInput, Select, Stack, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
@@ -37,10 +37,10 @@ function endAddress(fixture: ProjectFixture): number {
 
 const ProjectFixtureTable = ({ projectPublicId }: ProjectFixtureTableProperties) => {
   const { t } = useTranslation();
-  const { data, loading } = useQuery(GetProjectDocument, {
-    variables: { publicId: projectPublicId },
-    skip: !projectPublicId,
-  });
+  const { data, loading } = useQuery(
+    GetProjectDocument,
+    projectPublicId ? { variables: { publicId: projectPublicId } } : skipToken,
+  );
   const { data: fixturesData } = useQuery(GetFixturesDocument);
   const [addProjectFixture, { loading: adding }] = useMutation(AddProjectFixtureDocument);
   const [updateProjectFixture, { loading: updating }] = useMutation(UpdateProjectFixtureDocument);
