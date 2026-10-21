@@ -3,7 +3,7 @@
 import { Loading } from '@/components/loading';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { GetProjectDocument } from '@/shared/types/graphql/graphql';
-import { useQuery } from '@apollo/client/react';
+import { skipToken, useQuery } from '@apollo/client/react';
 import { Box, Text, Title } from '@mantine/core';
 import { useParams } from 'next/navigation';
 import type { ReactNode } from 'react';
@@ -16,10 +16,7 @@ type ProjectDetailLayoutProperties = {
 const ProjectDetailLayout = ({ children }: ProjectDetailLayoutProperties) => {
   const { t } = useTranslation();
   const { publicId } = useParams<{ publicId: string }>();
-  const { data, loading } = useQuery(GetProjectDocument, {
-    variables: { publicId },
-    skip: !publicId,
-  });
+  const { data, loading } = useQuery(GetProjectDocument, publicId ? { variables: { publicId } } : skipToken);
 
   if (loading) {
     return <Loading />;
