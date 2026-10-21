@@ -3,7 +3,7 @@
 import { Loading } from '@/components/loading';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { GetProjectDocument, GetProjectQuery } from '@/shared/types/graphql/graphql';
-import { useQuery } from '@apollo/client/react';
+import { skipToken, useQuery } from '@apollo/client/react';
 import { useMemo } from 'react';
 import DmxFixtureBox from './dmx-fixture-box';
 import classes from './dmx-view.module.css';
@@ -23,10 +23,10 @@ function sortProjectFixtures(projectFixtures: ProjectFixture[]): ProjectFixture[
 
 const DmxView = ({ projectPublicId }: DmxViewProperties) => {
   const { t } = useTranslation();
-  const { data, loading } = useQuery(GetProjectDocument, {
-    variables: { publicId: projectPublicId },
-    skip: !projectPublicId,
-  });
+  const { data, loading } = useQuery(
+    GetProjectDocument,
+    projectPublicId ? { variables: { publicId: projectPublicId } } : skipToken,
+  );
 
   const projectFixtures = useMemo(
     () => sortProjectFixtures(data?.project?.projectFixtures ?? []),

@@ -3,7 +3,7 @@
 import { Loading } from '@/components/loading';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { GetFixtureDocument, GetFixtureVendorsDocument } from '@/shared/types/graphql/graphql';
-import { useQuery } from '@apollo/client/react';
+import { skipToken, useQuery } from '@apollo/client/react';
 import { Box, Text } from '@mantine/core';
 import { useParams } from 'next/navigation';
 import type { ReactNode } from 'react';
@@ -17,10 +17,10 @@ const FixtureDetailLayout = ({ children }: FixtureDetailLayoutProperties) => {
   const { t } = useTranslation();
   const { publicId } = useParams<{ publicId: string }>();
 
-  const { data: fixtureData, loading: fixtureLoading } = useQuery(GetFixtureDocument, {
-    variables: { publicId },
-    skip: !publicId,
-  });
+  const { data: fixtureData, loading: fixtureLoading } = useQuery(
+    GetFixtureDocument,
+    publicId ? { variables: { publicId } } : skipToken,
+  );
 
   const { data: vendorsData, loading: vendorsLoading } = useQuery(GetFixtureVendorsDocument);
 

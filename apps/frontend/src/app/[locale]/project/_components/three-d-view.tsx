@@ -14,7 +14,7 @@ import {
   UpdateProjectFixtureDocument,
 } from '@/shared/types/graphql/graphql';
 import { CombinedGraphQLErrors } from '@apollo/client';
-import { useMutation, useQuery } from '@apollo/client/react';
+import { skipToken, useMutation, useQuery } from '@apollo/client/react';
 import { Box, Group, Paper, Stack, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import dynamic from 'next/dynamic';
@@ -48,10 +48,10 @@ type ObjectDraft = {
 
 const ThreeDView = ({ projectPublicId }: ThreeDViewProperties) => {
   const { t } = useTranslation();
-  const { data, loading } = useQuery(GetProjectDocument, {
-    variables: { publicId: projectPublicId },
-    skip: !projectPublicId,
-  });
+  const { data, loading } = useQuery(
+    GetProjectDocument,
+    projectPublicId ? { variables: { publicId: projectPublicId } } : skipToken,
+  );
   const { data: typesData } = useQuery(GetSceneObjectTypesDocument);
   const [updateProject] = useMutation(UpdateProjectDocument);
   const [addObject, { loading: adding }] = useMutation(AddProject3dObjectDocument, {
