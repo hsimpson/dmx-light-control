@@ -2,6 +2,8 @@
 
 NestJS backend + Next.js frontend in Nx monorepo.
 
+**Last harness review:** 2026-10-23
+
 ## Agent behavior
 
 - **Think before coding:** State assumptions. If unclear or multi-interpretation, ask. Surface tradeoffs. Push back on overcomplication.
@@ -42,29 +44,28 @@ NestJS backend + Next.js frontend in Nx monorepo.
 | `nx run frontend:i18n-extract`                     | Extract keys into `src/lang/en.json` only                          |
 | `nx run frontend:i18n-verify`                      | Verify translation files are in sync                               |
 
-**Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.22.1. **pnpm:** 12.15.0 (exact pin in `packageManager` / `devEngines`; bump both when upgrading).
+**Versions:** Node and pnpm are exact pins in root `package.json` (`engines`, `packageManager`, `devEngines`); bump `packageManager` and `devEngines` together.
 **Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
-**Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; GraphQL stack-trace stripping and Rspack asset-copy mode), `BACKEND_PORT` (required; HTTP; GraphQL at `/graphql`; live DMX WebSocket at `/dmx`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Optional `DMX_SERIAL_PATH` (FTDI UART device; when unset, SerialSendService auto-detects FT232R, else Linux `/dev/ttyUSB0`). Optional `FIXTURE_ASSETS_ROOT` overrides the fixture-asset disk root (used in tests; not in `.env.example`). Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL` (the DMX socket URL is derived: HTTP GraphQL origin → `ws`/`wss` + `/dmx`). Nest `ConfigModule` loads workspace-root `.env`. Drizzle-kit targets run with cwd `apps/backend` and `dotenv/config` (so `apps/backend/.env` or already-exported vars). Infra compose uses `--env-file ../.env`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (`postgres:18.4`, same image as `infra/docker-compose.yml`).
+**Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; GraphQL stack-trace stripping and Rspack asset-copy mode), `BACKEND_PORT` (required; HTTP; GraphQL at `/graphql`; live DMX WebSocket at `/dmx`), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. Optional `DMX_SERIAL_PATH` (FTDI UART device; when unset, SerialSendService auto-detects FT232R, else Linux `/dev/ttyUSB0`). Optional `FIXTURE_ASSETS_ROOT` overrides the fixture-asset disk root (used in tests; not in `.env.example`). Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL` (the DMX socket URL is derived: HTTP GraphQL origin → `ws`/`wss` + `/dmx`). Nest `ConfigModule` loads workspace-root `.env`. Drizzle-kit targets run with cwd `apps/backend` and `dotenv/config` (so `apps/backend/.env` or already-exported vars). Infra compose uses `--env-file ../.env`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (keep its image tag in sync with `infra/docker-compose.yml`).
 
 ## Done means
 
 1. Typecheck and lint pass with zero errors `nx run-many --targets typecheck,lint`.
-2. Prettier has been run on all created/changed files (`pnpm exec prettier --write <paths>`; use `git diff --name-only` to enumerate).
-3. Relevant tests run and pass (show output) `nx run-many --targets test`.
+2. Prettier has been run on all created/changed files (see Agent behavior).
+3. Relevant tests run with coverage and pass, including the coverage thresholds in `vitest.base.ts` (show output) `nx run-many --targets test --coverage`.
 4. When changing GraphQL resolvers or DTOs, run `nx test backend` (includes `graphql-schema.spec.ts`) and rebuild Bruno requests `nx run bruno:build`.
 5. When database schema has changed (entities, relations) regenerate ER diagram `nx run backend:erd`.
 6. **Harness health-check** (required when change set matches the triggers below — report `Harness: up to date` or `Harness: updated`).
 7. Conventional commit message ready when asked to commit.
-8. Stop any backend or frontend server **you started** (`nx serve backend`, `nx dev frontend` / `nx start frontend`, or equivalent `next`/`node` on those ports). Do not leave them running after the task.
+8. Servers you started are stopped (see Agent behavior).
 
 ## Conventions
 
 - Clean architecture, domain-driven design, feature-based modules (resolver/service/repository/DTO/entity colocated)
-- Repository pattern with `@InjectDb()` custom decorator + `DRIZZLE_DB_PROVIDER` token
-- `DrizzleDbModule.forRoot` (project dynamic module); NestJS `ConfigModule.forRoot` loads `loadConfig()` → typed `Config`
+- Repository pattern with `@InjectDb()` custom decorator + `DRIZZLE_DB_PROVIDER` token; global `DrizzleDbModule.forRoot` exports the DB
+- NestJS `ConfigModule.forRoot` loads `loadConfig()` → typed `Config`
 - Path aliases: backend `@/*` → `apps/backend/src/*`; frontend `@/*` → `apps/frontend/src/*`
 - `pnpm` (not npm/yarn), `nx` (not lerna/turborepo), Fastify (not Express), Drizzle (not Prisma/TypeORM)
-- No typecheck errors, no lint errors
 
 ## Harness health-check
 
@@ -76,7 +77,7 @@ Harness maintenance is part of **done**, not optional docs.
 - New or changed path aliases, module patterns, or stack versions
 - New commands, env vars, or architecture boundaries
 
-**If stale:** update **`AGENTS.md` in the same change set**. If `CLAUDE.md` / `.github/copilot-instructions.md` exist, keep them thin — edit overlays only if their overlay text is wrong.
+**If stale:** update **`AGENTS.md` in the same change set**. Keep `CLAUDE.md` thin — edit it only if its overlay text is wrong.
 
 **If accurate:** no harness edit.
 
@@ -92,39 +93,17 @@ Harness maintenance is part of **done**, not optional docs.
 - Domain modules: `FixturesModule`, `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`, `FunctionPlaybackModule`. `UsbModule` exists under `io/usb/` but is not imported (live DMX output is `SerialSendService` on the FTDI UART, not WebUSB). `SerialSendService` is provided by `DmxModule` (no `SerialModule`).
 - Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). Import/export is Resolver → `FixtureImportExportService` / `ProjectImportExportService` (`InjectDb()` + repositories + transactions). IO resolvers may emit events or call services without repositories.
 - Tests: Vitest unit/integration (`src/**/*.spec.ts`); e2e in `src/e2e-tests/` (GraphQL, REST fixture assets, DMX/MIDI IO); Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
-- Repositories use `InjectDb()` for typed Drizzle connection
 - ORM repositories extend `BaseRepository` (`apps/backend/src/db/base.repository.ts`) for shared `publicId` CRUD; pass `relationalFind` for nested `with` graphs, add domain-specific methods as needed
-- Events: `AppEventEmitter` extends `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents`; IO modules import `EventsModule`. `AppModule` also provides `AppEventEmitter` and imports `EventEmitterModule.forRoot()`.
+- Events: `AppEventEmitter` extends `TypedEventEmitter<AppEvents>` wrapping `EventEmitter2`; `AppEvents = DmxEvents & MidiEvents & FunctionEvents` (`events/types/app-events.ts`); IO modules import `EventsModule`. `AppModule` also provides `AppEventEmitter` and imports `EventEmitterModule.forRoot()`.
 - CLI command via `nest-commander`: `dmx-sniffer` (Linux-only)
-- Global `DrizzleDbModule` exports DB; `@/` path alias → `apps/backend/src/`
 - Static files: Fastify serves `apps/backend/src/assets` at `/assets/` when that directory exists (`nx serve`), otherwise Rspack-copied `dist/.../assets`. 3D models live under `apps/backend/src/assets/3d/` (e.g. `room.gltf`, `light_stand.glb`). Fixture catalog assets live under `apps/backend/src/assets/fixtures/$VENDOR/$FIXTURE_NAME` with generic defaults in `_defaults/` (`model.glb`, `picture.webp`, `picture-2d.svg`).
 - Fixture asset uploads: REST multipart `POST/DELETE /fixtures/:publicId/assets/:kind` (`picture` \| `picture2d` \| `model3d`); GraphQL stores relative `/assets/...` paths and dimensions (`weight` kg, `width`/`length`/`height` in meters).
-- Blender sources (`blender/`) are the authoring files; runtime GLB/GLTF under `apps/backend/src/assets/` is what the app serves. After editing a `.blend`, re-export the matching runtime file (do not leave the GLB stale). Mapping: `blender/fixtures/_defaults/led_par_can.blend` → `apps/backend/src/assets/fixtures/_defaults/model.glb`; `blender/rig/light_stand.blend` → `apps/backend/src/assets/3d/light_stand.glb`. Fixture models must face **+X**: the beam / throw axis and the front (lenses) point along world +X in Blender (identity in the app; do not compensate with loader rotations). Each fixture GLB includes a `BeamOrigin` empty at the LED-cluster center on the lens face. The room placement pivot stays the group origin; the loader offsets only the beam to that empty and opens the near cap to the lens-cluster radius. Export with the Cursor Blender MCP (`uvx blender-mcp` in `.cursor/mcp.json`): open the source `.blend` if needed (`bpy.ops.wm.open_mainfile`), then `bpy.ops.export_scene.gltf(filepath=<runtime glb>, export_format='GLB', use_visible=True, export_cameras=False, export_lights=False, export_apply=True)`.
+- Blender sources (`blender/`) are the authoring files; runtime GLB/GLTF under `apps/backend/src/assets/` is what the app serves. After editing a `.blend`, re-export the matching runtime file (do not leave the GLB stale). Mapping: `blender/fixtures/_defaults/led_par_can.blend` → `apps/backend/src/assets/fixtures/_defaults/model.glb`; `blender/rig/light_stand.blend` → `apps/backend/src/assets/3d/light_stand.glb`. Fixture models must face **+X**: the beam / throw axis and the front (lenses) point along world +X in Blender (identity in the app; do not compensate with loader rotations). Each fixture GLB includes a `BeamOrigin` empty at the LED-cluster center on the lens face. The room placement pivot stays the group origin; the loader offsets only the beam to that empty and opens the near cap to the lens-cluster radius. Export with the Blender MCP (`uvx blender-mcp`, configured in Claude Code user scope, not in the repo): open the source `.blend` if needed (`bpy.ops.wm.open_mainfile`), then `bpy.ops.export_scene.gltf(filepath=<runtime glb>, export_format='GLB', use_visible=True, export_cameras=False, export_lights=False, export_apply=True)`.
 - IO layer: `io/dmx/` (GraphQL `setChannelValues` plus Fastify WebSocket `/dmx` for the live 512-channel universe; client messages `set`, `functionStart`, `functionStop`; server broadcasts `functionState`), `io/function-playback/` (sequence playback layers merged HTP into the universe), `io/midi/`, `io/usb/`, `io/serial/`, `io/io-bridge/`
 
-### Domain module structure (e.g. `fixtures/`, `projects/`)
+### Domain modules (`fixtures/`, `projects/`)
 
-Domain modules today: `fixtures/`, `projects/`.
-
-```text
-fixtures/
-├── fixtures.module.ts # NestJS module (providers + fixture asset REST controller)
-├── fixture.service.ts # CRUD business logic
-├── fixture-asset.service.ts # disk upload/delete under src/assets/fixtures
-├── fixture-asset.controller.ts # REST multipart POST/DELETE /fixtures/:publicId/assets/:kind
-├── fixture-asset-path.ts # slug + default asset paths
-├── fixture-import-export.service.ts # export/import (InjectDb + transactions)
-├── fixture-export.mapper.ts
-├── fixture-import.validator.ts
-├── fixture.resolver.ts # GraphQL queries/mutations
-├── fixture.exceptions.ts # Extends BaseDomainError
-├── channel-presets.ts # Enums/constants
-├── dto/ # GraphQL DTOs
-│ └── *.dto.ts # @ObjectType() / @InputType() with class-validator
-├── entities/ # Drizzle schemas (export default)
-│ └── index.ts # Re-exports
-└── repositories/ # Entity CRUD (extends BaseRepository, InjectDb())
-```
+- Flat per-domain files (`*.module.ts`, `*.resolver.ts`, `*.service.ts`, `*.exceptions.ts` extending `BaseDomainError`, import/export service + mapper + validator) plus `dto/` (`@ObjectType()`/`@InputType()` with class-validator), `entities/` (Drizzle tables, default export, `index.ts` barrel), `repositories/` (extend `BaseRepository`, `InjectDb()`).
 
 ### Frontend (`apps/frontend/`)
 
@@ -132,8 +111,7 @@ fixtures/
 - Mantine v9 (primary styling); CSS modules used sparingly; Phosphor Icons (`weight="duotone"` common, `"fill"` for some actions)
 - Apollo Client v4; GraphQL codegen from `src/**/*.graphql` against remote schema (`NEXT_PUBLIC_GRAPHQL_API_URL`); types written to `src/shared/types/graphql/`
 - i18n: `next-i18n-router` + `react-intl`; German/English (`src/lang/en.json`, `de.json`)
-- `'use client'` on client boundary components (pages, wrappers); prop types named `*Props` or `*Properties`
-- `@/` path alias → `apps/frontend/src/`
+- `'use client'` on client boundary components (pages, wrappers); functional components only; `AppShell` layout (header + navbar); prop types named `*Props` or `*Properties`
 - Apollo Client setup: `src/lib/graphql/graphql-client.ts` + `src/lib/graphql/apollo-wrapper.tsx`
 
 ### Database (`apps/backend/src/db/`)
@@ -147,44 +125,20 @@ fixtures/
 
 ## Coding Conventions
 
-### TypeScript (strict, `tsconfig.base.json`)
-
-- `noUncheckedIndexedAccess`, `noUnusedParameters` (prefix `_`), `noImplicitOverride`
-- `exactOptionalPropertyTypes: false`, target ES2025, module esnext, resolution bundler
-
-### ESLint
-
-- `no-console`: warn · `eqeqeq`: error · `no-warning-comments`: warn
-- `@typescript-eslint/switch-exhaustiveness-check`: error
-- `@typescript-eslint/explicit-member-accessibility`: error (explicit modifiers required)
-- `@typescript-eslint/member-ordering`: error · `@typescript-eslint/no-shadow`: error
-
-### Prettier
-
-- printWidth 120, single quotes, trailing comma all, arrow parens avoid
-- Format every file you create or change before finishing: `pnpm exec prettier --write <paths>` (all changed paths from `git diff --name-only`)
+Rules live in `tsconfig.base.json`, `eslint.config.ts`, `prettier.config.ts`. Traps: `noUncheckedIndexedAccess` (indexed reads are `T | undefined`), `noUnusedParameters` (prefix `_`), `exactOptionalPropertyTypes: false`; ESLint requires explicit member accessibility, member ordering, exhaustive switches, no shadowing.
 
 ### NestJS / GraphQL
 
-- Explicit `public`/`private`/`protected` on all members
-- `plainToInstance()` to convert entities → DTOs in resolvers
 - `@Type()` for nested DTO transformation; `class-validator` on InputTypes
 - Descriptions on all GraphQL fields/resolvers; UUIDs via `GraphQLUUID`
-- `autoSchemaFile: true`, Fastify adapter
 
 ### Drizzle ORM
 
-- `d.snakeCase.table()`, helpers `pk` + `timestamps` from `@/db/columns.helpers`
-- Relations in `relations.ts`; repositories for entity CRUD; fixture and project import/export also use `InjectDb()` and transactions; `project_fixtures` links a project to catalog fixture + channel mode + DMX start address; `project_functions` stores project-scoped functions (type `Sequence`, jsonb `properties`)
-
-### React
-
-- `'use client'` on client boundary components; functional only; `AppShell` layout (header + navbar)
+- `project_fixtures` links a project to catalog fixture + channel mode + DMX start address; `project_functions` stores project-scoped functions (type `Sequence`, jsonb `properties`)
 
 ## Important Notes
 
-- Frontend: Vitest colocated `*.spec.ts` / `*.spec.tsx`; Playwright e2e in `apps/frontend/e2e/*.e2e.spec.ts` (mocked GraphQL). Install Chromium once with `pnpm exec playwright install chromium`. Backend Vitest e2e lives in `src/e2e-tests/`
-- `nx dev frontend` runs `next dev` (Next 16 default Turbopack) on port 3001.
+- Frontend: Vitest colocated `*.spec.ts` / `*.spec.tsx`; Playwright e2e in `apps/frontend/e2e/*.e2e.spec.ts` (mocked GraphQL). Install Chromium once with `pnpm exec playwright install chromium`.
 - `REVIEW` comments mark incomplete implementations (ValidationPipe `disableErrorMessages` in `main.ts`)
 - IO layer is Linux-focused (`/dev/usbmon`, serial ports)
 - Production hides stack traces from GraphQL errors
@@ -196,3 +150,9 @@ fixtures/
 - **When you change, add, or remove any i18n string, you MUST keep all language files in sync** — add/update/remove the key in every locale file (`en.json`, `de.json`, …). Use the `defaultMessage` as the English (`en.json`) value.
 - Keep keys sorted alphabetically within each language file.
 - After editing translations, run `nx run frontend:i18n-extract` (writes `en.json` only), sync the same keys in `de.json`, then `nx run frontend:i18n-verify` to confirm no missing or extra keys remain.
+
+## Lessons
+
+Format: `- **Topic:** imperative rule. Why: cause. (YYYY-MM)`. Max 10; promote durable ones into their section.
+
+_None yet._
