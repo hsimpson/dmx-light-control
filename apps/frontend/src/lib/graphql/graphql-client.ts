@@ -52,6 +52,14 @@ export const graphqlClient = new ApolloClient({
       }
       return undefined;
     },
+    typePolicies: {
+      ProjectDto: {
+        fields: {
+          // Devices have no publicId and the list is always saved as a whole, so incoming replaces existing.
+          ioDevices: { merge: false },
+        },
+      },
+    },
   }),
   link: ApolloLink.from([errorLink, httpLink]),
 });
