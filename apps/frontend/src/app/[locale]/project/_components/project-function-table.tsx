@@ -4,7 +4,7 @@ import { Loading } from '@/components/loading';
 import { ICON_SIZE } from '@/lib/constants';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { DeleteProjectFunctionDocument, GetProjectDocument } from '@/shared/types/graphql/graphql';
-import { useMutation, useQuery } from '@apollo/client/react';
+import { skipToken, useMutation, useQuery } from '@apollo/client/react';
 import { ActionIcon, Button, Group, Modal, Stack, Text } from '@mantine/core';
 import { PencilSimpleIcon, PlusCircleIcon, TrashIcon } from '@phosphor-icons/react';
 import { DataTable } from 'mantine-datatable';
@@ -20,10 +20,10 @@ type ProjectFunctionTableProperties = {
 const ProjectFunctionTable = ({ projectPublicId }: ProjectFunctionTableProperties) => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { data, loading } = useQuery(GetProjectDocument, {
-    variables: { publicId: projectPublicId },
-    skip: !projectPublicId,
-  });
+  const { data, loading } = useQuery(
+    GetProjectDocument,
+    projectPublicId ? { variables: { publicId: projectPublicId } } : skipToken,
+  );
   const [deleteProjectFunction, { loading: deleting }] = useMutation(DeleteProjectFunctionDocument);
   const [functionToDelete, setFunctionToDelete] = useState<ProjectFunctionRow | null>(null);
 
