@@ -9,5 +9,4 @@ export type DatabaseConfig = {
 export type Config = {
   port: number;
   database: DatabaseConfig;
-  serialPath?: string;
 };

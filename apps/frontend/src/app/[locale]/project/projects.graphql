@@ -316,6 +316,9 @@ query ExportProjects {
       virtualConsole {
         ...VirtualConsoleFields
       }
+      ioDevices {
+        ...IoDeviceFields
+      }
     }
   }
 }
@@ -345,5 +348,58 @@ mutation ImportProjects($document: ImportProjectsInput!) {
     projects {
       ...ProjectFields
     }
+  }
+}
+
+fragment IoDeviceFields on IoDeviceDto {
+  kind
+  name
+  manufacturer
+  serial
+  vendorId
+  productId
+  usbLocation
+}
+
+query GetProjectIoDevices($publicId: UUID!) {
+  project(publicId: $publicId) {
+    publicId
+    ioDevices {
+      ...IoDeviceFields
+    }
+  }
+}
+
+query AvailableIoDevices {
+  availableIoDevices {
+    ...IoDeviceFields
+  }
+}
+
+query ActiveIoDeviceStates {
+  ioDevices {
+    kind
+    name
+    manufacturer
+    serial
+    vendorId
+    productId
+    usbLocation
+    status
+  }
+}
+
+mutation UpdateProjectIoDevices($input: UpdateProjectIoDevicesInput!) {
+  updateProjectIoDevices(input: $input) {
+    publicId
+    ioDevices {
+      ...IoDeviceFields
+    }
+  }
+}
+
+mutation ActivateProject($publicId: UUID!) {
+  activateProject(publicId: $publicId) {
+    publicId
   }
 }

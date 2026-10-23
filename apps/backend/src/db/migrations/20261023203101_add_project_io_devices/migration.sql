@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ADD COLUMN "io_devices" jsonb DEFAULT '[]' NOT NULL;

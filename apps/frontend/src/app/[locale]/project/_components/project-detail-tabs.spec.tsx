@@ -35,6 +35,10 @@ vi.mock('./virtual-console-view', () => ({
   default: () => <div data-testid="virtual-console-view" />,
 }));
 
+vi.mock('./project-io-devices-panel', () => ({
+  default: () => <div data-testid="project-io-devices-panel" />,
+}));
+
 describe('ProjectDetailTabs', () => {
   beforeEach(() => {
     mockUseParams.mockReturnValue({ tab: 'fixtures' });
@@ -53,6 +57,7 @@ describe('ProjectDetailTabs', () => {
       '2D View',
       '3D View',
       'Virtual Console',
+      'Input/Output',
     ]);
     expect(screen.getByTestId('project-fixture-table')).toBeInTheDocument();
   });
@@ -106,6 +111,14 @@ describe('ProjectDetailTabs', () => {
     renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
 
     expect(screen.getByTestId('virtual-console-view')).toBeInTheDocument();
+  });
+
+  it('shows the input/output panel when the route tab is io', () => {
+    mockUseParams.mockReturnValue({ tab: 'io' });
+
+    renderWithProviders(<ProjectDetailTabs projectPublicId="proj-1" />);
+
+    expect(screen.getByTestId('project-io-devices-panel')).toBeInTheDocument();
   });
 
   it('falls back to fixtures for an unknown route tab', () => {

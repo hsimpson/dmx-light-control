@@ -86,6 +86,7 @@ erDiagram
         doubleprecision room_length
         doubleprecision room_height
         jsonb virtual_console
+        jsonb io_devices
         timestamp created_at
         timestamp updated_at
     }

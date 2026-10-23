@@ -37,14 +37,15 @@ export class IoBridgeService implements OnModuleInit {
   public constructor(private readonly eventEmitter: AppEventEmitter) {}
 
   public onModuleInit(): void {
-    this.eventEmitter.on('midi.inputMessage', message => {
+    // shortcut: every controller shares the APC mapping; per-device mappings are a planned follow-up.
+    this.eventEmitter.on('midi.inputMessage', ({ message }) => {
       this.handleMidiMessage(message);
     });
 
-    this.eventEmitter.on('midi.outputOpened', () => {
-      // create the outbound events to control the LEDs on the MIDI controller
+    this.eventEmitter.on('midi.outputOpened', ({ portName }) => {
+      // create the outbound events to control the LEDs on the MIDI controller that just connected
       for (const ledMessage of ledMidiMapping) {
-        this.eventEmitter.emit('midi.sendMessage', ledMessage);
+        this.eventEmitter.emit('midi.sendMessage', { portName, message: ledMessage });
       }
     });
   }

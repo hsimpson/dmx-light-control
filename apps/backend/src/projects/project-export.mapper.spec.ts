@@ -36,7 +36,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 10,
+      schemaVersion: 11,
       projects: [
         {
           publicId: 'a',
@@ -46,6 +46,7 @@ describe('mapProjectsToExportDocument', () => {
           roomLength: 8,
           roomHeight: 5,
           virtualConsole: null,
+          ioDevices: [],
           projectFixtures: [],
           project3dObjects: [],
           projectFunctions: [],
@@ -59,6 +60,7 @@ describe('mapProjectsToExportDocument', () => {
           roomLength: 8,
           roomHeight: 5,
           virtualConsole: null,
+          ioDevices: [],
           projectFixtures: [],
           project3dObjects: [],
           projectFunctions: [],
@@ -104,7 +106,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 10,
+      schemaVersion: 11,
       projects: [
         {
           publicId: '',
@@ -114,6 +116,7 @@ describe('mapProjectsToExportDocument', () => {
           roomLength: 8,
           roomHeight: 5,
           virtualConsole: null,
+          ioDevices: [],
           projectFixtures: [
             {
               publicId: '',
@@ -255,7 +258,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 10,
+      schemaVersion: 11,
       projects: [
         {
           publicId: 'p',
@@ -265,6 +268,7 @@ describe('mapProjectsToExportDocument', () => {
           roomLength: 9,
           roomHeight: 4,
           virtualConsole: null,
+          ioDevices: [],
           projectFixtures: [
             {
               publicId: 'pf-1',

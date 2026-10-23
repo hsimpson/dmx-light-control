@@ -18,6 +18,7 @@ import { SceneObjectTypeDto } from './dto/scene-object-type.dto';
 import { UpdateProject3dObjectInput } from './dto/update-project-3d-object.dto';
 import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
+import { UpdateProjectIoDevicesInput } from './dto/update-project-io-devices.dto';
 import { UpdateProjectVirtualConsoleInput } from './dto/virtual-console.dto';
 import { ProjectImportExportService } from './project-import-export.service';
 import { ProjectService } from './project.service';
@@ -100,6 +101,24 @@ export class ProjectResolver {
     return plainToInstance(ProjectDto, project);
   }
 
+  @Mutation(() => ProjectDto, {
+    name: 'activateProject',
+    description: 'mark a project as the loaded project and connect its input/output devices',
+  })
+  public async activateProject(@Args('publicId', { type: () => GraphQLUUID }) publicId: string): Promise<ProjectDto> {
+    const project = await this.projectService.activateProject(publicId);
+    return plainToInstance(ProjectDto, project);
+  }
+
+  @Mutation(() => ProjectDto, {
+    name: 'updateProjectIoDevices',
+    description: 'replace the input/output devices used by a project',
+  })
+  public async updateProjectIoDevices(@Args('input') input: UpdateProjectIoDevicesInput): Promise<ProjectDto> {
+    const project = await this.projectService.updateProjectIoDevices(input);
+    return plainToInstance(ProjectDto, project);
+  }
+
   @Mutation(() => DeleteProjectPayload, {
     name: 'deleteProject',
     description: 'delete a project by public id',
@@ -117,6 +136,7 @@ export class ProjectResolver {
   })
   public async importProjects(@Args('document') document: ImportProjectsInput): Promise<ImportProjectsPayload> {
     const result = await this.projectImportExportService.importProjects(document);
+    await this.projectService.refreshActiveProject();
     return plainToInstance(ImportProjectsPayload, {
       importedCount: result.importedCount,
       projects: plainToInstance(ProjectDto, result.projects),

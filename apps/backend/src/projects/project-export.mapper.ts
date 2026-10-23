@@ -1,10 +1,11 @@
 import { ExportTimestamps, ExportTimestampSource, mapExportTimestamps } from '@/db/export-timestamps';
+import type { IoDeviceIdentity } from '@/io/devices/match-io-devices';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { ProjectFunctionType, SequenceProperties } from '@/projects/project-function';
 import { VirtualConsoleDocument } from '@/projects/virtual-console';
 import { enrichVirtualConsoleForExport } from '@/projects/virtual-console.validation';
 
-export const PROJECT_EXPORT_SCHEMA_VERSION = 10;
+export const PROJECT_EXPORT_SCHEMA_VERSION = 11;
 
 export type ProjectExportFixtureChannelAssignment = {
   publicId: string;
@@ -47,6 +48,7 @@ export type ProjectExportProject = {
   roomLength: number;
   roomHeight: number;
   virtualConsole: VirtualConsoleDocument | null;
+  ioDevices: IoDeviceIdentity[];
   projectFixtures: ProjectExportFixture[];
   project3dObjects: ProjectExport3dObject[];
   projectFunctions: ProjectExportFunction[];
@@ -97,6 +99,7 @@ export type ProjectExportSource = {
   roomLength: number;
   roomHeight: number;
   virtualConsole?: VirtualConsoleDocument | null;
+  ioDevices?: IoDeviceIdentity[];
   projectFixtures?: ProjectExportFixtureSource[];
   project3dObjects?: ProjectExport3dObjectSource[];
   projectFunctions?: ProjectExportFunctionSource[];
@@ -167,6 +170,7 @@ export function mapProjectsToExportDocument(projects: ProjectExportSource[]): Pr
           project.projectFixtures ?? [],
           project.projectFunctions ?? [],
         ),
+        ioDevices: project.ioDevices ?? [],
         projectFixtures: [...(project.projectFixtures ?? [])]
           .map(mapProjectFixtureToExport)
           .sort((left, right) => left.startAddress - right.startAddress || left.publicId.localeCompare(right.publicId)),

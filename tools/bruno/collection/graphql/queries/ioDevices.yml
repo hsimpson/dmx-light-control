@@ -1,7 +1,7 @@
 info:
-  name: closePorts
+  name: ioDevices
   type: graphql
-  seq: 4
+  seq: 7
 
 graphql:
   method: POST
@@ -9,8 +9,17 @@ graphql:
   auth: inherit
   body:
     query: |
-      mutation {
-        closePorts
+      query {
+        ioDevices {
+          kind
+          manufacturer
+          name
+          productId
+          serial
+          status
+          usbLocation
+          vendorId
+        }
       }
     variables: |
       {}

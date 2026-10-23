@@ -1,7 +1,7 @@
 info:
   name: sceneObjectTypes
   type: graphql
-  seq: 9
+  seq: 10
 
 graphql:
   method: POST

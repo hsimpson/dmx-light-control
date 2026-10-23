@@ -154,6 +154,44 @@ const toMockedSequence = (sequence: MockedSequenceInput): MockedProjectFunction[
   fixturePublicIds: sequence.fixturePublicIds ?? null,
 });
 
+type MockedIoDevice = {
+  kind: 'DmxSerial' | 'Midi';
+  name: string;
+  manufacturer: string | null;
+  serial: string | null;
+  vendorId: string | null;
+  productId: string | null;
+  usbLocation: string | null;
+};
+
+export const mockedAvailableIoDevices: MockedIoDevice[] = [
+  {
+    kind: 'DmxSerial',
+    name: 'FT232R USB UART',
+    manufacturer: 'FTDI',
+    serial: 'A50285BI',
+    vendorId: '0403',
+    productId: '6001',
+    usbLocation: '3-10',
+  },
+  {
+    kind: 'Midi',
+    name: 'APC mini mk2',
+    manufacturer: 'AKAI professional',
+    serial: 'Ver00.10',
+    vendorId: '09e8',
+    productId: '004f',
+    usbLocation: '3-9',
+  },
+];
+
+const ioDeviceDto = (device: MockedIoDevice) => ({ __typename: 'IoDeviceDto', ...device });
+
+const isPluggedIn = (device: MockedIoDevice) =>
+  mockedAvailableIoDevices.some(
+    available => available.name === device.name && available.serial === device.serial && available.kind === device.kind,
+  );
+
 export const mockGraphql = async (page: Page) => {
   const fixtures = [mockedFixture];
   const projects: (typeof mockedProject)[] = [{ ...mockedProject }];
@@ -161,6 +199,8 @@ export const mockGraphql = async (page: Page) => {
     [mockedProject.publicId]: [],
   };
   const projectFunctions: Record<string, MockedProjectFunction[]> = { [mockedProject.publicId]: [] };
+  const projectIoDevices: Record<string, MockedIoDevice[]> = { [mockedProject.publicId]: [] };
+  let activeProjectPublicId: string | null = null;
 
   await page.route('**/graphql', async route => {
     if (route.request().method() === 'OPTIONS') {
@@ -188,13 +228,54 @@ export const mockGraphql = async (page: Page) => {
           transform?: number[];
           channelModePublicId?: string;
           sequence?: MockedSequenceInput;
+          ioDevices?: MockedIoDevice[];
         };
         document?: { schemaVersion: number; projects: { publicId?: string; name: string }[] };
       };
     };
 
     let body: unknown = { data: {} };
-    if (postData.operationName === 'ExportProjects' || postData.query?.includes('exportProjects')) {
+    // Matched by operationName first: their queries also contain the `project(publicId` / `updateProject` fallbacks below.
+    if (postData.operationName === 'ActivateProject') {
+      activeProjectPublicId = postData.variables?.publicId ?? null;
+      body = { data: { activateProject: { __typename: 'ProjectDto', publicId: activeProjectPublicId } } };
+    } else if (postData.operationName === 'GetProjectIoDevices') {
+      const publicId = postData.variables?.publicId ?? mockedProject.publicId;
+      body = {
+        data: {
+          project: {
+            __typename: 'ProjectDto',
+            publicId,
+            ioDevices: (projectIoDevices[publicId] ?? []).map(ioDeviceDto),
+          },
+        },
+      };
+    } else if (postData.operationName === 'AvailableIoDevices') {
+      body = { data: { availableIoDevices: mockedAvailableIoDevices.map(ioDeviceDto) } };
+    } else if (postData.operationName === 'ActiveIoDeviceStates') {
+      const active = activeProjectPublicId ? (projectIoDevices[activeProjectPublicId] ?? []) : [];
+      body = {
+        data: {
+          ioDevices: active.map(device => ({
+            __typename: 'IoDeviceStateDto',
+            ...device,
+            status: isPluggedIn(device) ? 'Connected' : 'Missing',
+          })),
+        },
+      };
+    } else if (postData.operationName === 'UpdateProjectIoDevices') {
+      const publicId = postData.variables?.input?.publicId ?? mockedProject.publicId;
+      projectIoDevices[publicId] = postData.variables?.input?.ioDevices ?? [];
+      body = {
+        data: {
+          updateProjectIoDevices: {
+            __typename: 'ProjectDto',
+            publicId,
+            ioDevices: projectIoDevices[publicId].map(ioDeviceDto),
+          },
+        },
+      };
+    } else if (postData.operationName === 'ExportProjects' || postData.query?.includes('exportProjects')) {
       body = {
         data: {
           exportProjects: {

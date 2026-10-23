@@ -24,5 +24,6 @@ describe('DmxModule', () => {
     expect(providers).toContain(SerialSendService);
     expect(exports).toContain(DmxSnifferCommand);
     expect(exports).toContain(DmxUniverseService);
+    expect(exports).toContain(SerialSendService);
   });
 });

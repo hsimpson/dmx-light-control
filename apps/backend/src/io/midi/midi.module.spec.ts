@@ -2,7 +2,6 @@ import { EventsModule } from '@/events/events.module';
 import 'reflect-metadata';
 import { describe, expect, it } from 'vitest';
 import { MidiModule } from './midi.module';
-import { MidiResolver } from './midi.resolver';
 import { MidiService } from './midi.service';
 
 describe('MidiModule', () => {
@@ -10,9 +9,8 @@ describe('MidiModule', () => {
     expect(MidiModule.name).toBe('MidiModule');
     const providers = Reflect.getMetadata('providers', MidiModule) as unknown[];
     expect(providers).toContain(MidiService);
-    expect(providers).toContain(MidiResolver);
     const imports = Reflect.getMetadata('imports', MidiModule) as unknown[];
     expect(imports).toContain(EventsModule);
-    expect(Reflect.getMetadata('exports', MidiModule)).toBeUndefined();
+    expect(Reflect.getMetadata('exports', MidiModule)).toEqual([MidiService]);
   });
 });

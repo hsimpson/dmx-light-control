@@ -1146,6 +1146,11 @@ input ImportProjectInput {
   environmentType: ProjectEnvironmentType
 
   """
+  The input/output devices used by this project (schema v11+)
+  """
+  ioDevices: [IoDeviceInput!]
+
+  """
   The name of the project
   """
   name: String!
@@ -1220,31 +1225,145 @@ type ImportProjectsPayload {
   projects: [ProjectDto!]!
 }
 
-type MidiDeviceDto {
+type IoDeviceDto {
   """
-  The name of the MIDI device
+  Device kind (DMX serial output or MIDI controller)
+  """
+  kind: IoDeviceKind!
+
+  """
+  USB manufacturer name
+  """
+  manufacturer: String
+
+  """
+  USB product name
   """
   name: String!
 
   """
-  The port number of the MIDI device
+  USB product id (4 lowercase hex digits)
   """
-  port: Int!
+  productId: String
+
+  """
+  USB serial number
+  """
+  serial: String
+
+  """
+  OS-specific USB port location; only used to tell identical devices apart
+  """
+  usbLocation: String
+
+  """
+  USB vendor id (4 lowercase hex digits)
+  """
+  vendorId: String
 }
 
-type MidiDevicesDto {
+input IoDeviceInput {
   """
-  The list of MIDI input devices
+  Device kind (DMX serial output or MIDI controller)
   """
-  inputDevices: [MidiDeviceDto!]!
+  kind: IoDeviceKind!
 
   """
-  The list of MIDI output devices
+  USB manufacturer name
   """
-  outputDevices: [MidiDeviceDto!]!
+  manufacturer: String
+
+  """
+  USB product name
+  """
+  name: String!
+
+  """
+  USB product id (4 lowercase hex digits)
+  """
+  productId: String
+
+  """
+  USB serial number
+  """
+  serial: String
+
+  """
+  OS-specific USB port location; only used to tell identical devices apart
+  """
+  usbLocation: String
+
+  """
+  USB vendor id (4 lowercase hex digits)
+  """
+  vendorId: String
+}
+
+"""
+Kind of input/output device
+"""
+enum IoDeviceKind {
+  DmxSerial
+  Midi
+}
+
+type IoDeviceStateDto {
+  """
+  Device kind (DMX serial output or MIDI controller)
+  """
+  kind: IoDeviceKind!
+
+  """
+  USB manufacturer name
+  """
+  manufacturer: String
+
+  """
+  USB product name
+  """
+  name: String!
+
+  """
+  USB product id (4 lowercase hex digits)
+  """
+  productId: String
+
+  """
+  USB serial number
+  """
+  serial: String
+
+  """
+  Whether the configured device is currently connected
+  """
+  status: IoDeviceStatus!
+
+  """
+  OS-specific USB port location; only used to tell identical devices apart
+  """
+  usbLocation: String
+
+  """
+  USB vendor id (4 lowercase hex digits)
+  """
+  vendorId: String
+}
+
+"""
+Connection state of a configured input/output device
+"""
+enum IoDeviceStatus {
+  Ambiguous
+  Connected
+  Missing
 }
 
 type Mutation {
+  """
+  mark a project as the loaded project and connect its input/output devices
+  """
+  activateProject(publicId: UUID!): ProjectDto!
+
   """
   add a scene object instance to a project
   """
@@ -1259,11 +1378,6 @@ type Mutation {
   add a function to a project
   """
   addProjectFunction(input: AddProjectFunctionInput!): ProjectFunctionDto!
-
-  """
-  Close the specified MIDI ports
-  """
-  closePorts: Boolean
 
   """
   create a new fixture; creates the vendor when only a name is given
@@ -1321,11 +1435,6 @@ type Mutation {
   importProjects(document: ImportProjectsInput!): ImportProjectsPayload!
 
   """
-  Open the specified MIDI ports
-  """
-  openPorts(openPortsDto: OpenPortsInput!): Boolean
-
-  """
   Set DMX channel values
   """
   setChannelValues(channelValues: ChannelValuesInput!): String!
@@ -1356,21 +1465,14 @@ type Mutation {
   updateProjectFunction(input: UpdateProjectFunctionInput!): ProjectFunctionDto!
 
   """
+  replace the input/output devices used by a project
+  """
+  updateProjectIoDevices(input: UpdateProjectIoDevicesInput!): ProjectDto!
+
+  """
   replace the virtual console layout for a project
   """
   updateProjectVirtualConsole(input: UpdateProjectVirtualConsoleInput!): ProjectDto!
-}
-
-input OpenPortsInput {
-  """
-  The MIDI input port number to open
-  """
-  inputPort: Int! = 1
-
-  """
-  The MIDI output port number to open
-  """
-  outputPort: Int! = 1
 }
 
 type Project3dObjectDto {
@@ -1430,6 +1532,11 @@ type ProjectDto {
   The 3D environment used by the project
   """
   environmentType: ProjectEnvironmentType!
+
+  """
+  The input/output devices used by this project
+  """
+  ioDevices: [IoDeviceDto!]!
 
   """
   The name of the project
@@ -1655,6 +1762,11 @@ type ProjectExportProjectDto {
   The 3D environment used by the project
   """
   environmentType: ProjectEnvironmentType!
+
+  """
+  The input/output devices used by this project
+  """
+  ioDevices: [IoDeviceDto!]!
 
   """
   The name of the project
@@ -1900,6 +2012,11 @@ enum ProjectFunctionType {
 
 type Query {
   """
+  USB DMX outputs and MIDI controllers currently connected to the backend host
+  """
+  availableIoDevices: [IoDeviceDto!]!
+
+  """
   export all fixture vendors, fixtures, and related entities as a versioned JSON document
   """
   exportFixtures: FixtureExportDocumentDto!
@@ -1925,9 +2042,9 @@ type Query {
   fixtures: [FixtureDto!]!
 
   """
-  Get the list of MIDI input and output devices
+  Input/output devices of the active project with their connection status
   """
-  getMidiDevices: MidiDevicesDto!
+  ioDevices: [IoDeviceStateDto!]!
 
   """
   get project by external id
@@ -2377,6 +2494,18 @@ input UpdateProjectInput {
   Room width in meters
   """
   roomWidth: Float
+}
+
+input UpdateProjectIoDevicesInput {
+  """
+  The complete list of input/output devices used by the project
+  """
+  ioDevices: [IoDeviceInput!]!
+
+  """
+  The public ID of the project
+  """
+  publicId: UUID!
 }
 
 input UpdateProjectVirtualConsoleInput {

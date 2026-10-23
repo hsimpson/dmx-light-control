@@ -2,6 +2,8 @@ import { ImportTimestampsInput } from '@/db/import-timestamps.input';
 import { SequencePropertiesInput } from '@/projects/dto/project-function.dto';
 import { ProjectDto } from '@/projects/dto/project.dto';
 import { VirtualConsoleInput } from '@/projects/dto/virtual-console.dto';
+import { IoDeviceInput } from '@/io/devices/dto/io-device.dto';
+import { PROJECT_IO_DEVICES_MAX } from '@/projects/dto/update-project-io-devices.dto';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { ProjectFunctionType } from '@/projects/project-function';
 import { ROOM_DIMENSION_MAX, ROOM_DIMENSION_MIN } from '@/projects/project-room-dimensions';
@@ -192,6 +194,16 @@ export class ImportProjectInput extends ImportTimestampsInput {
   @ValidateNested()
   @Type(() => VirtualConsoleInput)
   public virtualConsole?: VirtualConsoleInput | null;
+
+  @Field(() => [IoDeviceInput], {
+    nullable: true,
+    description: 'The input/output devices used by this project (schema v11+)',
+  })
+  @IsOptional()
+  @ArrayMaxSize(PROJECT_IO_DEVICES_MAX)
+  @ValidateNested({ each: true })
+  @Type(() => IoDeviceInput)
+  public ioDevices?: IoDeviceInput[] | null;
 
   @Field(() => [ImportProjectFixtureInput], {
     nullable: true,

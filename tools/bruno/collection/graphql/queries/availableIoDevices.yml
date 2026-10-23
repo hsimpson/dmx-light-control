@@ -1,7 +1,7 @@
 info:
-  name: getMidiDevices
+  name: availableIoDevices
   type: graphql
-  seq: 6
+  seq: 1
 
 graphql:
   method: POST
@@ -10,15 +10,14 @@ graphql:
   body:
     query: |
       query {
-        getMidiDevices {
-          inputDevices {
-            name
-            port
-          }
-          outputDevices {
-            name
-            port
-          }
+        availableIoDevices {
+          kind
+          manufacturer
+          name
+          productId
+          serial
+          usbLocation
+          vendorId
         }
       }
     variables: |

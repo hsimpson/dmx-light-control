@@ -2,6 +2,7 @@ import { InjectDb } from '@/db/drizzle-db/drizzle-db.provider';
 import { optionalImportTimestamps } from '@/db/import-timestamps.input';
 import { relations } from '@/db/relations';
 import { fixture, fixtureChannelAssignment, fixtureChannelMode } from '@/fixtures/entities';
+import { IoDeviceInput } from '@/io/devices/dto/io-device.dto';
 import { ImportProject3dObjectInput, ImportProjectsInput } from '@/projects/dto/import-projects.dto';
 import { project, project3dObject, projectFixture, projectFunction, sceneObjectType } from '@/projects/entities';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from '@/projects/project-3d-object-name';
@@ -72,6 +73,11 @@ function virtualConsolePatchForUpdate(virtualConsole: VirtualConsoleDocument | n
     return { virtualConsole: null };
   }
   return { virtualConsole };
+}
+
+// Exports before schema v11 carry no devices; keep the stored ones instead of clearing them.
+function optionalIoDevices(incoming: ImportProjectsInput['projects'][number]): { ioDevices?: IoDeviceInput[] } {
+  return incoming.ioDevices ? { ioDevices: incoming.ioDevices } : {};
 }
 
 function virtualConsolePatchForInsert(virtualConsole: VirtualConsoleDocument | null | undefined) {
@@ -150,6 +156,7 @@ export class ProjectImportExportService {
           ...optionalRoomDimensions(incoming),
           ...optionalImportTimestamps(incoming),
           ...virtualConsolePatchForUpdate(preparedVirtualConsole),
+          ...optionalIoDevices(incoming),
         })
         .where(eq(project.id, existingId))
         .returning();
@@ -170,6 +177,7 @@ export class ProjectImportExportService {
           ...optionalRoomDimensions(incoming),
           ...optionalImportTimestamps(incoming),
           ...virtualConsolePatchForInsert(preparedVirtualConsole),
+          ...optionalIoDevices(incoming),
         })
         .returning();
       const row = inserted[0];

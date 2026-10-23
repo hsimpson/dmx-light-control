@@ -1,4 +1,5 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
+import type { IoDeviceIdentity } from '@/io/devices/match-io-devices';
 import { ChannelModeNotFoundException, FixtureNotFoundException } from '@/fixtures/fixture.exceptions';
 import { FixtureChannelModeRepository } from '@/fixtures/repositories/fixture-channel-mode.repository';
 import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
@@ -10,6 +11,7 @@ import { CreateProjectInput } from './dto/create-project.dto';
 import { UpdateProject3dObjectInput } from './dto/update-project-3d-object.dto';
 import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
+import { UpdateProjectIoDevicesInput } from './dto/update-project-io-devices.dto';
 import { UpdateProjectVirtualConsoleInput } from './dto/virtual-console.dto';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from './project-3d-object-name';
 import { defaultTransformForObject, identityTransform } from './project-3d-object.transform';
@@ -229,6 +231,8 @@ function mapProjectToDto(project: LoadedProject | undefined) {
 
 @Injectable()
 export class ProjectService {
+  private activeProjectPublicId: string | null = null;
+
   public constructor(
     private readonly projectRepository: ProjectRepository,
     private readonly projectFixtureRepository: ProjectFixtureRepository,
@@ -253,6 +257,28 @@ export class ProjectService {
   public async getProjectByPublicId(publicId: string) {
     const project = await this.projectRepository.findOneByPublicIdWithFixtures(publicId);
     return mapProjectToDto(project ?? undefined);
+  }
+
+  public async activateProject(publicId: string) {
+    const project = await this.projectRepository.findOneByPublicIdWithFixtures(publicId);
+    if (!project) {
+      throw new ProjectNotFoundException(publicId);
+    }
+    this.activeProjectPublicId = publicId;
+    this.emitActiveIoDevices(project.ioDevices);
+    return mapProjectToDto(project);
+  }
+
+  /** Re-reads the active project after bulk changes (e.g. import) so the IO layer sees its current devices. */
+  public async refreshActiveProject(): Promise<void> {
+    if (!this.activeProjectPublicId) {
+      return;
+    }
+    const project = await this.projectRepository.findOneByPublicId(this.activeProjectPublicId);
+    if (!project) {
+      this.activeProjectPublicId = null;
+    }
+    this.emitActiveIoDevices(project?.ioDevices ?? []);
   }
 
   public async createProject(input: CreateProjectInput) {
@@ -309,8 +335,23 @@ export class ProjectService {
     return withVirtualConsole({ ...updated, ...emptyProjectExtras() });
   }
 
+  public async updateProjectIoDevices(input: UpdateProjectIoDevicesInput) {
+    const updated = await this.projectRepository.updateOneByPublicId(input.publicId, { ioDevices: input.ioDevices });
+    if (!updated) {
+      throw new ProjectNotFoundException(input.publicId);
+    }
+    if (input.publicId === this.activeProjectPublicId) {
+      this.emitActiveIoDevices(updated.ioDevices);
+    }
+    return withVirtualConsole({ ...updated, ...emptyProjectExtras() });
+  }
+
   public async deleteProjectByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {
     const deleted = await this.projectRepository.deleteOneByPublicId(publicId);
+    if (deleted && publicId === this.activeProjectPublicId) {
+      this.activeProjectPublicId = null;
+      this.emitActiveIoDevices([]);
+    }
     return { publicId, deleted };
   }
 
@@ -607,5 +648,9 @@ export class ProjectService {
       throw new ChannelModeNotFoundException(String(modeId));
     }
     return mode;
+  }
+
+  private emitActiveIoDevices(devices: IoDeviceIdentity[]): void {
+    this.eventEmitter.emit('project.ioDevicesActivated', { devices });
   }
 }

@@ -1,70 +1,97 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
-import { Injectable, Logger } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import midi, { MidiMessage } from 'midi';
-import { MidiDeviceDto } from './dto/get-devices.dto';
-import { OpenPortsInput } from './dto/open-ports.dto';
+
+type OpenMidiDevice = {
+  input: midi.Input;
+  output: midi.Output | null;
+};
 
 @Injectable()
-export class MidiService {
-  // This service will handle the logic for receiving and sending MIDI messages to USB devices.
+export class MidiService implements OnModuleDestroy {
   private readonly logger = new Logger(MidiService.name);
-  private readonly input = new midi.Input();
-  private readonly output = new midi.Output();
+  // Long-lived and only used for listing: on ALSA every new Input/Output registers another sequencer client.
+  private readonly inputLister = new midi.Input();
+  private readonly outputLister = new midi.Output();
+  private readonly devices = new Map<string, OpenMidiDevice>();
 
   public constructor(private readonly eventEmitter: AppEventEmitter) {
-    this.input.on('message', (deltaTime, message) => {
-      this.handleMidiMessage(deltaTime, message);
-    });
-
-    this.eventEmitter.on('midi.sendMessage', async (message: MidiMessage) => {
-      await this.sendMidiMessage(message);
+    this.eventEmitter.on('midi.sendMessage', async ({ portName, message }) => {
+      await this.sendMidiMessage(portName, message);
     });
   }
 
-  public getInputDevices(): MidiDeviceDto[] {
-    const count = this.input.getPortCount();
-    return Array.from({ length: count }, (_, i) =>
-      plainToInstance(MidiDeviceDto, {
-        port: i,
-        name: this.input.getPortName(i),
-      }),
-    );
+  public onModuleDestroy(): void {
+    for (const portName of [...this.devices.keys()]) {
+      this.close(portName);
+    }
   }
 
-  public getOutputDevices(): MidiDeviceDto[] {
-    const count = this.output.getPortCount();
-    return Array.from({ length: count }, (_, i) =>
-      plainToInstance(MidiDeviceDto, {
-        port: i,
-        name: this.output.getPortName(i),
-      }),
-    );
+  public listPortNames(): string[] {
+    return portNames(this.inputLister);
   }
 
-  public openPorts(openPortsDto: OpenPortsInput): void {
-    const { inputPort, outputPort } = openPortsDto;
-    this.input.openPort(inputPort);
-    this.eventEmitter.emit('midi.inputOpened');
-    this.output.openPort(outputPort);
-    this.eventEmitter.emit('midi.outputOpened');
-    this.logger.log(`Opened MIDI input port ${inputPort} and output port ${outputPort}`);
+  public openPortNames(): string[] {
+    return [...this.devices.keys()];
   }
 
-  public closePorts(): void {
-    this.input.closePort();
-    this.output.closePort();
-    this.logger.log('Closed MIDI input and output ports');
+  /** Opens input and (if present) output by name; port indexes shift whenever devices come and go. */
+  public open(portName: string): boolean {
+    if (this.devices.has(portName)) return true;
+
+    const inputIndex = portNames(this.inputLister).indexOf(portName);
+    if (inputIndex < 0) {
+      this.logger.warn(`MIDI port "${portName}" is not available`);
+      return false;
+    }
+    const outputIndex = portNames(this.outputLister).indexOf(portName);
+
+    const input = new midi.Input();
+    input.on('message', (_deltaTime: number, message: MidiMessage) => {
+      this.logger.debug(`Received MIDI message from ${portName}: ${message.join(', ')}`);
+      this.eventEmitter.emit('midi.inputMessage', { portName, message });
+    });
+    const output = outputIndex >= 0 ? new midi.Output() : null;
+    try {
+      input.openPort(inputIndex);
+      output?.openPort(outputIndex);
+    } catch (err) {
+      this.logger.error(`Failed to open MIDI port "${portName}": ${err instanceof Error ? err.message : String(err)}`);
+      closeDevice({ input, output });
+      return false;
+    }
+
+    this.devices.set(portName, { input, output });
+    this.logger.log(`Opened MIDI device "${portName}"`);
+    if (output) {
+      this.eventEmitter.emit('midi.outputOpened', { portName });
+    }
+    return true;
   }
 
-  private handleMidiMessage(deltaTime: number, message: MidiMessage): void {
-    this.logger.debug(`Received MIDI message: ${message.join(', ')} (deltaTime: ${deltaTime})`);
-    this.eventEmitter.emit('midi.inputMessage', message);
+  public close(portName: string): void {
+    const device = this.devices.get(portName);
+    if (!device) return;
+    closeDevice(device);
+    this.devices.delete(portName);
+    this.logger.log(`Closed MIDI device "${portName}"`);
   }
 
-  private async sendMidiMessage(message: MidiMessage): Promise<void> {
-    this.logger.debug(`Sent MIDI message: ${message.join(', ')}`);
-    this.output.sendMessage(message);
+  private async sendMidiMessage(portName: string, message: MidiMessage): Promise<void> {
+    const output = this.devices.get(portName)?.output;
+    if (!output) return;
+    this.logger.debug(`Sent MIDI message to ${portName}: ${message.join(', ')}`);
+    output.sendMessage(message);
     await new Promise(resolve => setTimeout(resolve, 200));
   }
+}
+
+function portNames(port: midi.Input | midi.Output): string[] {
+  return Array.from({ length: port.getPortCount() }, (_, index) => port.getPortName(index));
+}
+
+function closeDevice({ input, output }: OpenMidiDevice): void {
+  input.closePort();
+  input.removeAllListeners();
+  output?.closePort();
 }

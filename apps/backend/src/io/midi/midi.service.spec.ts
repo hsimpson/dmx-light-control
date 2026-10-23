@@ -1,124 +1,208 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
-import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { EventEmitter2 } from 'eventemitter2';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MidiService } from './midi.service';
 
-type MidiCallback = (...args: unknown[]) => void;
+const { fakeMidi } = vi.hoisted(() => {
+  class Emitter {
+    private handlers = new Map<string, ((...args: unknown[]) => void)[]>();
+    public on(event: string, handler: (...args: unknown[]) => void): this {
+      this.handlers.set(event, [...(this.handlers.get(event) ?? []), handler]);
+      return this;
+    }
+    public emit(event: string, ...args: unknown[]): void {
+      for (const handler of this.handlers.get(event) ?? []) handler(...args);
+    }
+    public removeAllListeners(): this {
+      this.handlers.clear();
+      return this;
+    }
+  }
 
-const { inputMock, outputMock } = vi.hoisted(() => ({
-  inputMock: {
-    getPortCount: vi.fn<() => number>().mockReturnValue(2),
-    getPortName: vi.fn<() => string>().mockReturnValue('dev'),
-    openPort: vi.fn<(port: number) => void>(),
-    closePort: vi.fn<() => void>(),
-    on: vi.fn<(event: string, cb: MidiCallback) => void>(),
-  },
-  outputMock: {
-    getPortCount: vi.fn<() => number>().mockReturnValue(1),
-    getPortName: vi.fn<() => string>().mockReturnValue('out'),
-    openPort: vi.fn<(port: number) => void>(),
-    closePort: vi.fn<() => void>(),
-    sendMessage: vi.fn<(msg: number[]) => void>(),
-  },
-}));
+  const state = {
+    inputNames: [] as string[],
+    outputNames: [] as string[],
+    openFailure: null as Error | null,
+    inputs: [] as FakeInput[],
+    outputs: [] as FakeOutput[],
+  };
 
-vi.mock('midi', () => ({
-  default: {
-    Input: class {
-      public getPortCount = inputMock.getPortCount;
-      public getPortName = inputMock.getPortName;
-      public openPort = inputMock.openPort;
-      public closePort = inputMock.closePort;
-      public on = inputMock.on;
-    },
-    Output: class {
-      public getPortCount = outputMock.getPortCount;
-      public getPortName = outputMock.getPortName;
-      public openPort = outputMock.openPort;
-      public closePort = outputMock.closePort;
-      public sendMessage = outputMock.sendMessage;
-    },
-  },
-  Input: class {},
-  Output: class {},
-  MidiMessage: class {},
-}));
+  class FakeInput extends Emitter {
+    public openedName: string | null = null;
+    public constructor() {
+      super();
+      state.inputs.push(this);
+    }
+    public getPortCount(): number {
+      return state.inputNames.length;
+    }
+    public getPortName(index: number): string {
+      return state.inputNames[index] ?? '';
+    }
+    public openPort(index: number): void {
+      if (state.openFailure) throw state.openFailure;
+      this.openedName = state.inputNames[index] ?? null;
+    }
+    public closePort(): void {
+      this.openedName = null;
+    }
+  }
+
+  class FakeOutput {
+    public openedName: string | null = null;
+    public readonly sent: number[][] = [];
+    public constructor() {
+      state.outputs.push(this);
+    }
+    public getPortCount(): number {
+      return state.outputNames.length;
+    }
+    public getPortName(index: number): string {
+      return state.outputNames[index] ?? '';
+    }
+    public openPort(index: number): void {
+      this.openedName = state.outputNames[index] ?? null;
+    }
+    public closePort(): void {
+      this.openedName = null;
+    }
+    public sendMessage(message: number[]): void {
+      this.sent.push(message);
+    }
+  }
+
+  return { fakeMidi: { state, FakeInput, FakeOutput } };
+});
+
+vi.mock('midi', () => ({ default: { Input: fakeMidi.FakeInput, Output: fakeMidi.FakeOutput } }));
+
+const APC = 'APC mini mk2:APC mini mk2 Control 28:0';
+const KEYS = 'Keys:Keys MIDI 1 32:0';
+
+function openedInput(name: string) {
+  return fakeMidi.state.inputs.find(input => input.openedName === name);
+}
+
+function openedOutput(name: string) {
+  return fakeMidi.state.outputs.find(output => output.openedName === name);
+}
 
 describe('MidiService', () => {
   let eventEmitter: AppEventEmitter;
+  let emitted: { event: string; payload: unknown }[];
   let service: MidiService;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    eventEmitter = {
-      emit: vi.fn<(event: string, payload?: unknown) => boolean>(),
-      on: vi.fn<(event: string, listener: (...args: unknown[]) => void) => void>(),
-    } as unknown as AppEventEmitter;
+    vi.useFakeTimers();
+    Object.assign(fakeMidi.state, {
+      inputNames: ['Midi Through:Midi Through Port-0 14:0', APC, KEYS],
+      outputNames: ['Midi Through:Midi Through Port-0 14:0', APC],
+      openFailure: null,
+      inputs: [],
+      outputs: [],
+    });
+    const emitter2 = new EventEmitter2({ wildcard: true });
+    emitted = [];
+    emitter2.onAny((event, payload: unknown) => {
+      emitted.push({ event: String(event), payload });
+    });
+    eventEmitter = new AppEventEmitter(emitter2);
     service = new MidiService(eventEmitter);
   });
 
-  it('registers message + sendMessage listeners on construction', () => {
-    expect(eventEmitter.on).toHaveBeenCalledWith('midi.sendMessage', expect.any(Function));
-    expect(inputMock.on).toHaveBeenCalledWith('message', expect.any(Function));
+  afterEach(() => {
+    service.onModuleDestroy();
+    vi.useRealTimers();
   });
 
-  it('forwards incoming midi messages from the input to midi.inputMessage', () => {
-    const messageCallback = inputMock.on.mock.calls.find((c: unknown[]) => c[0] === 'message')?.[1];
-    expect(typeof messageCallback).toBe('function');
-    messageCallback?.(0, [144, 1, 100]);
-    expect(eventEmitter.emit).toHaveBeenCalledWith('midi.inputMessage', [144, 1, 100]);
+  it('GIVEN connected devices WHEN listing THEN returns the input port names', () => {
+    expect(service.listPortNames()).toEqual(['Midi Through:Midi Through Port-0 14:0', APC, KEYS]);
   });
 
-  it('sends midi messages when midi.sendMessage is emitted', () => {
-    const sendCallback = (
-      eventEmitter.on as unknown as Mock<(event: string, listener: MidiCallback) => void>
-    ).mock.calls.find((c: unknown[]) => c[0] === 'midi.sendMessage')?.[1];
-    expect(typeof sendCallback).toBe('function');
-    const spy = vi.spyOn(global, 'setTimeout').mockImplementation((cb: MidiCallback) => {
-      cb();
-      return 0 as unknown as NodeJS.Timeout;
-    });
-    sendCallback?.([144, 1, 100]);
-    expect(outputMock.sendMessage).toHaveBeenCalledWith([144, 1, 100]);
-    spy.mockRestore();
+  it('GIVEN a bidirectional device WHEN opened by name THEN both directions open at the current index', () => {
+    fakeMidi.state.inputNames = [APC];
+    fakeMidi.state.outputNames = [APC];
+
+    expect(service.open(APC)).toBe(true);
+
+    expect(service.openPortNames()).toContain(APC);
+    expect(openedInput(APC)).toBeDefined();
+    expect(openedOutput(APC)).toBeDefined();
+    expect(emitted).toContainEqual({ event: 'midi.outputOpened', payload: { portName: APC } });
   });
 
-  it('getInputDevices maps port count to dtos', () => {
-    expect(service.getInputDevices()).toHaveLength(2);
+  it('GIVEN two devices WHEN each sends a message THEN events carry the source port', () => {
+    service.open(APC);
+    service.open(KEYS);
+
+    openedInput(APC)?.emit('message', 0, [144, 1, 100]);
+    openedInput(KEYS)?.emit('message', 0, [176, 48, 64]);
+
+    expect(emitted.filter(entry => entry.event === 'midi.inputMessage').map(entry => entry.payload)).toEqual([
+      { portName: APC, message: [144, 1, 100] },
+      { portName: KEYS, message: [176, 48, 64] },
+    ]);
   });
 
-  it('getOutputDevices maps port count to dtos', () => {
-    expect(service.getOutputDevices()).toHaveLength(1);
+  it('GIVEN an input-only device WHEN opened THEN no output opens and no outputOpened event fires', () => {
+    service.open(KEYS);
+
+    expect(openedOutput(KEYS)).toBeUndefined();
+    expect(emitted.some(entry => entry.event === 'midi.outputOpened')).toBe(false);
   });
 
-  it('openPorts opens both and emits events', () => {
-    service.openPorts({ inputPort: 0, outputPort: 0 });
-    expect(inputMock.openPort).toHaveBeenCalledWith(0);
-    expect(outputMock.openPort).toHaveBeenCalledWith(0);
-    expect(eventEmitter.emit).toHaveBeenCalledWith('midi.inputOpened');
-    expect(eventEmitter.emit).toHaveBeenCalledWith('midi.outputOpened');
+  it('GIVEN two open devices WHEN a message is sent to one THEN only that output receives it', () => {
+    fakeMidi.state.outputNames = [APC, KEYS];
+    service.open(APC);
+    service.open(KEYS);
+
+    eventEmitter.emit('midi.sendMessage', { portName: KEYS, message: [0x96, 0, 5] });
+
+    expect(openedOutput(KEYS)?.sent).toEqual([[0x96, 0, 5]]);
+    expect(openedOutput(APC)?.sent).toEqual([]);
   });
 
-  it('closePorts closes both', () => {
-    service.closePorts();
-    expect(inputMock.closePort).toHaveBeenCalled();
-    expect(outputMock.closePort).toHaveBeenCalled();
+  it('GIVEN a message for a closed device WHEN sent THEN it is dropped', () => {
+    eventEmitter.emit('midi.sendMessage', { portName: APC, message: [0x96, 0, 5] });
+
+    expect(fakeMidi.state.outputs.flatMap(output => output.sent)).toEqual([]);
   });
 
-  it('handleMidiMessage emits midi.inputMessage', () => {
-    (service as unknown as { handleMidiMessage: (port: number, data: number[]) => void }).handleMidiMessage(
-      0,
-      [144, 1, 100],
-    );
-    expect(eventEmitter.emit).toHaveBeenCalledWith('midi.inputMessage', [144, 1, 100]);
+  it('GIVEN an unknown port WHEN opened THEN returns false', () => {
+    expect(service.open('Gone:Gone 40:0')).toBe(false);
+    expect(service.openPortNames()).not.toContain('Gone:Gone 40:0');
   });
 
-  it('sendMidiMessage sends and waits', async () => {
-    const spy = vi.spyOn(global, 'setTimeout').mockImplementation((cb: MidiCallback) => {
-      cb();
-      return 0 as unknown as NodeJS.Timeout;
-    });
-    await (service as unknown as { sendMidiMessage: (data: number[]) => Promise<void> }).sendMidiMessage([144, 1, 100]);
-    expect(outputMock.sendMessage).toHaveBeenCalledWith([144, 1, 100]);
-    spy.mockRestore();
+  it('GIVEN RtMidi fails to open WHEN opening THEN returns false and keeps nothing open', () => {
+    fakeMidi.state.openFailure = new Error('ALSA error');
+
+    expect(service.open(APC)).toBe(false);
+    expect(service.openPortNames()).not.toContain(APC);
+  });
+
+  it('GIVEN an open device WHEN opened again THEN no second port is created', () => {
+    service.open(APC);
+    const inputsBefore = fakeMidi.state.inputs.length;
+
+    expect(service.open(APC)).toBe(true);
+    expect(fakeMidi.state.inputs).toHaveLength(inputsBefore);
+  });
+
+  it('GIVEN an open device WHEN closed THEN ports close and later messages are not forwarded', () => {
+    service.open(APC);
+    const input = openedInput(APC);
+
+    service.close(APC);
+    input?.emit('message', 0, [144, 1, 100]);
+
+    expect(service.openPortNames()).not.toContain(APC);
+    expect(input?.openedName).toBeNull();
+    expect(emitted.some(entry => entry.event === 'midi.inputMessage')).toBe(false);
+  });
+
+  it('GIVEN an unknown device WHEN closed THEN nothing happens', () => {
+    expect(() => {
+      service.close(APC);
+    }).not.toThrow();
   });
 });

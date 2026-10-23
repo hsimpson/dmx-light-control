@@ -13,6 +13,15 @@ graphql:
         createProject(input: $input) {
           createdAt
           environmentType
+          ioDevices {
+            kind
+            manufacturer
+            name
+            productId
+            serial
+            usbLocation
+            vendorId
+          }
           name
           project3dObjects {
             createdAt
