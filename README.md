@@ -18,11 +18,11 @@ Nx is provided by the workspace — run `nx` commands directly (no global instal
 
 ### Update pnpm
 
-To update pnpm to the latest version, run:
-Change the pinned version in `package.json`, `README.md`, `AGENTS.md` and run:
+Change the pinned version in `package.json` (`packageManager` and `devEngines`) and in this README, then run:
 
 ```bash
 pnpm install
+```
 
 ## Nx monorepo
 
@@ -39,4 +39,3 @@ Read all sub projects documentation carefully for more details.
 - [frontend](apps/frontend/README.md) - Next.js UI for catalog, vendors, projects (patch, universe, 3D), and related views.
 - [bruno](tools/bruno/README.md) - Regenerates the Bruno GraphQL collection from a running backend schema.
 - [blender](blender/README.md) - Authoring `.blend` files; re-export runtime GLB/GLTF under `apps/backend/src/assets/`.
-```

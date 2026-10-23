@@ -18,7 +18,7 @@ Room GLTF (`apps/backend/src/assets/3d/room.gltf`) is served as-is; there is no 
 
 ## Export
 
-Use the Cursor Blender MCP (`uvx blender-mcp` in `.cursor/mcp.json`): open the source `.blend` if needed (`bpy.ops.wm.open_mainfile`), then:
+Use the Blender MCP (`uvx blender-mcp`, configured in Claude Code user scope, not in the repo): open the source `.blend` if needed (`bpy.ops.wm.open_mainfile`), then:
 
 ```python
 bpy.ops.export_scene.gltf(
