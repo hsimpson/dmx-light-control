@@ -5,7 +5,7 @@ import { Checkbox, Stack, Text, TextInput, UnstyledButton } from '@mantine/core'
 import { CaretDownIcon, CaretRightIcon, MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import classes from './sequence-fixture-list.module.css';
-import { fixtureAbsoluteChannels, sortedSequenceFixtures, type SequenceFixtureChannel } from './sequence-steps';
+import { sortedSequenceFixtures, type SequenceFixtureChannel } from './sequence-steps';
 
 export type SequenceFixtureListProperties = {
   fixtures: SequenceFixtureChannel[];
@@ -13,22 +13,15 @@ export type SequenceFixtureListProperties = {
   onChange: (fixturePublicIds: string[]) => void;
 };
 
-const fixtureLabel = (fixture: SequenceFixtureChannel): string => {
-  const channels = fixtureAbsoluteChannels(fixture);
-  const start = Math.min(fixture.startAddress, ...channels);
-  const end = Math.max(fixture.startAddress, ...channels);
-  return `${fixture.name} · DMX ${start}–${end}`;
-};
-
 const SequenceFixtureList = ({ fixtures, selectedIds, onChange }: SequenceFixtureListProperties) => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const selected = new Set(selectedIds);
   const needle = query.trim().toLowerCase();
-  const visible = sortedSequenceFixtures(fixtures).filter(fixture =>
-    fixtureLabel(fixture).toLowerCase().includes(needle),
-  );
+  const visible = sortedSequenceFixtures(fixtures)
+    .map((fixture, index) => ({ fixture, label: `${fixture.name} [${index + 1}]` }))
+    .filter(item => item.label.toLowerCase().includes(needle));
   const fixturesLabel = t({ id: 'ProjectFunction.fixtures', defaultMessage: 'Fixtures' });
   const filterLabel = t({ id: 'ProjectFunction.fixturesFilter', defaultMessage: 'Filter fixtures' });
   const nothingFound = t({ id: 'ProjectFunction.fixturesNothingFound', defaultMessage: 'No fixtures found' });
@@ -78,12 +71,12 @@ const SequenceFixtureList = ({ fixtures, selectedIds, onChange }: SequenceFixtur
             </Text>
           ) : (
             <div className={classes.list}>
-              {visible.map(fixture => (
+              {visible.map(({ fixture, label }) => (
                 <Checkbox
                   key={fixture.publicId}
                   className={classes.option}
                   size="xs"
-                  label={fixtureLabel(fixture)}
+                  label={label}
                   checked={selected.has(fixture.publicId)}
                   onChange={event => {
                     toggle(fixture.publicId, event.currentTarget.checked);

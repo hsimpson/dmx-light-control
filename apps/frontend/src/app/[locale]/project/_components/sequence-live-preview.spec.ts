@@ -44,6 +44,10 @@ describe('sequence live preview helpers', () => {
       { channel: 1, value: 10 },
       { channel: 2, value: 255 },
     ]);
+    expect(liveOutput(step([[2, 255]]), restore, new Set([1, 2]))).toEqual([
+      { channel: 1, value: 0 },
+      { channel: 2, value: 255 },
+    ]);
     expect(restoreOutput(restore)).toEqual([
       { channel: 1, value: 10 },
       { channel: 2, value: 20 },

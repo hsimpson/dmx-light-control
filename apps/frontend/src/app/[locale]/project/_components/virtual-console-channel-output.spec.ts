@@ -5,6 +5,7 @@ import {
   dmxChannelUpdates,
   publishVirtualConsoleValue,
   resetVirtualConsoleChannelOutput,
+  virtualConsoleBoundChannels,
   type VirtualConsoleBoundFixture,
 } from './virtual-console-channel-output';
 
@@ -129,5 +130,27 @@ describe('virtual console channel output', () => {
   it('does not write when the control has no resolvable channels', () => {
     publishVirtualConsoleValue(createControl('slider', 0, 0), 10, fixtures);
     expect(setChannels).not.toHaveBeenCalled();
+  });
+
+  it('lists every channel bound on the console, including nested controls', () => {
+    const nested = {
+      ...createControl('slider', 0, 0),
+      channelBindings: [{ projectFixturePublicId: OTHER_FIXTURE_ID, channelAssignmentPublicId: RED_ID }],
+    };
+    const frame = {
+      ...createControl('frame', 0, 0),
+      children: [
+        {
+          ...createControl('slider', 0, 0),
+          channelBindings: [
+            { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: GREEN_ID },
+            { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: RED_ID },
+          ],
+          children: [nested],
+        },
+      ],
+    };
+    expect(virtualConsoleBoundChannels([{ controls: [frame] }], fixtures)).toEqual([10, 11, 20]);
+    expect(virtualConsoleBoundChannels(undefined, fixtures)).toEqual([]);
   });
 });

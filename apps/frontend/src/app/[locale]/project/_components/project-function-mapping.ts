@@ -92,5 +92,6 @@ export const projectSequenceFixtures = (
     channels: fixture.channelMode.fixtureChannelAssignments.map(assignment => ({
       channelNumber: assignment.channelNumber,
       name: assignment.fixtureChannelDefinition.name,
+      preset: assignment.fixtureChannelDefinition.preset,
     })),
   }));

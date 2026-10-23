@@ -22,6 +22,7 @@ const App = ({ children }: AppProperties) => {
   const pathname = usePathname();
   const isConsolePopout = /\/project\/[^/]+\/console\/popout\/?$/.test(pathname);
   const isVirtualConsole = /\/project\/[^/]+\/console\/?$/.test(pathname);
+  const isFunctionEditor = /\/project\/[^/]+\/functions\/[^/]+/.test(pathname);
 
   if (isConsolePopout) {
     return (
@@ -42,7 +43,7 @@ const App = ({ children }: AppProperties) => {
           flexDirection: 'column',
           height: '100dvh',
           minHeight: 0,
-          overflow: isVirtualConsole ? 'hidden' : 'auto',
+          overflow: isVirtualConsole || isFunctionEditor ? 'hidden' : 'auto',
           ...(isVirtualConsole ? { paddingBottom: 0 } : {}),
         },
       }}

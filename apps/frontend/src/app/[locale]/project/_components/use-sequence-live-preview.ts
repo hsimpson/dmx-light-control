@@ -5,6 +5,7 @@ import { dmxStore, useDmxStore, type DmxChannelUpdate } from '@/lib/dmx/dmx-stor
 import { useEffect, useEffectEvent, useRef, useState, type RefObject } from 'react';
 import { liveOutput, restoreOutput, snapshotChannels, stepChannels } from './sequence-live-preview';
 import type { SequenceStepDraft } from './sequence-steps';
+import { resetVirtualConsoleChannelOutput } from './virtual-console-channel-output';
 
 export type SequenceLivePreview = {
   live: boolean;
@@ -26,23 +27,31 @@ const sendTracked = (sent: Map<number, number>, updates: DmxChannelUpdate[]) => 
 export const useSequenceLivePreview = (
   steps: SequenceStepDraft[],
   selectedStep: number | undefined,
+  zeroChannels: readonly number[],
   onDisconnected: () => void,
 ): SequenceLivePreview => {
   const [enabled, setEnabled] = useState(false);
   const open = useDmxStore(state => state.status === 'open');
   const restoreRef = useRef(new Map<number, number>());
   const sentRef = useRef(new Map<number, number>());
+  const enteredLiveRef = useRef(false);
   const notifyDisconnected = useEffectEvent(onDisconnected);
   const step = selectedStep === undefined ? undefined : steps[selectedStep];
   const live = enabled && open && step !== undefined;
 
   useEffect(() => {
     if (!live) {
+      enteredLiveRef.current = false;
       return;
     }
-    restoreRef.current = snapshotChannels(dmxStore.getState().channels, stepChannels(steps), restoreRef.current);
-    sendTracked(sentRef.current, liveOutput(step, restoreRef.current));
-  }, [live, step, steps]);
+    if (!enteredLiveRef.current) {
+      resetVirtualConsoleChannelOutput();
+      enteredLiveRef.current = true;
+    }
+    const channels = [...new Set([...stepChannels(steps), ...zeroChannels])].sort((left, right) => left - right);
+    restoreRef.current = snapshotChannels(dmxStore.getState().channels, channels, restoreRef.current);
+    sendTracked(sentRef.current, liveOutput(step, restoreRef.current, new Set(zeroChannels)));
+  }, [live, step, steps, zeroChannels]);
 
   useEffect(() => {
     if (live || restoreRef.current.size === 0) {

@@ -10,10 +10,14 @@ import type { ProjectFunctionDraft } from './project-function-mapping';
 import { appendCapturedStep, mergeCapturedIntoStep } from './sequence-capture';
 import SequenceFixtureList from './sequence-fixture-list';
 import SequenceMatrix from './sequence-matrix';
-import type { MatrixRange } from './sequence-matrix-model';
+import { setCellValue, type MatrixRange } from './sequence-matrix-model';
+import { sequenceSliderGroups } from './sequence-slider-channels';
+import SequenceSliderPanel from './sequence-slider-panel';
 import { fixtureAbsoluteChannels, removeChannelValues, type SequenceFixtureChannel } from './sequence-steps';
 import { useSequenceCapture } from './use-sequence-capture';
 import { useSequenceLivePreview } from './use-sequence-live-preview';
+
+const noChannels: readonly number[] = [];
 
 const initialRange: MatrixRange = { anchor: { row: 0, column: 0 }, focus: { row: 0, column: 0 } };
 
@@ -21,11 +25,19 @@ type SequenceEditorProperties = {
   fixtures: SequenceFixtureChannel[];
   initial: ProjectFunctionDraft;
   saving: boolean;
+  consoleChannels?: readonly number[];
   onSave: (draft: ProjectFunctionDraft) => Promise<boolean>;
   onLeave: () => void;
 };
 
-const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: SequenceEditorProperties) => {
+const SequenceEditor = ({
+  fixtures,
+  initial,
+  saving,
+  consoleChannels = noChannels,
+  onSave,
+  onLeave,
+}: SequenceEditorProperties) => {
   const { t } = useTranslation();
   const [draft, setDraft] = useState(initial);
   const [baseline, setBaseline] = useState(initial);
@@ -35,7 +47,22 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
   const dirty = JSON.stringify(draft) !== JSON.stringify(baseline);
   const selectedStep =
     draft.steps.length > 0 ? Math.min(Math.max(range.focus.column, 0), draft.steps.length - 1) : undefined;
-  const livePreview = useSequenceLivePreview(draft.steps, selectedStep, () => {
+  const selectedFixtures = useMemo(
+    () => fixtures.filter(fixture => draft.fixturePublicIds.includes(fixture.publicId)),
+    [fixtures, draft.fixturePublicIds],
+  );
+  const sliderGroups = useMemo(() => sequenceSliderGroups(selectedFixtures), [selectedFixtures]);
+  const zeroChannels = useMemo(
+    () =>
+      [
+        ...new Set([
+          ...sliderGroups.flatMap(group => group.channels.map(channel => channel.channel)),
+          ...consoleChannels,
+        ]),
+      ].sort((left, right) => left - right),
+    [sliderGroups, consoleChannels],
+  );
+  const livePreview = useSequenceLivePreview(draft.steps, selectedStep, zeroChannels, () => {
     notifications.show({
       color: 'orange',
       message: t({
@@ -44,10 +71,6 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
       }),
     });
   });
-  const selectedFixtures = useMemo(
-    () => fixtures.filter(fixture => draft.fixturePublicIds.includes(fixture.publicId)),
-    [fixtures, draft.fixturePublicIds],
-  );
   const patchedChannels = useMemo(() => new Set(selectedFixtures.flatMap(fixtureAbsoluteChannels)), [selectedFixtures]);
   const capture = useSequenceCapture(patchedChannels, livePreview.sentValues);
   const functionsRunning = useDmxStore(state => state.runningFunctionIds.length > 0);
@@ -87,6 +110,16 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
     }
   };
 
+  const setSliderValue = (channel: number, value: number) => {
+    if (selectedStep === undefined) {
+      return;
+    }
+    setDraft(current => ({
+      ...current,
+      steps: setCellValue(current.steps, selectedStep, { kind: 'channel', channel, label: '' }, value),
+    }));
+  };
+
   const updateStep = () => {
     if (selectedStep === undefined) {
       return;
@@ -116,7 +149,7 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
   };
 
   return (
-    <Stack gap="sm" flex={1} mih={0}>
+    <Stack gap="sm" flex={1} mih={0} style={{ overflow: 'hidden' }}>
       <Group gap="sm" align="flex-end">
         <ActionIcon
           size="lg"
@@ -242,6 +275,13 @@ const SequenceEditor = ({ fixtures, initial, saving, onSave, onLeave }: Sequence
         }}
         onRangeChange={setRange}
       />
+      {livePreview.live ? (
+        <SequenceSliderPanel
+          groups={sliderGroups}
+          step={selectedStep === undefined ? undefined : draft.steps[selectedStep]}
+          onChange={setSliderValue}
+        />
+      ) : null}
       <Modal
         opened={pendingFixtureIds !== null}
         title={t({ id: 'ProjectFunction.removeFixturesTitle', defaultMessage: 'Remove fixtures' })}

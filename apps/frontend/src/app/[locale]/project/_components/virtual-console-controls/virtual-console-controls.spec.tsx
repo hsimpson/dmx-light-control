@@ -103,6 +103,20 @@ describe('virtual console controls', () => {
     expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('0%');
   });
 
+  it('follows a controlled play value from the caller', () => {
+    const onPlayValue = vi.fn();
+    const control = { ...createControl('slider', 0, 0), label: 'Dimmer' };
+    const { rerender } = renderWithProviders(
+      <SliderControl control={control} mode="play" value={80} onPlayValue={onPlayValue} />,
+    );
+    expect(screen.getByRole('slider', { name: 'Dimmer' })).toHaveAttribute('aria-valuenow', '80');
+    fireEvent.keyDown(screen.getByRole('slider', { name: 'Dimmer' }), { key: 'ArrowUp' });
+    expect(onPlayValue).toHaveBeenCalledWith(81);
+    expect(screen.getByRole('slider', { name: 'Dimmer' })).toHaveAttribute('aria-valuenow', '80');
+    rerender(<SliderControl control={control} mode="play" value={81} onPlayValue={onPlayValue} />);
+    expect(screen.getByRole('slider', { name: 'Dimmer' })).toHaveAttribute('aria-valuenow', '81');
+  });
+
   it('exposes a range input in play mode for sliders', () => {
     const control = { ...createControl('slider', 0, 0), label: 'Dimmer' };
     renderWithProviders(<SliderControl control={control} mode="play" />);

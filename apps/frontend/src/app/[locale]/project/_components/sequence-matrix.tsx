@@ -66,7 +66,7 @@ const SequenceMatrix = ({ fixtures, steps, range, onChange, onRangeChange }: Seq
   const inputRef = useRef<HTMLInputElement>(null);
   const editFinishedRef = useRef(false);
   const [query, setQuery] = useState('');
-  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(() => new Set());
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
   const [editing, setEditing] = useState<string | null>(null);
   const isEditing = editing !== null;
 
@@ -82,6 +82,15 @@ const SequenceMatrix = ({ fixtures, steps, range, onChange, onRangeChange }: Seq
       ),
     [fixtures, steps, query, unpatchedLabel],
   );
+  const collapsed = useMemo(() => {
+    const next = new Set<string>();
+    for (const group of groups) {
+      if (!expanded.has(group.key)) {
+        next.add(group.key);
+      }
+    }
+    return next;
+  }, [groups, expanded]);
   const rows = visibleMatrixRows(groups, collapsed);
   const offsets = groupRowOffsets(groups, collapsed);
   const clampCell = (cell: MatrixCell): MatrixCell => ({
@@ -235,7 +244,7 @@ const SequenceMatrix = ({ fixtures, steps, range, onChange, onRangeChange }: Seq
   };
 
   const toggleGroup = (key: string) => {
-    setCollapsed(previous => {
+    setExpanded(previous => {
       const next = new Set(previous);
       if (next.has(key)) {
         next.delete(key);
@@ -319,7 +328,7 @@ const SequenceMatrix = ({ fixtures, steps, range, onChange, onRangeChange }: Seq
             size="xs"
             variant="default"
             onClick={() => {
-              setCollapsed(new Set(groups.map(group => group.key)));
+              setExpanded(new Set());
             }}
           >
             {t({ id: 'ProjectFunction.matrix.collapseAll', defaultMessage: 'Collapse all' })}
@@ -328,7 +337,7 @@ const SequenceMatrix = ({ fixtures, steps, range, onChange, onRangeChange }: Seq
             size="xs"
             variant="default"
             onClick={() => {
-              setCollapsed(new Set());
+              setExpanded(new Set(groups.map(group => group.key)));
             }}
           >
             {t({ id: 'ProjectFunction.matrix.expandAll', defaultMessage: 'Expand all' })}

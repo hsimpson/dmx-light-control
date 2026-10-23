@@ -25,6 +25,53 @@ export const controlToDmxValue = (
   return Math.min(DMX_MAX, Math.max(0, Math.round(scaled)));
 };
 
+export const resolveBindingChannel = (
+  binding: { projectFixturePublicId: string; channelAssignmentPublicId: string },
+  fixtures: readonly VirtualConsoleBoundFixture[],
+): number | undefined => {
+  const fixture = fixtures.find(candidate => candidate.publicId === binding.projectFixturePublicId);
+  const assignment = fixture?.channelMode.fixtureChannelAssignments.find(
+    candidate => candidate.publicId === binding.channelAssignmentPublicId,
+  );
+  if (!fixture || !assignment) {
+    return undefined;
+  }
+  const channel = fixture.startAddress + assignment.channelNumber - 1;
+  if (channel < 1 || channel > DMX_UNIVERSE_SIZE) {
+    return undefined;
+  }
+  return channel;
+};
+
+type ConsoleControlTree = {
+  channelBindings?: readonly { projectFixturePublicId: string; channelAssignmentPublicId: string }[] | null;
+  children?: readonly ConsoleControlTree[] | null;
+};
+
+export const virtualConsoleBoundChannels = (
+  pages: readonly { controls: readonly ConsoleControlTree[] }[] | null | undefined,
+  fixtures: readonly VirtualConsoleBoundFixture[],
+): number[] => {
+  const channels = new Set<number>();
+  const visit = (control: ConsoleControlTree) => {
+    for (const binding of control.channelBindings ?? []) {
+      const channel = resolveBindingChannel(binding, fixtures);
+      if (channel !== undefined) {
+        channels.add(channel);
+      }
+    }
+    for (const child of control.children ?? []) {
+      visit(child);
+    }
+  };
+  for (const page of pages ?? []) {
+    for (const control of page.controls) {
+      visit(control);
+    }
+  }
+  return [...channels].sort((left, right) => left - right);
+};
+
 export const dmxChannelUpdates = (
   control: VirtualConsoleControl,
   rawValue: number,
@@ -33,18 +80,10 @@ export const dmxChannelUpdates = (
   const value = controlToDmxValue(control, rawValue);
   const updates: { channel: number; value: number }[] = [];
   for (const binding of control.channelBindings ?? []) {
-    const fixture = fixtures.find(candidate => candidate.publicId === binding.projectFixturePublicId);
-    const assignment = fixture?.channelMode.fixtureChannelAssignments.find(
-      candidate => candidate.publicId === binding.channelAssignmentPublicId,
-    );
-    if (!fixture || !assignment) {
-      continue;
+    const channel = resolveBindingChannel(binding, fixtures);
+    if (channel !== undefined) {
+      updates.push({ channel, value });
     }
-    const channel = fixture.startAddress + assignment.channelNumber - 1;
-    if (channel < 1 || channel > DMX_UNIVERSE_SIZE) {
-      continue;
-    }
-    updates.push({ channel, value });
   }
   return updates;
 };

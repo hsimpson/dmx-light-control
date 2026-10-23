@@ -255,6 +255,8 @@
   "ProjectFunction.live": "Live",
   "ProjectFunction.liveBadge": "LIVE",
   "ProjectFunction.liveDisconnected": "Live preview stopped because the DMX connection was lost.",
+  "ProjectFunction.liveSliders": "Live channel sliders",
+  "ProjectFunction.liveSliders.empty": "No fixture channels selected.",
   "ProjectFunction.matrix.collapseAll": "Collapse all",
   "ProjectFunction.matrix.duplicateStep": "Duplicate step",
   "ProjectFunction.matrix.editCell": "Edit value",

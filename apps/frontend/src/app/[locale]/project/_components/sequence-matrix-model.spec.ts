@@ -64,7 +64,7 @@ describe('sequence matrix model', () => {
         ]),
       ],
     );
-    expect(groups.map(group => group.label)).toEqual(['Wash [1] · DMX 1–1', 'PAR [2] · DMX 10–11', '']);
+    expect(groups.map(group => group.label)).toEqual(['Wash [1]', 'PAR [2]', '']);
     expect(groups[1]?.rows.map(row => row.label)).toEqual(['Dimmer · 10', 'Red · 11']);
     expect(groups[2]).toMatchObject({ key: UNPATCHED_GROUP_KEY, rows: [{ channel: 300 }] });
   });

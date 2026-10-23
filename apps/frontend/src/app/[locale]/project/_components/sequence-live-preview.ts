@@ -18,10 +18,14 @@ export const snapshotChannels = (
   return new Map([...next].sort(([left], [right]) => left - right));
 };
 
-export const liveOutput = (step: SequenceStepDraft, restore: ReadonlyMap<number, number>): DmxChannelUpdate[] =>
+export const liveOutput = (
+  step: SequenceStepDraft,
+  restore: ReadonlyMap<number, number>,
+  zeroUnlessStep: ReadonlySet<number> = new Set(),
+): DmxChannelUpdate[] =>
   [...restore].map(([channel, value]) => ({
     channel,
-    value: step.dmxValues.find(entry => entry.channel === channel)?.value ?? value,
+    value: step.dmxValues.find(entry => entry.channel === channel)?.value ?? (zeroUnlessStep.has(channel) ? 0 : value),
   }));
 
 export const restoreOutput = (restore: ReadonlyMap<number, number>): DmxChannelUpdate[] =>

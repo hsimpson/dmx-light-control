@@ -21,6 +21,7 @@ import {
   type ProjectFunctionDraft,
 } from './project-function-mapping';
 import SequenceEditor from './sequence-editor';
+import { virtualConsoleBoundChannels } from './virtual-console-channel-output';
 
 type SequenceEditorPageProperties = {
   projectPublicId: string;
@@ -35,6 +36,10 @@ const SequenceEditorPage = ({ projectPublicId, functionPublicId }: SequenceEdito
   const [updateProjectFunction, { loading: updating }] = useMutation(UpdateProjectFunctionDocument);
   const project = data?.project;
   const fixtures = useMemo(() => projectSequenceFixtures(project), [project]);
+  const consoleChannels = useMemo(
+    () => virtualConsoleBoundChannels(project?.virtualConsole.pages, project?.projectFixtures ?? []),
+    [project],
+  );
 
   if (loading && !data) {
     return <Loading />;
@@ -87,6 +92,7 @@ const SequenceEditorPage = ({ projectPublicId, functionPublicId }: SequenceEdito
       fixtures={fixtures}
       initial={existing ? functionToDraft(existing, fixtures) : newFunctionDraft()}
       saving={adding || updating}
+      consoleChannels={consoleChannels}
       onSave={save}
       onLeave={() => {
         router.push(`/project/${projectPublicId}/functions`);

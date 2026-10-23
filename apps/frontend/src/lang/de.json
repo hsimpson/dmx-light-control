@@ -255,6 +255,8 @@
   "ProjectFunction.live": "Live",
   "ProjectFunction.liveBadge": "LIVE",
   "ProjectFunction.liveDisconnected": "Live-Vorschau beendet, weil die DMX-Verbindung getrennt wurde.",
+  "ProjectFunction.liveSliders": "Live-Kanalschieber",
+  "ProjectFunction.liveSliders.empty": "Keine Fixture-Kanäle ausgewählt.",
   "ProjectFunction.matrix.collapseAll": "Alle einklappen",
   "ProjectFunction.matrix.duplicateStep": "Schritt duplizieren",
   "ProjectFunction.matrix.editCell": "Wert bearbeiten",

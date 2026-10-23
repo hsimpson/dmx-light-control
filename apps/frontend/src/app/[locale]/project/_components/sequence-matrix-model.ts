@@ -33,9 +33,7 @@ export const buildMatrixGroups = (fixtures: SequenceFixtureChannel[], steps: Seq
         patched.add(channel);
         return { kind: 'channel' as const, channel, label: `${item.name} · ${channel}` };
       });
-    const first = rows[0]?.channel ?? fixture.startAddress;
-    const last = rows.at(-1)?.channel ?? first;
-    return { key: fixture.publicId, label: `${fixture.name} [${index + 1}] · DMX ${first}–${last}`, rows };
+    return { key: fixture.publicId, label: `${fixture.name} [${index + 1}]`, rows };
   });
   const unpatched = [...new Set(steps.flatMap(item => item.dmxValues.map(entry => entry.channel)))]
     .filter(channel => !patched.has(channel))

@@ -1,8 +1,10 @@
+import type { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
+
 export type SequenceFixtureChannel = {
   publicId: string;
   startAddress: number;
   name: string;
-  channels: { channelNumber: number; name: string }[];
+  channels: { channelNumber: number; name: string; preset?: FixtureChannelPreset }[];
 };
 
 export const absoluteDmxChannel = (startAddress: number, channelNumber: number): number =>

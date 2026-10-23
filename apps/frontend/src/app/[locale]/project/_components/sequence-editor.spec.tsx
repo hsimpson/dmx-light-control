@@ -1,4 +1,5 @@
 import { dmxStore, resetDmxStore } from '@/lib/dmx/dmx-store';
+import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { act, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -7,9 +8,27 @@ import SequenceEditor from './sequence-editor';
 import type { SequenceFixtureChannel } from './sequence-steps';
 
 const fixtures: SequenceFixtureChannel[] = [
-  { publicId: 'par', startAddress: 1, name: 'PAR', channels: [{ channelNumber: 1, name: 'Dimmer' }] },
-  { publicId: 'wash', startAddress: 5, name: 'Wash', channels: [{ channelNumber: 1, name: 'Intensity' }] },
+  {
+    publicId: 'par',
+    startAddress: 1,
+    name: 'PAR',
+    channels: [{ channelNumber: 1, name: 'Dimmer', preset: FixtureChannelPreset.IntensityDimmer }],
+  },
+  {
+    publicId: 'wash',
+    startAddress: 5,
+    name: 'Wash',
+    channels: [{ channelNumber: 1, name: 'Intensity', preset: FixtureChannelPreset.IntensityRed }],
+  },
 ];
+
+const openFixtures = async (user: { click: (element: HTMLElement) => Promise<void> }) => {
+  await user.click(screen.getByRole('button', { name: /Fixtures/ }));
+};
+
+const expandGroup = async (user: { click: (element: HTMLElement) => Promise<void> }, name: string) => {
+  await user.click(screen.getByRole('button', { name: `Toggle ${name}` }));
+};
 
 const initial = (): ProjectFunctionDraft => ({
   name: 'Chase',
@@ -32,6 +51,7 @@ describe('SequenceEditor', () => {
     );
     await user.clear(screen.getByRole('textbox', { name: 'Name' }));
     await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Wave');
+    await expandGroup(user, 'PAR [1]');
     await user.click(screen.getByRole('gridcell', { name: 'Dimmer · 1, Step 1' }));
     await user.keyboard('200{Enter}');
     await user.click(screen.getByRole('button', { name: 'Save' }));
@@ -41,6 +61,51 @@ describe('SequenceEditor', () => {
         steps: [expect.objectContaining({ dmxValues: [expect.objectContaining({ channel: 1, value: 200 })] })],
       }),
     );
+  });
+
+  it('shows the selected step on channel sliders while live', async () => {
+    const draft = initial();
+    draft.steps = [
+      { key: 's1', fadeIn: 0, hold: 0, fadeOut: 0, dmxValues: [{ key: 'd1', channel: 1, value: 80 }] },
+      { key: 's2', fadeIn: 0, hold: 0, fadeOut: 0, dmxValues: [{ key: 'd2', channel: 1, value: 200 }] },
+    ];
+    draft.fixturePublicIds = ['par', 'wash'];
+    dmxStore.getState().setStatus('open');
+    const { user } = renderWithProviders(
+      <SequenceEditor
+        fixtures={fixtures}
+        initial={draft}
+        saving={false}
+        consoleChannels={[4]}
+        onSave={vi.fn()}
+        onLeave={vi.fn()}
+      />,
+    );
+    expect(screen.queryByTestId('sequence-slider-panel')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('switch', { name: 'Live' }));
+    expect(screen.getByRole('region', { name: 'PAR [1]' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Wash [2]' })).toBeInTheDocument();
+    const sliders = screen.getAllByRole('slider');
+    expect(sliders.map(slider => slider.getAttribute('aria-label'))).toEqual(['Dimmer · 1', 'Intensity · 5']);
+    expect(sliders[0]).toHaveAttribute('aria-valuenow', '80');
+    expect(sliders[1]).toHaveAttribute('aria-valuenow', '0');
+    expect(screen.getByTestId('sequence-slider-icon-1')).toHaveAttribute(
+      'data-preset',
+      FixtureChannelPreset.IntensityDimmer,
+    );
+    expect(screen.getByTestId('sequence-slider-icon-1').querySelector('svg')).not.toBeNull();
+    expect(screen.getByTestId('sequence-slider-icon-5')).toHaveAttribute(
+      'data-preset',
+      FixtureChannelPreset.IntensityRed,
+    );
+    expect(screen.getByTestId('sequence-slider-icon-5').querySelector('svg')).not.toBeNull();
+    await expandGroup(user, 'PAR [1]');
+    await expandGroup(user, 'Wash [2]');
+    await user.click(screen.getByRole('gridcell', { name: 'Dimmer · 1, Step 2' }));
+    expect(screen.getByRole('slider', { name: 'Dimmer · 1' })).toHaveAttribute('aria-valuenow', '200');
+    screen.getByRole('slider', { name: 'Intensity · 5' }).focus();
+    await user.keyboard('{ArrowUp}');
+    expect(screen.getByRole('gridcell', { name: 'Intensity · 5, Step 2' })).toHaveTextContent('1');
   });
 
   it('disables Live while the DMX socket is not connected', () => {
@@ -59,6 +124,7 @@ describe('SequenceEditor', () => {
     });
     expect(screen.getByText('1 channel captured')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Store as step' }));
+    await expandGroup(user, 'PAR [1]');
     expect(screen.getByRole('gridcell', { name: 'Dimmer · 1, Step 2' })).toHaveTextContent('180');
     expect(screen.getByText('0 channels captured')).toBeInTheDocument();
   });
@@ -68,7 +134,9 @@ describe('SequenceEditor', () => {
       <SequenceEditor fixtures={fixtures} initial={initial()} saving={false} onSave={vi.fn()} onLeave={vi.fn()} />,
     );
     expect(screen.queryByRole('gridcell', { name: 'Intensity · 5, Step 1' })).not.toBeInTheDocument();
-    await user.click(screen.getByRole('checkbox', { name: 'Wash · DMX 5–5' }));
+    await openFixtures(user);
+    await user.click(screen.getByRole('checkbox', { name: 'Wash [2]' }));
+    await expandGroup(user, 'Wash [2]');
     expect(screen.getByRole('gridcell', { name: 'Intensity · 5, Step 1' })).toBeInTheDocument();
   });
 
@@ -77,9 +145,11 @@ describe('SequenceEditor', () => {
     const { user } = renderWithProviders(
       <SequenceEditor fixtures={fixtures} initial={initial()} saving={false} onSave={onSave} onLeave={vi.fn()} />,
     );
+    await expandGroup(user, 'PAR [1]');
     await user.click(screen.getByRole('gridcell', { name: 'Dimmer · 1, Step 1' }));
     await user.keyboard('200{Enter}');
-    await user.click(screen.getByRole('checkbox', { name: 'PAR · DMX 1–1' }));
+    await openFixtures(user);
+    await user.click(screen.getByRole('checkbox', { name: 'PAR [1]' }));
     await user.click(await screen.findByRole('button', { name: 'Remove' }));
     expect(screen.queryByRole('gridcell', { name: 'Dimmer · 1, Step 1' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Save' }));

@@ -15,14 +15,14 @@ describe('SequenceFixtureList', () => {
       <SequenceFixtureList fixtures={fixtures} selectedIds={['par']} onChange={vi.fn()} />,
     );
 
-    expect(screen.getByRole('checkbox', { name: 'PAR · DMX 1–1' })).toBeChecked();
-    expect(screen.getByRole('checkbox', { name: 'Wash · DMX 5–5' })).not.toBeChecked();
+    expect(screen.queryByRole('checkbox', { name: 'PAR [1]' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /Fixtures/ }));
-    expect(screen.queryByRole('checkbox', { name: 'PAR · DMX 1–1' })).not.toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'PAR [1]' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Wash [2]' })).not.toBeChecked();
 
     await user.click(screen.getByRole('button', { name: /Fixtures/ }));
-    expect(screen.getByRole('checkbox', { name: 'PAR · DMX 1–1' })).toBeChecked();
+    expect(screen.queryByRole('checkbox', { name: 'PAR [1]' })).not.toBeInTheDocument();
   });
 
   it('filters the list and reports the next selection', async () => {
@@ -31,13 +31,14 @@ describe('SequenceFixtureList', () => {
       <SequenceFixtureList fixtures={fixtures} selectedIds={['par']} onChange={onChange} />,
     );
 
+    await user.click(screen.getByRole('button', { name: /Fixtures/ }));
     await user.type(screen.getByRole('textbox', { name: 'Filter fixtures' }), 'wash');
-    expect(screen.queryByRole('checkbox', { name: 'PAR · DMX 1–1' })).not.toBeInTheDocument();
-    await user.click(screen.getByRole('checkbox', { name: 'Wash · DMX 5–5' }));
+    expect(screen.queryByRole('checkbox', { name: 'PAR [1]' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('checkbox', { name: 'Wash [2]' }));
     expect(onChange).toHaveBeenCalledWith(['par', 'wash']);
 
     await user.clear(screen.getByRole('textbox', { name: 'Filter fixtures' }));
-    await user.click(screen.getByRole('checkbox', { name: 'PAR · DMX 1–1' }));
+    await user.click(screen.getByRole('checkbox', { name: 'PAR [1]' }));
     expect(onChange).toHaveBeenCalledWith([]);
   });
 });

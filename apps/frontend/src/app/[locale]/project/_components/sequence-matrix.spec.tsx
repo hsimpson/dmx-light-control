@@ -46,23 +46,30 @@ const Harness = () => {
 
 const cell = (name: string) => screen.getByRole('gridcell', { name });
 
+const expandPar = async (user: { click: (element: HTMLElement) => Promise<void> }) => {
+  await user.click(screen.getByRole('button', { name: 'Toggle PAR [1]' }));
+};
+
 describe('SequenceMatrix', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = () => undefined;
     onStepsChange.mockClear();
   });
 
-  it('renders steps as columns and channels grouped by fixture', () => {
-    renderWithProviders(<Harness />);
+  it('renders steps as columns and channels grouped by fixture', async () => {
+    const { user } = renderWithProviders(<Harness />);
     expect(screen.getByRole('columnheader', { name: /Step 1/ })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /Step 2/ })).toBeInTheDocument();
-    expect(screen.getByText('PAR [1] · DMX 10–11')).toBeInTheDocument();
+    expect(screen.getByText('PAR [1]')).toBeInTheDocument();
+    expect(screen.queryByRole('gridcell', { name: 'Dimmer · 10, Step 1' })).not.toBeInTheDocument();
+    await expandPar(user);
     expect(cell('Dimmer · 10, Step 1')).toHaveTextContent('50');
     expect(cell('Red · 11, Step 1')).toHaveTextContent('');
   });
 
   it('edits a cell by typing and pressing Enter', async () => {
     const { user } = renderWithProviders(<Harness />);
+    await expandPar(user);
     await user.click(cell('Red · 11, Step 2'));
     await user.keyboard('128{Enter}');
     expect(cell('Red · 11, Step 2')).toHaveTextContent('128');
@@ -71,6 +78,7 @@ describe('SequenceMatrix', () => {
 
   it('clears the selection with Delete and moves with arrow keys', async () => {
     const { user } = renderWithProviders(<Harness />);
+    await expandPar(user);
     await user.click(cell('Fade in (ms), Step 1'));
     await user.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}');
     expect(cell('Dimmer · 10, Step 1')).toHaveAttribute('aria-selected', 'true');
@@ -80,6 +88,7 @@ describe('SequenceMatrix', () => {
 
   it('fills a shift-selected range with Ctrl+Enter', async () => {
     const { user } = renderWithProviders(<Harness />);
+    await expandPar(user);
     await user.click(cell('Dimmer · 10, Step 1'));
     await user.keyboard('{Shift>}{ArrowDown}{ArrowRight}{/Shift}');
     await user.keyboard('9{Control>}{Enter}{/Control}');
@@ -90,6 +99,7 @@ describe('SequenceMatrix', () => {
 
   it('pastes tab-separated values at the selection', async () => {
     const { user } = renderWithProviders(<Harness />);
+    await expandPar(user);
     await user.click(cell('Dimmer · 10, Step 1'));
     await user.paste('1\t2\n3\t4');
     expect(cell('Red · 11, Step 2')).toHaveTextContent('4');
@@ -97,10 +107,15 @@ describe('SequenceMatrix', () => {
 
   it('filters and collapses channel rows', async () => {
     const { user } = renderWithProviders(<Harness />);
+    await expandPar(user);
     await user.type(screen.getByRole('textbox', { name: 'Filter channels' }), 'red');
     expect(screen.queryByRole('gridcell', { name: 'Dimmer · 10, Step 1' })).not.toBeInTheDocument();
     await user.clear(screen.getByRole('textbox', { name: 'Filter channels' }));
-    await user.click(screen.getByRole('button', { name: 'Toggle PAR [1] · DMX 10–11' }));
+    await user.click(screen.getByRole('button', { name: 'Toggle PAR [1]' }));
+    expect(screen.queryByRole('gridcell', { name: 'Red · 11, Step 1' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Expand all' }));
+    expect(cell('Red · 11, Step 1')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Collapse all' }));
     expect(screen.queryByRole('gridcell', { name: 'Red · 11, Step 1' })).not.toBeInTheDocument();
   });
 
@@ -114,6 +129,7 @@ describe('SequenceMatrix', () => {
       });
     };
 
+    await expandPar(user);
     await chooseStepAction('Duplicate step');
     expect(cell('Dimmer · 10, Step 2')).toHaveTextContent('50');
     expect(latestSteps()).toHaveLength(3);
