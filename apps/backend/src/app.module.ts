@@ -1,6 +1,7 @@
 import { relations } from '@/db/relations';
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { DmxModule } from '@/io/dmx/dmx.module';
+import { FunctionPlaybackModule } from '@/io/function-playback/function-playback.module';
 import { IoBridgeModule } from '@/io/io-bridge/io-bridge.module';
 import { MidiModule } from '@/io/midi/midi.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -40,6 +41,7 @@ import { ProjectsModule } from './projects/projects.module';
     }),
     EventEmitterModule.forRoot(),
     DmxModule,
+    FunctionPlaybackModule,
     MidiModule,
     IoBridgeModule,
     FixturesModule,

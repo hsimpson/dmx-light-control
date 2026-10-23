@@ -1,5 +1,6 @@
 import type { VirtualConsoleControlInput, VirtualConsoleInput } from '@/shared/types/graphql/graphql';
 import {
+  VirtualConsoleButtonMode as GqlVirtualConsoleButtonMode,
   VirtualConsoleControlType as GqlVirtualConsoleControlType,
   VirtualConsoleSliderOrientation as GqlVirtualConsoleSliderOrientation,
   VirtualConsoleSliderValueType as GqlVirtualConsoleSliderValueType,
@@ -27,6 +28,7 @@ export type VirtualConsoleResizeHandle = (typeof VIRTUAL_CONSOLE_RESIZE_HANDLES)
 export type VirtualConsoleControlType = 'frame' | 'slider' | 'button';
 export type VirtualConsoleSliderOrientation = 'vertical' | 'horizontal';
 export type VirtualConsoleSliderValueType = 'dmx' | 'percentage';
+export type VirtualConsoleButtonMode = 'flash' | 'toggle';
 
 export type VirtualConsoleChannelBinding = {
   projectFixturePublicId: string;
@@ -54,6 +56,9 @@ export type VirtualConsoleControl = {
   lowerLimit?: number;
   upperLimit?: number;
   channelBindings?: VirtualConsoleChannelBinding[];
+  buttonMode?: VirtualConsoleButtonMode;
+  functionPublicId?: string;
+  functionName?: string;
 };
 
 export type VirtualConsolePage = {
@@ -190,12 +195,61 @@ const sliderValueTypeToInput = (valueType: VirtualConsoleSliderValueType): GqlVi
   }
 };
 
+export type FunctionBindingLocation = {
+  pageName: string;
+  label: string;
+};
+
+type FunctionBindingNode = {
+  name?: string;
+  label?: string;
+  functionPublicId?: string | null;
+  pages?: readonly FunctionBindingNode[] | null;
+  controls?: readonly FunctionBindingNode[] | null;
+  children?: readonly FunctionBindingNode[] | null;
+};
+
+export const findFunctionBindings = (
+  document: FunctionBindingNode | null | undefined,
+  functionPublicId: string,
+): FunctionBindingLocation[] => {
+  if (!document) {
+    return [];
+  }
+  const found: FunctionBindingLocation[] = [];
+  const walk = (controls: readonly FunctionBindingNode[] | null | undefined, pageName: string) => {
+    for (const control of controls ?? []) {
+      if (control.functionPublicId === functionPublicId) {
+        found.push({ pageName, label: control.label ?? '' });
+      }
+      walk(control.children, pageName);
+    }
+  };
+  for (const page of document.pages ?? []) {
+    walk(page.controls, page.name ?? '');
+  }
+  return found;
+};
+
+const buttonModeToInput = (buttonMode: VirtualConsoleButtonMode): GqlVirtualConsoleButtonMode =>
+  buttonMode === 'toggle' ? GqlVirtualConsoleButtonMode.Toggle : GqlVirtualConsoleButtonMode.Flash;
+
 const controlToInput = (control: VirtualConsoleControl): VirtualConsoleControlInput => {
-  const { type, orientation, valueType, children, channelBindings, ...rest } = control;
+  const {
+    type,
+    orientation,
+    valueType,
+    children,
+    channelBindings,
+    buttonMode,
+    functionName: _functionName,
+    ...rest
+  } = control;
 
   return {
     ...rest,
     type: controlTypeToInput(type),
+    ...(buttonMode !== undefined ? { buttonMode: buttonModeToInput(buttonMode) } : {}),
     ...(orientation !== undefined ? { orientation: sliderOrientationToInput(orientation) } : {}),
     ...(valueType !== undefined ? { valueType: sliderValueTypeToInput(valueType) } : {}),
     ...(children !== undefined ? { children: children.map(controlToInput) } : {}),

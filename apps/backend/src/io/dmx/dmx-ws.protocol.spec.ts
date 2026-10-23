@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseDmxWsSetMessage } from './dmx-ws.protocol';
+import { parseDmxWsClientMessage, parseDmxWsSetMessage } from './dmx-ws.protocol';
 
 describe('parseDmxWsSetMessage', () => {
   it('reads a set payload', () => {
@@ -27,5 +27,13 @@ describe('parseDmxWsSetMessage', () => {
       { channel: 1, value: 10 },
       { channel: 3, value: 30 },
     ]);
+  });
+
+  it('reads function start and stop payloads', () => {
+    expect(parseDmxWsClientMessage(JSON.stringify({ type: 'functionStart', functionPublicId: 'abc' }))).toEqual({
+      type: 'functionStart',
+      functionPublicId: 'abc',
+    });
+    expect(parseDmxWsClientMessage(JSON.stringify({ type: 'functionStop', functionPublicId: '' }))).toBeUndefined();
   });
 });

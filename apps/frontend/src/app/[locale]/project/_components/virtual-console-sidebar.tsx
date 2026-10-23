@@ -432,6 +432,25 @@ const ControlFields = ({ control, onDelete, onPatch }: ControlFieldsProperties) 
         </>
       ) : null}
       {control.type === 'button' ? (
+        <Select
+          allowDeselect={false}
+          data={[
+            { value: 'flash', label: t({ id: 'ProjectDetail.virtualConsole.buttonFlash', defaultMessage: 'Flash' }) },
+            {
+              value: 'toggle',
+              label: t({ id: 'ProjectDetail.virtualConsole.buttonToggle', defaultMessage: 'Toggle' }),
+            },
+          ]}
+          label={t({ id: 'ProjectDetail.virtualConsole.buttonMode', defaultMessage: 'Button mode' })}
+          value={control.buttonMode ?? 'flash'}
+          onChange={value => {
+            if (value === 'flash' || value === 'toggle') {
+              onPatch({ buttonMode: value });
+            }
+          }}
+        />
+      ) : null}
+      {control.type === 'button' ? (
         <NumberInput
           hideControls
           label={t({ id: 'ProjectDetail.virtualConsole.upperLimit', defaultMessage: 'Upper limit' })}

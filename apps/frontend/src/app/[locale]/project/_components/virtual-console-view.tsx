@@ -799,6 +799,10 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
             <VirtualConsoleChannelSidebar
               control={channelControl}
               fixtures={data?.project?.projectFixtures ?? []}
+              functions={(data?.project?.projectFunctions ?? []).map(fn => ({
+                publicId: fn.publicId,
+                name: fn.name,
+              }))}
               onPatch={patchSelectedControl}
             />
           ) : null}

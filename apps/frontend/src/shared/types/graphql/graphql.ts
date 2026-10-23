@@ -32,6 +32,17 @@ export type AddProjectFixtureInput = {
   startAddress: number;
 };
 
+export type AddProjectFunctionInput = {
+  /** Unique name within the project */
+  name: string;
+  /** The public ID of the project */
+  projectPublicId: string;
+  /** Sequence properties, required when type is Sequence */
+  sequence?: SequencePropertiesInput | null | undefined;
+  /** The function type */
+  type: ProjectFunctionType;
+};
+
 export type CreateFixtureInput = {
   /** Beam angle in degrees (full opening angle) */
   beamAngle?: number | null | undefined;
@@ -78,6 +89,8 @@ export type ImportFixtureAssignmentInput = {
   channelNumber: number;
   /** The date and time when the entity was created */
   createdAt?: Date | null | undefined;
+  /** The public ID of the channel assignment */
+  publicId?: string | null | undefined;
   /** The date and time when the entity was last updated */
   updatedAt?: Date | null | undefined;
 };
@@ -205,7 +218,18 @@ export type ImportProject3dObjectInput = {
   updatedAt?: Date | null | undefined;
 };
 
+export type ImportProjectFixtureChannelAssignmentInput = {
+  /** The public ID of the catalog channel definition */
+  channelDefinitionPublicId?: string | null | undefined;
+  /** The 1-based channel number within the fixture mode */
+  channelNumber: number;
+  /** The public ID of the channel assignment at export time */
+  publicId: string;
+};
+
 export type ImportProjectFixtureInput = {
+  /** Channel assignment snapshot from export; used to remap virtual console bindings on import */
+  channelAssignments?: Array<ImportProjectFixtureChannelAssignmentInput> | null | undefined;
   /** The public ID of the channel mode */
   channelModePublicId: string;
   /** The date and time when the entity was created */
@@ -222,6 +246,21 @@ export type ImportProjectFixtureInput = {
   updatedAt?: Date | null | undefined;
 };
 
+export type ImportProjectFunctionInput = {
+  /** The date and time when the entity was created */
+  createdAt?: Date | null | undefined;
+  /** Unique name within the project */
+  name: string;
+  /** The public ID of the project function */
+  publicId?: string | null | undefined;
+  /** Sequence properties, required when type is Sequence */
+  sequence?: SequencePropertiesInput | null | undefined;
+  /** The function type */
+  type: ProjectFunctionType;
+  /** The date and time when the entity was last updated */
+  updatedAt?: Date | null | undefined;
+};
+
 export type ImportProjectInput = {
   /** The date and time when the entity was created */
   createdAt?: Date | null | undefined;
@@ -233,6 +272,8 @@ export type ImportProjectInput = {
   project3dObjects?: Array<ImportProject3dObjectInput> | null | undefined;
   /** The fixture instances patched into this project */
   projectFixtures?: Array<ImportProjectFixtureInput> | null | undefined;
+  /** The functions configured in this project */
+  projectFunctions?: Array<ImportProjectFunctionInput> | null | undefined;
   /** The public ID of the project */
   publicId?: string | null | undefined;
   /** Room height in meters */
@@ -260,11 +301,58 @@ export const enum ProjectEnvironmentType {
   SimpleGround = 'SimpleGround',
 }
 
+/** Kind of project function */
+export const enum ProjectFunctionType {
+  Sequence = 'Sequence',
+}
+
 /** How a scene object type is rendered in the 3D view */
 export const enum SceneObjectGeometryKind {
   Box = 'Box',
   Gltf = 'Gltf',
 }
+
+/** Order in which a sequence walks its steps */
+export const enum SequenceDirection {
+  Backward = 'Backward',
+  Forward = 'Forward',
+}
+
+export type SequencePropertiesInput = {
+  /** Direction the sequence walks its steps */
+  direction: SequenceDirection;
+  /** Public IDs of the project fixtures edited by this sequence. Omit to leave unset. */
+  fixturePublicIds?: Array<string> | null | undefined;
+  /** How the sequence repeats */
+  runOrder: SequenceRunOrder;
+  /** Steps in order */
+  steps: Array<SequenceStepInput>;
+};
+
+/** How a sequence repeats after its last step */
+export const enum SequenceRunOrder {
+  Loop = 'Loop',
+  PingPong = 'PingPong',
+  SingleShot = 'SingleShot',
+}
+
+export type SequenceStepDmxValueInput = {
+  /** DMX channel from 1 to 512 */
+  channel: number;
+  /** DMX value from 0 to 255 */
+  value: number;
+};
+
+export type SequenceStepInput = {
+  /** Sparse DMX values for this step */
+  dmxValues: Array<SequenceStepDmxValueInput>;
+  /** Fade-in time in milliseconds */
+  fadeIn: number;
+  /** Fade-out time in milliseconds. 0 skips the fade-out. */
+  fadeOut: number;
+  /** Hold time in milliseconds */
+  hold: number;
+};
 
 export type UpdateFixtureChannelAssignmentInput = {
   /** The public ID of the channel definition to assign */
@@ -360,6 +448,15 @@ export type UpdateProjectFixtureInput = {
   transform?: Array<number> | null | undefined;
 };
 
+export type UpdateProjectFunctionInput = {
+  /** Unique name within the project */
+  name?: string | null | undefined;
+  /** The public ID of the function */
+  publicId: string;
+  /** Replacement sequence properties. Replaces the whole sequence, including steps. */
+  sequence?: SequencePropertiesInput | null | undefined;
+};
+
 export type UpdateProjectInput = {
   /** The 3D environment used by the project */
   environmentType?: ProjectEnvironmentType | null | undefined;
@@ -382,9 +479,19 @@ export type UpdateProjectVirtualConsoleInput = {
   virtualConsole: VirtualConsoleInput;
 };
 
+/** Whether a virtual console button latches or runs only while held */
+export const enum VirtualConsoleButtonMode {
+  Flash = 'flash',
+  Toggle = 'toggle',
+}
+
 export type VirtualConsoleChannelBindingInput = {
   /** Public id of the channel assignment in the fixture mode */
   channelAssignmentPublicId: string;
+  /** Catalog channel definition public id (export/import remapping hint) */
+  channelDefinitionPublicId?: string | null | undefined;
+  /** 1-based channel number within the fixture mode (export/import remapping hint) */
+  channelNumber?: number | null | undefined;
   /** Public id of the patched project fixture */
   projectFixturePublicId: string;
 };
@@ -396,6 +503,8 @@ export type VirtualConsoleControlInput = {
   borderColor?: string | null | undefined;
   /** Frame border width in pixels */
   borderWidth?: number | null | undefined;
+  /** Whether a button latches (toggle) or runs only while held (flash) */
+  buttonMode?: VirtualConsoleButtonMode | null | undefined;
   /** Fixture channels this slider or button controls */
   channelBindings?: Array<VirtualConsoleChannelBindingInput> | null | undefined;
   /** Nested controls when this is a frame */
@@ -408,6 +517,10 @@ export type VirtualConsoleControlInput = {
   fontWeight?: number | null | undefined;
   /** Foreground color as hex */
   foregroundColor?: string | null | undefined;
+  /** Function name used to remap a button binding on import */
+  functionName?: string | null | undefined;
+  /** Project function started by this button */
+  functionPublicId?: string | null | undefined;
   /** Height in pixels */
   height: number;
   /** Stable id of this control */
@@ -1060,7 +1173,15 @@ export type VirtualConsoleControlFieldsFragment = {
   valueType: VirtualConsoleSliderValueType | null;
   lowerLimit: number | null;
   upperLimit: number | null;
-  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+  buttonMode: VirtualConsoleButtonMode | null;
+  functionPublicId: string | null;
+  functionName: string | null;
+  channelBindings: Array<{
+    projectFixturePublicId: string;
+    channelAssignmentPublicId: string;
+    channelNumber: number | null;
+    channelDefinitionPublicId: string | null;
+  }> | null;
 };
 
 export type VirtualConsoleFieldsFragment = {
@@ -1090,6 +1211,9 @@ export type VirtualConsoleFieldsFragment = {
       valueType: VirtualConsoleSliderValueType | null;
       lowerLimit: number | null;
       upperLimit: number | null;
+      buttonMode: VirtualConsoleButtonMode | null;
+      functionPublicId: string | null;
+      functionName: string | null;
       children: Array<{
         id: string;
         type: VirtualConsoleControlType;
@@ -1109,6 +1233,9 @@ export type VirtualConsoleFieldsFragment = {
         valueType: VirtualConsoleSliderValueType | null;
         lowerLimit: number | null;
         upperLimit: number | null;
+        buttonMode: VirtualConsoleButtonMode | null;
+        functionPublicId: string | null;
+        functionName: string | null;
         children: Array<{
           id: string;
           type: VirtualConsoleControlType;
@@ -1128,6 +1255,9 @@ export type VirtualConsoleFieldsFragment = {
           valueType: VirtualConsoleSliderValueType | null;
           lowerLimit: number | null;
           upperLimit: number | null;
+          buttonMode: VirtualConsoleButtonMode | null;
+          functionPublicId: string | null;
+          functionName: string | null;
           children: Array<{
             id: string;
             type: VirtualConsoleControlType;
@@ -1147,6 +1277,9 @@ export type VirtualConsoleFieldsFragment = {
             valueType: VirtualConsoleSliderValueType | null;
             lowerLimit: number | null;
             upperLimit: number | null;
+            buttonMode: VirtualConsoleButtonMode | null;
+            functionPublicId: string | null;
+            functionName: string | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -1166,6 +1299,9 @@ export type VirtualConsoleFieldsFragment = {
               valueType: VirtualConsoleSliderValueType | null;
               lowerLimit: number | null;
               upperLimit: number | null;
+              buttonMode: VirtualConsoleButtonMode | null;
+              functionPublicId: string | null;
+              functionName: string | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -1185,6 +1321,9 @@ export type VirtualConsoleFieldsFragment = {
                 valueType: VirtualConsoleSliderValueType | null;
                 lowerLimit: number | null;
                 upperLimit: number | null;
+                buttonMode: VirtualConsoleButtonMode | null;
+                functionPublicId: string | null;
+                functionName: string | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -1204,6 +1343,9 @@ export type VirtualConsoleFieldsFragment = {
                   valueType: VirtualConsoleSliderValueType | null;
                   lowerLimit: number | null;
                   upperLimit: number | null;
+                  buttonMode: VirtualConsoleButtonMode | null;
+                  functionPublicId: string | null;
+                  functionName: string | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -1223,24 +1365,64 @@ export type VirtualConsoleFieldsFragment = {
                     valueType: VirtualConsoleSliderValueType | null;
                     lowerLimit: number | null;
                     upperLimit: number | null;
+                    buttonMode: VirtualConsoleButtonMode | null;
+                    functionPublicId: string | null;
+                    functionName: string | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
                       channelAssignmentPublicId: string;
+                      channelNumber: number | null;
+                      channelDefinitionPublicId: string | null;
                     }> | null;
                   }> | null;
-                  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+                  channelBindings: Array<{
+                    projectFixturePublicId: string;
+                    channelAssignmentPublicId: string;
+                    channelNumber: number | null;
+                    channelDefinitionPublicId: string | null;
+                  }> | null;
                 }> | null;
-                channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+                channelBindings: Array<{
+                  projectFixturePublicId: string;
+                  channelAssignmentPublicId: string;
+                  channelNumber: number | null;
+                  channelDefinitionPublicId: string | null;
+                }> | null;
               }> | null;
-              channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+              channelBindings: Array<{
+                projectFixturePublicId: string;
+                channelAssignmentPublicId: string;
+                channelNumber: number | null;
+                channelDefinitionPublicId: string | null;
+              }> | null;
             }> | null;
-            channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+            channelBindings: Array<{
+              projectFixturePublicId: string;
+              channelAssignmentPublicId: string;
+              channelNumber: number | null;
+              channelDefinitionPublicId: string | null;
+            }> | null;
           }> | null;
-          channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+          channelBindings: Array<{
+            projectFixturePublicId: string;
+            channelAssignmentPublicId: string;
+            channelNumber: number | null;
+            channelDefinitionPublicId: string | null;
+          }> | null;
         }> | null;
-        channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+        channelBindings: Array<{
+          projectFixturePublicId: string;
+          channelAssignmentPublicId: string;
+          channelNumber: number | null;
+          channelDefinitionPublicId: string | null;
+        }> | null;
       }> | null;
-      channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+      channelBindings: Array<{
+        projectFixturePublicId: string;
+        channelAssignmentPublicId: string;
+        channelNumber: number | null;
+        channelDefinitionPublicId: string | null;
+      }> | null;
     }>;
   }>;
 };
@@ -1369,6 +1551,9 @@ export type GetProjectQuery = {
           valueType: VirtualConsoleSliderValueType | null;
           lowerLimit: number | null;
           upperLimit: number | null;
+          buttonMode: VirtualConsoleButtonMode | null;
+          functionPublicId: string | null;
+          functionName: string | null;
           children: Array<{
             id: string;
             type: VirtualConsoleControlType;
@@ -1388,6 +1573,9 @@ export type GetProjectQuery = {
             valueType: VirtualConsoleSliderValueType | null;
             lowerLimit: number | null;
             upperLimit: number | null;
+            buttonMode: VirtualConsoleButtonMode | null;
+            functionPublicId: string | null;
+            functionName: string | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -1407,6 +1595,9 @@ export type GetProjectQuery = {
               valueType: VirtualConsoleSliderValueType | null;
               lowerLimit: number | null;
               upperLimit: number | null;
+              buttonMode: VirtualConsoleButtonMode | null;
+              functionPublicId: string | null;
+              functionName: string | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -1426,6 +1617,9 @@ export type GetProjectQuery = {
                 valueType: VirtualConsoleSliderValueType | null;
                 lowerLimit: number | null;
                 upperLimit: number | null;
+                buttonMode: VirtualConsoleButtonMode | null;
+                functionPublicId: string | null;
+                functionName: string | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -1445,6 +1639,9 @@ export type GetProjectQuery = {
                   valueType: VirtualConsoleSliderValueType | null;
                   lowerLimit: number | null;
                   upperLimit: number | null;
+                  buttonMode: VirtualConsoleButtonMode | null;
+                  functionPublicId: string | null;
+                  functionName: string | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -1464,6 +1661,9 @@ export type GetProjectQuery = {
                     valueType: VirtualConsoleSliderValueType | null;
                     lowerLimit: number | null;
                     upperLimit: number | null;
+                    buttonMode: VirtualConsoleButtonMode | null;
+                    functionPublicId: string | null;
+                    functionName: string | null;
                     children: Array<{
                       id: string;
                       type: VirtualConsoleControlType;
@@ -1483,6 +1683,9 @@ export type GetProjectQuery = {
                       valueType: VirtualConsoleSliderValueType | null;
                       lowerLimit: number | null;
                       upperLimit: number | null;
+                      buttonMode: VirtualConsoleButtonMode | null;
+                      functionPublicId: string | null;
+                      functionName: string | null;
                       children: Array<{
                         id: string;
                         type: VirtualConsoleControlType;
@@ -1502,30 +1705,64 @@ export type GetProjectQuery = {
                         valueType: VirtualConsoleSliderValueType | null;
                         lowerLimit: number | null;
                         upperLimit: number | null;
+                        buttonMode: VirtualConsoleButtonMode | null;
+                        functionPublicId: string | null;
+                        functionName: string | null;
                         channelBindings: Array<{
                           projectFixturePublicId: string;
                           channelAssignmentPublicId: string;
+                          channelNumber: number | null;
+                          channelDefinitionPublicId: string | null;
                         }> | null;
                       }> | null;
                       channelBindings: Array<{
                         projectFixturePublicId: string;
                         channelAssignmentPublicId: string;
+                        channelNumber: number | null;
+                        channelDefinitionPublicId: string | null;
                       }> | null;
                     }> | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
                       channelAssignmentPublicId: string;
+                      channelNumber: number | null;
+                      channelDefinitionPublicId: string | null;
                     }> | null;
                   }> | null;
-                  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+                  channelBindings: Array<{
+                    projectFixturePublicId: string;
+                    channelAssignmentPublicId: string;
+                    channelNumber: number | null;
+                    channelDefinitionPublicId: string | null;
+                  }> | null;
                 }> | null;
-                channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+                channelBindings: Array<{
+                  projectFixturePublicId: string;
+                  channelAssignmentPublicId: string;
+                  channelNumber: number | null;
+                  channelDefinitionPublicId: string | null;
+                }> | null;
               }> | null;
-              channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+              channelBindings: Array<{
+                projectFixturePublicId: string;
+                channelAssignmentPublicId: string;
+                channelNumber: number | null;
+                channelDefinitionPublicId: string | null;
+              }> | null;
             }> | null;
-            channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+            channelBindings: Array<{
+              projectFixturePublicId: string;
+              channelAssignmentPublicId: string;
+              channelNumber: number | null;
+              channelDefinitionPublicId: string | null;
+            }> | null;
           }> | null;
-          channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+          channelBindings: Array<{
+            projectFixturePublicId: string;
+            channelAssignmentPublicId: string;
+            channelNumber: number | null;
+            channelDefinitionPublicId: string | null;
+          }> | null;
         }>;
       }>;
     };
@@ -1577,6 +1814,39 @@ export type GetProjectQuery = {
         createdAt: Date;
         updatedAt: Date;
       };
+    }>;
+    projectFunctions: Array<{
+      publicId: string;
+      name: string;
+      type: ProjectFunctionType;
+      sequence: {
+        direction: SequenceDirection;
+        runOrder: SequenceRunOrder;
+        fixturePublicIds: Array<string> | null;
+        steps: Array<{
+          fadeIn: number;
+          hold: number;
+          fadeOut: number;
+          dmxValues: Array<{ channel: number; value: number }>;
+        }>;
+      } | null;
+    }>;
+  } | null;
+};
+
+export type ProjectFunctionFieldsFragment = {
+  publicId: string;
+  name: string;
+  type: ProjectFunctionType;
+  sequence: {
+    direction: SequenceDirection;
+    runOrder: SequenceRunOrder;
+    fixturePublicIds: Array<string> | null;
+    steps: Array<{
+      fadeIn: number;
+      hold: number;
+      fadeOut: number;
+      dmxValues: Array<{ channel: number; value: number }>;
     }>;
   } | null;
 };
@@ -1798,6 +2068,11 @@ export type ExportProjectsQuery = {
         transform: Array<number>;
         createdAt: Date;
         updatedAt: Date;
+        channelAssignments: Array<{
+          publicId: string;
+          channelNumber: number;
+          channelDefinitionPublicId: string;
+        }> | null;
       }>;
       project3dObjects: Array<{
         publicId: string;
@@ -1810,6 +2085,24 @@ export type ExportProjectsQuery = {
         transform: Array<number>;
         createdAt: Date;
         updatedAt: Date;
+      }>;
+      projectFunctions: Array<{
+        publicId: string;
+        name: string;
+        type: ProjectFunctionType;
+        createdAt: Date;
+        updatedAt: Date;
+        sequence: {
+          direction: SequenceDirection;
+          runOrder: SequenceRunOrder;
+          fixturePublicIds: Array<string> | null;
+          steps: Array<{
+            fadeIn: number;
+            hold: number;
+            fadeOut: number;
+            dmxValues: Array<{ channel: number; value: number }>;
+          }>;
+        };
       }>;
       virtualConsole: {
         schemaVersion: number;
@@ -1838,6 +2131,9 @@ export type ExportProjectsQuery = {
             valueType: VirtualConsoleSliderValueType | null;
             lowerLimit: number | null;
             upperLimit: number | null;
+            buttonMode: VirtualConsoleButtonMode | null;
+            functionPublicId: string | null;
+            functionName: string | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -1857,6 +2153,9 @@ export type ExportProjectsQuery = {
               valueType: VirtualConsoleSliderValueType | null;
               lowerLimit: number | null;
               upperLimit: number | null;
+              buttonMode: VirtualConsoleButtonMode | null;
+              functionPublicId: string | null;
+              functionName: string | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -1876,6 +2175,9 @@ export type ExportProjectsQuery = {
                 valueType: VirtualConsoleSliderValueType | null;
                 lowerLimit: number | null;
                 upperLimit: number | null;
+                buttonMode: VirtualConsoleButtonMode | null;
+                functionPublicId: string | null;
+                functionName: string | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -1895,6 +2197,9 @@ export type ExportProjectsQuery = {
                   valueType: VirtualConsoleSliderValueType | null;
                   lowerLimit: number | null;
                   upperLimit: number | null;
+                  buttonMode: VirtualConsoleButtonMode | null;
+                  functionPublicId: string | null;
+                  functionName: string | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -1914,6 +2219,9 @@ export type ExportProjectsQuery = {
                     valueType: VirtualConsoleSliderValueType | null;
                     lowerLimit: number | null;
                     upperLimit: number | null;
+                    buttonMode: VirtualConsoleButtonMode | null;
+                    functionPublicId: string | null;
+                    functionName: string | null;
                     children: Array<{
                       id: string;
                       type: VirtualConsoleControlType;
@@ -1933,6 +2241,9 @@ export type ExportProjectsQuery = {
                       valueType: VirtualConsoleSliderValueType | null;
                       lowerLimit: number | null;
                       upperLimit: number | null;
+                      buttonMode: VirtualConsoleButtonMode | null;
+                      functionPublicId: string | null;
+                      functionName: string | null;
                       children: Array<{
                         id: string;
                         type: VirtualConsoleControlType;
@@ -1952,6 +2263,9 @@ export type ExportProjectsQuery = {
                         valueType: VirtualConsoleSliderValueType | null;
                         lowerLimit: number | null;
                         upperLimit: number | null;
+                        buttonMode: VirtualConsoleButtonMode | null;
+                        functionPublicId: string | null;
+                        functionName: string | null;
                         children: Array<{
                           id: string;
                           type: VirtualConsoleControlType;
@@ -1971,39 +2285,122 @@ export type ExportProjectsQuery = {
                           valueType: VirtualConsoleSliderValueType | null;
                           lowerLimit: number | null;
                           upperLimit: number | null;
+                          buttonMode: VirtualConsoleButtonMode | null;
+                          functionPublicId: string | null;
+                          functionName: string | null;
                           channelBindings: Array<{
                             projectFixturePublicId: string;
                             channelAssignmentPublicId: string;
+                            channelNumber: number | null;
+                            channelDefinitionPublicId: string | null;
                           }> | null;
                         }> | null;
                         channelBindings: Array<{
                           projectFixturePublicId: string;
                           channelAssignmentPublicId: string;
+                          channelNumber: number | null;
+                          channelDefinitionPublicId: string | null;
                         }> | null;
                       }> | null;
                       channelBindings: Array<{
                         projectFixturePublicId: string;
                         channelAssignmentPublicId: string;
+                        channelNumber: number | null;
+                        channelDefinitionPublicId: string | null;
                       }> | null;
                     }> | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
                       channelAssignmentPublicId: string;
+                      channelNumber: number | null;
+                      channelDefinitionPublicId: string | null;
                     }> | null;
                   }> | null;
-                  channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+                  channelBindings: Array<{
+                    projectFixturePublicId: string;
+                    channelAssignmentPublicId: string;
+                    channelNumber: number | null;
+                    channelDefinitionPublicId: string | null;
+                  }> | null;
                 }> | null;
-                channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+                channelBindings: Array<{
+                  projectFixturePublicId: string;
+                  channelAssignmentPublicId: string;
+                  channelNumber: number | null;
+                  channelDefinitionPublicId: string | null;
+                }> | null;
               }> | null;
-              channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+              channelBindings: Array<{
+                projectFixturePublicId: string;
+                channelAssignmentPublicId: string;
+                channelNumber: number | null;
+                channelDefinitionPublicId: string | null;
+              }> | null;
             }> | null;
-            channelBindings: Array<{ projectFixturePublicId: string; channelAssignmentPublicId: string }> | null;
+            channelBindings: Array<{
+              projectFixturePublicId: string;
+              channelAssignmentPublicId: string;
+              channelNumber: number | null;
+              channelDefinitionPublicId: string | null;
+            }> | null;
           }>;
         }>;
       } | null;
     }>;
   };
 };
+
+export type AddProjectFunctionMutationVariables = Exact<{
+  input: AddProjectFunctionInput;
+}>;
+
+export type AddProjectFunctionMutation = {
+  addProjectFunction: {
+    publicId: string;
+    name: string;
+    type: ProjectFunctionType;
+    sequence: {
+      direction: SequenceDirection;
+      runOrder: SequenceRunOrder;
+      fixturePublicIds: Array<string> | null;
+      steps: Array<{
+        fadeIn: number;
+        hold: number;
+        fadeOut: number;
+        dmxValues: Array<{ channel: number; value: number }>;
+      }>;
+    } | null;
+  };
+};
+
+export type UpdateProjectFunctionMutationVariables = Exact<{
+  input: UpdateProjectFunctionInput;
+}>;
+
+export type UpdateProjectFunctionMutation = {
+  updateProjectFunction: {
+    publicId: string;
+    name: string;
+    type: ProjectFunctionType;
+    sequence: {
+      direction: SequenceDirection;
+      runOrder: SequenceRunOrder;
+      fixturePublicIds: Array<string> | null;
+      steps: Array<{
+        fadeIn: number;
+        hold: number;
+        fadeOut: number;
+        dmxValues: Array<{ channel: number; value: number }>;
+      }>;
+    } | null;
+  };
+};
+
+export type DeleteProjectFunctionMutationVariables = Exact<{
+  publicId: string;
+}>;
+
+export type DeleteProjectFunctionMutation = { deleteProjectFunction: { publicId: string; deleted: boolean } };
 
 export type ImportProjectsMutationVariables = Exact<{
   document: ImportProjectsInput;
@@ -2479,9 +2876,14 @@ export const VirtualConsoleControlFieldsFragmentDoc = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelDefinitionPublicId' } },
               ],
             },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'buttonMode' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
         ],
       },
     },
@@ -2652,9 +3054,14 @@ export const VirtualConsoleFieldsFragmentDoc = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelDefinitionPublicId' } },
               ],
             },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'buttonMode' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
         ],
       },
     },
@@ -2791,6 +3198,59 @@ export const Project3dObjectFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<Project3dObjectFieldsFragment, unknown>;
+export const ProjectFunctionFieldsFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFunctionFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectFunctionDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sequence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'direction' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'runOrder' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicIds' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'steps' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'dmxValues' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'channel' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ProjectFunctionFieldsFragment, unknown>;
 export const GetFixturesDocument = {
   kind: 'Document',
   definitions: [
@@ -4227,6 +4687,14 @@ export const GetProjectDocument = {
                     selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'Project3dObjectFields' } }],
                   },
                 },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'projectFunctions' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFunctionFields' } }],
+                  },
+                },
               ],
             },
           },
@@ -4266,9 +4734,14 @@ export const GetProjectDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelDefinitionPublicId' } },
               ],
             },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'buttonMode' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
         ],
       },
     },
@@ -4537,6 +5010,54 @@ export const GetProjectDocument = {
           },
           { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
           { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFunctionFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectFunctionDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sequence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'direction' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'runOrder' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicIds' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'steps' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'dmxValues' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'channel' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
         ],
       },
     },
@@ -5288,6 +5809,18 @@ export const ExportProjectsDocument = {
                             { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'channelAssignments' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'channelDefinitionPublicId' } },
+                                ],
+                              },
+                            },
                           ],
                         },
                       },
@@ -5307,6 +5840,55 @@ export const ExportProjectsDocument = {
                             { kind: 'Field', name: { kind: 'Name', value: 'transform' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'projectFunctions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'sequence' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  { kind: 'Field', name: { kind: 'Name', value: 'direction' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'runOrder' } },
+                                  { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicIds' } },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'steps' },
+                                    selectionSet: {
+                                      kind: 'SelectionSet',
+                                      selections: [
+                                        { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                                        { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                                        { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
+                                        {
+                                          kind: 'Field',
+                                          name: { kind: 'Name', value: 'dmxValues' },
+                                          selectionSet: {
+                                            kind: 'SelectionSet',
+                                            selections: [
+                                              { kind: 'Field', name: { kind: 'Name', value: 'channel' } },
+                                              { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+                                            ],
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
                           ],
                         },
                       },
@@ -5362,9 +5944,14 @@ export const ExportProjectsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'channelDefinitionPublicId' } },
               ],
             },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'buttonMode' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
         ],
       },
     },
@@ -5499,6 +6086,222 @@ export const ExportProjectsDocument = {
     },
   ],
 } as unknown as DocumentNode<ExportProjectsQuery, ExportProjectsQueryVariables>;
+export const AddProjectFunctionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'AddProjectFunction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'AddProjectFunctionInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'addProjectFunction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFunctionFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFunctionFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectFunctionDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sequence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'direction' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'runOrder' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicIds' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'steps' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'dmxValues' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'channel' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<AddProjectFunctionMutation, AddProjectFunctionMutationVariables>;
+export const UpdateProjectFunctionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateProjectFunction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'UpdateProjectFunctionInput' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateProjectFunction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'ProjectFunctionFields' } }],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'ProjectFunctionFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ProjectFunctionDto' } },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'sequence' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'direction' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'runOrder' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fixturePublicIds' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'steps' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'dmxValues' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'channel' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UpdateProjectFunctionMutation, UpdateProjectFunctionMutationVariables>;
+export const DeleteProjectFunctionDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteProjectFunction' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+          type: { kind: 'NonNullType', type: { kind: 'NamedType', name: { kind: 'Name', value: 'UUID' } } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteProjectFunction' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'publicId' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'publicId' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'publicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'deleted' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<DeleteProjectFunctionMutation, DeleteProjectFunctionMutationVariables>;
 export const ImportProjectsDocument = {
   kind: 'Document',
   definitions: [

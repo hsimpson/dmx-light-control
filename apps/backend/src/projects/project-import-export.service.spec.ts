@@ -59,7 +59,7 @@ describe('ProjectImportExportService', () => {
     );
 
     await expect(service.exportProjects()).resolves.toEqual({
-      schemaVersion: 9,
+      schemaVersion: 10,
       projects: [
         {
           publicId: 'proj-1',
@@ -71,6 +71,7 @@ describe('ProjectImportExportService', () => {
           virtualConsole: null,
           projectFixtures: [],
           project3dObjects: [],
+          projectFunctions: [],
           ...timestamps,
         },
       ],

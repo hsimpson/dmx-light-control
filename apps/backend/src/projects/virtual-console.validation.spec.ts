@@ -11,6 +11,7 @@ import {
 import {
   assertValidVirtualConsole,
   assertVirtualConsoleChannelBindings,
+  assertVirtualConsoleFunctionBindings,
   defaultVirtualConsoleDocument,
   enrichVirtualConsoleForExport,
   remapVirtualConsoleBindingsForImport,
@@ -546,5 +547,54 @@ describe('assertValidVirtualConsole', () => {
     expect(() => {
       assertValidVirtualConsole(document);
     }).toThrow(InvalidVirtualConsoleException);
+  });
+
+  it('rejects a button that binds both channels and a function', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('missing button');
+    }
+    button.channelBindings = [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID }];
+    button.functionPublicId = '88888888-8888-4888-8888-888888888888';
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(/both channels and a function/);
+  });
+
+  it('accepts null function fields on a frame from an export', () => {
+    const document = validDocument();
+    const frame = document.pages[0]?.controls[0];
+    if (!frame) {
+      throw new Error('missing frame');
+    }
+    Object.assign(frame, { functionPublicId: null, functionName: null, buttonMode: null });
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).not.toThrow();
+  });
+
+  it('rejects a function binding on a slider', () => {
+    const document = validDocument();
+    const slider = document.pages[0]?.controls[0]?.children?.[0];
+    if (!slider) {
+      throw new Error('missing slider');
+    }
+    slider.functionPublicId = '88888888-8888-4888-8888-888888888888';
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow(InvalidVirtualConsoleException);
+  });
+
+  it('rejects a function that does not belong to the project', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (!button) {
+      throw new Error('missing button');
+    }
+    button.functionPublicId = '88888888-8888-4888-8888-888888888888';
+    expect(() => {
+      assertVirtualConsoleFunctionBindings(document, new Set());
+    }).toThrow(/does not belong to this project/);
   });
 });

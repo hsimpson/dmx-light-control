@@ -3,11 +3,12 @@ import { optionalImportTimestamps } from '@/db/import-timestamps.input';
 import { relations } from '@/db/relations';
 import { fixture, fixtureChannelAssignment, fixtureChannelMode } from '@/fixtures/entities';
 import { ImportProject3dObjectInput, ImportProjectsInput } from '@/projects/dto/import-projects.dto';
-import { project, project3dObject, projectFixture, sceneObjectType } from '@/projects/entities';
+import { project, project3dObject, projectFixture, projectFunction, sceneObjectType } from '@/projects/entities';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from '@/projects/project-3d-object-name';
 import { identityTransform } from '@/projects/project-3d-object.transform';
 import { assertValidTransform, resolveSizesForType } from '@/projects/project-3d-object.validation';
 import { environmentTypeForImport, optionalEnvironmentType } from '@/projects/project-environment';
+import { buildProjectFunctionProperties } from '@/projects/project-function.validation';
 import { mapProjectsToExportDocument, ProjectExportDocument } from '@/projects/project-export.mapper';
 import {
   assertChannelModeBelongsToFixture,
@@ -24,7 +25,9 @@ import { ProjectRepository } from '@/projects/repositories/project.repository';
 import {
   assertValidVirtualConsole,
   assertVirtualConsoleChannelBindings,
+  assertVirtualConsoleFunctionBindings,
   remapVirtualConsoleBindingsForImport,
+  remapVirtualConsoleFunctionsForImport,
   sanitizeVirtualConsoleForImport,
   stripVirtualConsoleBindingHints,
   type VirtualConsoleBindingFixture,
@@ -32,6 +35,7 @@ import {
 } from '@/projects/virtual-console.validation';
 import { VirtualConsoleDocument } from '@/projects/virtual-console';
 import { Injectable } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import { eq, InferSelectModel } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
@@ -102,9 +106,11 @@ export class ProjectImportExportService {
     const importedPublicIds = await this.db.transaction(async tx => {
       const publicIds: string[] = [];
       for (const incoming of document.projects) {
+        this.assignFunctionPublicIds(incoming);
         const row = await this.upsertProject(tx, incoming);
         await this.replaceProjectFixtures(tx, row, incoming);
         await this.replaceProject3dObjects(tx, row, incoming);
+        await this.replaceProjectFunctions(tx, row, incoming);
         publicIds.push(row.publicId ?? incoming.publicId ?? incoming.name);
       }
       return publicIds;
@@ -334,8 +340,9 @@ export class ProjectImportExportService {
     const bindingFixtures = await this.bindingFixturesForImport(tx, incoming);
     const importHints = this.importBindingHints(incoming);
     const sanitized = sanitizeVirtualConsoleForImport(virtualConsole);
+    const functionsRemapped = remapVirtualConsoleFunctionsForImport(sanitized, this.importFunctions(incoming));
     const remapped = await remapVirtualConsoleBindingsForImport(
-      sanitized,
+      functionsRemapped,
       bindingFixtures,
       async assignmentPublicId => await this.findAssignmentChannelNumber(tx, assignmentPublicId),
       importHints,
@@ -343,7 +350,62 @@ export class ProjectImportExportService {
     const stored = stripVirtualConsoleBindingHints(remapped);
     assertValidVirtualConsole(stored);
     assertVirtualConsoleChannelBindings(stored, bindingFixtures);
+    assertVirtualConsoleFunctionBindings(stored, new Set(this.importFunctions(incoming).map(fn => fn.publicId)));
     return stored;
+  }
+
+  private assignFunctionPublicIds(incoming: ImportProjectsInput['projects'][number]): void {
+    for (const fn of incoming.projectFunctions ?? []) {
+      fn.publicId ??= randomUUID();
+    }
+  }
+
+  private importFunctions(incoming: ImportProjectsInput['projects'][number]): { publicId: string; name: string }[] {
+    return (incoming.projectFunctions ?? []).flatMap(fn =>
+      fn.publicId ? [{ publicId: fn.publicId, name: fn.name }] : [],
+    );
+  }
+
+  private async replaceProjectFunctions(
+    tx: Tx,
+    projectRow: ProjectRow,
+    incoming: ImportProjectsInput['projects'][number],
+  ): Promise<void> {
+    const projectId = projectRow.id;
+    if (projectId === null) {
+      throw new ProjectImportConflictException(`Failed to import functions for project "${incoming.name}"`);
+    }
+
+    await tx.delete(projectFunction).where(eq(projectFunction.projectId, projectId));
+
+    const usedNames = new Set<string>();
+    for (const fn of incoming.projectFunctions ?? []) {
+      const name = fn.name.trim();
+      if (usedNames.has(name)) {
+        throw new ProjectImportConflictException(
+          `Function name "${name}" is duplicated in import for project "${incoming.name}"`,
+        );
+      }
+      usedNames.add(name);
+      const properties = buildProjectFunctionProperties(fn.type, fn.sequence);
+      try {
+        await tx.insert(projectFunction).values({
+          projectId,
+          name,
+          type: fn.type,
+          properties,
+          ...optionalPublicId(fn.publicId),
+          ...optionalImportTimestamps(fn),
+        });
+      } catch (error) {
+        if (isPostgresUniqueViolation(error)) {
+          throw new ProjectImportConflictException(
+            `Function name "${name}" already exists in project "${incoming.name}"`,
+          );
+        }
+        throw error;
+      }
+    }
   }
 
   private importBindingHints(incoming: ImportProjectsInput['projects'][number]): VirtualConsoleImportBindingHints {

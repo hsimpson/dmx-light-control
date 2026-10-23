@@ -1,6 +1,13 @@
 'use client';
 
-import { useCallback, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
 import { controlFontStyle } from '../virtual-console-fonts';
 import classes from './slider-control.module.css';
 import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
@@ -23,22 +30,34 @@ const valueFromPointer = (
   return clamp(Math.round(min + ratio * (max - min)), min, max);
 };
 
-const SliderControl = ({ control, mode, selected = false, onPlayValue }: VirtualConsoleControlProperties) => {
+const SliderControl = ({
+  control,
+  mode,
+  selected = false,
+  onPlayValue,
+  value: controlledValue,
+}: VirtualConsoleControlProperties & { value?: number }) => {
   const orientation = control.orientation ?? 'vertical';
   const percentage = control.valueType === 'percentage';
   const lowerLimit = control.lowerLimit ?? 0;
   const upperLimit = control.upperLimit ?? 255;
   const min = percentage ? 0 : lowerLimit;
   const max = percentage ? 100 : upperLimit;
-  const [value, setValue] = useState(min);
-  const valueRef = useRef(min);
+  const [uncontrolledValue, setUncontrolledValue] = useState(min);
+  const value = controlledValue ?? uncontrolledValue;
+  const valueRef = useRef(value);
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
   const commitValue = useCallback(
     (next: number) => {
       valueRef.current = next;
-      setValue(next);
+      if (controlledValue === undefined) {
+        setUncontrolledValue(next);
+      }
       onPlayValue?.(next);
     },
-    [onPlayValue],
+    [controlledValue, onPlayValue],
   );
   const ratio = max === min ? 0 : (value - min) / (max - min);
   const isVertical = orientation === 'vertical';

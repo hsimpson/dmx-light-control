@@ -15,6 +15,7 @@ erDiagram
     projects ||--o{ project_fixtures : "project_id"
     fixtures ||--o{ project_fixtures : "fixture_id"
     fixture_channel_modes ||--o{ project_fixtures : "fixture_channel_mode_id"
+    projects ||--o{ project_functions : "project_id"
     fixtures {
         integer id PK
         uuid public_id UK
@@ -109,6 +110,16 @@ erDiagram
         integer fixture_channel_mode_id FK
         integer start_address
         doubleprecision transform
+        timestamp created_at
+        timestamp updated_at
+    }
+    project_functions {
+        integer id PK
+        uuid public_id UK
+        integer project_id FK,UK
+        varchar name UK
+        projectfunctiontype type
+        jsonb properties
         timestamp created_at
         timestamp updated_at
     }

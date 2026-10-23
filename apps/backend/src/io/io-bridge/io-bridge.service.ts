@@ -79,7 +79,7 @@ export class IoBridgeService implements OnModuleInit {
     dmxValue = Math.round((dmxValue / 127) * 255);
 
     for (const dmxChannel of dmxChannels) {
-      this.eventEmitter.emit('dmx.channelValues', [{ channel: dmxChannel, value: dmxValue }]);
+      this.eventEmitter.emit('dmx.manualValues', [{ channel: dmxChannel, value: dmxValue }]);
     }
   }
 }

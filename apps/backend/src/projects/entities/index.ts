@@ -1,4 +1,5 @@
 export { default as project3dObject } from '@/projects/entities/project-3d-object.entity';
+export { default as projectFunction, projectFunctionTypeEnum } from '@/projects/entities/project-function.entity';
 export { default as projectFixture } from '@/projects/entities/project-fixture.entity';
 export { default as project, projectEnvironmentTypeEnum } from '@/projects/entities/project.entity';
 export { sceneObjectGeometryKindEnum, default as sceneObjectType } from '@/projects/entities/scene-object-type.entity';

@@ -5,11 +5,13 @@ import { AddProject3dObjectInput } from './dto/add-project-3d-object.dto';
 import { AddProjectFixtureInput } from './dto/add-project-fixture.dto';
 import { CreateProjectInput } from './dto/create-project.dto';
 import { DeleteProject3dObjectPayload } from './dto/delete-project-3d-object-payload.dto';
+import { DeleteProjectFunctionPayload } from './dto/delete-project-function-payload.dto';
 import { DeleteProjectFixturePayload } from './dto/delete-project-fixture-payload.dto';
 import { DeleteProjectPayload } from './dto/delete-project-payload.dto';
 import { ProjectExportDocumentDto } from './dto/export-projects.dto';
 import { ImportProjectsInput, ImportProjectsPayload } from './dto/import-projects.dto';
 import { Project3dObjectDto } from './dto/project-3d-object.dto';
+import { AddProjectFunctionInput, ProjectFunctionDto, UpdateProjectFunctionInput } from './dto/project-function.dto';
 import { ProjectFixtureDto } from './dto/project-fixture.dto';
 import { ProjectDto } from './dto/project.dto';
 import { SceneObjectTypeDto } from './dto/scene-object-type.dto';
@@ -177,5 +179,34 @@ export class ProjectResolver {
   ): Promise<DeleteProject3dObjectPayload> {
     const result = await this.projectService.deleteProject3dObjectByPublicId(publicId);
     return plainToInstance(DeleteProject3dObjectPayload, result);
+  }
+
+  @Mutation(() => ProjectFunctionDto, {
+    name: 'addProjectFunction',
+    description: 'add a function to a project',
+  })
+  public async addProjectFunction(@Args('input') input: AddProjectFunctionInput): Promise<ProjectFunctionDto> {
+    const projectFunction = await this.projectService.addProjectFunction(input);
+    return plainToInstance(ProjectFunctionDto, projectFunction);
+  }
+
+  @Mutation(() => ProjectFunctionDto, {
+    name: 'updateProjectFunction',
+    description: 'update a project function',
+  })
+  public async updateProjectFunction(@Args('input') input: UpdateProjectFunctionInput): Promise<ProjectFunctionDto> {
+    const projectFunction = await this.projectService.updateProjectFunction(input);
+    return plainToInstance(ProjectFunctionDto, projectFunction);
+  }
+
+  @Mutation(() => DeleteProjectFunctionPayload, {
+    name: 'deleteProjectFunction',
+    description: 'delete a project function by public id and remove it from virtual console buttons',
+  })
+  public async deleteProjectFunction(
+    @Args('publicId', { type: () => GraphQLUUID }) publicId: string,
+  ): Promise<DeleteProjectFunctionPayload> {
+    const result = await this.projectService.deleteProjectFunctionByPublicId(publicId);
+    return plainToInstance(DeleteProjectFunctionPayload, result);
   }
 }

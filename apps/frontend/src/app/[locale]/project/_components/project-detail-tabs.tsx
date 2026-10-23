@@ -12,6 +12,7 @@ import {
 } from './project-detail-tabs.constants';
 import classes from './project-detail-tabs.module.css';
 import ProjectFixtureTable from './project-fixture-table';
+import ProjectFunctionTable from './project-function-table';
 import ProjectTabEmptyState from './project-tab-empty-state';
 import ThreeDView from './three-d-view';
 import UniverseView from './universe-view';
@@ -39,6 +40,7 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
 
   const tabLabels: Record<ProjectDetailTab, string> = {
     fixtures: t({ id: 'ProjectDetail.tabs.fixtures', defaultMessage: 'Fixtures' }),
+    functions: t({ id: 'ProjectDetail.tabs.functions', defaultMessage: 'Functions' }),
     universe: t({ id: 'ProjectDetail.tabs.universeView', defaultMessage: 'Universe View' }),
     dmx: t({ id: 'ProjectDetail.tabs.dmxView', defaultMessage: 'DMX View' }),
     '2d': t({ id: 'ProjectDetail.tabs.twoDView', defaultMessage: '2D View' }),
@@ -58,6 +60,10 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
 
       <Tabs.Panel value="fixtures" pt="md">
         <ProjectFixtureTable projectPublicId={projectPublicId} />
+      </Tabs.Panel>
+
+      <Tabs.Panel value="functions" pt="md">
+        <ProjectFunctionTable projectPublicId={projectPublicId} />
       </Tabs.Panel>
 
       <Tabs.Panel value="universe" pt="md">

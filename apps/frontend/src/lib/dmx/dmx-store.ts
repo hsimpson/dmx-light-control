@@ -15,9 +15,11 @@ export type DmxChannelUpdate = {
 export type DmxStoreState = {
   channels: number[];
   status: DmxConnectionStatus;
+  runningFunctionIds: string[];
   applySnapshot: (values: ArrayLike<number>) => void;
   applyDelta: (updates: DmxChannelUpdate[]) => void;
   setStatus: (status: DmxConnectionStatus) => void;
+  setRunningFunctionIds: (ids: string[]) => void;
 };
 
 function createZeroChannels(): number[] {
@@ -32,6 +34,7 @@ export function createDmxStore() {
   return createStore<DmxStoreState>(set => ({
     channels: createZeroChannels(),
     status: 'idle',
+    runningFunctionIds: [],
     applySnapshot: values => {
       const next = createZeroChannels();
       const length = Math.min(DMX_CHANNEL_COUNT, values.length);
@@ -66,6 +69,9 @@ export function createDmxStore() {
     setStatus: status => {
       set({ status });
     },
+    setRunningFunctionIds: runningFunctionIds => {
+      set({ runningFunctionIds });
+    },
   }));
 }
 
@@ -78,6 +84,7 @@ export function useDmxStore<T>(selector: (state: DmxStoreState) => T): T {
 export function resetDmxStore(): void {
   dmxStore.setState({
     channels: createZeroChannels(),
+    runningFunctionIds: [],
     status: 'idle',
   });
 }

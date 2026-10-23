@@ -11,6 +11,7 @@ import {
   createDefaultVirtualConsoleDocument,
   extractControl,
   findControl,
+  findFunctionBindings,
   findControlAbsolutePosition,
   findControlParentId,
   findDropTarget,
@@ -324,5 +325,31 @@ describe('virtual-console-document', () => {
     expect(again.label).toBe('Slider (1) (1)');
     expect(again.id).not.toBe(pasted.id);
     expect(again.children).toBeUndefined();
+  });
+
+  it('finds function bindings on nested frames across pages', () => {
+    const button = {
+      ...createControl('button', 0, 0),
+      label: 'Strobe button',
+      functionPublicId: 'fn-1',
+    };
+    const document: VirtualConsoleDocument = {
+      ...createDefaultVirtualConsoleDocument(),
+      pages: [
+        {
+          id: 'page-1',
+          name: 'Page 1',
+          controls: [{ ...createControl('frame', 0, 0), label: 'Group', children: [button] }],
+        },
+        {
+          id: 'page-2',
+          name: 'Page 2',
+          controls: [{ ...createControl('button', 0, 0), label: 'Other', functionPublicId: 'fn-2' }],
+        },
+      ],
+    };
+
+    expect(findFunctionBindings(document, 'fn-1')).toEqual([{ pageName: 'Page 1', label: 'Strobe button' }]);
+    expect(findFunctionBindings(document, 'missing')).toEqual([]);
   });
 });

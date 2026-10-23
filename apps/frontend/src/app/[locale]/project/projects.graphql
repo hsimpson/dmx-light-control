@@ -34,6 +34,9 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
     channelNumber
     channelDefinitionPublicId
   }
+  buttonMode
+  functionPublicId
+  functionName
 }
 
 fragment VirtualConsoleFields on VirtualConsoleDto {
@@ -162,6 +165,29 @@ query GetProject($publicId: UUID!) {
     project3dObjects {
       ...Project3dObjectFields
     }
+    projectFunctions {
+      ...ProjectFunctionFields
+    }
+  }
+}
+
+fragment ProjectFunctionFields on ProjectFunctionDto {
+  publicId
+  name
+  type
+  sequence {
+    direction
+    runOrder
+    fixturePublicIds
+    steps {
+      fadeIn
+      hold
+      fadeOut
+      dmxValues {
+        channel
+        value
+      }
+    }
   }
 }
 
@@ -266,10 +292,50 @@ query ExportProjects {
         createdAt
         updatedAt
       }
+      projectFunctions {
+        publicId
+        name
+        type
+        createdAt
+        updatedAt
+        sequence {
+          direction
+          runOrder
+          fixturePublicIds
+          steps {
+            fadeIn
+            hold
+            fadeOut
+            dmxValues {
+              channel
+              value
+            }
+          }
+        }
+      }
       virtualConsole {
         ...VirtualConsoleFields
       }
     }
+  }
+}
+
+mutation AddProjectFunction($input: AddProjectFunctionInput!) {
+  addProjectFunction(input: $input) {
+    ...ProjectFunctionFields
+  }
+}
+
+mutation UpdateProjectFunction($input: UpdateProjectFunctionInput!) {
+  updateProjectFunction(input: $input) {
+    ...ProjectFunctionFields
+  }
+}
+
+mutation DeleteProjectFunction($publicId: UUID!) {
+  deleteProjectFunction(publicId: $publicId) {
+    publicId
+    deleted
   }
 }
 

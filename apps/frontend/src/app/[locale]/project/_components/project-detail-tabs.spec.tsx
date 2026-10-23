@@ -15,6 +15,10 @@ vi.mock('./project-fixture-table', () => ({
   default: () => <div data-testid="project-fixture-table" />,
 }));
 
+vi.mock('./project-function-table', () => ({
+  default: () => <div data-testid="project-function-table" />,
+}));
+
 vi.mock('./universe-view', () => ({
   default: () => <div data-testid="universe-view" />,
 }));
@@ -43,6 +47,7 @@ describe('ProjectDetailTabs', () => {
     const tabs = screen.getAllByRole('tab');
     expect(tabs.map(tab => tab.textContent)).toEqual([
       'Fixtures',
+      'Functions',
       'Universe View',
       'DMX View',
       '2D View',

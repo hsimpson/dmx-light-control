@@ -1,7 +1,7 @@
 info:
   name: importProjects
   type: graphql
-  seq: 13
+  seq: 15
 
 graphql:
   method: POST
@@ -59,6 +59,19 @@ graphql:
               publicId
               startAddress
               transform
+              updatedAt
+            }
+            projectFunctions {
+              createdAt
+              name
+              publicId
+              sequence {
+                direction
+                fixturePublicIds
+                runOrder
+                steps
+              }
+              type
               updatedAt
             }
             publicId

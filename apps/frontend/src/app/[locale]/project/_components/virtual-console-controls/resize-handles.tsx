@@ -9,17 +9,6 @@ type ResizeHandlesProperties = {
   onResizePointerDown: (handle: VirtualConsoleResizeHandle, event: PointerEvent<HTMLDivElement>) => void;
 };
 
-const HANDLE_LABEL_IDS: Record<VirtualConsoleResizeHandle, { id: string; defaultMessage: string }> = {
-  n: { id: 'ProjectDetail.virtualConsole.resize.north', defaultMessage: 'Resize top' },
-  s: { id: 'ProjectDetail.virtualConsole.resize.south', defaultMessage: 'Resize bottom' },
-  e: { id: 'ProjectDetail.virtualConsole.resize.east', defaultMessage: 'Resize right' },
-  w: { id: 'ProjectDetail.virtualConsole.resize.west', defaultMessage: 'Resize left' },
-  ne: { id: 'ProjectDetail.virtualConsole.resize.northEast', defaultMessage: 'Resize top-right' },
-  nw: { id: 'ProjectDetail.virtualConsole.resize.northWest', defaultMessage: 'Resize top-left' },
-  se: { id: 'ProjectDetail.virtualConsole.resize.southEast', defaultMessage: 'Resize bottom-right' },
-  sw: { id: 'ProjectDetail.virtualConsole.resize.southWest', defaultMessage: 'Resize bottom-left' },
-};
-
 const HANDLE_CLASS: Record<VirtualConsoleResizeHandle, string> = {
   n: classes.n ?? '',
   s: classes.s ?? '',
@@ -31,6 +20,27 @@ const HANDLE_CLASS: Record<VirtualConsoleResizeHandle, string> = {
   sw: classes.sw ?? '',
 };
 
+const resizeLabel = (t: ReturnType<typeof useTranslation>['t'], handle: VirtualConsoleResizeHandle): string => {
+  switch (handle) {
+    case 'n':
+      return t({ id: 'ProjectDetail.virtualConsole.resize.north', defaultMessage: 'Resize top' });
+    case 's':
+      return t({ id: 'ProjectDetail.virtualConsole.resize.south', defaultMessage: 'Resize bottom' });
+    case 'e':
+      return t({ id: 'ProjectDetail.virtualConsole.resize.east', defaultMessage: 'Resize right' });
+    case 'w':
+      return t({ id: 'ProjectDetail.virtualConsole.resize.west', defaultMessage: 'Resize left' });
+    case 'ne':
+      return t({ id: 'ProjectDetail.virtualConsole.resize.northEast', defaultMessage: 'Resize top-right' });
+    case 'nw':
+      return t({ id: 'ProjectDetail.virtualConsole.resize.northWest', defaultMessage: 'Resize top-left' });
+    case 'se':
+      return t({ id: 'ProjectDetail.virtualConsole.resize.southEast', defaultMessage: 'Resize bottom-right' });
+    case 'sw':
+      return t({ id: 'ProjectDetail.virtualConsole.resize.southWest', defaultMessage: 'Resize bottom-left' });
+  }
+};
+
 const ResizeHandles = ({ onResizePointerDown }: ResizeHandlesProperties) => {
   const { t } = useTranslation();
 
@@ -38,7 +48,7 @@ const ResizeHandles = ({ onResizePointerDown }: ResizeHandlesProperties) => {
     <>
       {VIRTUAL_CONSOLE_RESIZE_HANDLES.map(handle => (
         <div
-          aria-label={t(HANDLE_LABEL_IDS[handle])}
+          aria-label={resizeLabel(t, handle)}
           className={`${classes.handle ?? ''} ${HANDLE_CLASS[handle]}`}
           data-testid={`virtual-console-resize-${handle}`}
           key={handle}

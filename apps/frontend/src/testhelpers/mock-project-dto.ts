@@ -24,6 +24,7 @@ export type MockProjectDto = {
   virtualConsole: typeof mockVirtualConsoleDto | null;
   projectFixtures: unknown[];
   project3dObjects: unknown[];
+  projectFunctions: unknown[];
 };
 
 export type MockProjectDtoOverrides = Partial<Omit<MockProjectDto, '__typename'>>;
@@ -43,6 +44,7 @@ export function mockProjectDto(overrides: MockProjectDtoOverrides = {}): MockPro
     updatedAt: defaultNow,
     projectFixtures: [],
     project3dObjects: [],
+    projectFunctions: [],
     virtualConsole,
     ...rest,
   };

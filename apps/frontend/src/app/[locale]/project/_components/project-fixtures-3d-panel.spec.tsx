@@ -58,6 +58,22 @@ describe('ProjectFixtures3dPanel', () => {
         positionZ: 3,
       }),
     );
+
+    await user.clear(screen.getByLabelText('Position Y'));
+    await user.type(screen.getByLabelText('Position Y'), '5');
+    await user.clear(screen.getByLabelText('Position Z'));
+    await user.type(screen.getByLabelText('Position Z'), '6');
+    await user.clear(screen.getByLabelText('Rotation X'));
+    await user.type(screen.getByLabelText('Rotation X'), '10');
+    await user.clear(screen.getByLabelText('Rotation Y'));
+    await user.type(screen.getByLabelText('Rotation Y'), '20');
+    await user.clear(screen.getByLabelText('Rotation Z'));
+    await user.type(screen.getByLabelText('Rotation Z'), '30');
+    expect(onPoseChange).toHaveBeenCalledWith(expect.objectContaining({ positionY: 5 }));
+    expect(onPoseChange).toHaveBeenCalledWith(expect.objectContaining({ positionZ: 6 }));
+    expect(onPoseChange).toHaveBeenCalledWith(expect.objectContaining({ rotationX: 10 }));
+    expect(onPoseChange).toHaveBeenCalledWith(expect.objectContaining({ rotationY: 20 }));
+    expect(onPoseChange).toHaveBeenCalledWith(expect.objectContaining({ rotationZ: 30 }));
   });
 
   it('lists patched fixtures by name and universe number', async () => {

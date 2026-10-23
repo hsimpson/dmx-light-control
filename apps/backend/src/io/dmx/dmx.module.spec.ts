@@ -23,5 +23,6 @@ describe('DmxModule', () => {
     expect(providers).toContain(DmxWebsocketService);
     expect(providers).toContain(SerialSendService);
     expect(exports).toContain(DmxSnifferCommand);
+    expect(exports).toContain(DmxUniverseService);
   });
 });

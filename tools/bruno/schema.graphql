@@ -57,6 +57,28 @@ input AddProjectFixtureInput {
   startAddress: Int!
 }
 
+input AddProjectFunctionInput {
+  """
+  Unique name within the project
+  """
+  name: String!
+
+  """
+  The public ID of the project
+  """
+  projectPublicId: UUID!
+
+  """
+  Sequence properties, required when type is Sequence
+  """
+  sequence: SequencePropertiesInput
+
+  """
+  The function type
+  """
+  type: ProjectFunctionType!
+}
+
 input ChannelValuesInput {
   """
   The list of DMX channel values
@@ -174,6 +196,18 @@ type DeleteProjectFixturePayload {
 
   """
   The public id of the project fixture that was requested for deletion
+  """
+  publicId: UUID!
+}
+
+type DeleteProjectFunctionPayload {
+  """
+  True if a project function was deleted, false if no function matched the public id
+  """
+  deleted: Boolean!
+
+  """
+  The public id of the project function that was requested for deletion
   """
   publicId: UUID!
 }
@@ -447,6 +481,11 @@ type FixtureExportAssignmentDto {
   createdAt: DateTime!
 
   """
+  The public ID of the channel assignment
+  """
+  publicId: UUID!
+
+  """
   The date and time when the entity was last updated
   """
   updatedAt: DateTime!
@@ -711,6 +750,11 @@ input ImportFixtureAssignmentInput {
   The date and time when the entity was created
   """
   createdAt: DateTime
+
+  """
+  The public ID of the channel assignment
+  """
+  publicId: UUID
 
   """
   The date and time when the entity was last updated
@@ -999,7 +1043,29 @@ input ImportProject3dObjectInput {
   updatedAt: DateTime
 }
 
+input ImportProjectFixtureChannelAssignmentInput {
+  """
+  The public ID of the catalog channel definition
+  """
+  channelDefinitionPublicId: UUID
+
+  """
+  The 1-based channel number within the fixture mode
+  """
+  channelNumber: Int!
+
+  """
+  The public ID of the channel assignment at export time
+  """
+  publicId: UUID!
+}
+
 input ImportProjectFixtureInput {
+  """
+  Channel assignment snapshot from export; used to remap virtual console bindings on import
+  """
+  channelAssignments: [ImportProjectFixtureChannelAssignmentInput!]
+
   """
   The public ID of the channel mode
   """
@@ -1036,6 +1102,38 @@ input ImportProjectFixtureInput {
   updatedAt: DateTime
 }
 
+input ImportProjectFunctionInput {
+  """
+  The date and time when the entity was created
+  """
+  createdAt: DateTime
+
+  """
+  Unique name within the project
+  """
+  name: String!
+
+  """
+  The public ID of the project function
+  """
+  publicId: UUID
+
+  """
+  Sequence properties, required when type is Sequence
+  """
+  sequence: SequencePropertiesInput
+
+  """
+  The function type
+  """
+  type: ProjectFunctionType!
+
+  """
+  The date and time when the entity was last updated
+  """
+  updatedAt: DateTime
+}
+
 input ImportProjectInput {
   """
   The date and time when the entity was created
@@ -1061,6 +1159,11 @@ input ImportProjectInput {
   The fixture instances patched into this project
   """
   projectFixtures: [ImportProjectFixtureInput!]
+
+  """
+  The functions configured in this project
+  """
+  projectFunctions: [ImportProjectFunctionInput!]
 
   """
   The public ID of the project
@@ -1153,6 +1256,11 @@ type Mutation {
   addProjectFixture(input: AddProjectFixtureInput!): ProjectFixtureDto!
 
   """
+  add a function to a project
+  """
+  addProjectFunction(input: AddProjectFunctionInput!): ProjectFunctionDto!
+
+  """
   Close the specified MIDI ports
   """
   closePorts: Boolean
@@ -1198,6 +1306,11 @@ type Mutation {
   deleteProjectFixture(publicId: UUID!): DeleteProjectFixturePayload!
 
   """
+  delete a project function by public id and remove it from virtual console buttons
+  """
+  deleteProjectFunction(publicId: UUID!): DeleteProjectFunctionPayload!
+
+  """
   import fixtures and related entities from a versioned JSON document, upserting by publicId or name
   """
   importFixtures(document: ImportFixturesInput!): ImportFixturesPayload!
@@ -1236,6 +1349,11 @@ type Mutation {
   update a project fixture instance
   """
   updateProjectFixture(input: UpdateProjectFixtureInput!): ProjectFixtureDto!
+
+  """
+  update a project function
+  """
+  updateProjectFunction(input: UpdateProjectFunctionInput!): ProjectFunctionDto!
 
   """
   replace the virtual console layout for a project
@@ -1327,6 +1445,11 @@ type ProjectDto {
   The fixture instances patched into this project
   """
   projectFixtures: [ProjectFixtureDto!]!
+
+  """
+  The functions configured in this project
+  """
+  projectFunctions: [ProjectFunctionDto!]!
 
   """
   The public id, unique identifier of the entity
@@ -1431,7 +1554,29 @@ type ProjectExportDocumentDto {
   schemaVersion: Int!
 }
 
+type ProjectExportFixtureChannelAssignmentDto {
+  """
+  The public ID of the catalog channel definition
+  """
+  channelDefinitionPublicId: UUID!
+
+  """
+  The 1-based channel number within the fixture mode
+  """
+  channelNumber: Int!
+
+  """
+  The public ID of the channel assignment at export time
+  """
+  publicId: UUID!
+}
+
 type ProjectExportFixtureDto {
+  """
+  Channel assignment snapshot for virtual console import remapping
+  """
+  channelAssignments: [ProjectExportFixtureChannelAssignmentDto!]
+
   """
   The public ID of the channel mode
   """
@@ -1468,6 +1613,38 @@ type ProjectExportFixtureDto {
   updatedAt: DateTime!
 }
 
+type ProjectExportFunctionDto {
+  """
+  The date and time when the entity was created
+  """
+  createdAt: DateTime!
+
+  """
+  The unique name of this function within the project
+  """
+  name: String!
+
+  """
+  The public ID of the project function
+  """
+  publicId: UUID!
+
+  """
+  Sequence properties, including steps and DMX values
+  """
+  sequence: SequencePropertiesDto!
+
+  """
+  The function type
+  """
+  type: ProjectFunctionType!
+
+  """
+  The date and time when the entity was last updated
+  """
+  updatedAt: DateTime!
+}
+
 type ProjectExportProjectDto {
   """
   The date and time when the entity was created
@@ -1493,6 +1670,11 @@ type ProjectExportProjectDto {
   The fixture instances patched into this project
   """
   projectFixtures: [ProjectExportFixtureDto!]!
+
+  """
+  The functions configured in this project
+  """
+  projectFunctions: [ProjectExportFunctionDto!]!
 
   """
   The public ID of the project
@@ -1677,6 +1859,45 @@ type ProjectFixtureFixtureDto {
   updatedAt: DateTime!
 }
 
+type ProjectFunctionDto {
+  """
+  The date and time when the entity was created
+  """
+  createdAt: DateTime!
+
+  """
+  The unique name of this function within the project
+  """
+  name: String!
+
+  """
+  The public id, unique identifier of the entity
+  """
+  publicId: UUID!
+
+  """
+  Sequence properties when type is Sequence
+  """
+  sequence: SequencePropertiesDto
+
+  """
+  The function type
+  """
+  type: ProjectFunctionType!
+
+  """
+  The date and time when the entity was last updated
+  """
+  updatedAt: DateTime!
+}
+
+"""
+Kind of project function
+"""
+enum ProjectFunctionType {
+  Sequence
+}
+
 type Query {
   """
   export all fixture vendors, fixtures, and related entities as a versioned JSON document
@@ -1782,6 +2003,135 @@ type SceneObjectTypeDto {
   The date and time when the entity was last updated
   """
   updatedAt: DateTime!
+}
+
+"""
+Order in which a sequence walks its steps
+"""
+enum SequenceDirection {
+  Backward
+  Forward
+}
+
+type SequencePropertiesDto {
+  """
+  Direction the sequence walks its steps
+  """
+  direction: SequenceDirection!
+
+  """
+  Public IDs of the project fixtures edited by this sequence. Null when never stored.
+  """
+  fixturePublicIds: [UUID!]
+
+  """
+  How the sequence repeats
+  """
+  runOrder: SequenceRunOrder!
+
+  """
+  Steps in order
+  """
+  steps: [SequenceStepDto!]!
+}
+
+input SequencePropertiesInput {
+  """
+  Direction the sequence walks its steps
+  """
+  direction: SequenceDirection!
+
+  """
+  Public IDs of the project fixtures edited by this sequence. Omit to leave unset.
+  """
+  fixturePublicIds: [UUID!]
+
+  """
+  How the sequence repeats
+  """
+  runOrder: SequenceRunOrder!
+
+  """
+  Steps in order
+  """
+  steps: [SequenceStepInput!]!
+}
+
+"""
+How a sequence repeats after its last step
+"""
+enum SequenceRunOrder {
+  Loop
+  PingPong
+  SingleShot
+}
+
+type SequenceStepDmxValueDto {
+  """
+  DMX channel from 1 to 512
+  """
+  channel: Int!
+
+  """
+  DMX value from 0 to 255
+  """
+  value: Int!
+}
+
+input SequenceStepDmxValueInput {
+  """
+  DMX channel from 1 to 512
+  """
+  channel: Int!
+
+  """
+  DMX value from 0 to 255
+  """
+  value: Int!
+}
+
+type SequenceStepDto {
+  """
+  Sparse DMX values for this step
+  """
+  dmxValues: [SequenceStepDmxValueDto!]!
+
+  """
+  Fade-in time in milliseconds
+  """
+  fadeIn: Int!
+
+  """
+  Fade-out time in milliseconds. 0 skips the fade-out.
+  """
+  fadeOut: Int!
+
+  """
+  Hold time in milliseconds
+  """
+  hold: Int!
+}
+
+input SequenceStepInput {
+  """
+  Sparse DMX values for this step
+  """
+  dmxValues: [SequenceStepDmxValueInput!]!
+
+  """
+  Fade-in time in milliseconds
+  """
+  fadeIn: Int!
+
+  """
+  Fade-out time in milliseconds. 0 skips the fade-out.
+  """
+  fadeOut: Int!
+
+  """
+  Hold time in milliseconds
+  """
+  hold: Int!
 }
 
 """
@@ -1980,6 +2330,23 @@ input UpdateProjectFixtureInput {
   transform: [Float!]
 }
 
+input UpdateProjectFunctionInput {
+  """
+  Unique name within the project
+  """
+  name: String
+
+  """
+  The public ID of the function
+  """
+  publicId: UUID!
+
+  """
+  Replacement sequence properties. Replaces the whole sequence, including steps.
+  """
+  sequence: SequencePropertiesInput
+}
+
 input UpdateProjectInput {
   """
   The 3D environment used by the project
@@ -2024,11 +2391,29 @@ input UpdateProjectVirtualConsoleInput {
   virtualConsole: VirtualConsoleInput!
 }
 
+"""
+Whether a virtual console button latches or runs only while held
+"""
+enum VirtualConsoleButtonMode {
+  flash
+  toggle
+}
+
 type VirtualConsoleChannelBindingDto {
   """
   Public id of the channel assignment in the fixture mode
   """
   channelAssignmentPublicId: UUID!
+
+  """
+  Catalog channel definition public id (export/import remapping hint)
+  """
+  channelDefinitionPublicId: UUID
+
+  """
+  1-based channel number within the fixture mode (export/import remapping hint)
+  """
+  channelNumber: Int
 
   """
   Public id of the patched project fixture
@@ -2041,6 +2426,16 @@ input VirtualConsoleChannelBindingInput {
   Public id of the channel assignment in the fixture mode
   """
   channelAssignmentPublicId: UUID!
+
+  """
+  Catalog channel definition public id (export/import remapping hint)
+  """
+  channelDefinitionPublicId: UUID
+
+  """
+  1-based channel number within the fixture mode (export/import remapping hint)
+  """
+  channelNumber: Int
 
   """
   Public id of the patched project fixture
@@ -2063,6 +2458,11 @@ type VirtualConsoleControlDto {
   Frame border width in pixels
   """
   borderWidth: Float
+
+  """
+  Whether a button latches (toggle) or runs only while held (flash)
+  """
+  buttonMode: VirtualConsoleButtonMode
 
   """
   Fixture channels this slider or button controls
@@ -2093,6 +2493,16 @@ type VirtualConsoleControlDto {
   Foreground color as hex
   """
   foregroundColor: String
+
+  """
+  Function name used to remap a button binding on import
+  """
+  functionName: String
+
+  """
+  Project function started by this button
+  """
+  functionPublicId: UUID
 
   """
   Height in pixels
@@ -2167,6 +2577,11 @@ input VirtualConsoleControlInput {
   borderWidth: Float
 
   """
+  Whether a button latches (toggle) or runs only while held (flash)
+  """
+  buttonMode: VirtualConsoleButtonMode
+
+  """
   Fixture channels this slider or button controls
   """
   channelBindings: [VirtualConsoleChannelBindingInput!]
@@ -2195,6 +2610,16 @@ input VirtualConsoleControlInput {
   Foreground color as hex
   """
   foregroundColor: String
+
+  """
+  Function name used to remap a button binding on import
+  """
+  functionName: String
+
+  """
+  Project function started by this button
+  """
+  functionPublicId: UUID
 
   """
   Height in pixels

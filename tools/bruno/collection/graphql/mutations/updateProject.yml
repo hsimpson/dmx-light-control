@@ -1,7 +1,7 @@
 info:
   name: updateProject
   type: graphql
-  seq: 17
+  seq: 19
 
 graphql:
   method: POST
@@ -68,6 +68,24 @@ graphql:
             transform
             updatedAt
           }
+          projectFunctions {
+            createdAt
+            name
+            publicId
+            sequence {
+              direction
+              fixturePublicIds
+              runOrder
+              steps {
+                dmxValues
+                fadeIn
+                fadeOut
+                hold
+              }
+            }
+            type
+            updatedAt
+          }
           publicId
           roomHeight
           roomLength
@@ -80,17 +98,22 @@ graphql:
                 backgroundColor
                 borderColor
                 borderWidth
+                buttonMode
                 channelBindings
                 children
                 fontFamily
                 fontSize
                 fontWeight
                 foregroundColor
+                functionName
+                functionPublicId
                 height
                 id
                 label
+                lowerLimit
                 orientation
                 type
+                upperLimit
                 valueType
                 width
                 x

@@ -1,0 +1,31 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 30px;
+  padding: 0 4px;
+  color: inherit;
+}
+
+.list {
+  max-height: 220px;
+  overflow: auto;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-sm);
+}
+
+.option {
+  width: 100%;
+  margin: 0;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--mantine-color-default-border);
+}
+
+.option:last-child {
+  border-bottom: 0;
+}
+
+.option:hover {
+  background: var(--mantine-color-default-hover);
+}

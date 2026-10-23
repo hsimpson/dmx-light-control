@@ -6,6 +6,7 @@ import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
 import { describe, expect, it, vi } from 'vitest';
 import { identityTransform } from './project-3d-object.transform';
 import { ProjectEnvironmentType } from './project-environment';
+import { ProjectFunctionType, SequenceDirection, SequenceRunOrder } from './project-function';
 import {
   InvalidProject3dObjectTransformException,
   InvalidVirtualConsoleException,
@@ -13,6 +14,8 @@ import {
   Project3dObjectNotFoundException,
   ProjectAlreadyExistsException,
   ProjectFixtureNotFoundException,
+  ProjectFunctionNameExistsException,
+  ProjectFunctionNotFoundException,
   ProjectNotFoundException,
   SceneObjectNotScalableException,
   SceneObjectTypeNotFoundException,
@@ -20,6 +23,7 @@ import {
 import { ProjectService } from './project.service';
 import { Project3dObjectRepository } from './repositories/project-3d-object.repository';
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
+import { ProjectFunctionRepository } from './repositories/project-function.repository';
 import { ProjectRepository } from './repositories/project.repository';
 import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
 
@@ -56,11 +60,21 @@ function build() {
     findOneByPublicId: vi.fn(),
     findOneByIdWithAssignments: vi.fn(),
   };
+  const projectFunctionRepository = {
+    createOne: vi.fn(),
+    findOneByPublicId: vi.fn(),
+    updateOneByPublicId: vi.fn(),
+    deleteByPublicIdAndUnbind: vi.fn(),
+    listByProjectId: vi.fn().mockResolvedValue([]),
+  };
+  const eventEmitter = { emit: vi.fn(), on: vi.fn() };
   const service = new ProjectService(
     projectRepository as unknown as ProjectRepository,
     projectFixtureRepository as unknown as ProjectFixtureRepository,
     project3dObjectRepository as unknown as Project3dObjectRepository,
+    projectFunctionRepository as unknown as ProjectFunctionRepository,
     sceneObjectTypeRepository as unknown as SceneObjectTypeRepository,
+    eventEmitter as never,
     fixtureRepository as unknown as FixtureRepository,
     fixtureChannelModeRepository as unknown as FixtureChannelModeRepository,
   );
@@ -69,11 +83,19 @@ function build() {
     projectRepository,
     projectFixtureRepository,
     project3dObjectRepository,
+    projectFunctionRepository,
     sceneObjectTypeRepository,
     fixtureRepository,
     fixtureChannelModeRepository,
+    eventEmitter,
   };
 }
+
+const functionSequence = {
+  direction: SequenceDirection.Forward,
+  runOrder: SequenceRunOrder.Loop,
+  steps: [{ fadeIn: 0, hold: 0, fadeOut: 0, dmxValues: [] as { channel: number; value: number }[] }],
+};
 
 describe('ProjectService', () => {
   it('getAllProjects delegates to repository and returns empty projectFixtures', async () => {
@@ -92,6 +114,7 @@ describe('ProjectService', () => {
       name: 'x',
       projectFixtures: [],
       project3dObjects: [],
+      projectFunctions: [],
     });
     expect(await service.getProjectByPublicId('id')).toMatchObject({
       publicId: 'p',
@@ -154,7 +177,11 @@ describe('ProjectService', () => {
       height: 720,
       pages: [{ id: '11111111-1111-4111-8111-111111111111', name: 'Page 1', controls: [] }],
     };
-    projectRepository.findOneByPublicIdWithFixtures.mockResolvedValue({ publicId: 'p', projectFixtures: [] });
+    projectRepository.findOneByPublicIdWithFixtures.mockResolvedValue({
+      publicId: 'p',
+      projectFixtures: [],
+      projectFunctions: [],
+    });
     projectRepository.updateOneByPublicId.mockResolvedValue({ publicId: 'p', virtualConsole });
     const result = await service.updateProjectVirtualConsole({ publicId: 'p', virtualConsole });
     expect(projectRepository.updateOneByPublicId).toHaveBeenCalledWith('p', { virtualConsole });
@@ -163,6 +190,7 @@ describe('ProjectService', () => {
       virtualConsole,
       projectFixtures: [],
       project3dObjects: [],
+      projectFunctions: [],
     });
   });
 
@@ -204,6 +232,7 @@ describe('ProjectService', () => {
           fixtureChannelMode: { fixtureChannelAssignments: [{ publicId: assignmentId }] },
         },
       ],
+      projectFunctions: [],
     });
     projectRepository.updateOneByPublicId.mockResolvedValue({ publicId: 'p', virtualConsole });
     await expect(service.updateProjectVirtualConsole({ publicId: 'p', virtualConsole })).resolves.toMatchObject({
@@ -484,6 +513,7 @@ describe('ProjectService', () => {
         },
       ],
       project3dObjects: [],
+      projectFunctions: [],
     });
     expect(await service.getProjectByPublicId('p')).toMatchObject({
       projectFixtures: [
@@ -833,6 +863,154 @@ describe('ProjectService', () => {
         startAddress: 1,
       }),
     ).rejects.toBeInstanceOf(ChannelModeNotFoundException);
+  });
+
+  it('addProjectFunction stores a trimmed name and returns the sequence', async () => {
+    const { service, projectRepository, projectFunctionRepository } = build();
+    projectRepository.findOneByPublicId.mockResolvedValue({ id: 4, publicId: 'p' });
+    projectFunctionRepository.createOne.mockResolvedValue({
+      publicId: 'fn',
+      name: 'Pulse',
+      type: ProjectFunctionType.Sequence,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      properties: { type: ProjectFunctionType.Sequence, sequence: functionSequence },
+    });
+    await expect(
+      service.addProjectFunction({
+        projectPublicId: 'p',
+        name: '  Pulse  ',
+        type: ProjectFunctionType.Sequence,
+        sequence: functionSequence,
+      }),
+    ).resolves.toMatchObject({ publicId: 'fn', name: 'Pulse', sequence: functionSequence });
+    expect(projectFunctionRepository.createOne).toHaveBeenCalledWith(
+      expect.objectContaining({ projectId: 4, name: 'Pulse' }),
+    );
+  });
+
+  it('addProjectFunction rejects a missing project, a duplicate name, and a row without a public id', async () => {
+    const { service, projectRepository, projectFunctionRepository } = build();
+    projectRepository.findOneByPublicId.mockResolvedValue(undefined);
+    await expect(
+      service.addProjectFunction({
+        projectPublicId: 'missing',
+        name: 'Pulse',
+        type: ProjectFunctionType.Sequence,
+        sequence: functionSequence,
+      }),
+    ).rejects.toBeInstanceOf(ProjectNotFoundException);
+
+    projectRepository.findOneByPublicId.mockResolvedValue({ publicId: 'p' });
+    await expect(
+      service.addProjectFunction({
+        projectPublicId: 'p',
+        name: 'Pulse',
+        type: ProjectFunctionType.Sequence,
+        sequence: functionSequence,
+      }),
+    ).rejects.toBeInstanceOf(ProjectNotFoundException);
+
+    projectRepository.findOneByPublicId.mockResolvedValue({ id: 4, publicId: 'p' });
+    projectFunctionRepository.createOne.mockRejectedValue(Object.assign(new Error('unique'), { code: '23505' }));
+    await expect(
+      service.addProjectFunction({
+        projectPublicId: 'p',
+        name: 'Pulse',
+        type: ProjectFunctionType.Sequence,
+        sequence: functionSequence,
+      }),
+    ).rejects.toBeInstanceOf(ProjectFunctionNameExistsException);
+
+    const dbError = new Error('db');
+    projectFunctionRepository.createOne.mockRejectedValue(dbError);
+    await expect(
+      service.addProjectFunction({
+        projectPublicId: 'p',
+        name: 'Pulse',
+        type: ProjectFunctionType.Sequence,
+        sequence: functionSequence,
+      }),
+    ).rejects.toBe(dbError);
+
+    projectFunctionRepository.createOne.mockResolvedValue({ id: 1 });
+    await expect(
+      service.addProjectFunction({
+        projectPublicId: 'p',
+        name: 'Pulse',
+        type: ProjectFunctionType.Sequence,
+        sequence: functionSequence,
+      }),
+    ).rejects.toBeInstanceOf(ProjectFunctionNotFoundException);
+  });
+
+  it('updateProjectFunction renames, replaces the sequence, and reports conflicts', async () => {
+    const { service, projectFunctionRepository } = build();
+    const existing = {
+      publicId: 'fn',
+      name: 'Chase',
+      type: ProjectFunctionType.Sequence,
+      properties: { type: ProjectFunctionType.Sequence, sequence: functionSequence },
+    };
+    projectFunctionRepository.findOneByPublicId.mockResolvedValue(undefined);
+    await expect(service.updateProjectFunction({ publicId: 'fn', name: 'Next' })).rejects.toBeInstanceOf(
+      ProjectFunctionNotFoundException,
+    );
+
+    projectFunctionRepository.findOneByPublicId.mockResolvedValue(existing);
+    projectFunctionRepository.updateOneByPublicId.mockResolvedValue({
+      ...existing,
+      name: 'Next',
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+    await expect(service.updateProjectFunction({ publicId: 'fn', name: ' Next ' })).resolves.toMatchObject({
+      name: 'Next',
+    });
+
+    projectFunctionRepository.updateOneByPublicId.mockResolvedValue({
+      ...existing,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      properties: { type: ProjectFunctionType.Sequence, sequence: functionSequence },
+    });
+    await expect(service.updateProjectFunction({ publicId: 'fn', sequence: functionSequence })).resolves.toMatchObject({
+      sequence: functionSequence,
+    });
+
+    projectFunctionRepository.updateOneByPublicId.mockRejectedValue(
+      Object.assign(new Error('unique'), { code: '23505' }),
+    );
+    await expect(service.updateProjectFunction({ publicId: 'fn', name: 'Taken' })).rejects.toBeInstanceOf(
+      ProjectFunctionNameExistsException,
+    );
+    await expect(service.updateProjectFunction({ publicId: 'fn', sequence: functionSequence })).rejects.toBeInstanceOf(
+      ProjectFunctionNameExistsException,
+    );
+
+    const dbError = new Error('db');
+    projectFunctionRepository.updateOneByPublicId.mockRejectedValue(dbError);
+    await expect(service.updateProjectFunction({ publicId: 'fn' })).rejects.toBe(dbError);
+
+    projectFunctionRepository.updateOneByPublicId.mockResolvedValue({ id: 1 });
+    await expect(service.updateProjectFunction({ publicId: 'fn', name: 'Next' })).rejects.toBeInstanceOf(
+      ProjectFunctionNotFoundException,
+    );
+  });
+
+  it('deleteProjectFunctionByPublicId emits only when a row was removed', async () => {
+    const { service, projectFunctionRepository, eventEmitter } = build();
+    projectFunctionRepository.deleteByPublicIdAndUnbind.mockResolvedValue(true);
+    await expect(service.deleteProjectFunctionByPublicId('fn')).resolves.toEqual({ publicId: 'fn', deleted: true });
+    expect(eventEmitter.emit).toHaveBeenCalledWith('function.deleted', { functionPublicId: 'fn' });
+
+    eventEmitter.emit.mockClear();
+    projectFunctionRepository.deleteByPublicIdAndUnbind.mockResolvedValue(false);
+    await expect(service.deleteProjectFunctionByPublicId('missing')).resolves.toEqual({
+      publicId: 'missing',
+      deleted: false,
+    });
+    expect(eventEmitter.emit).not.toHaveBeenCalled();
   });
 
   it('addProject3dObject rejects sizes on a fixed-size type', async () => {
