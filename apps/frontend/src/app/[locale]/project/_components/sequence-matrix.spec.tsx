@@ -143,6 +143,15 @@ describe('SequenceMatrix', () => {
     expect(cell('Dimmer · 10, Step 1')).toHaveTextContent('50');
   });
 
+  it('inserts a step after the chosen column', async () => {
+    const { user } = renderWithProviders(<Harness />);
+    await user.click(screen.getByRole('button', { name: 'Step 1 actions' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Insert step after' }));
+    expect(latestSteps()).toHaveLength(3);
+    expect(latestSteps()[1]?.dmxValues).toEqual([]);
+    expect(latestSteps()[2]?.key).toBe('s2');
+  });
+
   it('adds a step from the toolbar', async () => {
     const { user } = renderWithProviders(<Harness />);
     await user.click(screen.getByRole('button', { name: 'Add step' }));

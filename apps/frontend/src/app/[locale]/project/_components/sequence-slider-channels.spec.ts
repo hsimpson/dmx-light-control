@@ -35,6 +35,15 @@ describe('sequenceSliderGroups', () => {
     ]);
   });
 
+  it('skips a fixture with no channels and a channel that another fixture already owns', () => {
+    const overlap: SequenceFixtureChannel[] = [
+      { publicId: 'a', startAddress: 1, name: 'A', channels: [{ channelNumber: 1, name: 'Dimmer' }] },
+      { publicId: 'b', startAddress: 1, name: 'B', channels: [{ channelNumber: 1, name: 'Dimmer again' }] },
+      { publicId: 'c', startAddress: 10, name: 'C', channels: [] },
+    ];
+    expect(sequenceSliderGroups(overlap).map(group => group.publicId)).toEqual(['a']);
+  });
+
   it('reads the selected step value and uses 0 when the step omits the channel', () => {
     const step: SequenceStepDraft = {
       key: 's',

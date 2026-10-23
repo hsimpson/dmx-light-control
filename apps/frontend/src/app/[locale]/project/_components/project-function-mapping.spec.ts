@@ -4,6 +4,7 @@ import {
   draftToSequenceInput,
   functionToDraft,
   newFunctionDraft,
+  projectSequenceFixtures,
   type ProjectFunctionRow,
 } from './project-function-mapping';
 import type { SequenceFixtureChannel } from './sequence-steps';
@@ -57,5 +58,50 @@ describe('project function mapping', () => {
     expect(draft).toMatchObject({ name: '', direction: 'forward', runOrder: 'loop', fixturePublicIds: [] });
     expect(draft.steps).toHaveLength(1);
     expect(draft.steps[0]?.dmxValues).toEqual([]);
+    expect(draftToSequenceInput(draft)).toMatchObject({
+      direction: SequenceDirection.Forward,
+      runOrder: SequenceRunOrder.Loop,
+    });
+    expect(draftToSequenceInput({ ...draft, runOrder: 'singleShot' }).runOrder).toBe(SequenceRunOrder.SingleShot);
+  });
+
+  it('treats a function without a sequence as an empty forward loop', () => {
+    const bare = { ...row, sequence: null };
+    expect(functionToDraft(bare, fixtures)).toMatchObject({
+      direction: 'forward',
+      runOrder: 'loop',
+      steps: [],
+      fixturePublicIds: [],
+    });
+    const single = { ...row, sequence: row.sequence && { ...row.sequence, runOrder: SequenceRunOrder.SingleShot } };
+    expect(functionToDraft(single, fixtures).runOrder).toBe('singleShot');
+  });
+
+  it('lists patched fixtures with their channel names', () => {
+    expect(projectSequenceFixtures(null)).toEqual([]);
+    expect(projectSequenceFixtures(undefined)).toEqual([]);
+    expect(
+      projectSequenceFixtures({
+        projectFixtures: [
+          {
+            publicId: 'pf',
+            startAddress: 1,
+            fixture: { name: 'PAR' },
+            channelMode: {
+              fixtureChannelAssignments: [
+                { channelNumber: 1, fixtureChannelDefinition: { name: 'Red', preset: null } },
+              ],
+            },
+          },
+        ],
+      } as Parameters<typeof projectSequenceFixtures>[0]),
+    ).toEqual([
+      {
+        publicId: 'pf',
+        startAddress: 1,
+        name: 'PAR',
+        channels: [{ channelNumber: 1, name: 'Red', preset: null }],
+      },
+    ]);
   });
 });

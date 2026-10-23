@@ -73,6 +73,68 @@ describe('project function validation', () => {
     }).toThrow(/0 to 255/);
   });
 
+  it('rejects steps and channel values that are not arrays, and non-integer or too-small numbers', () => {
+    expect(() => {
+      assertSequenceProperties(sequence({ steps: undefined as unknown as SequenceProperties['steps'] }));
+    }).toThrow(/steps must be an array/);
+    expect(() => {
+      assertSequenceProperties(
+        sequence({
+          steps: [{ fadeIn: 1.5, hold: 0, fadeOut: 0, dmxValues: [] }],
+        }),
+      );
+    }).toThrow(/fadeIn/);
+    expect(() => {
+      assertSequenceProperties(
+        sequence({
+          steps: [{ fadeIn: 0, hold: -1, fadeOut: 0, dmxValues: [] }],
+        }),
+      );
+    }).toThrow(/hold/);
+    expect(() => {
+      assertSequenceProperties(
+        sequence({
+          steps: [{ fadeIn: 0, hold: 0, fadeOut: Number.NaN, dmxValues: [] }],
+        }),
+      );
+    }).toThrow(/fadeOut/);
+    expect(() => {
+      assertSequenceProperties(
+        sequence({
+          steps: [{ fadeIn: 0, hold: 0, fadeOut: 0, dmxValues: undefined as unknown as [] }],
+        }),
+      );
+    }).toThrow(/dmxValues must be an array/);
+    expect(() => {
+      assertSequenceProperties(
+        sequence({
+          steps: [{ fadeIn: 0, hold: 0, fadeOut: 0, dmxValues: [{ channel: 0, value: 1 }] }],
+        }),
+      );
+    }).toThrow(/1 to 512/);
+    expect(() => {
+      assertSequenceProperties(
+        sequence({
+          steps: [{ fadeIn: 0, hold: 0, fadeOut: 0, dmxValues: [{ channel: 1.2, value: 1 }] }],
+        }),
+      );
+    }).toThrow(/1 to 512/);
+    expect(() => {
+      assertSequenceProperties(
+        sequence({
+          steps: [{ fadeIn: 0, hold: 0, fadeOut: 0, dmxValues: [{ channel: 1, value: -1 }] }],
+        }),
+      );
+    }).toThrow(/0 to 255/);
+    expect(() => {
+      assertSequenceProperties(
+        sequence({
+          steps: [{ fadeIn: 0, hold: 0, fadeOut: 0, dmxValues: [{ channel: 1, value: 1.5 }] }],
+        }),
+      );
+    }).toThrow(/0 to 255/);
+  });
+
   it('requires sequence properties for a sequence function', () => {
     expect(() => {
       buildProjectFunctionProperties(ProjectFunctionType.Sequence, undefined);

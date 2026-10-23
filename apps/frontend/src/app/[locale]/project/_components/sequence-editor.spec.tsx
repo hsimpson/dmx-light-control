@@ -167,6 +167,29 @@ describe('SequenceEditor', () => {
     expect(onLeave).toHaveBeenCalledTimes(1);
   });
 
+  it('keeps the draft when save fails and when the leave or remove dialogs are cancelled', async () => {
+    const onLeave = vi.fn();
+    const onSave = vi.fn().mockResolvedValue(false);
+    const { user } = renderWithProviders(
+      <SequenceEditor fixtures={fixtures} initial={initial()} saving={false} onSave={onSave} onLeave={onLeave} />,
+    );
+    await expandGroup(user, 'PAR [1]');
+    await user.click(screen.getByRole('gridcell', { name: 'Dimmer · 1, Step 1' }));
+    await user.keyboard('200{Enter}');
+    await openFixtures(user);
+    await user.click(screen.getByRole('checkbox', { name: 'PAR [1]' }));
+    await user.click(await screen.findByRole('button', { name: 'Cancel' }));
+    expect(screen.getByRole('gridcell', { name: 'Dimmer · 1, Step 1' })).toHaveTextContent('200');
+
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => {
+      expect(onSave).toHaveBeenCalled();
+    });
+    await user.click(screen.getByRole('button', { name: 'Back' }));
+    await user.click(await screen.findByRole('button', { name: 'Cancel' }));
+    expect(onLeave).not.toHaveBeenCalled();
+  });
+
   it('asks before leaving with unsaved changes', async () => {
     const onLeave = vi.fn();
     const { user } = renderWithProviders(

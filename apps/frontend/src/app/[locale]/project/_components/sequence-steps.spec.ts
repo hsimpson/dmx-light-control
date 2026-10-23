@@ -19,4 +19,13 @@ describe('sequence steps', () => {
   it('maps a fixture channel onto its absolute DMX address', () => {
     expect(absoluteDmxChannel(10, 2)).toBe(11);
   });
+
+  it('leaves the array unchanged when the indexes are not a move', () => {
+    const steps = [step(0), step(1)];
+    expect(moveSequenceStep(steps, 0, 0)).toBe(steps);
+    expect(moveSequenceStep(steps, -1, 0)).toBe(steps);
+    expect(moveSequenceStep(steps, 0, -1)).toBe(steps);
+    expect(moveSequenceStep(steps, 2, 0)).toBe(steps);
+    expect(moveSequenceStep(steps, 0, 2)).toBe(steps);
+  });
 });

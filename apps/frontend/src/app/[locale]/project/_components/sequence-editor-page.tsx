@@ -54,8 +54,8 @@ const SequenceEditorPage = ({ projectPublicId, functionPublicId }: SequenceEdito
 
   const refetchQueries = [{ query: GetProjectDocument, variables: { publicId: projectPublicId } }];
   const save = async (draft: ProjectFunctionDraft): Promise<boolean> => {
-    const sequence = draftToSequenceInput(draft);
     try {
+      const sequence = draftToSequenceInput(draft);
       if (functionPublicId) {
         await updateProjectFunction({
           variables: { input: { publicId: functionPublicId, name: draft.name.trim(), sequence } },
