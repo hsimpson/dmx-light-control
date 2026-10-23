@@ -3,7 +3,7 @@
 ## Development setup
 
 - Install Docker and Docker Compose for running the local database. It doesn't matter which docker engine you use, as long as it supports `docker` and `docker compose`.
-- Install Node.js **24.21.0** (see `package.json` `engines`).
+- Install Node.js **24.22.1** (see `package.json` `engines`).
 - Install pnpm **12.15.0** (pinned in `package.json` `packageManager` / `devEngines`; Corepack and Dependabot require an exact version).
 - Install project dependencies:
 
