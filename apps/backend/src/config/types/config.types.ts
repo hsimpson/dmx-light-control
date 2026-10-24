@@ -1,3 +1,5 @@
+import { LogLevel } from '@nestjs/common';
+
 export type DatabaseConfig = {
   user: string;
   password: string;
@@ -8,5 +10,6 @@ export type DatabaseConfig = {
 
 export type Config = {
   port: number;
+  logLevels: LogLevel[];
   database: DatabaseConfig;
 };
