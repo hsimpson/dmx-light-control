@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import type { App } from 'supertest/types';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-const UNKNOWN_PROJECT_PUBLIC_ID = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
+const UNKNOWN_PROJECT_PUBLIC_ID = '00000000-0000-4000-8000-000000000000';
 
 const ftdi = {
   kind: 'DmxSerial',
