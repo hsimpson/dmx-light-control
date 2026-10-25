@@ -91,7 +91,7 @@
     "wait-on": "^9.5.1"
   },
   "dependencies": {
-    "@apollo/client": "^4.3.4",
+    "@apollo/client": "^4.3.5",
     "@apollo/server": "^5.5.1",
     "@as-integrations/fastify": "^3.1.0",
     "@dnd-kit/helpers": "^0.5.1",
