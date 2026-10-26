@@ -144,6 +144,35 @@ describe('MidiService', () => {
     ]);
   });
 
+  it('GIVEN macOS names the output differently WHEN opened THEN the same-index output of that device opens', () => {
+    fakeMidi.state.inputNames = ['APC mini mk2 Control', 'APC mini mk2 Notes'];
+    fakeMidi.state.outputNames = ['APC mini mk2 Port 1', 'APC mini mk2 Notes'];
+
+    service.open('APC mini mk2 Control');
+
+    expect(openedOutput('APC mini mk2 Port 1')).toBeDefined();
+    expect(emitted).toContainEqual({ event: 'midi.outputOpened', payload: { portName: 'APC mini mk2 Control' } });
+  });
+
+  it('GIVEN the same-index output belongs to another device WHEN opened THEN no output opens', () => {
+    fakeMidi.state.inputNames = ['Keys MIDI', 'APC mini mk2 Control'];
+    fakeMidi.state.outputNames = ['APC mini mk2 Port 1'];
+
+    service.open('Keys MIDI');
+
+    expect(openedOutput('APC mini mk2 Port 1')).toBeUndefined();
+    expect(emitted.some(entry => entry.event === 'midi.outputOpened')).toBe(false);
+  });
+
+  it('GIVEN a single-word input name without exact output WHEN opened THEN no output opens', () => {
+    fakeMidi.state.inputNames = ['Keys'];
+    fakeMidi.state.outputNames = ['Synth'];
+
+    service.open('Keys');
+
+    expect(openedOutput('Synth')).toBeUndefined();
+  });
+
   it('GIVEN an input-only device WHEN opened THEN no output opens and no outputOpened event fires', () => {
     service.open(KEYS);
 

@@ -44,7 +44,7 @@ export class MidiService implements OnModuleDestroy {
       this.logger.warn(`MIDI port "${portName}" is not available`);
       return false;
     }
-    const outputIndex = portNames(this.outputLister).indexOf(portName);
+    const outputIndex = findOutputIndex(portName, inputIndex, portNames(this.outputLister));
 
     const input = new midi.Input();
     input.on('message', (_deltaTime: number, message: MidiMessage) => {
@@ -88,6 +88,20 @@ export class MidiService implements OnModuleDestroy {
 
 function portNames(port: midi.Input | midi.Output): string[] {
   return Array.from({ length: port.getPortCount() }, (_, index) => port.getPortName(index));
+}
+
+/**
+ * Exact name first; otherwise the same-index output of the same device, because macOS names
+ * paired endpoints differently (APC mini mk2: input "… Control", output "… Port 1").
+ */
+function findOutputIndex(inputName: string, inputIndex: number, outputNames: readonly string[]): number {
+  const exactIndex = outputNames.indexOf(inputName);
+  if (exactIndex >= 0) return exactIndex;
+
+  const lastSpace = inputName.lastIndexOf(' ');
+  if (lastSpace <= 0) return -1;
+  const devicePrefix = inputName.slice(0, lastSpace + 1);
+  return outputNames[inputIndex]?.startsWith(devicePrefix) ? inputIndex : -1;
 }
 
 function closeDevice({ input, output }: OpenMidiDevice): void {
