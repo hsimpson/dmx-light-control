@@ -5,7 +5,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
-  parseValue,
+  parseConstValue,
   type GraphQLFieldConfigArgumentMap,
 } from 'graphql';
 import { describe, expect, it } from 'vitest';
@@ -42,7 +42,7 @@ describe('buildVariables', () => {
       fields: {
         dmxValues: {
           type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(dmxValueInput))),
-          default: { literal: parseValue('[{channel: 1, value: 127}]') },
+          default: { literal: parseConstValue('[{channel: 1, value: 127}]') },
         },
       },
     });
@@ -59,8 +59,8 @@ describe('buildVariables', () => {
     const openPortsInput = new GraphQLInputObjectType({
       name: 'OpenPortsInput',
       fields: {
-        inputPort: { type: new GraphQLNonNull(GraphQLInt), default: { literal: parseValue('1') } },
-        outputPort: { type: new GraphQLNonNull(GraphQLInt), default: { literal: parseValue('1') } },
+        inputPort: { type: new GraphQLNonNull(GraphQLInt), default: { literal: parseConstValue('1') } },
+        outputPort: { type: new GraphQLNonNull(GraphQLInt), default: { literal: parseConstValue('1') } },
       },
     });
     const field = mutationArgField({
