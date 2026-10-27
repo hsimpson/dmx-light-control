@@ -5,10 +5,5 @@
     "noPropertyAccessFromIndexSignature": false
   },
   "extends": "../../tsconfig.base.json",
-  "include": [
-    "create-collection.ts",
-    "graphql-default-variables.ts",
-    "graphql-default-variables.spec.ts",
-    "vitest.config.ts"
-  ]
+  "include": ["create-collection.ts", "graphql-default-variables.ts", "graphql-default-variables.spec.ts"]
 }
