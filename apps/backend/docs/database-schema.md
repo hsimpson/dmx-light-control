@@ -10,6 +10,7 @@ erDiagram
     fixtures ||--o{ fixture_channel_definitions : "fixture_id"
     fixtures ||--o{ fixture_channel_modes : "fixture_id"
     fixture_channel_definitions ||--o{ fixture_channel_ranges : "fixture_channel_definition_id"
+    midi_mappings ||--o{ midi_mapping_entries : "midi_mapping_id"
     projects ||--o{ project_3d_objects : "project_id"
     scene_object_types ||--o{ project_3d_objects : "scene_object_type_id"
     projects ||--o{ project_fixtures : "project_id"
@@ -74,6 +75,26 @@ erDiagram
         integer id PK
         uuid public_id UK
         varchar name UK
+        timestamp created_at
+        timestamp updated_at
+    }
+    midi_mappings {
+        integer id PK
+        uuid public_id UK
+        varchar name UK
+        timestamp created_at
+        timestamp updated_at
+    }
+    midi_mapping_entries {
+        integer id PK
+        uuid public_id UK
+        integer midi_mapping_id FK,UK
+        varchar name UK
+        midicontroltype control_type
+        midimessagetype message_type UK
+        integer channel UK
+        integer number UK
+        jsonb feedback
         timestamp created_at
         timestamp updated_at
     }

@@ -1,7 +1,7 @@
 info:
   name: deleteProject3dObject
   type: graphql
-  seq: 11
+  seq: 15
 
 graphql:
   method: POST

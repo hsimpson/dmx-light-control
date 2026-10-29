@@ -1,7 +1,7 @@
 info:
   name: updateProjectFixture
   type: graphql
-  seq: 20
+  seq: 26
 
 graphql:
   method: POST

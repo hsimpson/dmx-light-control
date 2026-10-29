@@ -1,0 +1,52 @@
+info:
+  name: updateMidiMapping
+  type: graphql
+  seq: 22
+
+graphql:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body:
+    query: |
+      mutation($input: UpdateMidiMappingInput!) {
+        updateMidiMapping(input: $input) {
+          createdAt
+          entries {
+            channel
+            controlType
+            createdAt
+            feedback {
+              off {
+                behavior
+                color
+              }
+              on {
+                behavior
+                color
+              }
+            }
+            messageType
+            name
+            number
+            publicId
+            updatedAt
+          }
+          name
+          publicId
+          updatedAt
+        }
+      }
+    variables: |
+      {
+        "input": {
+          "name": null,
+          "publicId": null
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

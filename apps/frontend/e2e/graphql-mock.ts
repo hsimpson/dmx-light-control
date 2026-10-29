@@ -192,6 +192,25 @@ const isPluggedIn = (device: MockedIoDevice) =>
     available => available.name === device.name && available.serial === device.serial && available.kind === device.kind,
   );
 
+type MockedMidiMappingEntry = {
+  __typename: 'MidiMappingEntryDto';
+  publicId: string;
+  name: string;
+  controlType: string;
+  messageType: string;
+  channel: number;
+  number: number;
+  feedback: { off: { behavior: number; color: number }; on: { behavior: number; color: number } } | null;
+};
+
+export const mockedMidiMapping = {
+  __typename: 'MidiMappingDto',
+  publicId: 'midi-1',
+  name: 'APC mini mk2',
+  createdAt: now,
+  updatedAt: now,
+};
+
 export const mockGraphql = async (page: Page) => {
   const fixtures = [mockedFixture];
   const projects: (typeof mockedProject)[] = [{ ...mockedProject }];
@@ -201,6 +220,7 @@ export const mockGraphql = async (page: Page) => {
   const projectFunctions: Record<string, MockedProjectFunction[]> = { [mockedProject.publicId]: [] };
   const projectIoDevices: Record<string, MockedIoDevice[]> = { [mockedProject.publicId]: [] };
   let activeProjectPublicId: string | null = null;
+  const midiMappings = [{ ...mockedMidiMapping, entries: [] as MockedMidiMappingEntry[] }];
 
   await page.route('**/graphql', async route => {
     if (route.request().method() === 'OPTIONS') {
@@ -229,6 +249,12 @@ export const mockGraphql = async (page: Page) => {
           channelModePublicId?: string;
           sequence?: MockedSequenceInput;
           ioDevices?: MockedIoDevice[];
+          midiMappingPublicId?: string;
+          controlType?: string;
+          messageType?: string;
+          channel?: number;
+          number?: number;
+          feedback?: MockedMidiMappingEntry['feedback'];
         };
         document?: { schemaVersion: number; projects: { publicId?: string; name: string }[] };
       };
@@ -236,7 +262,41 @@ export const mockGraphql = async (page: Page) => {
 
     let body: unknown = { data: {} };
     // Matched by operationName first: their queries also contain the `project(publicId` / `updateProject` fallbacks below.
-    if (postData.operationName === 'ActivateProject') {
+    if (postData.operationName === 'GetMidiMappings') {
+      body = { data: { midiMappings } };
+    } else if (postData.operationName === 'GetMidiMapping') {
+      body = {
+        data: { midiMapping: midiMappings.find(mapping => mapping.publicId === postData.variables?.publicId) ?? null },
+      };
+    } else if (postData.operationName === 'CreateMidiMapping') {
+      const created = {
+        ...mockedMidiMapping,
+        publicId: `midi-${midiMappings.length + 1}`,
+        name: postData.variables?.name ?? '',
+        entries: [],
+      };
+      midiMappings.push(created);
+      body = { data: { createMidiMapping: created } };
+    } else if (postData.operationName === 'DeleteMidiMapping') {
+      const index = midiMappings.findIndex(mapping => mapping.publicId === postData.variables?.publicId);
+      if (index >= 0) midiMappings.splice(index, 1);
+      body = { data: { deleteMidiMapping: { publicId: postData.variables?.publicId, deleted: index >= 0 } } };
+    } else if (postData.operationName === 'AddMidiMappingEntry') {
+      const input = postData.variables?.input;
+      const mapping = midiMappings.find(candidate => candidate.publicId === input?.midiMappingPublicId);
+      const entry: MockedMidiMappingEntry = {
+        __typename: 'MidiMappingEntryDto',
+        publicId: `entry-${(mapping?.entries.length ?? 0) + 1}`,
+        name: input?.name ?? '',
+        controlType: input?.controlType ?? 'Button',
+        messageType: input?.messageType ?? 'Note',
+        channel: input?.channel ?? 0,
+        number: input?.number ?? 0,
+        feedback: input?.feedback ?? null,
+      };
+      mapping?.entries.push(entry);
+      body = { data: { addMidiMappingEntry: entry } };
+    } else if (postData.operationName === 'ActivateProject') {
       activeProjectPublicId = postData.variables?.publicId ?? null;
       body = { data: { activateProject: { __typename: 'ProjectDto', publicId: activeProjectPublicId } } };
     } else if (postData.operationName === 'GetProjectIoDevices') {

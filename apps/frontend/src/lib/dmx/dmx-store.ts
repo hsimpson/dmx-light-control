@@ -12,14 +12,21 @@ export type DmxChannelUpdate = {
   value: number;
 };
 
+export type MidiInput = {
+  portName: string;
+  message: number[];
+};
+
 export type DmxStoreState = {
   channels: number[];
   status: DmxConnectionStatus;
   runningFunctionIds: string[];
+  lastMidiInput: MidiInput | null;
   applySnapshot: (values: ArrayLike<number>) => void;
   applyDelta: (updates: DmxChannelUpdate[]) => void;
   setStatus: (status: DmxConnectionStatus) => void;
   setRunningFunctionIds: (ids: string[]) => void;
+  setLastMidiInput: (input: MidiInput) => void;
 };
 
 function createZeroChannels(): number[] {
@@ -35,6 +42,7 @@ export function createDmxStore() {
     channels: createZeroChannels(),
     status: 'idle',
     runningFunctionIds: [],
+    lastMidiInput: null,
     applySnapshot: values => {
       const next = createZeroChannels();
       const length = Math.min(DMX_CHANNEL_COUNT, values.length);
@@ -72,6 +80,9 @@ export function createDmxStore() {
     setRunningFunctionIds: runningFunctionIds => {
       set({ runningFunctionIds });
     },
+    setLastMidiInput: lastMidiInput => {
+      set({ lastMidiInput });
+    },
   }));
 }
 
@@ -85,6 +96,7 @@ export function resetDmxStore(): void {
   dmxStore.setState({
     channels: createZeroChannels(),
     runningFunctionIds: [],
+    lastMidiInput: null,
     status: 'idle',
   });
 }

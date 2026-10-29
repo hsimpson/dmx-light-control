@@ -1,7 +1,7 @@
 info:
   name: createProject
   type: graphql
-  seq: 7
+  seq: 9
 
 graphql:
   method: POST

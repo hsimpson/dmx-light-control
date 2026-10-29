@@ -21,13 +21,29 @@ const noteDmxMapping: Record<number, number[]> = {
 
 // format: [behavior, button, color]
 const ledMidiMapping: MidiMessage[] = [
-  [0x96, 0, 0x5], // 100% brightness for button 1 with red color (#FF0000)
-  [0x96, 1, 0x15], // 100% brightness for button 2 with green color (#00FF00)
-  [0x96, 2, 0x2d], // 100% brightness for button 3 with blue color  (#0000FF)
-
-  [0x9d, 3, 0x5], // Blinking 1/8 for button 4 with red color (#FF0000)
-  [0x9d, 4, 0x15], // Blinking 1/8 for button 5 with green color (#00FF00)
-  [0x9d, 5, 0x2d], // Blinking 1/8 for button 6 with blue color (#0000FF)
+  // [0x96, 0, 0x5], // 100% brightness for button 1 with red color (#FF0000)
+  // [0x96, 1, 0x15], // 100% brightness for button 2 with green color (#00FF00)
+  // [0x96, 2, 0x2d], // 100% brightness for button 3 with blue color  (#0000FF)
+  // [0x9d, 3, 0x5], // Blinking 1/8 for button 4 with red color (#FF0000)
+  // [0x9d, 4, 0x15], // Blinking 1/8 for button 5 with green color (#00FF00)
+  // [0x9d, 5, 0x2d], // Blinking 1/8 for button 6 with blue color (#0000FF)
+  // [0x90, 0x64, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 1 on
+  // [0x90, 0x65, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 2 on
+  // [0x90, 0x66, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 3 on
+  // [0x90, 0x67, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 4 on
+  // [0x90, 0x68, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 5 on
+  // [0x90, 0x69, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 6 on
+  // [0x90, 0x6a, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 7 on
+  // [0x90, 0x6b, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 8 on
+  // [0x90, 0x70, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 1 on
+  // [0x90, 0x71, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 2 on
+  // [0x90, 0x72, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 3 on
+  // [0x90, 0x73, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 4 on
+  // [0x90, 0x74, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 5 on
+  // [0x90, 0x75, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 6 on
+  // [0x90, 0x76, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 7 on
+  // [0x90, 0x77, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 8 on
+  // [0x90, 0x7a, 0x1], // single-color LEDs only listen on channel 0 (0x90): Shift Button on
 ];
 
 @Injectable()

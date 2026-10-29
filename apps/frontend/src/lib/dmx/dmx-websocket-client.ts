@@ -106,7 +106,14 @@ export class DmxWebsocketClient {
     if (typeof parsed !== 'object' || parsed === null) {
       return;
     }
-    const message = parsed as { type?: unknown; channels?: unknown; values?: unknown; running?: unknown };
+    const message = parsed as {
+      type?: unknown;
+      channels?: unknown;
+      values?: unknown;
+      running?: unknown;
+      portName?: unknown;
+      message?: unknown;
+    };
     if (message.type === 'snapshot' && Array.isArray(message.channels)) {
       this.store.getState().applySnapshot(message.channels as number[]);
       this.sawSnapshot = true;
@@ -115,6 +122,13 @@ export class DmxWebsocketClient {
     }
     if (message.type === 'delta' && Array.isArray(message.values)) {
       this.store.getState().applyDelta(message.values as DmxChannelUpdate[]);
+      return;
+    }
+    if (message.type === 'midiInput' && typeof message.portName === 'string' && Array.isArray(message.message)) {
+      this.store.getState().setLastMidiInput({
+        portName: message.portName,
+        message: message.message.filter((byte): byte is number => typeof byte === 'number'),
+      });
       return;
     }
     if (message.type === 'functionState' && Array.isArray(message.running)) {

@@ -55,6 +55,8 @@ describe('DmxWebsocketClient', () => {
 
     socket?.receive({ type: 'functionState', running: ['fn-1'] });
     expect(store.getState().runningFunctionIds).toEqual(['fn-1']);
+    socket?.receive({ type: 'midiInput', portName: 'APC', message: [0x90, 0x64, 0x7f] });
+    expect(store.getState().lastMidiInput).toEqual({ portName: 'APC', message: [0x90, 0x64, 0x7f] });
     client.startFunction('fn-1');
     client.stopFunction('fn-2');
     expect(socket?.sent).toEqual([

@@ -1,7 +1,7 @@
 info:
   name: setChannelValues
   type: graphql
-  seq: 16
+  seq: 20
 
 graphql:
   method: POST

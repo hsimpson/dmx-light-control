@@ -1,0 +1,78 @@
+fragment MidiMappingEntryFields on MidiMappingEntryDto {
+  publicId
+  name
+  controlType
+  messageType
+  channel
+  number
+  feedback {
+    off {
+      behavior
+      color
+    }
+    on {
+      behavior
+      color
+    }
+  }
+}
+
+fragment MidiMappingFields on MidiMappingDto {
+  publicId
+  name
+  createdAt
+  updatedAt
+  entries {
+    ...MidiMappingEntryFields
+  }
+}
+
+query GetMidiMappings {
+  midiMappings {
+    ...MidiMappingFields
+  }
+}
+
+query GetMidiMapping($publicId: UUID!) {
+  midiMapping(publicId: $publicId) {
+    ...MidiMappingFields
+  }
+}
+
+mutation CreateMidiMapping($name: String!) {
+  createMidiMapping(input: { name: $name }) {
+    ...MidiMappingFields
+  }
+}
+
+mutation UpdateMidiMapping($input: UpdateMidiMappingInput!) {
+  updateMidiMapping(input: $input) {
+    ...MidiMappingFields
+  }
+}
+
+mutation DeleteMidiMapping($publicId: UUID!) {
+  deleteMidiMapping(publicId: $publicId) {
+    publicId
+    deleted
+  }
+}
+
+mutation AddMidiMappingEntry($input: AddMidiMappingEntryInput!) {
+  addMidiMappingEntry(input: $input) {
+    ...MidiMappingEntryFields
+  }
+}
+
+mutation UpdateMidiMappingEntry($input: UpdateMidiMappingEntryInput!) {
+  updateMidiMappingEntry(input: $input) {
+    ...MidiMappingEntryFields
+  }
+}
+
+mutation DeleteMidiMappingEntry($publicId: UUID!) {
+  deleteMidiMappingEntry(publicId: $publicId) {
+    publicId
+    deleted
+  }
+}

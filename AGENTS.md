@@ -17,40 +17,40 @@ NestJS backend + Next.js frontend in Nx monorepo.
 
 ## Commands
 
-| Command                                            | Description                                                        |
-| -------------------------------------------------- | ------------------------------------------------------------------ |
-| `nx serve backend`                                 | Backend dev server (also runs `infra:db-start`)                    |
-| `nx run infra:db-start`                            | Start local Postgres (Docker)                                      |
-| `nx run infra:db-stop`                             | Stop local Postgres                                                |
-| `nx run infra:db-reset`                            | Reset local Postgres (removes volumes)                             |
-| `nx run infra:db-logs`                             | Tail local Postgres logs                                           |
-| `nx dev frontend` / `nx start frontend`            | Frontend Next.js Turbopack-dev (port 3001) / prod start            |
-| `nx build backend` / `nx build frontend`           | Production build                                                   |
-| `nx typecheck backend` / `nx typecheck frontend`   | Type check                                                         |
-| `nx lint backend` / `nx lint frontend`             | Lint                                                               |
-| `nx test backend`                                  | Backend unit/integration + e2e tests                               |
-| `nx test backend --coverage`                       | Backend coverage under `coverage/apps/backend`                     |
-| `nx test frontend`                                 | Frontend Vitest unit/component tests                               |
-| `nx test frontend --coverage`                      | Frontend coverage under `coverage/apps/frontend`                   |
-| `nx e2e frontend`                                  | Playwright e2e (mocked GraphQL, no backend)                        |
-| `nx run backend:drizzle-generate -- --name <name>` | Generate a migration (required snake_case `--name`; never omit it) |
-| `nx run backend:erd`                               | Write Mermaid ER diagram to `apps/backend/docs/database-schema.md` |
-| `nx run backend:dmx-sniffer`                       | DMX USB sniffer CLI (Linux-only)                                   |
-| `nx run bruno:build`                               | Rebuild Bruno API collection (needs backend on `BACKEND_PORT`)     |
-| `nx test bruno`                                    | Bruno collection generator unit tests                              |
-| `nx run backend:drizzle-migrate`                   | Run migrations                                                     |
-| `nx run backend:drizzle-studio`                    | Open Drizzle Studio                                                |
-| `nx run frontend:graphql-codegen`                  | Generate GraphQL types (needs a reachable schema URL)              |
-| `nx run frontend:i18n-extract`                     | Extract keys into `src/lang/en.json` only                          |
-| `nx run frontend:i18n-verify`                      | Verify translation files are in sync                               |
+| Command                                            | Description                                                                                    |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `nx serve backend`                                 | Backend dev server (also runs `infra:db-start`)                                                |
+| `nx run infra:db-start`                            | Start local Postgres (Docker)                                                                  |
+| `nx run infra:db-stop`                             | Stop local Postgres                                                                            |
+| `nx run infra:db-reset`                            | Reset local Postgres (removes volumes)                                                         |
+| `nx run infra:db-logs`                             | Tail local Postgres logs                                                                       |
+| `nx dev frontend` / `nx start frontend`            | Frontend Next.js Turbopack-dev (port 3001) / prod start                                        |
+| `nx build backend` / `nx build frontend`           | Production build                                                                               |
+| `nx typecheck frontend`                            | Type check (backend has no target: `pnpm exec tsc -p apps/backend/tsconfig.app.json --noEmit`) |
+| `nx lint backend` / `nx lint frontend`             | Lint                                                                                           |
+| `nx test backend`                                  | Backend unit/integration + e2e tests                                                           |
+| `nx test backend --coverage`                       | Backend coverage under `coverage/apps/backend`                                                 |
+| `nx test frontend`                                 | Frontend Vitest unit/component tests                                                           |
+| `nx test frontend --coverage`                      | Frontend coverage under `coverage/apps/frontend`                                               |
+| `nx e2e frontend`                                  | Playwright e2e (mocked GraphQL, no backend)                                                    |
+| `nx run backend:drizzle-generate -- --name <name>` | Generate a migration (required snake_case `--name`; never omit it)                             |
+| `nx run backend:erd`                               | Write Mermaid ER diagram to `apps/backend/docs/database-schema.md`                             |
+| `nx run backend:dmx-sniffer`                       | DMX USB sniffer CLI (Linux-only)                                                               |
+| `nx run bruno:build`                               | Rebuild Bruno API collection (needs backend on `BACKEND_PORT`)                                 |
+| `nx test bruno`                                    | Bruno collection generator unit tests                                                          |
+| `nx run backend:drizzle-migrate`                   | Run migrations                                                                                 |
+| `nx run backend:drizzle-studio`                    | Open Drizzle Studio                                                                            |
+| `nx run frontend:graphql-codegen`                  | Generate GraphQL types (needs a reachable schema URL)                                          |
+| `nx run frontend:i18n-extract`                     | Extract keys into `src/lang/en.json` only                                                      |
+| `nx run frontend:i18n-verify`                      | Verify translation files are in sync                                                           |
 
 **Package manager:** `pnpm` (used for `pnpm install` and other pnpm tasks). **Node:** 24.22.1. **pnpm:** 12.16.1 (exact pin in `packageManager` / `devEngines`; bump both when upgrading).
-**Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck backend`) — do **not** prefix with `pnpm`.
+**Nx:** invoked directly as `nx <target> <project>` (e.g. `nx typecheck frontend`) — do **not** prefix with `pnpm`.
 **Env (`.env.example`):** `NODE_ENV` (not in typed `Config`; GraphQL stack-trace stripping and Rspack asset-copy mode), `BACKEND_PORT` (required; HTTP; GraphQL at `/graphql`; live DMX WebSocket at `/dmx`), `LOG_LEVEL` (optional, default `log`; minimum Nest log level: `verbose`, `debug`, `log`, `warn`, `error`, `fatal`; applies to server and CLI), `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`. No env var selects I/O devices: DMX outputs and MIDI controllers are configured per project (see IO layer). Optional `FIXTURE_ASSETS_ROOT` overrides the fixture-asset disk root (used in tests; not in `.env.example`). Frontend: `apps/frontend/.env.example` has `NEXT_PUBLIC_GRAPHQL_API_URL` (the DMX socket URL is derived: HTTP GraphQL origin → `ws`/`wss` + `/dmx`). Nest `ConfigModule` loads workspace-root `.env`. Drizzle-kit targets run with cwd `apps/backend` and `dotenv/config` (so `apps/backend/.env` or already-exported vars). Infra compose uses `--env-file ../.env`. Tests override `POSTGRES_*` via Testcontainers in `apps/backend/vitest.setup.ts` (keep its image tag in sync with `infra/docker-compose.yml`).
 
 ## Done means
 
-1. Typecheck and lint pass with zero errors `nx run-many --targets typecheck,lint`.
+1. Typecheck and lint pass with zero errors `nx run-many --targets typecheck,lint` plus the backend `tsc` command above (`run-many` skips backend, which has no `typecheck` target).
 2. Prettier has been run on all created/changed files (see Agent behavior).
 3. Relevant tests run with coverage and pass, including the coverage thresholds in `vitest.base.ts` (show output) `nx run-many --targets test --coverage`.
 4. When changing GraphQL resolvers or DTOs, run `nx test backend` (includes `graphql-schema.spec.ts`) and rebuild Bruno requests `nx run bruno:build`.
@@ -90,7 +90,7 @@ Harness maintenance is part of **done**, not optional docs.
 ### Backend (`apps/backend/src/`)
 
 - NestJS + Apollo GraphQL on Fastify (`autoSchemaFile: true`)
-- Domain modules: `FixturesModule`, `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`, `IoDevicesModule`, `FunctionPlaybackModule`. Live DMX output is `SerialSendService` (one shared 513-byte frame sent to every open FTDI UART via `DmxSerialPort`); it is provided and exported by `DmxModule` (no `SerialModule`). `MidiService` (exported by `MidiModule`) opens one input/output pair per device by port name.
+- Domain modules: `FixturesModule`, `MidiMappingsModule` (global MIDI controller mapping catalog: `midi_mappings` + `midi_mapping_entries` with address, control type and optional LED feedback jsonb), `ProjectsModule` (`ProjectsModule` imports `FixturesModule` for `project_fixtures` patch instances). `AppModule` IO imports: `DmxModule`, `MidiModule`, `IoBridgeModule`, `IoDevicesModule`, `FunctionPlaybackModule`. Live DMX output is `SerialSendService` (one shared 513-byte frame sent to every open FTDI UART via `DmxSerialPort`); it is provided and exported by `DmxModule` (no `SerialModule`). `MidiService` (exported by `MidiModule`) opens one input/output pair per device by port name.
 - Domain pattern: Resolver → Service → Repository; DTO mapping via `plainToInstance()` in domain resolvers (inject services, not DB directly). Import/export is Resolver → `FixtureImportExportService` / `ProjectImportExportService` (`InjectDb()` + repositories + transactions). IO resolvers may emit events or call services without repositories.
 - Tests: Vitest unit/integration (`src/**/*.spec.ts`); e2e in `src/e2e-tests/` (GraphQL, REST fixture assets, DMX/MIDI IO); Testcontainers PostgreSQL in `apps/backend/vitest.setup.ts` (project root, not `src/`)
 - ORM repositories extend `BaseRepository` (`apps/backend/src/db/base.repository.ts`) for shared `publicId` CRUD; pass `relationalFind` for nested `with` graphs, add domain-specific methods as needed
@@ -99,10 +99,10 @@ Harness maintenance is part of **done**, not optional docs.
 - Static files: Fastify serves `apps/backend/src/assets` at `/assets/` when that directory exists (`nx serve`), otherwise Rspack-copied `dist/.../assets`. 3D models live under `apps/backend/src/assets/3d/` (e.g. `room.gltf`, `light_stand.glb`). Fixture catalog assets live under `apps/backend/src/assets/fixtures/$VENDOR/$FIXTURE_NAME` with generic defaults in `_defaults/` (`model.glb`, `picture.webp`, `picture-2d.svg`).
 - Fixture asset uploads: REST multipart `POST/DELETE /fixtures/:publicId/assets/:kind` (`picture` \| `picture2d` \| `model3d`); GraphQL stores relative `/assets/...` paths and dimensions (`weight` kg, `width`/`length`/`height` in meters).
 - Blender sources (`blender/`) are the authoring files; runtime GLB/GLTF under `apps/backend/src/assets/` is what the app serves. After editing a `.blend`, re-export the matching runtime file (do not leave the GLB stale). Source → runtime mapping: `blender/README.md`. Fixture models must face **+X**: the beam / throw axis and the front (lenses) point along world +X in Blender (identity in the app; do not compensate with loader rotations). Each fixture GLB includes a `BeamOrigin` empty at the LED-cluster center on the lens face. The room placement pivot stays the group origin; the loader offsets only the beam to that empty and opens the near cap to the lens-cluster radius. Export with the Blender MCP (`uvx blender-mcp`, configured in Claude Code user scope, not in the repo): open the source `.blend` if needed (`bpy.ops.wm.open_mainfile`), then `bpy.ops.export_scene.gltf(filepath=<runtime glb>, export_format='GLB', use_visible=True, export_cameras=False, export_lights=False, export_apply=True)`.
-- IO layer: `io/dmx/` (GraphQL `setChannelValues` plus Fastify WebSocket `/dmx` for the live 512-channel universe; client messages `set`, `functionStart`, `functionStop`; server broadcasts `functionState`), `io/function-playback/` (sequence playback layers merged HTP into the universe), `io/midi/`, `io/serial/`, `io/io-bridge/` (one hardcoded APC mini mk2 mapping for every MIDI device), `io/devices/` (USB device discovery + per-project connection)
+- IO layer: `io/dmx/` (GraphQL `setChannelValues` plus Fastify WebSocket `/dmx` for the live 512-channel universe; client messages `set`, `functionStart`, `functionStop`; server broadcasts `functionState` and raw `midiInput` for MIDI learn in the mapping editor), `io/function-playback/` (sequence playback layers merged HTP into the universe), `io/midi/`, `io/serial/`, `io/io-bridge/` (one hardcoded APC mini mk2 mapping for every MIDI device), `io/devices/` (USB device discovery + per-project connection)
 - Project I/O devices: `projects.io_devices` (jsonb) stores identity only (`kind`, `name`, `manufacturer`, `serial`, `vendorId`, `productId`, `usbLocation` as tie-breaker for identical devices), never OS paths/port indexes. GraphQL `activateProject(publicId)` marks the loaded project (in memory in `ProjectService`); it emits `project.ioDevicesActivated` (also on device update, delete, import). `IoDeviceManagerService` matches configured vs. discovered devices (`match-io-devices.ts`, two-pass), opens/closes serial and MIDI handles, re-polls every 2 s while devices are configured, and serves `ioDevices` (status `Connected`/`Missing`/`Ambiguous`). `availableIoDevices` lists plugged-in devices. Identity lookup: serial via `SerialPort.list()` (+ Linux sysfs location); MIDI via Linux sysfs (ALSA client → card), macOS `ioreg`, Windows `Get-PnpDevice` (`io/devices/midi-identity/`, `execFile` with fixed args). The frontend project layout calls `activateProject` on mount and on DMX WebSocket reconnect; the `io` project tab edits the list.
 
-### Domain modules (`fixtures/`, `projects/`)
+### Domain modules (`fixtures/`, `midi-mappings/`, `projects/`)
 
 - Flat per-domain files (`*.module.ts`, `*.resolver.ts`, `*.service.ts`, `*.exceptions.ts` extending `BaseDomainError`, import/export service + mapper + validator) plus `dto/` (`@ObjectType()`/`@InputType()` with class-validator), `entities/` (Drizzle tables, default export, `index.ts` barrel), `repositories/` (extend `BaseRepository`, `InjectDb()`).
 
@@ -117,7 +117,7 @@ Harness maintenance is part of **done**, not optional docs.
 
 ### Database (`apps/backend/src/db/`)
 
-- Schema barrel: `schema.ts` re-exports domain tables (`@/fixtures/entities`, `@/projects/entities`). Relations: `relations.ts` (`defineRelations()`). Helpers: `columns.helpers.ts` (`pk`, `timestamps`).
+- Schema barrel: `schema.ts` re-exports domain tables (`@/fixtures/entities`, `@/midi-mappings/entities`, `@/projects/entities`). Relations: `relations.ts` (`defineRelations()`). Helpers: `columns.helpers.ts` (`pk`, `timestamps`).
 - Entities live in domain `entities/` files: `d.snakeCase.table('name', { ...pk, ...timestamps, fields })`
 - Repositories: one per entity/group, use `InferSelectModel`/`InferInsertModel`
 - Migrations: `src/db/migrations/` (timestamp + snake_case name from `--name`; never drizzle-kit random names)
@@ -156,4 +156,4 @@ Rules live in `tsconfig.base.json`, `eslint.config.ts`, `prettier.config.ts`. Tr
 
 Format: `- **Topic:** imperative rule. Why: cause. (YYYY-MM)`. Max 10; promote durable ones into their section.
 
-_None yet._
+- **Frontend e2e:** run `NODE_ENV=production nx e2e frontend` with port 3001 free, or `pnpm exec playwright test` in `apps/frontend` against a running `nx dev frontend`. Why: Nx loads root `.env`; a non-production `NODE_ENV` breaks `next build` (`/_global-error` prerender `useContext` null), and the target's `start` dependency fails with EADDRINUSE when 3001 is taken. (2026-10)

@@ -106,4 +106,26 @@ describe('DmxWebsocketService', () => {
 
     service.onModuleDestroy();
   });
+
+  it('GIVEN a connected client WHEN MIDI input arrives THEN broadcasts it for MIDI learn', () => {
+    const listeners = new Map<string, (payload: unknown) => void>();
+    const eventEmitter = {
+      on: (event: string, listener: (payload: unknown) => void) => {
+        listeners.set(event, listener);
+      },
+      emit: () => true,
+    };
+    const service = new DmxWebsocketService(new DmxUniverseService(), eventEmitter as unknown as AppEventEmitter);
+    service.onModuleInit();
+    const client = new FakeSocket();
+    handleDmxWebsocketConnection(client);
+    client.sent.length = 0;
+
+    listeners.get('midi.inputMessage')?.({ portName: 'APC mini mk2', message: [0x90, 0x64, 0x7f] });
+
+    expect(client.sent).toEqual([
+      JSON.stringify({ type: 'midiInput', portName: 'APC mini mk2', message: [0x90, 0x64, 0x7f] }),
+    ]);
+    service.onModuleDestroy();
+  });
 });

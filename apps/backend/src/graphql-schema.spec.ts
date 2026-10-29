@@ -11,6 +11,8 @@ import { DmxResolver } from './io/dmx/dmx.resolver';
 import { IoDeviceDiscoveryService } from './io/devices/io-device-discovery.service';
 import { IoDeviceManagerService } from './io/devices/io-device-manager.service';
 import { IoDevicesResolver } from './io/devices/io-devices.resolver';
+import { MidiMappingResolver } from './midi-mappings/midi-mapping.resolver';
+import { MidiMappingService } from './midi-mappings/midi-mapping.service';
 import { ProjectImportExportService } from './projects/project-import-export.service';
 import { ProjectResolver } from './projects/project.resolver';
 import { ProjectService } from './projects/project.service';
@@ -24,6 +26,7 @@ describe('GraphQL schema generation', () => {
         ProjectResolver,
         DmxResolver,
         IoDevicesResolver,
+        MidiMappingResolver,
         { provide: FixtureService, useValue: {} },
         { provide: FixtureImportExportService, useValue: {} },
         { provide: ProjectService, useValue: {} },
@@ -32,11 +35,18 @@ describe('GraphQL schema generation', () => {
         { provide: DmxUniverseService, useValue: {} },
         { provide: IoDeviceDiscoveryService, useValue: {} },
         { provide: IoDeviceManagerService, useValue: {} },
+        { provide: MidiMappingService, useValue: {} },
       ],
     }).compile();
 
     const factory = moduleRef.get(GraphQLSchemaFactory);
-    const schema = await factory.create([FixtureResolver, ProjectResolver, DmxResolver, IoDevicesResolver]);
+    const schema = await factory.create([
+      FixtureResolver,
+      ProjectResolver,
+      DmxResolver,
+      IoDevicesResolver,
+      MidiMappingResolver,
+    ]);
 
     expect(schema).toBeDefined();
     expect(schema.getQueryType()?.getFields().exportFixtures).toBeDefined();
@@ -55,6 +65,9 @@ describe('GraphQL schema generation', () => {
     expect(schema.getMutationType()?.getFields().updateProjectIoDevices).toBeDefined();
     expect(schema.getMutationType()?.getFields().openPorts).toBeUndefined();
     expect(schema.getType('ProjectEnvironmentType')).toBeDefined();
+    expect(schema.getQueryType()?.getFields().midiMappings).toBeDefined();
+    expect(schema.getMutationType()?.getFields().addMidiMappingEntry).toBeDefined();
+    expect(schema.getType('MidiControlType')).toBeDefined();
     expect(schema.getMutationType()?.getFields().importProjects).toBeDefined();
     expect(schema.getMutationType()?.getFields().updateProject).toBeDefined();
     expect(schema.getMutationType()?.getFields().updateProjectVirtualConsole).toBeDefined();

@@ -27,6 +27,12 @@ export type DmxWsFunctionStateMessage = {
   running: string[];
 };
 
+export type DmxWsMidiInputMessage = {
+  type: 'midiInput';
+  portName: string;
+  message: number[];
+};
+
 export type DmxWsClientMessage = DmxWsSetMessage | DmxWsFunctionMessage;
 
 export function dmxWsSnapshotMessage(channels: number[]): DmxWsSnapshotMessage {
@@ -39,6 +45,10 @@ export function dmxWsDeltaMessage(values: DmxValue[]): DmxWsDeltaMessage {
 
 export function dmxWsFunctionStateMessage(running: string[]): DmxWsFunctionStateMessage {
   return { type: 'functionState', running };
+}
+
+export function dmxWsMidiInputMessage(portName: string, message: readonly number[]): DmxWsMidiInputMessage {
+  return { type: 'midiInput', portName, message: [...message] };
 }
 
 export function parseDmxWsClientMessage(raw: string): DmxWsClientMessage | undefined {

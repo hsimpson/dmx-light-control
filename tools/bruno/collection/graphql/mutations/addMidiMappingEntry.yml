@@ -1,0 +1,60 @@
+info:
+  name: addMidiMappingEntry
+  type: graphql
+  seq: 2
+
+graphql:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body:
+    query: |
+      mutation($input: AddMidiMappingEntryInput!) {
+        addMidiMappingEntry(input: $input) {
+          channel
+          controlType
+          createdAt
+          feedback {
+            off {
+              behavior
+              color
+            }
+            on {
+              behavior
+              color
+            }
+          }
+          messageType
+          name
+          number
+          publicId
+          updatedAt
+        }
+      }
+    variables: |
+      {
+        "input": {
+          "channel": null,
+          "controlType": null,
+          "feedback": {
+            "off": {
+              "behavior": null,
+              "color": null
+            },
+            "on": {
+              "behavior": null,
+              "color": null
+            }
+          },
+          "messageType": null,
+          "midiMappingPublicId": null,
+          "name": null,
+          "number": null
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
