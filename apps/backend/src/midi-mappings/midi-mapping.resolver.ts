@@ -10,11 +10,38 @@ import {
   UpdateMidiMappingEntryInput,
   UpdateMidiMappingInput,
 } from './dto/midi-mapping.dto';
+import {
+  ImportMidiMappingsInput,
+  ImportMidiMappingsPayload,
+  MidiMappingExportDocumentDto,
+} from './dto/midi-mapping-import-export.dto';
+import { MidiMappingImportExportService } from './midi-mapping-import-export.service';
 import { MidiMappingService } from './midi-mapping.service';
 
 @Resolver()
 export class MidiMappingResolver {
-  public constructor(private readonly midiMappingService: MidiMappingService) {}
+  public constructor(
+    private readonly midiMappingService: MidiMappingService,
+    private readonly importExportService: MidiMappingImportExportService,
+  ) {}
+
+  @Query(() => MidiMappingExportDocumentDto, {
+    name: 'exportMidiMappings',
+    description: 'export all MIDI mappings with their entries as a versioned JSON document',
+  })
+  public async exportMidiMappings(): Promise<MidiMappingExportDocumentDto> {
+    return plainToInstance(MidiMappingExportDocumentDto, await this.importExportService.exportMappings());
+  }
+
+  @Mutation(() => ImportMidiMappingsPayload, {
+    name: 'importMidiMappings',
+    description: 'import MIDI mappings from a versioned JSON document, upserting by publicId or name',
+  })
+  public async importMidiMappings(
+    @Args('document') document: ImportMidiMappingsInput,
+  ): Promise<ImportMidiMappingsPayload> {
+    return plainToInstance(ImportMidiMappingsPayload, await this.importExportService.importMappings(document));
+  }
 
   @Query(() => [MidiMappingDto], { name: 'midiMappings', description: 'get all MIDI mappings with their entries' })
   public async getAll(): Promise<MidiMappingDto[]> {

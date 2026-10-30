@@ -1,6 +1,6 @@
 import { pk, timestamps } from '@/db/columns.helpers';
 import midiMapping from '@/midi-mappings/entities/midi-mapping.entity';
-import { MidiControlType, MidiFeedback, MidiMessageType } from '@/midi-mappings/midi-mapping';
+import { MidiControlType, MidiFeedback, MidiLedType, MidiMessageType } from '@/midi-mappings/midi-mapping';
 import * as d from 'drizzle-orm/pg-core';
 import { jsonb, varchar } from 'drizzle-orm/pg-core';
 
@@ -8,6 +8,8 @@ const controlTypeValues = Object.values(MidiControlType) as [MidiControlType, ..
 const messageTypeValues = Object.values(MidiMessageType) as [MidiMessageType, ...MidiMessageType[]];
 export const midiControlTypeEnum = d.pgEnum('midi_control_type', controlTypeValues);
 export const midiMessageTypeEnum = d.pgEnum('midi_message_type', messageTypeValues);
+const ledTypeValues = Object.values(MidiLedType) as [MidiLedType, ...MidiLedType[]];
+export const midiLedTypeEnum = d.pgEnum('midi_led_type', ledTypeValues);
 
 const midiMappingEntry = d.snakeCase.table(
   'midi_mapping_entries',
@@ -23,6 +25,7 @@ const midiMappingEntry = d.snakeCase.table(
     channel: d.integer().notNull(),
     number: d.integer().notNull(),
     feedback: jsonb().$type<MidiFeedback>(),
+    ledType: midiLedTypeEnum(),
     ...timestamps,
   },
   table => [

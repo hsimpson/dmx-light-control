@@ -19,6 +19,22 @@ fragment MidiMappingEntryFields on MidiMappingEntryDto {
       color
     }
   }
+  ledType
+}
+
+fragment MidiLedOptionFields on MidiLedOptionDto {
+  name
+  value
+  hex
+}
+
+fragment MidiLedPaletteFields on MidiLedPaletteDto {
+  behaviors {
+    ...MidiLedOptionFields
+  }
+  colors {
+    ...MidiLedOptionFields
+  }
 }
 
 fragment MidiMappingFields on MidiMappingDto {
@@ -26,6 +42,14 @@ fragment MidiMappingFields on MidiMappingDto {
   name
   createdAt
   updatedAt
+  ledPalettes {
+    rgb {
+      ...MidiLedPaletteFields
+    }
+    single {
+      ...MidiLedPaletteFields
+    }
+  }
   entries {
     ...MidiMappingEntryFields
   }
@@ -78,5 +102,23 @@ mutation DeleteMidiMappingEntry($publicId: UUID!) {
   deleteMidiMappingEntry(publicId: $publicId) {
     publicId
     deleted
+  }
+}
+
+query ExportMidiMappings {
+  exportMidiMappings {
+    schemaVersion
+    mappings {
+      ...MidiMappingFields
+    }
+  }
+}
+
+mutation ImportMidiMappings($document: ImportMidiMappingsInput!) {
+  importMidiMappings(document: $document) {
+    importedCount
+    mappings {
+      ...MidiMappingFields
+    }
   }
 }

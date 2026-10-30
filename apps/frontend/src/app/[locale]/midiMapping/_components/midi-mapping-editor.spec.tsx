@@ -58,6 +58,7 @@ const trackButton1 = {
   channel: 0,
   number: 100,
   feedback,
+  ledType: null,
 };
 const mapping = {
   __typename: 'MidiMappingDto' as const,
@@ -65,6 +66,7 @@ const mapping = {
   name: 'APC mini mk2',
   createdAt: now,
   updatedAt: now,
+  ledPalettes: { __typename: 'MidiLedPalettesDto' as const, rgb: null, single: null },
   entries: [trackButton1],
 };
 const refetch = (entries: unknown[]) => ({
@@ -150,6 +152,7 @@ describe('MidiMappingEditor', () => {
                 channel: 0,
                 number: 100,
                 feedback: null,
+                ledType: null,
               },
             },
           },
@@ -195,6 +198,7 @@ describe('MidiMappingEditor', () => {
                 channel: 0,
                 number: 100,
                 feedback: null,
+                ledType: null,
               },
             },
           },

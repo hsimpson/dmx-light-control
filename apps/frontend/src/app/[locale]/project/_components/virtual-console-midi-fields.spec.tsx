@@ -3,6 +3,7 @@ import {
   GetProjectIoDevicesDocument,
   IoDeviceKind,
   MidiControlType,
+  MidiLedType,
   MidiMessageType,
 } from '@/shared/types/graphql/graphql';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
@@ -27,6 +28,7 @@ const mappingEntry = (publicId: string, name: string, number: number) => ({
   channel: 0,
   number,
   feedback: ledDefault,
+  ledType: MidiLedType.Rgb,
 });
 const mapping = (publicId: string, name: string, entries: ReturnType<typeof mappingEntry>[]) => ({
   __typename: 'MidiMappingDto' as const,
@@ -34,6 +36,15 @@ const mapping = (publicId: string, name: string, entries: ReturnType<typeof mapp
   name,
   createdAt: now,
   updatedAt: now,
+  ledPalettes: {
+    __typename: 'MidiLedPalettesDto' as const,
+    rgb: {
+      __typename: 'MidiLedPaletteDto' as const,
+      behaviors: [{ __typename: 'MidiLedOptionDto' as const, name: 'Solid 100 %', value: 6, hex: null }],
+      colors: [{ __typename: 'MidiLedOptionDto' as const, name: 'Red', value: 5, hex: '#FF0000' }],
+    },
+    single: null,
+  },
   entries,
 });
 
@@ -119,7 +130,7 @@ describe('VirtualConsoleMidiFields', () => {
       { apolloMocks: mocks },
     );
 
-    expect(screen.getByLabelText('On: Color (velocity 0-127)')).toHaveValue('5');
+    expect(await screen.findByRole('combobox', { name: 'On: Color (velocity 0-127)' })).toHaveValue('Red');
     await user.click(screen.getByLabelText('Monitor state: the function runs but was started elsewhere'));
 
     expect(onPatch).toHaveBeenCalledWith({

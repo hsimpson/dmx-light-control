@@ -181,4 +181,48 @@ describe('MIDI mappings', () => {
     expect(body.data?.addMidiMappingEntry.feedback).toEqual(feedback);
     expect(changed).toHaveBeenCalledTimes(1);
   });
+
+  it('GIVEN LED palettes and an entry LED type WHEN saved THEN both are returned', async () => {
+    const created = await graphqlQuery<{ createMidiMapping: { publicId: string } }>(server, CREATE_MAPPING, {
+      variables: { input: { name: 'Palette Mapping' } },
+    });
+    const publicId = created.data?.createMidiMapping.publicId;
+    const ledPalettes = {
+      rgb: {
+        behaviors: [{ name: 'Blink 1/8', value: 13, hex: null }],
+        colors: [{ name: 'Red', value: 5, hex: '#FF0000' }],
+      },
+      single: {
+        behaviors: [{ name: 'Single LED', value: 0, hex: null }],
+        colors: [{ name: 'Blink', value: 2, hex: null }],
+      },
+    };
+    const OPTION = 'name value hex';
+    const PALETTE = `behaviors { ${OPTION} } colors { ${OPTION} }`;
+
+    const updated = await graphqlQuery<{ updateMidiMapping: { ledPalettes: unknown } }>(
+      server,
+      `mutation ($input: UpdateMidiMappingInput!) {
+        updateMidiMapping(input: $input) { ledPalettes { rgb { ${PALETTE} } single { ${PALETTE} } } }
+      }`,
+      { variables: { input: { publicId, name: 'Palette Mapping', ledPalettes } } },
+    );
+    const entry = await graphqlQuery<{ addMidiMappingEntry: { ledType: string } }>(
+      server,
+      `mutation ($input: AddMidiMappingEntryInput!) { addMidiMappingEntry(input: $input) { ledType } }`,
+      { variables: { input: { ...trackButton1, midiMappingPublicId: publicId, ledType: 'Single' } } },
+    );
+    const renamed = await graphqlQuery<{ updateMidiMapping: { ledPalettes: unknown } }>(
+      server,
+      `mutation ($input: UpdateMidiMappingInput!) {
+        updateMidiMapping(input: $input) { ledPalettes { rgb { ${PALETTE} } } }
+      }`,
+      { variables: { input: { publicId, name: 'Palette Mapping 2' } } },
+    );
+
+    expect(updated.errors).toBeUndefined();
+    expect(updated.data?.updateMidiMapping.ledPalettes).toEqual(ledPalettes);
+    expect(entry.data?.addMidiMappingEntry.ledType).toBe('Single');
+    expect(renamed.data?.updateMidiMapping.ledPalettes).toEqual({ rgb: ledPalettes.rgb });
+  });
 });

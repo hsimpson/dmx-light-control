@@ -28,6 +28,7 @@ graphql:
               color
             }
           }
+          ledType
           messageType
           name
           number
@@ -54,6 +55,7 @@ graphql:
               "color": null
             }
           },
+          "ledType": null,
           "messageType": null,
           "midiMappingPublicId": null,
           "name": null,

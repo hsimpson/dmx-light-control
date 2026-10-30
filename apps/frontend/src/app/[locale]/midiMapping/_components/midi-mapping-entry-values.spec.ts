@@ -1,4 +1,4 @@
-import { MidiControlType, MidiMessageType } from '@/shared/types/graphql/graphql';
+import { MidiControlType, MidiLedType, MidiMessageType } from '@/shared/types/graphql/graphql';
 import { describe, expect, it } from 'vitest';
 import { applyLearned, entryInput, entryValues, learnedAddress, midiAddress } from './midi-mapping-entry-values';
 
@@ -10,6 +10,7 @@ const trackButton1 = {
   channel: 0,
   number: 100,
   feedback: { off: { behavior: 0, color: 0 }, on: { behavior: 6, color: 5 }, monitor: { behavior: 13, color: 9 } },
+  ledType: MidiLedType.Single,
 };
 
 describe('midi mapping entry values', () => {
@@ -29,7 +30,7 @@ describe('midi mapping entry values', () => {
 
   it('GIVEN feedback is switched off WHEN building the input THEN feedback is null and the name trimmed', () => {
     const values = { ...entryValues(trackButton1), name: '  Track 1 ', hasFeedback: false };
-    expect(entryInput(values)).toMatchObject({ name: 'Track 1', feedback: null });
+    expect(entryInput(values)).toMatchObject({ name: 'Track 1', feedback: null, ledType: null });
   });
 
   it('formats the address with the 0-based channel used in the form', () => {

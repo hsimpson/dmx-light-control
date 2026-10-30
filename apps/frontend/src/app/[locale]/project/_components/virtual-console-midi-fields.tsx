@@ -1,6 +1,7 @@
 'use client';
 
 import MidiFeedbackFields from '@/app/[locale]/midiMapping/_components/midi-feedback-fields';
+import { paletteFor } from '@/app/[locale]/midiMapping/_components/midi-led-palettes';
 import { feedbackValues, midiAddress } from '@/app/[locale]/midiMapping/_components/midi-mapping-entry-values';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { GetMidiMappingsDocument, GetProjectIoDevicesDocument, IoDeviceKind } from '@/shared/types/graphql/graphql';
@@ -25,7 +26,8 @@ const VirtualConsoleMidiFields = ({ projectPublicId, control, onPatch }: Virtual
     ),
   );
   const mappings = (mappingsData?.midiMappings ?? []).filter(mapping => assigned.has(mapping.publicId));
-  const entry = mappings.flatMap(mapping => mapping.entries).find(e => e.publicId === control.midiEntryPublicId);
+  const entryMapping = mappings.find(mapping => mapping.entries.some(e => e.publicId === control.midiEntryPublicId));
+  const entry = entryMapping?.entries.find(e => e.publicId === control.midiEntryPublicId);
 
   return (
     <Stack gap="xs">
@@ -58,6 +60,7 @@ const VirtualConsoleMidiFields = ({ projectPublicId, control, onPatch }: Virtual
       ) : null}
       {control.midiEntryPublicId && control.feedback ? (
         <MidiFeedbackFields
+          palette={paletteFor(entryMapping?.ledPalettes, entry?.ledType)}
           value={feedbackValues(control.feedback)}
           onChange={feedback => {
             onPatch({ feedback });

@@ -1,7 +1,7 @@
 info:
   name: importProjects
   type: graphql
-  seq: 19
+  seq: 20
 
 graphql:
   method: POST

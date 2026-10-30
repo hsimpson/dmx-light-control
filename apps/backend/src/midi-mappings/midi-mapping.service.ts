@@ -3,13 +3,15 @@ import { AppEventEmitter } from '@/events/app-event-emitter';
 import { Injectable } from '@nestjs/common';
 import {
   AddMidiMappingEntryInput,
+  MidiLedPaletteInput,
+  MidiLedPalettesInput,
   CreateMidiMappingInput,
   MidiFeedbackInput,
   MidiLedStateInput,
   UpdateMidiMappingEntryInput,
   UpdateMidiMappingInput,
 } from './dto/midi-mapping.dto';
-import { MidiFeedback, MidiLedState } from './midi-mapping';
+import { MidiFeedback, MidiLedPalette, MidiLedPalettes, MidiLedState } from './midi-mapping';
 import {
   MidiMappingAlreadyExistsException,
   MidiMappingEntryConflictException,
@@ -25,7 +27,7 @@ function toMidiMapping({ midiMappingEntries, ...mapping }: LoadedMidiMapping) {
 }
 
 /** GraphQL inputs have a null prototype; DrizzleQueryError stringifies params and throws on them, hiding the pg error. */
-function toFeedback(feedback: MidiFeedbackInput | null | undefined): MidiFeedback | null | undefined {
+export function toFeedback(feedback: MidiFeedbackInput | null | undefined): MidiFeedback | null | undefined {
   return (
     feedback && {
       off: toLedState(feedback.off),
@@ -37,6 +39,22 @@ function toFeedback(feedback: MidiFeedbackInput | null | undefined): MidiFeedbac
 
 function toLedState({ behavior, color }: MidiLedStateInput): MidiLedState {
   return { behavior, color };
+}
+
+export function toLedPalettes(palettes: MidiLedPalettesInput): MidiLedPalettes {
+  return {
+    ...(palettes.rgb ? { rgb: toLedPalette(palettes.rgb) } : {}),
+    ...(palettes.single ? { single: toLedPalette(palettes.single) } : {}),
+  };
+}
+
+function toLedPalette({ behaviors, colors }: MidiLedPaletteInput): MidiLedPalette {
+  const toOption = ({ name, value, hex }: { name: string; value: number; hex?: string | null }) => ({
+    name,
+    value,
+    hex: hex ?? null,
+  });
+  return { behaviors: behaviors.map(toOption), colors: colors.map(toOption) };
 }
 
 async function rethrowUniqueViolation<T>(write: Promise<T>, conflict: () => Error): Promise<T> {
@@ -80,7 +98,10 @@ export class MidiMappingService {
   public async update(input: UpdateMidiMappingInput) {
     const name = input.name.trim();
     const updated = await rethrowUniqueViolation(
-      this.mappingRepository.updateOneByPublicId(input.publicId, { name }),
+      this.mappingRepository.updateOneByPublicId(input.publicId, {
+        name,
+        ...(input.ledPalettes ? { ledPalettes: toLedPalettes(input.ledPalettes) } : {}),
+      }),
       () => new MidiMappingAlreadyExistsException(name),
     );
     if (!updated) {

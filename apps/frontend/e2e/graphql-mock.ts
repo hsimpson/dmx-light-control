@@ -202,6 +202,7 @@ type MockedMidiMappingEntry = {
   channel: number;
   number: number;
   feedback: { off: { behavior: number; color: number }; on: { behavior: number; color: number } } | null;
+  ledType: string | null;
 };
 
 export const mockedMidiMapping = {
@@ -210,6 +211,23 @@ export const mockedMidiMapping = {
   name: 'APC mini mk2',
   createdAt: now,
   updatedAt: now,
+  ledPalettes: { __typename: 'MidiLedPalettesDto', rgb: null, single: null } as unknown,
+};
+
+type MockedLedOption = { name: string; value: number; hex?: string | null };
+type MockedLedPalette = { behaviors: MockedLedOption[]; colors: MockedLedOption[] } | null | undefined;
+
+// Same shape as the server response, so Apollo can cache the saved palettes.
+const ledPalettesDto = ({ rgb, single }: { rgb?: MockedLedPalette; single?: MockedLedPalette }) => {
+  const palette = (value: MockedLedPalette) =>
+    value
+      ? {
+          __typename: 'MidiLedPaletteDto',
+          behaviors: value.behaviors.map(option => ({ __typename: 'MidiLedOptionDto', hex: null, ...option })),
+          colors: value.colors.map(option => ({ __typename: 'MidiLedOptionDto', hex: null, ...option })),
+        }
+      : null;
+  return { __typename: 'MidiLedPalettesDto', rgb: palette(rgb), single: palette(single) };
 };
 
 export const mockGraphql = async (page: Page) => {
@@ -256,6 +274,8 @@ export const mockGraphql = async (page: Page) => {
           channel?: number;
           number?: number;
           feedback?: MockedMidiMappingEntry['feedback'];
+          ledType?: string | null;
+          ledPalettes?: { rgb?: MockedLedPalette; single?: MockedLedPalette };
         };
         document?: { schemaVersion: number; projects: { publicId?: string; name: string }[] };
       };
@@ -265,6 +285,20 @@ export const mockGraphql = async (page: Page) => {
     // Matched by operationName first: their queries also contain the `project(publicId` / `updateProject` fallbacks below.
     if (postData.operationName === 'GetMidiMappings') {
       body = { data: { midiMappings } };
+    } else if (postData.operationName === 'ExportMidiMappings') {
+      body = { data: { exportMidiMappings: { schemaVersion: 1, mappings: midiMappings } } };
+    } else if (postData.operationName === 'ImportMidiMappings') {
+      const imported = { ...mockedMidiMapping, publicId: 'midi-imported', name: 'Imported APC', entries: [] };
+      midiMappings.push(imported);
+      body = { data: { importMidiMappings: { importedCount: 1, mappings: [imported] } } };
+    } else if (postData.operationName === 'UpdateMidiMapping') {
+      const input = postData.variables?.input;
+      const mapping = midiMappings.find(candidate => candidate.publicId === input?.publicId);
+      if (mapping) {
+        mapping.name = input?.name ?? mapping.name;
+        mapping.ledPalettes = input?.ledPalettes ? ledPalettesDto(input.ledPalettes) : mapping.ledPalettes;
+      }
+      body = { data: { updateMidiMapping: mapping ?? null } };
     } else if (postData.operationName === 'GetMidiMapping') {
       body = {
         data: { midiMapping: midiMappings.find(mapping => mapping.publicId === postData.variables?.publicId) ?? null },
@@ -294,6 +328,7 @@ export const mockGraphql = async (page: Page) => {
         channel: input?.channel ?? 0,
         number: input?.number ?? 0,
         feedback: input?.feedback ?? null,
+        ledType: input?.ledType ?? null,
       };
       mapping?.entries.push(entry);
       body = { data: { addMidiMappingEntry: entry } };

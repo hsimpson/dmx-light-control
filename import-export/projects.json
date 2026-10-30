@@ -3,6 +3,28 @@
     {
       "createdAt": "2026-08-28T22:55:51.687Z",
       "environmentType": "Room",
+      "ioDevices": [
+        {
+          "kind": "DmxSerial",
+          "manufacturer": "FTDI",
+          "midiMappingPublicId": null,
+          "name": "FT232R USB UART",
+          "productId": "6001",
+          "serial": "A50285BI",
+          "usbLocation": "3-10",
+          "vendorId": "0403"
+        },
+        {
+          "kind": "Midi",
+          "manufacturer": "AKAI professional",
+          "midiMappingPublicId": "53e6118d-be14-4c2b-8fc0-5898253ef422",
+          "name": "APC mini mk2",
+          "productId": "004f",
+          "serial": "Ver00.10",
+          "usbLocation": "3-10",
+          "vendorId": "09e8"
+        }
+      ],
       "name": "Test-001",
       "project3dObjects": [
         {
@@ -6298,7 +6320,7 @@
       "roomHeight": 6.58,
       "roomLength": 14.6,
       "roomWidth": 12.2,
-      "updatedAt": "2026-10-23T15:34:13.411Z",
+      "updatedAt": "2026-10-30T21:27:39.841Z",
       "virtualConsole": {
         "height": 1080,
         "pages": [
@@ -6367,6 +6389,20 @@
                       }
                     ],
                     "children": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 5
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 5
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 5
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -6377,6 +6413,7 @@
                     "id": "f3be87ef-c570-4bcd-93d5-abd54c549650",
                     "label": "Red",
                     "lowerLimit": null,
+                    "midiEntryPublicId": "562d9a63-04b0-4f89-9086-f4b39c182b9c",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -6441,6 +6478,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -6451,6 +6489,7 @@
                     "id": "c207d246-c41c-4770-991d-813dde22081e",
                     "label": "Red",
                     "lowerLimit": null,
+                    "midiEntryPublicId": "a495daeb-6e47-4248-a260-fa5647fc0a37",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -6515,6 +6554,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -6525,6 +6565,7 @@
                     "id": "80282361-c4b6-4eaa-bda1-bd87ad69c7a9",
                     "label": "Green",
                     "lowerLimit": null,
+                    "midiEntryPublicId": "56aa1b4b-ed1a-4876-ad06-44ae35956693",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -6589,6 +6630,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -6599,6 +6641,7 @@
                     "id": "60c5a97f-c7db-4cac-9f83-3db24117a13b",
                     "label": "Blue",
                     "lowerLimit": null,
+                    "midiEntryPublicId": "0fbd8f90-d8ac-4767-b2d0-150c5e6e03b4",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -6663,6 +6706,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -6673,6 +6717,7 @@
                     "id": "d172cf69-6b6b-4e17-8856-e8fe9461d404",
                     "label": "UV",
                     "lowerLimit": null,
+                    "midiEntryPublicId": "2f2c2f3f-4f9a-4971-8920-34bd561eb59e",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -6737,6 +6782,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -6747,6 +6793,7 @@
                     "id": "6c49d06e-323d-4923-9e8a-6ddf69139094",
                     "label": "Strobe",
                     "lowerLimit": 63,
+                    "midiEntryPublicId": "b682d2d0-382f-4028-99a7-9f572fd1c6b7",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": 95,
@@ -6811,6 +6858,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -6821,6 +6869,7 @@
                     "id": "0a41ee30-1770-43d3-9022-4794a7c8c60e",
                     "label": "Dimmer",
                     "lowerLimit": null,
+                    "midiEntryPublicId": "09ff59ec-8ad4-436d-a3b3-1eb74c7b8627",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -6885,6 +6934,20 @@
                       }
                     ],
                     "children": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 21
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 21
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 21
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -6895,6 +6958,7 @@
                     "id": "c40d2ee5-fafe-4b9e-8c13-4dffe3b2ec53",
                     "label": "Green",
                     "lowerLimit": null,
+                    "midiEntryPublicId": "c0bbcea9-7b1e-49aa-85bf-ca91fb79ff8b",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -6959,6 +7023,20 @@
                       }
                     ],
                     "children": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 45
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 45
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 45
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -6969,6 +7047,7 @@
                     "id": "2d0c57cc-93c8-49cb-9fc2-5ed72451e91d",
                     "label": "Blue",
                     "lowerLimit": null,
+                    "midiEntryPublicId": "bcb55c86-1deb-478f-bb93-e07160a0d355",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -7033,6 +7112,20 @@
                       }
                     ],
                     "children": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 81
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 81
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 81
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 600,
@@ -7043,6 +7136,7 @@
                     "id": "c4aeb389-6e22-43da-b677-dbfaa1f54c6e",
                     "label": "UV",
                     "lowerLimit": null,
+                    "midiEntryPublicId": "9245a127-16f2-4158-8d6e-fe2ac85d6076",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -7107,6 +7201,20 @@
                       }
                     ],
                     "children": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 70
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 70
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 3
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -7117,6 +7225,7 @@
                     "id": "449a1f58-f597-40c2-8724-276a85ec8524",
                     "label": "Strobe",
                     "lowerLimit": null,
+                    "midiEntryPublicId": "93a21e1b-8c3e-4725-a848-4cdf5c958a65",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": 95,
@@ -7126,6 +7235,7 @@
                     "y": 355
                   }
                 ],
+                "feedback": null,
                 "fontFamily": "system-ui, sans-serif",
                 "fontSize": 18,
                 "fontWeight": 700,
@@ -7136,6 +7246,7 @@
                 "id": "fb4f4504-9187-450d-94ab-5c0a8c9a2c1d",
                 "label": "Uplights",
                 "lowerLimit": null,
+                "midiEntryPublicId": null,
                 "orientation": null,
                 "type": "frame",
                 "upperLimit": null,
@@ -7231,6 +7342,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -7241,6 +7353,7 @@
                     "id": "2fd7f22f-7195-49c9-a8f3-b8db727d3b48",
                     "label": "Red",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -7329,6 +7442,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -7339,6 +7453,7 @@
                     "id": "20f86ee9-f1d2-4592-bd54-7682366b18bc",
                     "label": "Red",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -7427,6 +7542,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -7437,6 +7553,7 @@
                     "id": "c9df92f3-1125-47d1-8bcf-f6b321b29c8e",
                     "label": "Green",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -7525,6 +7642,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -7535,6 +7653,7 @@
                     "id": "74e2fa23-c603-45e8-bf93-a278f28b552a",
                     "label": "Blue",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -7611,6 +7730,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -7621,6 +7741,7 @@
                     "id": "a22dcfd9-d76b-47b4-a7f6-7e12b039bb7e",
                     "label": "UV",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -7709,6 +7830,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -7719,6 +7841,7 @@
                     "id": "a5b114fa-ad18-4592-9cce-6ecc4984cd4d",
                     "label": "Strobe",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -7807,6 +7930,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -7817,6 +7941,7 @@
                     "id": "7a9bdfcb-c1d6-4bb4-9edc-9a3062c8e4ff",
                     "label": "Dimmer",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -7905,6 +8030,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -7915,6 +8041,7 @@
                     "id": "2106bda2-814f-46a7-978d-cb9507505789",
                     "label": "Green",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -8003,6 +8130,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -8013,6 +8141,7 @@
                     "id": "d97045e8-999c-409b-8af9-c34d47f15914",
                     "label": "Blue",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -8089,6 +8218,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 600,
@@ -8099,6 +8229,7 @@
                     "id": "a89421fd-b9e9-494f-b142-048fdfd3e35c",
                     "label": "UV",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -8187,6 +8318,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -8197,6 +8329,7 @@
                     "id": "3d1947bb-6757-4712-8e51-9fbcbe3e4acb",
                     "label": "Strobe",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -8273,6 +8406,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -8283,6 +8417,7 @@
                     "id": "bd9b1ba9-c79d-468d-9b9e-ac3cb8892738",
                     "label": "Amber",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -8371,6 +8506,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -8381,6 +8517,7 @@
                     "id": "69842afe-4b82-4cdc-8f9f-87be99b72cfe",
                     "label": "White",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -8457,6 +8594,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -8467,6 +8605,7 @@
                     "id": "eb6429f8-7efb-4df0-8ba9-5a14f76ecf24",
                     "label": "Amber",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -8555,6 +8694,7 @@
                       }
                     ],
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -8565,6 +8705,7 @@
                     "id": "a8773c62-e663-4e09-b013-05cf3b576a22",
                     "label": "White",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -8574,6 +8715,7 @@
                     "y": 405
                   }
                 ],
+                "feedback": null,
                 "fontFamily": "system-ui, sans-serif",
                 "fontSize": 18,
                 "fontWeight": 700,
@@ -8584,6 +8726,7 @@
                 "id": "9218d00b-8d74-4b8e-aa15-3906c642fe6e",
                 "label": "Light Bars",
                 "lowerLimit": null,
+                "midiEntryPublicId": null,
                 "orientation": null,
                 "type": "frame",
                 "upperLimit": null,
@@ -8606,6 +8749,7 @@
                     "buttonMode": "toggle",
                     "channelBindings": null,
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -8616,6 +8760,7 @@
                     "id": "d393e0d2-2edf-47c1-b17c-27ed11daf008",
                     "label": "Polizei",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": null,
                     "type": "button",
                     "upperLimit": 255,
@@ -8631,6 +8776,7 @@
                     "buttonMode": "toggle",
                     "channelBindings": null,
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -8641,6 +8787,7 @@
                     "id": "a084ea16-fa05-4be1-bca1-f44ca5845f2a",
                     "label": "Rainbow",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": null,
                     "type": "button",
                     "upperLimit": 255,
@@ -8656,6 +8803,7 @@
                     "buttonMode": "toggle",
                     "channelBindings": null,
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -8666,6 +8814,7 @@
                     "id": "27e95930-0f78-49f6-ba1d-c23a403ad95b",
                     "label": "Bounce",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": null,
                     "type": "button",
                     "upperLimit": 255,
@@ -8681,6 +8830,7 @@
                     "buttonMode": "toggle",
                     "channelBindings": null,
                     "children": null,
+                    "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
                     "fontWeight": 700,
@@ -8691,6 +8841,7 @@
                     "id": "c411772d-367d-4a32-a329-c2e826a9eca9",
                     "label": "Herzschlag",
                     "lowerLimit": null,
+                    "midiEntryPublicId": null,
                     "orientation": null,
                     "type": "button",
                     "upperLimit": 255,
@@ -8700,6 +8851,7 @@
                     "y": 90
                   }
                 ],
+                "feedback": null,
                 "fontFamily": "system-ui, sans-serif",
                 "fontSize": 16,
                 "fontWeight": 600,
@@ -8710,6 +8862,7 @@
                 "id": "6be65722-ba28-401c-b08b-20cad58d46a6",
                 "label": "Uplights Sequenzen",
                 "lowerLimit": null,
+                "midiEntryPublicId": null,
                 "orientation": null,
                 "type": "frame",
                 "upperLimit": null,
@@ -8731,6 +8884,7 @@
                 "buttonMode": null,
                 "channelBindings": null,
                 "children": null,
+                "feedback": null,
                 "fontFamily": null,
                 "fontSize": null,
                 "fontWeight": null,
@@ -8741,6 +8895,7 @@
                 "id": "9d4403ff-b957-479d-bf80-b8c46a6fafff",
                 "label": "Button",
                 "lowerLimit": null,
+                "midiEntryPublicId": null,
                 "orientation": null,
                 "type": "button",
                 "upperLimit": null,
@@ -8760,5 +8915,5 @@
       }
     }
   ],
-  "schemaVersion": 10
+  "schemaVersion": 12
 }

@@ -11,6 +11,7 @@ import { DmxResolver } from './io/dmx/dmx.resolver';
 import { IoDeviceDiscoveryService } from './io/devices/io-device-discovery.service';
 import { IoDeviceManagerService } from './io/devices/io-device-manager.service';
 import { IoDevicesResolver } from './io/devices/io-devices.resolver';
+import { MidiMappingImportExportService } from './midi-mappings/midi-mapping-import-export.service';
 import { MidiMappingResolver } from './midi-mappings/midi-mapping.resolver';
 import { MidiMappingService } from './midi-mappings/midi-mapping.service';
 import { ProjectImportExportService } from './projects/project-import-export.service';
@@ -36,6 +37,7 @@ describe('GraphQL schema generation', () => {
         { provide: IoDeviceDiscoveryService, useValue: {} },
         { provide: IoDeviceManagerService, useValue: {} },
         { provide: MidiMappingService, useValue: {} },
+        { provide: MidiMappingImportExportService, useValue: {} },
       ],
     }).compile();
 

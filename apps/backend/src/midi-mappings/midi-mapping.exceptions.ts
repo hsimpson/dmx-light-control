@@ -50,3 +50,23 @@ export class MidiMappingInUseException extends BaseDomainError {
     this.name = 'MidiMappingInUseError';
   }
 }
+
+export class MidiMappingImportInvalidException extends BaseDomainError {
+  public readonly code = 'MIDI_MAPPING_IMPORT_INVALID';
+  public override readonly statusCode = HttpStatus.BAD_REQUEST;
+
+  public constructor(message: string) {
+    super(message);
+    this.name = 'MidiMappingImportInvalidError';
+  }
+}
+
+export class MidiMappingImportConflictException extends BaseDomainError {
+  public readonly code = 'MIDI_MAPPING_IMPORT_CONFLICT';
+  public override readonly statusCode = HttpStatus.CONFLICT;
+
+  public constructor(message: string) {
+    super(message);
+    this.name = 'MidiMappingImportConflictError';
+  }
+}

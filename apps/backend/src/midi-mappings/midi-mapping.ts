@@ -21,6 +21,24 @@ registerEnumType(MidiMessageType, {
   description: 'MIDI message kind the hardware control sends',
 });
 
+export enum MidiLedType {
+  Rgb = 'Rgb',
+  Single = 'Single',
+}
+
+registerEnumType(MidiLedType, {
+  name: 'MidiLedType',
+  description: 'LED kind of a hardware control: RGB (behaviors + color palette) or a single-color LED',
+});
+
+/** A named LED behavior (Note-On channel) or color (velocity); `hex` only for colors, as a swatch. */
+export type MidiLedOption = { name: string; value: number; hex?: string | null };
+
+export type MidiLedPalette = { behaviors: MidiLedOption[]; colors: MidiLedOption[] };
+
+/** Per LED type, the named choices the editors offer; stored feedback stays numeric. */
+export type MidiLedPalettes = { rgb?: MidiLedPalette | null; single?: MidiLedPalette | null };
+
 /** Sent back as Note-On: `behavior` is the MIDI channel (0–15), `color` the velocity (0–127). */
 export type MidiLedState = {
   behavior: number;

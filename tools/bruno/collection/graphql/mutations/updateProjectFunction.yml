@@ -1,7 +1,7 @@
 info:
   name: updateProjectFunction
   type: graphql
-  seq: 27
+  seq: 28
 
 graphql:
   method: POST

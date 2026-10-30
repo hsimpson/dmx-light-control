@@ -82,6 +82,7 @@ erDiagram
         integer id PK
         uuid public_id UK
         varchar name UK
+        jsonb led_palettes
         timestamp created_at
         timestamp updated_at
     }
@@ -95,6 +96,7 @@ erDiagram
         integer channel UK
         integer number UK
         jsonb feedback
+        midiledtype led_type
         timestamp created_at
         timestamp updated_at
     }

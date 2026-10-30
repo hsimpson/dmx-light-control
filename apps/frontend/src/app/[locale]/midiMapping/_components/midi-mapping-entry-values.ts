@@ -1,5 +1,6 @@
 import {
   MidiControlType,
+  MidiLedType,
   MidiMessageType,
   type AddMidiMappingEntryInput,
   type MidiMappingEntryFieldsFragment,
@@ -34,6 +35,7 @@ export type MidiMappingEntryValues = {
   number: number;
   hasFeedback: boolean;
   feedback: MidiFeedbackValues;
+  ledType: MidiLedType;
 };
 
 export type MidiMappingEntryInput = Omit<AddMidiMappingEntryInput, 'midiMappingPublicId'>;
@@ -46,17 +48,20 @@ export const entryValues = (entry?: MidiMappingEntryFieldsFragment): MidiMapping
   number: entry?.number ?? 0,
   hasFeedback: Boolean(entry?.feedback),
   feedback: feedbackValues(entry?.feedback),
+  ledType: entry?.ledType ?? MidiLedType.Rgb,
 });
 
 export const entryInput = ({
   hasFeedback,
   feedback,
+  ledType,
   name,
   ...values
 }: MidiMappingEntryValues): MidiMappingEntryInput => ({
   ...values,
   name: name.trim(),
   feedback: hasFeedback ? feedback : null,
+  ledType: hasFeedback ? ledType : null,
 });
 
 export const midiAddress = ({

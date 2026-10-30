@@ -1,7 +1,7 @@
 info:
   name: updateMidiMappingEntry
   type: graphql
-  seq: 23
+  seq: 24
 
 graphql:
   method: POST
@@ -28,6 +28,7 @@ graphql:
               color
             }
           }
+          ledType
           messageType
           name
           number
@@ -54,6 +55,7 @@ graphql:
               "color": null
             }
           },
+          "ledType": null,
           "messageType": null,
           "name": null,
           "number": null,

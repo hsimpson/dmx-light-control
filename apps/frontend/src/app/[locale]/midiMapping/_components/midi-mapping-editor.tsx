@@ -17,6 +17,7 @@ import { notifications } from '@mantine/notifications';
 import { PencilSimpleIcon, PlusCircleIcon, TrashIcon } from '@phosphor-icons/react';
 import { DataTable } from 'mantine-datatable';
 import { useState } from 'react';
+import MidiLedPaletteEditor from './midi-led-palette-editor';
 import MidiMappingEntryModal from './midi-mapping-entry-modal';
 import { midiAddress, type MidiMappingEntryInput } from './midi-mapping-entry-values';
 
@@ -151,9 +152,11 @@ const MidiMappingEditor = ({ mapping }: MidiMappingEditorProperties) => {
           },
         ]}
       />
+      <MidiLedPaletteEditor key={mapping.publicId} mapping={mapping} />
       {entryModal ? (
         <MidiMappingEntryModal
           entry={entryModal.entry}
+          ledPalettes={mapping.ledPalettes}
           saving={adding || updating}
           onClose={() => {
             setEntryModal(null);

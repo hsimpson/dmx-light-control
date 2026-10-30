@@ -1,7 +1,7 @@
 info:
   name: updateProjectVirtualConsole
   type: graphql
-  seq: 29
+  seq: 30
 
 graphql:
   method: POST

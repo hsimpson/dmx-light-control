@@ -5,11 +5,18 @@ import { DmxSocketConnector } from '@/lib/dmx/dmx-socket-connector';
 import { dmxStore } from '@/lib/dmx/dmx-store';
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { MidiControlType, MidiMessageType, type MidiMappingEntryFieldsFragment } from '@/shared/types/graphql/graphql';
+import {
+  MidiControlType,
+  MidiLedType,
+  MidiMessageType,
+  type MidiMappingEntryFieldsFragment,
+  type MidiMappingFieldsFragment,
+} from '@/shared/types/graphql/graphql';
 import { Button, Group, Modal, NumberInput, Select, SimpleGrid, Stack, Switch, Text, TextInput } from '@mantine/core';
 import { BroadcastIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import MidiFeedbackFields from './midi-feedback-fields';
+import { paletteFor } from './midi-led-palettes';
 import {
   applyLearned,
   entryInput,
@@ -21,15 +28,17 @@ import {
 
 const CONTROL_TYPES = [MidiControlType.Button, MidiControlType.Knob, MidiControlType.Slider];
 const MESSAGE_TYPES = [MidiMessageType.Note, MidiMessageType.ControlChange];
+const LED_TYPES = [MidiLedType.Rgb, MidiLedType.Single];
 
 type MidiMappingEntryModalProperties = {
   entry: MidiMappingEntryFieldsFragment | undefined;
+  ledPalettes: MidiMappingFieldsFragment['ledPalettes'];
   saving: boolean;
   onClose: () => void;
   onSubmit: (input: MidiMappingEntryInput) => void;
 };
 
-const MidiMappingEntryModal = ({ entry, saving, onClose, onSubmit }: MidiMappingEntryModalProperties) => {
+const MidiMappingEntryModal = ({ entry, ledPalettes, saving, onClose, onSubmit }: MidiMappingEntryModalProperties) => {
   const { t } = useTranslation();
   const [values, setValues] = useState<MidiMappingEntryValues>(() => entryValues(entry));
   const [learning, setLearning] = useState(false);
@@ -161,7 +170,26 @@ const MidiMappingEntryModal = ({ entry, saving, onClose, onSubmit }: MidiMapping
                   'Sent as Note-On to the same note: the behavior is the MIDI channel, the color the velocity.',
               })}
             </Text>
+            <Select
+              label={t({ id: 'MidiMappingEntry.ledType', defaultMessage: 'LED type' })}
+              allowDeselect={false}
+              data={[
+                { value: MidiLedType.Rgb, label: t({ id: 'MidiLedType.rgb', defaultMessage: 'RGB LED' }) },
+                {
+                  value: MidiLedType.Single,
+                  label: t({ id: 'MidiLedType.single', defaultMessage: 'Single-color LED' }),
+                },
+              ]}
+              value={values.ledType}
+              onChange={value => {
+                const ledType = LED_TYPES.find(type => type === value);
+                if (ledType) {
+                  patch({ ledType });
+                }
+              }}
+            />
             <MidiFeedbackFields
+              palette={paletteFor(ledPalettes, values.ledType)}
               value={values.feedback}
               onChange={feedback => {
                 patch({ feedback });

@@ -8,6 +8,9 @@ input AddMidiMappingEntryInput {
   """LED feedback; omit when the control has no LED"""
   feedback: MidiFeedbackInput
 
+  """LED kind; picks the palette the editors offer"""
+  ledType: MidiLedType
+
   """MIDI message kind the control sends"""
   messageType: MidiMessageType!
 
@@ -677,6 +680,74 @@ type ImportFixturesPayload {
   importedCount: Int!
 }
 
+input ImportMidiMappingEntryInput {
+  """MIDI channel (0-15)"""
+  channel: Int!
+
+  """Kind of hardware control"""
+  controlType: MidiControlType!
+
+  """The date and time when the entity was created"""
+  createdAt: DateTime
+
+  """LED feedback; omit when the control has no LED"""
+  feedback: MidiFeedbackInput
+
+  """LED kind; picks the palette the editors offer"""
+  ledType: MidiLedType
+
+  """MIDI message kind the control sends"""
+  messageType: MidiMessageType!
+
+  """The name of the hardware control, unique within the mapping"""
+  name: String!
+
+  """Note or controller number (0-127)"""
+  number: Int!
+
+  """Kept so virtual console bindings survive the import"""
+  publicId: UUID
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime
+}
+
+input ImportMidiMappingInput {
+  """The date and time when the entity was created"""
+  createdAt: DateTime
+
+  """Replaces all entries of the mapping"""
+  entries: [ImportMidiMappingEntryInput!]!
+
+  """Named LED choices; omit to keep the stored ones"""
+  ledPalettes: MidiLedPalettesInput
+
+  """The unique name of the mapping"""
+  name: String!
+
+  """Upsert key, together with the name"""
+  publicId: UUID
+
+  """The date and time when the entity was last updated"""
+  updatedAt: DateTime
+}
+
+input ImportMidiMappingsInput {
+  """The mappings to upsert by publicId or name"""
+  mappings: [ImportMidiMappingInput!]!
+
+  """The MIDI mapping export document schema version"""
+  schemaVersion: Int!
+}
+
+type ImportMidiMappingsPayload {
+  """The number of mappings upserted from the document"""
+  importedCount: Int!
+
+  """The imported mappings with their entries"""
+  mappings: [MidiMappingDto!]!
+}
+
 input ImportProject3dObjectInput {
   """The date and time when the entity was created"""
   createdAt: DateTime
@@ -966,6 +1037,77 @@ input MidiFeedbackInput {
   on: MidiLedStateInput!
 }
 
+input MidiLedBehaviorOptionInput {
+  """Unused for behaviors"""
+  hex: String
+
+  """
+  Display name, e.g. "Blink 1/8"
+  """
+  name: String!
+
+  """Note-On channel (0-15)"""
+  value: Int!
+}
+
+input MidiLedColorOptionInput {
+  """Swatch color #RRGGBB"""
+  hex: String
+
+  """
+  Display name, e.g. "Red"
+  """
+  name: String!
+
+  """Velocity (0-127)"""
+  value: Int!
+}
+
+type MidiLedOptionDto {
+  """Swatch color #RRGGBB (colors only)"""
+  hex: String
+
+  """
+  Display name, e.g. "Red" or "Blink 1/8"
+  """
+  name: String!
+
+  """Behavior: Note-On channel (0-15); color: velocity (0-127)"""
+  value: Int!
+}
+
+type MidiLedPaletteDto {
+  """Named LED behaviors"""
+  behaviors: [MidiLedOptionDto!]!
+
+  """Named LED colors"""
+  colors: [MidiLedOptionDto!]!
+}
+
+input MidiLedPaletteInput {
+  """Named LED behaviors (max 16)"""
+  behaviors: [MidiLedBehaviorOptionInput!]!
+
+  """Named LED colors (max 128)"""
+  colors: [MidiLedColorOptionInput!]!
+}
+
+type MidiLedPalettesDto {
+  """Choices for RGB LEDs"""
+  rgb: MidiLedPaletteDto
+
+  """Choices for single-color LEDs"""
+  single: MidiLedPaletteDto
+}
+
+input MidiLedPalettesInput {
+  """Choices for RGB LEDs"""
+  rgb: MidiLedPaletteInput
+
+  """Choices for single-color LEDs"""
+  single: MidiLedPaletteInput
+}
+
 type MidiLedStateDto {
   """LED behavior, sent as the Note-On MIDI channel (0-15)"""
   behavior: Int!
@@ -982,12 +1124,23 @@ input MidiLedStateInput {
   color: Int!
 }
 
+"""
+LED kind of a hardware control: RGB (behaviors + color palette) or a single-color LED
+"""
+enum MidiLedType {
+  Rgb
+  Single
+}
+
 type MidiMappingDto {
   """The date and time when the entity was created"""
   createdAt: DateTime!
 
   """The hardware controls of this mapping"""
   entries: [MidiMappingEntryDto!]!
+
+  """Named LED behaviors and colors per LED type"""
+  ledPalettes: MidiLedPalettesDto!
 
   """The unique name of the mapping, e.g. the controller model"""
   name: String!
@@ -1012,6 +1165,9 @@ type MidiMappingEntryDto {
   """LED feedback, null when the control has no LED"""
   feedback: MidiFeedbackDto
 
+  """LED kind; picks the palette the editors offer"""
+  ledType: MidiLedType
+
   """MIDI message kind the control sends"""
   messageType: MidiMessageType!
 
@@ -1026,6 +1182,14 @@ type MidiMappingEntryDto {
 
   """The date and time when the entity was last updated"""
   updatedAt: DateTime!
+}
+
+type MidiMappingExportDocumentDto {
+  """All MIDI mappings with their entries"""
+  mappings: [MidiMappingDto!]!
+
+  """The MIDI mapping export document schema version"""
+  schemaVersion: Int!
 }
 
 """MIDI message kind the hardware control sends"""
@@ -1094,6 +1258,11 @@ type Mutation {
   import fixtures and related entities from a versioned JSON document, upserting by publicId or name
   """
   importFixtures(document: ImportFixturesInput!): ImportFixturesPayload!
+
+  """
+  import MIDI mappings from a versioned JSON document, upserting by publicId or name
+  """
+  importMidiMappings(document: ImportMidiMappingsInput!): ImportMidiMappingsPayload!
 
   """
   import projects from a versioned JSON document, upserting by publicId or name
@@ -1477,6 +1646,11 @@ type Query {
   """
   exportFixtures: FixtureExportDocumentDto!
 
+  """
+  export all MIDI mappings with their entries as a versioned JSON document
+  """
+  exportMidiMappings: MidiMappingExportDocumentDto!
+
   """export all projects as a versioned JSON document"""
   exportProjects: ProjectExportDocumentDto!
 
@@ -1749,6 +1923,9 @@ input UpdateMidiMappingEntryInput {
   """LED feedback; omit to keep it, null to remove it"""
   feedback: MidiFeedbackInput
 
+  """LED kind; omit to keep it, null to remove it"""
+  ledType: MidiLedType
+
   """MIDI message kind the control sends"""
   messageType: MidiMessageType
 
@@ -1763,6 +1940,9 @@ input UpdateMidiMappingEntryInput {
 }
 
 input UpdateMidiMappingInput {
+  """Named LED choices; omit to keep them"""
+  ledPalettes: MidiLedPalettesInput
+
   """The unique name of the mapping"""
   name: String!
 

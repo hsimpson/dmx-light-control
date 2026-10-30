@@ -1,7 +1,7 @@
 info:
   name: updateProjectIoDevices
   type: graphql
-  seq: 28
+  seq: 29
 
 graphql:
   method: POST

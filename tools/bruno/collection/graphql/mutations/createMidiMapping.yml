@@ -30,11 +30,38 @@ graphql:
                 color
               }
             }
+            ledType
             messageType
             name
             number
             publicId
             updatedAt
+          }
+          ledPalettes {
+            rgb {
+              behaviors {
+                hex
+                name
+                value
+              }
+              colors {
+                hex
+                name
+                value
+              }
+            }
+            single {
+              behaviors {
+                hex
+                name
+                value
+              }
+              colors {
+                hex
+                name
+                value
+              }
+            }
           }
           name
           publicId
