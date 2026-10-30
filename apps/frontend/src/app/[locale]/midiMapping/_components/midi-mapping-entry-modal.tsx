@@ -103,6 +103,7 @@ const MidiMappingEntryModal = ({ entry, saving, onClose, onSubmit }: MidiMapping
         <DmxSocketConnector />
         <Group wrap="nowrap">
           <Button
+            flex="none"
             variant={learning ? 'filled' : 'light'}
             leftSection={<BroadcastIcon size={ICON_SIZE} weight="duotone" />}
             onClick={() => {

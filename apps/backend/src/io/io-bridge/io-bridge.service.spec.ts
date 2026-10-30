@@ -21,12 +21,12 @@ describe('IoBridgeService', () => {
     expect(eventEmitter.on).toHaveBeenCalledWith('midi.outputOpened', expect.any(Function));
   });
 
-  it('emits led messages on midi.outputOpened', () => {
+  it('sends no led messages on midi.outputOpened while the led mapping is empty', () => {
     const { service, eventEmitter, eventEmitterMock } = build();
     service.onModuleInit();
     const outOpenedListener = eventEmitterMock.on.mock.calls.find(c => c[0] === 'midi.outputOpened')?.[1];
     outOpenedListener?.({ portName: 'APC' });
-    expect(eventEmitter.emit).toHaveBeenCalledWith('midi.sendMessage', { portName: 'APC', message: [0x96, 0, 0x5] });
+    expect(eventEmitter.emit).not.toHaveBeenCalledWith('midi.sendMessage', expect.anything());
   });
 
   it('ignores unmapped midi notes', () => {
