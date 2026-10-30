@@ -1,5 +1,5 @@
 import { pk, timestamps } from '@/db/columns.helpers';
-import type { IoDeviceIdentity } from '@/io/devices/match-io-devices';
+import type { ProjectIoDevice } from '@/io/devices/match-io-devices';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { DEFAULT_ROOM_HEIGHT, DEFAULT_ROOM_LENGTH, DEFAULT_ROOM_WIDTH } from '@/projects/project-room-dimensions';
 import { VirtualConsoleDocument } from '@/projects/virtual-console';
@@ -21,7 +21,7 @@ const project = d.snakeCase.table('projects', {
   roomLength: doublePrecision().notNull().default(DEFAULT_ROOM_LENGTH),
   roomHeight: doublePrecision().notNull().default(DEFAULT_ROOM_HEIGHT),
   virtualConsole: jsonb().$type<VirtualConsoleDocument>(),
-  ioDevices: jsonb().$type<IoDeviceIdentity[]>().notNull().default([]),
+  ioDevices: jsonb().$type<ProjectIoDevice[]>().notNull().default([]),
 
   ...timestamps,
 });

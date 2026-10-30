@@ -7,17 +7,17 @@ export type IoDeviceRow = {
   status: IoDeviceStatus | null;
 };
 
-type DeviceState = IoDeviceFieldsFragment & { status: IoDeviceStatus };
+type DeviceIdentity = Omit<IoDeviceFieldsFragment, 'midiMappingPublicId'>;
+type DeviceState = DeviceIdentity & { status: IoDeviceStatus };
 
-const sameIdentity = (a: IoDeviceFieldsFragment, b: IoDeviceFieldsFragment) =>
+const sameIdentity = (a: DeviceIdentity, b: DeviceIdentity) =>
   a.kind === b.kind &&
   a.vendorId === b.vendorId &&
   a.productId === b.productId &&
   a.name === b.name &&
   a.serial === b.serial;
 
-const sameDevice = (a: IoDeviceFieldsFragment, b: IoDeviceFieldsFragment) =>
-  sameIdentity(a, b) && a.usbLocation === b.usbLocation;
+const sameDevice = (a: DeviceIdentity, b: DeviceIdentity) => sameIdentity(a, b) && a.usbLocation === b.usbLocation;
 
 /**
  * Configured devices first (with live status), then plugged-in devices not used yet.
@@ -54,4 +54,14 @@ export const toIoDeviceInput = ({
   vendorId,
   productId,
   usbLocation,
-}: IoDeviceFieldsFragment): IoDeviceInput => ({ kind, name, manufacturer, serial, vendorId, productId, usbLocation });
+  midiMappingPublicId,
+}: IoDeviceFieldsFragment): IoDeviceInput => ({
+  kind,
+  name,
+  manufacturer,
+  serial,
+  vendorId,
+  productId,
+  usbLocation,
+  midiMappingPublicId,
+});

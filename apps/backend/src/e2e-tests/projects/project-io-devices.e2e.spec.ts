@@ -15,6 +15,7 @@ const ftdi = {
   vendorId: '0403',
   productId: '6001',
   usbLocation: '3-10',
+  midiMappingPublicId: null,
 };
 
 const apc = {
@@ -25,11 +26,12 @@ const apc = {
   vendorId: '09e8',
   productId: '004f',
   usbLocation: '7&2A3B4C5D&0&0000',
+  midiMappingPublicId: null,
 };
 
-type IoDevice = typeof ftdi;
+type IoDevice = Omit<typeof ftdi, 'midiMappingPublicId'> & { midiMappingPublicId: string | null };
 
-const IO_DEVICE_FIELDS = 'kind name manufacturer serial vendorId productId usbLocation';
+const IO_DEVICE_FIELDS = 'kind name manufacturer serial vendorId productId usbLocation midiMappingPublicId';
 
 const CREATE_PROJECT = gql`
   mutation ($input: CreateProjectInput!) {
@@ -63,6 +65,22 @@ const EXPORT_PROJECTS = `
         publicId
         ioDevices { ${IO_DEVICE_FIELDS} }
       }
+    }
+  }
+`;
+
+const CREATE_MIDI_MAPPING = gql`
+  mutation ($input: CreateMidiMappingInput!) {
+    createMidiMapping(input: $input) {
+      publicId
+    }
+  }
+`;
+
+const DELETE_MIDI_MAPPING = gql`
+  mutation ($publicId: UUID!) {
+    deleteMidiMapping(publicId: $publicId) {
+      deleted
     }
   }
 `;
@@ -168,6 +186,7 @@ describe('Project input/output devices', () => {
         vendorId: null,
         productId: null,
         usbLocation: null,
+        midiMappingPublicId: null,
       },
     ]);
   });
@@ -208,6 +227,84 @@ describe('Project input/output devices', () => {
 
     expect(imported.errors).toBeUndefined();
     await expect(storedIoDevices(publicId)).resolves.toEqual([ftdi]);
+  });
+
+  describe('MIDI mapping assignment', () => {
+    async function createMidiMapping(name: string): Promise<string> {
+      const body = await graphqlQuery<{ createMidiMapping: { publicId: string } }>(server, CREATE_MIDI_MAPPING, {
+        variables: { input: { name } },
+      });
+      const publicId = body.data?.createMidiMapping.publicId;
+      if (!publicId) throw new Error(`createMidiMapping failed: ${JSON.stringify(body.errors)}`);
+      return publicId;
+    }
+
+    async function deleteMidiMapping(publicId: string) {
+      return graphqlQuery<{ deleteMidiMapping: { deleted: boolean } }>(server, DELETE_MIDI_MAPPING, {
+        variables: { publicId },
+      });
+    }
+
+    it('GIVEN a MIDI mapping WHEN assigned to a MIDI device THEN it is stored', async () => {
+      const publicId = await createProject('IO Mapping Project');
+      const midiMappingPublicId = await createMidiMapping('IO Mapping APC');
+
+      const body = await updateIoDevices(publicId, [{ ...apc, midiMappingPublicId }]);
+
+      expect(body.errors).toBeUndefined();
+      await expect(storedIoDevices(publicId)).resolves.toEqual([{ ...apc, midiMappingPublicId }]);
+    });
+
+    it('GIVEN an unknown MIDI mapping WHEN assigned THEN MIDI_MAPPING_NOT_FOUND and nothing is stored', async () => {
+      const publicId = await createProject('IO Unknown Mapping Project');
+
+      const body = await updateIoDevices(publicId, [{ ...apc, midiMappingPublicId: UNKNOWN_PROJECT_PUBLIC_ID }]);
+
+      expect(body.errors?.[0]?.extensions?.code).toBe('MIDI_MAPPING_NOT_FOUND');
+      await expect(storedIoDevices(publicId)).resolves.toEqual([]);
+    });
+
+    it('GIVEN a mapping used by a project WHEN deleted THEN MIDI_MAPPING_IN_USE until it is unassigned', async () => {
+      const publicId = await createProject('IO Mapping In Use Project');
+      const midiMappingPublicId = await createMidiMapping('IO Mapping In Use APC');
+      await updateIoDevices(publicId, [{ ...apc, midiMappingPublicId }]);
+
+      const blocked = await deleteMidiMapping(midiMappingPublicId);
+      await updateIoDevices(publicId, [apc]);
+      const deleted = await deleteMidiMapping(midiMappingPublicId);
+
+      expect(blocked.errors?.[0]?.extensions?.code).toBe('MIDI_MAPPING_IN_USE');
+      expect(deleted.data?.deleteMidiMapping.deleted).toBe(true);
+    });
+
+    it('GIVEN a v12 import WHEN a device references an unknown mapping THEN only known mappings are kept', async () => {
+      const publicId = await createProject('IO Mapping Import Project');
+      const midiMappingPublicId = await createMidiMapping('IO Mapping Import APC');
+
+      const imported = await graphqlQuery(server, IMPORT_PROJECTS, {
+        variables: {
+          document: {
+            schemaVersion: 12,
+            projects: [
+              {
+                publicId,
+                name: 'IO Mapping Import Project',
+                ioDevices: [
+                  { ...apc, midiMappingPublicId },
+                  { ...apc, usbLocation: '2', midiMappingPublicId: UNKNOWN_PROJECT_PUBLIC_ID },
+                ],
+              },
+            ],
+          },
+        },
+      });
+
+      expect(imported.errors).toBeUndefined();
+      await expect(storedIoDevices(publicId)).resolves.toEqual([
+        { ...apc, midiMappingPublicId },
+        { ...apc, usbLocation: '2', midiMappingPublicId: null },
+      ]);
+    });
   });
 
   describe('active project', () => {

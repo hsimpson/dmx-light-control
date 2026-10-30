@@ -15,6 +15,10 @@ graphql:
           controlType
           createdAt
           feedback {
+            monitor {
+              behavior
+              color
+            }
             off {
               behavior
               color
@@ -37,6 +41,10 @@ graphql:
           "channel": null,
           "controlType": null,
           "feedback": {
+            "monitor": {
+              "behavior": null,
+              "color": null
+            },
             "off": {
               "behavior": null,
               "color": null

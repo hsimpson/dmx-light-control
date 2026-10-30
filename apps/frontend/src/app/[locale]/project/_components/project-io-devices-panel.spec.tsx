@@ -1,6 +1,7 @@
 import {
   ActiveIoDeviceStatesDocument,
   AvailableIoDevicesDocument,
+  GetMidiMappingsDocument,
   GetProjectIoDevicesDocument,
   IoDeviceKind,
   IoDeviceStatus,
@@ -47,6 +48,7 @@ const ftdi = {
   vendorId: '0403',
   productId: '6001',
   usbLocation: '3-10',
+  midiMappingPublicId: null as string | null,
 };
 
 const apc = {
@@ -57,6 +59,7 @@ const apc = {
   vendorId: '09e8',
   productId: '004f',
   usbLocation: '3-9',
+  midiMappingPublicId: null as string | null,
 };
 
 const asDto = (device: typeof ftdi) => ({ __typename: 'IoDeviceDto' as const, ...device });
@@ -75,8 +78,33 @@ const availableIoDevices = (devices: (typeof ftdi)[]) => ({
 
 const activeStates = (states: (typeof ftdi & { status: IoDeviceStatus })[]) => ({
   request: { query: ActiveIoDeviceStatesDocument },
-  result: { data: { ioDevices: states.map(state => ({ __typename: 'IoDeviceStateDto' as const, ...state })) } },
+  result: {
+    data: {
+      ioDevices: states.map(({ midiMappingPublicId: _mapping, ...state }) => ({
+        __typename: 'IoDeviceStateDto' as const,
+        ...state,
+      })),
+    },
+  },
 });
+
+const midiMappings = {
+  request: { query: GetMidiMappingsDocument },
+  result: {
+    data: {
+      midiMappings: [
+        {
+          __typename: 'MidiMappingDto' as const,
+          publicId: 'midi-1',
+          name: 'APC mini mk2',
+          createdAt: new Date('2026-01-01T00:00:00.000Z'),
+          updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+          entries: [],
+        },
+      ],
+    },
+  },
+};
 
 describe('ProjectIoDevicesPanel', () => {
   it('GIVEN a configured output and a plugged-in controller WHEN rendered THEN both sections list them with status', async () => {
@@ -198,5 +226,38 @@ describe('ProjectIoDevicesPanel', () => {
     await user.click(checkbox);
 
     expect(checkbox).not.toBeChecked();
+  });
+
+  it('GIVEN a configured controller WHEN a MIDI mapping is picked THEN the device is saved with it', async () => {
+    const assigned = { ...apc, midiMappingPublicId: 'midi-1' };
+    const save = vi.fn(() => ({
+      data: {
+        updateProjectIoDevices: { __typename: 'ProjectDto' as const, publicId: 'proj-1', ioDevices: [asDto(assigned)] },
+      },
+    }));
+    const { user } = renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {
+      apolloMocks: [
+        projectIoDevices([apc]),
+        availableIoDevices([]),
+        activeStates([]),
+        midiMappings,
+        {
+          request: {
+            query: UpdateProjectIoDevicesDocument,
+            variables: { input: { publicId: 'proj-1', ioDevices: [assigned] } },
+          },
+          result: save,
+        },
+        projectIoDevices([assigned]),
+        activeStates([]),
+      ],
+    });
+
+    await user.click(await screen.findByRole('combobox', { name: 'MIDI mapping for APC mini mk2' }));
+    await user.click(await screen.findByRole('option', { name: 'APC mini mk2', hidden: true }));
+
+    await waitFor(() => {
+      expect(save).toHaveBeenCalledTimes(1);
+    });
   });
 });

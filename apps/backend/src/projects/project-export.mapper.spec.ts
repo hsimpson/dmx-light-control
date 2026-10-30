@@ -36,7 +36,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 11,
+      schemaVersion: 12,
       projects: [
         {
           publicId: 'a',
@@ -106,7 +106,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 11,
+      schemaVersion: 12,
       projects: [
         {
           publicId: '',
@@ -258,7 +258,7 @@ describe('mapProjectsToExportDocument', () => {
         },
       ]),
     ).toEqual({
-      schemaVersion: 11,
+      schemaVersion: 12,
       projects: [
         {
           publicId: 'p',

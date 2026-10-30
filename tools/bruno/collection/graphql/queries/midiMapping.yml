@@ -17,6 +17,10 @@ graphql:
             controlType
             createdAt
             feedback {
+              monitor {
+                behavior
+                color
+              }
               off {
                 behavior
                 color

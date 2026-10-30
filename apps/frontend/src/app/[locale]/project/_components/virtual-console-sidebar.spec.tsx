@@ -14,6 +14,7 @@ describe('virtual console sidebar', () => {
     const onControlPatch = vi.fn();
     const { user } = renderWithProviders(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={vi.fn()}
@@ -27,6 +28,7 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'control', controlId: control.id }}
       />,
+      { apolloMocks: [] },
     );
 
     const background = screen.getByLabelText('Background');
@@ -42,6 +44,7 @@ describe('virtual console sidebar', () => {
     const onControlPatch = vi.fn();
     const { user } = renderWithProviders(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={vi.fn()}
@@ -55,6 +58,7 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'control', controlId: control.id }}
       />,
+      { apolloMocks: [] },
     );
 
     expect(screen.getByLabelText('Font')).toHaveValue('System UI · 16px · Semibold');
@@ -75,6 +79,7 @@ describe('virtual console sidebar', () => {
     const onDeleteControl = vi.fn();
     const { user } = renderWithProviders(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={vi.fn()}
@@ -88,6 +93,7 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'control', controlId: control.id }}
       />,
+      { apolloMocks: [] },
     );
 
     await user.click(screen.getByRole('button', { name: 'Delete control' }));
@@ -99,6 +105,7 @@ describe('virtual console sidebar', () => {
     const onCanvasSizeChange = vi.fn();
     const { user } = renderWithProviders(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={onCanvasSizeChange}
@@ -112,6 +119,7 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'canvas' }}
       />,
+      { apolloMocks: [] },
     );
 
     expect(screen.getByLabelText('Snap')).toHaveValue('1');
@@ -127,6 +135,7 @@ describe('virtual console sidebar', () => {
     const onCanvasSizeChange = vi.fn();
     const { user } = renderWithProviders(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={onCanvasSizeChange}
@@ -141,6 +150,7 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'canvas' }}
       />,
+      { apolloMocks: [] },
     );
 
     await user.click(screen.getByRole('button', { name: 'Pop out' }));
@@ -162,6 +172,7 @@ describe('virtual console sidebar', () => {
     const onPageNameChange = vi.fn();
     const { user } = renderWithProviders(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={vi.fn()}
@@ -175,6 +186,7 @@ describe('virtual console sidebar', () => {
         selectedPage={page}
         selection={{ kind: 'page', pageId: page.id }}
       />,
+      { apolloMocks: [] },
     );
 
     const name = screen.getByLabelText('Page name');
@@ -189,6 +201,7 @@ describe('virtual console sidebar', () => {
     const frame = createControl('frame', 0, 0);
     const { user, rerender } = renderWithProviders(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={vi.fn()}
@@ -202,6 +215,7 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'control', controlId: frame.id }}
       />,
+      { apolloMocks: [] },
     );
 
     await user.type(screen.getByLabelText('X'), '4');
@@ -216,6 +230,7 @@ describe('virtual console sidebar', () => {
     };
     rerender(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={vi.fn()}
@@ -229,6 +244,7 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'control', controlId: slider.id }}
       />,
+      { apolloMocks: [] },
     );
 
     await user.click(screen.getByRole('combobox', { name: 'Orientation' }));
@@ -241,6 +257,7 @@ describe('virtual console sidebar', () => {
     const frameAgain = createControl('frame', 0, 0);
     rerender(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={vi.fn()}
@@ -254,12 +271,14 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'control', controlId: frameAgain.id }}
       />,
+      { apolloMocks: [] },
     );
     expect(screen.queryByLabelText('Lower limit')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Upper limit')).not.toBeInTheDocument();
 
     rerender(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={vi.fn()}
@@ -273,6 +292,7 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'control', controlId: slider.id }}
       />,
+      { apolloMocks: [] },
     );
     const lowerLimit = screen.getByLabelText('Lower limit');
     const upperLimit = screen.getByLabelText('Upper limit');
@@ -288,6 +308,7 @@ describe('virtual console sidebar', () => {
     const button = { ...createControl('button', 0, 0), upperLimit: undefined };
     rerender(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={vi.fn()}
@@ -301,6 +322,7 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'control', controlId: button.id }}
       />,
+      { apolloMocks: [] },
     );
     expect(screen.queryByLabelText('Lower limit')).not.toBeInTheDocument();
     const buttonUpper = screen.getByLabelText('Upper limit');
@@ -320,6 +342,7 @@ describe('virtual console sidebar', () => {
     };
     renderWithProviders(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={vi.fn()}
@@ -333,6 +356,7 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'control', controlId: control.id }}
       />,
+      { apolloMocks: [] },
     );
 
     expect(screen.getByLabelText('Font')).toHaveValue('"Comic Sans MS", cursive · 16px · Default');
@@ -342,6 +366,7 @@ describe('virtual console sidebar', () => {
     const document = createDefaultVirtualConsoleDocument();
     renderWithProviders(
       <VirtualConsoleSidebar
+        projectPublicId="proj-1"
         document={document}
         dirty={false}
         onCanvasSizeChange={vi.fn()}
@@ -355,6 +380,7 @@ describe('virtual console sidebar', () => {
         selectedPage={document.pages[0]}
         selection={{ kind: 'canvas' }}
       />,
+      { apolloMocks: [] },
     );
 
     const dataTransfer = {

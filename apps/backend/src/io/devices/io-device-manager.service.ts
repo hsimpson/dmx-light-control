@@ -8,7 +8,7 @@ import {
   IoDeviceStatus,
   matchIoDevices,
   type AvailableIoDevice,
-  type IoDeviceIdentity,
+  type ProjectIoDevice,
   type IoDeviceMatch,
 } from './match-io-devices';
 
@@ -18,8 +18,8 @@ export const IO_DEVICE_POLL_INTERVAL_MS = 2000;
 @Injectable()
 export class IoDeviceManagerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(IoDeviceManagerService.name);
-  private configured: IoDeviceIdentity[] = [];
-  private matches: IoDeviceMatch<IoDeviceIdentity>[] = [];
+  private configured: ProjectIoDevice[] = [];
+  private matches: IoDeviceMatch<ProjectIoDevice>[] = [];
   private reconciling: Promise<void> = Promise.resolve();
   private pollTimer: NodeJS.Timeout | null = null;
   private destroyed = false;
@@ -43,7 +43,7 @@ export class IoDeviceManagerService implements OnModuleInit, OnModuleDestroy {
     this.clearPoll();
   }
 
-  public statuses(): IoDeviceMatch<IoDeviceIdentity>[] {
+  public statuses(): IoDeviceMatch<ProjectIoDevice>[] {
     return this.matches;
   }
 
@@ -89,7 +89,7 @@ export class IoDeviceManagerService implements OnModuleInit, OnModuleDestroy {
 
   private async connect(
     kind: IoDeviceKind,
-    matches: IoDeviceMatch<IoDeviceIdentity>[],
+    matches: IoDeviceMatch<ProjectIoDevice>[],
     openHandles: string[],
     port: { open: (handle: string) => Promise<boolean> | boolean; close: (handle: string) => void },
   ): Promise<void> {

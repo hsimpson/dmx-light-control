@@ -40,3 +40,13 @@ export class MidiMappingEntryConflictException extends BaseDomainError {
     this.name = 'MidiMappingEntryConflictError';
   }
 }
+
+export class MidiMappingInUseException extends BaseDomainError {
+  public readonly code = 'MIDI_MAPPING_IN_USE';
+  public override readonly statusCode = HttpStatus.CONFLICT;
+
+  public constructor(publicId: string) {
+    super(`MIDI mapping with ID ${publicId} is assigned to a project device.`);
+    this.name = 'MidiMappingInUseError';
+  }
+}

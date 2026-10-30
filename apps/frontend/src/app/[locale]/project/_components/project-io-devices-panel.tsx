@@ -5,13 +5,14 @@ import { useTranslation } from '@/lib/i18n/use-translation';
 import {
   ActiveIoDeviceStatesDocument,
   AvailableIoDevicesDocument,
+  GetMidiMappingsDocument,
   GetProjectIoDevicesDocument,
   IoDeviceKind,
   IoDeviceStatus,
   UpdateProjectIoDevicesDocument,
 } from '@/shared/types/graphql/graphql';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Badge, Checkbox, Stack, Title } from '@mantine/core';
+import { Badge, Checkbox, Select, Stack, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { DataTable } from 'mantine-datatable';
 import { buildIoDeviceRows, toIoDeviceInput, type IoDeviceRow } from './project-io-devices';
@@ -36,6 +37,7 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
   });
   const { data: availableData } = useQuery(AvailableIoDevicesDocument, { pollInterval: IO_DEVICE_POLL_INTERVAL_MS });
   const { data: statesData } = useQuery(ActiveIoDeviceStatesDocument, { pollInterval: IO_DEVICE_POLL_INTERVAL_MS });
+  const { data: mappingsData } = useQuery(GetMidiMappingsDocument);
   const [updateIoDevices, { loading: saving }] = useMutation(UpdateProjectIoDevicesDocument);
 
   if (loading && !projectData) {
@@ -54,8 +56,12 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
     }),
   };
 
-  const toggle = async (row: IoDeviceRow) => {
-    const next = row.configured ? configured.filter(device => device !== row.device) : [...configured, row.device];
+  const mappingOptions = (mappingsData?.midiMappings ?? []).map(mapping => ({
+    value: mapping.publicId,
+    label: mapping.name,
+  }));
+
+  const save = async (next: typeof configured) => {
     try {
       await updateIoDevices({
         variables: { input: { publicId: projectPublicId, ioDevices: next.map(toIoDeviceInput) } },
@@ -73,6 +79,34 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
             : t({ id: 'ProjectDetail.io.saveFailed', defaultMessage: 'Could not save the devices.' }),
       });
     }
+  };
+
+  const toggle = async (row: IoDeviceRow) =>
+    save(row.configured ? configured.filter(device => device !== row.device) : [...configured, row.device]);
+
+  const assignMapping = async (row: IoDeviceRow, midiMappingPublicId: string | null) =>
+    save(configured.map(device => (device === row.device ? { ...device, midiMappingPublicId } : device)));
+
+  const mappingColumn = {
+    accessor: 'midiMappingPublicId',
+    title: t({ id: 'ProjectDetail.io.midiMapping', defaultMessage: 'MIDI mapping' }),
+    render: (row: IoDeviceRow) => (
+      <Select
+        size="xs"
+        clearable
+        data={mappingOptions}
+        value={row.device.midiMappingPublicId ?? null}
+        disabled={saving || !row.configured}
+        placeholder={t({ id: 'ProjectDetail.io.noMidiMapping', defaultMessage: 'None' })}
+        aria-label={t(
+          { id: 'ProjectDetail.io.midiMappingFor', defaultMessage: 'MIDI mapping for {name}' },
+          { name: row.device.name },
+        )}
+        onChange={value => {
+          void assignMapping(row, value);
+        }}
+      />
+    ),
   };
 
   const renderTable = (kind: IoDeviceKind) => (
@@ -135,6 +169,7 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
               </Badge>
             ) : null,
         },
+        ...(kind === IoDeviceKind.Midi ? [mappingColumn] : []),
       ]}
     />
   );

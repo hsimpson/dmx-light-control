@@ -24,6 +24,13 @@ registerEnumType(IoDeviceStatus, {
 
 export type IoDeviceIdentity = UsbIdentity & { kind: IoDeviceKind };
 
+/** A device as configured in a project; MIDI devices may name the mapping that interprets their input. */
+export type ProjectIoDevice = IoDeviceIdentity & { midiMappingPublicId?: string | null };
+
+export function midiMappingPublicIds(devices: readonly ProjectIoDevice[]): string[] {
+  return devices.flatMap(device => (device.midiMappingPublicId ? [device.midiMappingPublicId] : []));
+}
+
 /** `handle` is what the OS opens: the serial path or the full RtMidi port name. */
 export type AvailableIoDevice = IoDeviceIdentity & { handle: string };
 

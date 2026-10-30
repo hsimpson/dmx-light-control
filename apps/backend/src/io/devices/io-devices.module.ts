@@ -15,5 +15,6 @@ import { LINUX_SYS_ROOT } from './linux-usb-sysfs';
     IoDevicesResolver,
     { provide: IO_DEVICES_SYS_ROOT, useValue: LINUX_SYS_ROOT },
   ],
+  exports: [IoDeviceManagerService],
 })
 export class IoDevicesModule {}

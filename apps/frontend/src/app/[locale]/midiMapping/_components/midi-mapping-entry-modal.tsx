@@ -9,12 +9,12 @@ import { MidiControlType, MidiMessageType, type MidiMappingEntryFieldsFragment }
 import { Button, Group, Modal, NumberInput, Select, SimpleGrid, Stack, Switch, Text, TextInput } from '@mantine/core';
 import { BroadcastIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
+import MidiFeedbackFields from './midi-feedback-fields';
 import {
   applyLearned,
   entryInput,
   entryValues,
   learnedAddress,
-  type MidiLedStateValues,
   type MidiMappingEntryInput,
   type MidiMappingEntryValues,
 } from './midi-mapping-entry-values';
@@ -52,38 +52,6 @@ const MidiMappingEntryModal = ({ entry, saving, onClose, onSubmit }: MidiMapping
       }
     });
   }, [learning]);
-
-  const ledInputs = (state: 'off' | 'on', label: string) => {
-    const setLed = (changes: Partial<MidiLedStateValues>) => {
-      patch({ [state]: { ...values[state], ...changes } });
-    };
-    return (
-      <SimpleGrid cols={2}>
-        <NumberInput
-          label={`${label}: ${t({ id: 'MidiMappingEntry.behavior', defaultMessage: 'Behavior (channel 0-15)' })}`}
-          min={0}
-          max={15}
-          allowDecimal={false}
-          clampBehavior="strict"
-          value={values[state].behavior}
-          onChange={value => {
-            setLed({ behavior: Number(value) });
-          }}
-        />
-        <NumberInput
-          label={`${label}: ${t({ id: 'MidiMappingEntry.color', defaultMessage: 'Color (velocity 0-127)' })}`}
-          min={0}
-          max={127}
-          allowDecimal={false}
-          clampBehavior="strict"
-          value={values[state].color}
-          onChange={value => {
-            setLed({ color: Number(value) });
-          }}
-        />
-      </SimpleGrid>
-    );
-  };
 
   const title = entry
     ? t({ id: 'MidiMappingEntry.edit', defaultMessage: 'Edit control' })
@@ -193,8 +161,12 @@ const MidiMappingEntryModal = ({ entry, saving, onClose, onSubmit }: MidiMapping
                   'Sent as Note-On to the same note: the behavior is the MIDI channel, the color the velocity.',
               })}
             </Text>
-            {ledInputs('off', t({ id: 'MidiMappingEntry.off', defaultMessage: 'Off' }))}
-            {ledInputs('on', t({ id: 'MidiMappingEntry.on', defaultMessage: 'On' }))}
+            <MidiFeedbackFields
+              value={values.feedback}
+              onChange={feedback => {
+                patch({ feedback });
+              }}
+            />
           </>
         ) : null}
         <Group justify="space-between">

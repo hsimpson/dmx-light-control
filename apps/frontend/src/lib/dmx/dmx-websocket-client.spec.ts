@@ -57,12 +57,10 @@ describe('DmxWebsocketClient', () => {
     expect(store.getState().runningFunctionIds).toEqual(['fn-1']);
     socket?.receive({ type: 'midiInput', portName: 'APC', message: [0x90, 0x64, 0x7f] });
     expect(store.getState().lastMidiInput).toEqual({ portName: 'APC', message: [0x90, 0x64, 0x7f] });
-    client.startFunction('fn-1');
-    client.stopFunction('fn-2');
-    expect(socket?.sent).toEqual([
-      JSON.stringify({ type: 'functionStart', functionPublicId: 'fn-1' }),
-      JSON.stringify({ type: 'functionStop', functionPublicId: 'fn-2' }),
-    ]);
+    socket?.receive({ type: 'controlState', values: { slider: 40, broken: 'x' } });
+    expect(store.getState().controlValues).toEqual({ slider: 40 });
+    client.sendControlValue('slider', 41);
+    expect(socket?.sent).toEqual([JSON.stringify({ type: 'controlValue', controlId: 'slider', value: 41 })]);
   });
 
   it('queues set until a snapshot arrives, then flushes automatically', () => {

@@ -834,6 +834,11 @@ type IoDeviceDto {
   """USB manufacturer name"""
   manufacturer: String
 
+  """
+  Public ID of the MIDI mapping assigned to this MIDI device in the project
+  """
+  midiMappingPublicId: UUID
+
   """USB product name"""
   name: String!
 
@@ -858,6 +863,11 @@ input IoDeviceInput {
 
   """USB manufacturer name"""
   manufacturer: String
+
+  """
+  Public ID of the MIDI mapping assigned to this MIDI device in the project
+  """
+  midiMappingPublicId: UUID
 
   """USB product name"""
   name: String!
@@ -889,6 +899,11 @@ type IoDeviceStateDto {
 
   """USB manufacturer name"""
   manufacturer: String
+
+  """
+  Public ID of the MIDI mapping assigned to this MIDI device in the project
+  """
+  midiMappingPublicId: UUID
 
   """USB product name"""
   name: String!
@@ -926,6 +941,11 @@ enum MidiControlType {
 }
 
 type MidiFeedbackDto {
+  """
+  LED state while the bound function runs but was started elsewhere; falls back to on
+  """
+  monitor: MidiLedStateDto
+
   """LED state while the bound control is off"""
   off: MidiLedStateDto!
 
@@ -934,6 +954,11 @@ type MidiFeedbackDto {
 }
 
 input MidiFeedbackInput {
+  """
+  LED state while the bound function runs but was started elsewhere; falls back to on
+  """
+  monitor: MidiLedStateInput
+
   """LED state while the bound control is off"""
   off: MidiLedStateInput!
 
@@ -1885,6 +1910,9 @@ type VirtualConsoleControlDto {
   """Nested controls when this is a frame"""
   children: [VirtualConsoleControlDto!]
 
+  """Overrides the MIDI entry's default LED feedback"""
+  feedback: MidiFeedbackDto
+
   """CSS font family"""
   fontFamily: String
 
@@ -1914,6 +1942,9 @@ type VirtualConsoleControlDto {
 
   """Inclusive lower DMX limit for a slider"""
   lowerLimit: Int
+
+  """MIDI mapping entry that drives this button or slider"""
+  midiEntryPublicId: UUID
 
   """Slider orientation"""
   orientation: VirtualConsoleSliderOrientation
@@ -1956,6 +1987,9 @@ input VirtualConsoleControlInput {
   """Nested controls when this is a frame"""
   children: [VirtualConsoleControlInput!]
 
+  """Overrides the MIDI entry's default LED feedback"""
+  feedback: MidiFeedbackInput
+
   """CSS font family"""
   fontFamily: String
 
@@ -1985,6 +2019,9 @@ input VirtualConsoleControlInput {
 
   """Inclusive lower DMX limit for a slider"""
   lowerLimit: Int
+
+  """MIDI mapping entry that drives this button or slider"""
+  midiEntryPublicId: UUID
 
   """Slider orientation"""
   orientation: VirtualConsoleSliderOrientation

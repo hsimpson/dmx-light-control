@@ -38,6 +38,13 @@ export class MidiFeedbackDto {
   @Field(() => MidiLedStateDto, { description: 'LED state while the bound control is on' })
   @Type(() => MidiLedStateDto)
   public on: MidiLedStateDto;
+
+  @Field(() => MidiLedStateDto, {
+    nullable: true,
+    description: 'LED state while the bound function runs but was started elsewhere; falls back to on',
+  })
+  @Type(() => MidiLedStateDto)
+  public monitor?: MidiLedStateDto | null;
 }
 
 @InputType()
@@ -51,6 +58,15 @@ export class MidiFeedbackInput {
   @ValidateNested()
   @Type(() => MidiLedStateInput)
   public on: MidiLedStateInput;
+
+  @Field(() => MidiLedStateInput, {
+    nullable: true,
+    description: 'LED state while the bound function runs but was started elsewhere; falls back to on',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => MidiLedStateInput)
+  public monitor?: MidiLedStateInput | null;
 }
 
 @ObjectType()

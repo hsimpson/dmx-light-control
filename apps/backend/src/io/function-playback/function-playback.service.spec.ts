@@ -58,6 +58,18 @@ describe('FunctionPlaybackService', () => {
     return { service, functions, universe, listeners, states };
   }
 
+  it('GIVEN a start still loading WHEN stop arrives first (quick flash press) THEN the function does not run', async () => {
+    const { service, functions, universe } = build();
+    functions.findOneByPublicId.mockResolvedValue(sequenceRow(SequenceRunOrder.Loop));
+
+    const starting = service.start(FUNCTION_ID);
+    service.stop(FUNCTION_ID);
+    await starting;
+
+    expect(service.runningIds()).toEqual([]);
+    expect(universe.getFrame()[4]).toBe(0);
+  });
+
   it('starts, restarts, and stops a sequence', async () => {
     const { service, functions, universe, states } = build();
     functions.findOneByPublicId.mockResolvedValue(sequenceRow(SequenceRunOrder.Loop));

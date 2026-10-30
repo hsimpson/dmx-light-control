@@ -1,8 +1,9 @@
+import { AppEventEmitter } from '@/events/app-event-emitter';
 import { createE2eApp } from '@/testhelpers/e2e-app';
 import { graphqlQuery } from '@/testhelpers/graphql-test-client';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import gql from 'graphql-tag';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 type Feedback = { off: { behavior: number; color: number }; on: { behavior: number; color: number } } | null;
 type Entry = {
@@ -148,5 +149,36 @@ describe('MIDI mappings', () => {
     await createMapping(name);
     const duplicate = await graphqlQuery(server, CREATE_MAPPING, { variables: { input: { name } } });
     expect(duplicate.errors?.[0]?.extensions?.code).toBe('MIDI_MAPPING_ALREADY_EXISTS');
+  });
+
+  it('GIVEN feedback with a monitor state WHEN an entry is added THEN it is returned and controllers reload the mapping', async () => {
+    const changed = vi.fn();
+    app.get(AppEventEmitter).on('midiMapping.changed', changed);
+    const created = await graphqlQuery<{ createMidiMapping: { publicId: string } }>(server, CREATE_MAPPING, {
+      variables: { input: { name: 'Monitor Mapping' } },
+    });
+    const feedback = {
+      off: { behavior: 0, color: 0 },
+      on: { behavior: 6, color: 5 },
+      monitor: { behavior: 13, color: 9 },
+    };
+
+    const body = await graphqlQuery<{ addMidiMappingEntry: { feedback: unknown } }>(
+      server,
+      `mutation ($input: AddMidiMappingEntryInput!) {
+        addMidiMappingEntry(input: $input) {
+          feedback { off { behavior color } on { behavior color } monitor { behavior color } }
+        }
+      }`,
+      {
+        variables: {
+          input: { ...trackButton1, midiMappingPublicId: created.data?.createMidiMapping.publicId, feedback },
+        },
+      },
+    );
+
+    expect(body.errors).toBeUndefined();
+    expect(body.data?.addMidiMappingEntry.feedback).toEqual(feedback);
+    expect(changed).toHaveBeenCalledTimes(1);
   });
 });

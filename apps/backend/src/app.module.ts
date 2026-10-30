@@ -2,6 +2,7 @@ import { relations } from '@/db/relations';
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { DmxModule } from '@/io/dmx/dmx.module';
 import { FunctionPlaybackModule } from '@/io/function-playback/function-playback.module';
+import { VirtualConsolePlaybackModule } from '@/io/virtual-console-playback/virtual-console-playback.module';
 import { IoBridgeModule } from '@/io/io-bridge/io-bridge.module';
 import { IoDevicesModule } from '@/io/devices/io-devices.module';
 import { MidiModule } from '@/io/midi/midi.module';
@@ -44,6 +45,7 @@ import { ProjectsModule } from './projects/projects.module';
     EventEmitterModule.forRoot(),
     DmxModule,
     FunctionPlaybackModule,
+    VirtualConsolePlaybackModule,
     MidiModule,
     IoBridgeModule,
     IoDevicesModule,

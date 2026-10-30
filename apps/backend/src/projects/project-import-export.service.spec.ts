@@ -56,10 +56,11 @@ describe('ProjectImportExportService', () => {
       {} as never,
       projectRepository as unknown as ProjectRepository,
       {} as unknown as ProjectFixtureRepository,
+      {} as never,
     );
 
     await expect(service.exportProjects()).resolves.toEqual({
-      schemaVersion: 11,
+      schemaVersion: 12,
       projects: [
         {
           publicId: 'proj-1',
@@ -85,6 +86,7 @@ describe('ProjectImportExportService', () => {
       { transaction } as never,
       { findMany: vi.fn() } as unknown as ProjectRepository,
       {} as unknown as ProjectFixtureRepository,
+      {} as never,
     );
 
     await expect(
@@ -102,6 +104,7 @@ describe('ProjectImportExportService', () => {
       { transaction } as never,
       { findMany: vi.fn().mockResolvedValue([]) } as unknown as ProjectRepository,
       {} as unknown as ProjectFixtureRepository,
+      {} as never,
     );
 
     await expect(
@@ -129,6 +132,7 @@ describe('ProjectImportExportService', () => {
       { transaction } as never,
       projectRepository as unknown as ProjectRepository,
       {} as unknown as ProjectFixtureRepository,
+      {} as never,
     );
 
     await expect(
@@ -160,6 +164,7 @@ describe('ProjectImportExportService', () => {
       { transaction } as never,
       projectRepository as unknown as ProjectRepository,
       {} as unknown as ProjectFixtureRepository,
+      {} as never,
     );
 
     await expect(
@@ -195,6 +200,7 @@ describe('ProjectImportExportService', () => {
       { transaction } as never,
       { findMany: vi.fn() } as unknown as ProjectRepository,
       {} as unknown as ProjectFixtureRepository,
+      {} as never,
     );
 
     await expect(
@@ -223,6 +229,7 @@ describe('ProjectImportExportService', () => {
       { transaction } as never,
       { findMany: vi.fn() } as unknown as ProjectRepository,
       {} as unknown as ProjectFixtureRepository,
+      {} as never,
     );
 
     await expect(
@@ -257,6 +264,7 @@ describe('ProjectImportExportService', () => {
       { transaction } as never,
       { findMany: vi.fn() } as unknown as ProjectRepository,
       {} as unknown as ProjectFixtureRepository,
+      {} as never,
     );
 
     await expect(
@@ -306,6 +314,7 @@ describe('ProjectImportExportService', () => {
       { transaction } as never,
       projectRepository as unknown as ProjectRepository,
       {} as unknown as ProjectFixtureRepository,
+      {} as never,
     );
 
     await expect(
@@ -364,6 +373,7 @@ describe('ProjectImportExportService', () => {
       { transaction } as never,
       { findMany: vi.fn() } as unknown as ProjectRepository,
       {} as unknown as ProjectFixtureRepository,
+      {} as never,
     );
 
     await expect(

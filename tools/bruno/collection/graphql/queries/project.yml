@@ -16,6 +16,7 @@ graphql:
           ioDevices {
             kind
             manufacturer
+            midiMappingPublicId
             name
             productId
             serial
@@ -110,6 +111,7 @@ graphql:
                 buttonMode
                 channelBindings
                 children
+                feedback
                 fontFamily
                 fontSize
                 fontWeight
@@ -120,6 +122,7 @@ graphql:
                 id
                 label
                 lowerLimit
+                midiEntryPublicId
                 orientation
                 type
                 upperLimit

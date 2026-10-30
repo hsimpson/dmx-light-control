@@ -33,7 +33,18 @@ export type DmxWsMidiInputMessage = {
   message: number[];
 };
 
-export type DmxWsClientMessage = DmxWsSetMessage | DmxWsFunctionMessage;
+export type DmxWsControlValueMessage = {
+  type: 'controlValue';
+  controlId: string;
+  value: number;
+};
+
+export type DmxWsControlStateMessage = {
+  type: 'controlState';
+  values: Record<string, number>;
+};
+
+export type DmxWsClientMessage = DmxWsSetMessage | DmxWsFunctionMessage | DmxWsControlValueMessage;
 
 export function dmxWsSnapshotMessage(channels: number[]): DmxWsSnapshotMessage {
   return { type: 'snapshot', channels };
@@ -51,6 +62,10 @@ export function dmxWsMidiInputMessage(portName: string, message: readonly number
   return { type: 'midiInput', portName, message: [...message] };
 }
 
+export function dmxWsControlStateMessage(values: Record<string, number>): DmxWsControlStateMessage {
+  return { type: 'controlState', values };
+}
+
 export function parseDmxWsClientMessage(raw: string): DmxWsClientMessage | undefined {
   let parsed: unknown;
   try {
@@ -61,7 +76,16 @@ export function parseDmxWsClientMessage(raw: string): DmxWsClientMessage | undef
   if (typeof parsed !== 'object' || parsed === null) {
     return undefined;
   }
-  const message = parsed as { type?: unknown; values?: unknown; functionPublicId?: unknown };
+  const message = parsed as {
+    type?: unknown;
+    values?: unknown;
+    functionPublicId?: unknown;
+    controlId?: unknown;
+    value?: unknown;
+  };
+  if (message.type === 'controlValue') {
+    return parseControlValue(message.controlId, message.value);
+  }
   if (message.type === 'functionStart' || message.type === 'functionStop') {
     if (typeof message.functionPublicId !== 'string' || message.functionPublicId.length === 0) {
       return undefined;
@@ -91,4 +115,12 @@ export function parseDmxWsSetMessage(raw: string): DmxValue[] | undefined {
     return undefined;
   }
   return message.values;
+}
+
+// Ids are allowlisted later against the active console; here only the shape is checked.
+function parseControlValue(controlId: unknown, value: unknown): DmxWsControlValueMessage | undefined {
+  if (typeof controlId !== 'string' || controlId.length === 0 || typeof value !== 'number' || !Number.isFinite(value)) {
+    return undefined;
+  }
+  return { type: 'controlValue', controlId, value };
 }

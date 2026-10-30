@@ -15,6 +15,8 @@ type Runner = {
 @Injectable()
 export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
   private readonly runners = new Map<string, Runner>();
+  // A stop that arrives while start awaits the database (quick flash press) must cancel that start.
+  private readonly pendingStarts = new Map<string, symbol>();
   private timer: ReturnType<typeof setInterval> | undefined;
 
   public constructor(
@@ -50,7 +52,13 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
   }
 
   public async start(functionPublicId: string): Promise<void> {
+    const startToken = Symbol(functionPublicId);
+    this.pendingStarts.set(functionPublicId, startToken);
     const row = await this.functions.findOneByPublicId(functionPublicId);
+    if (this.pendingStarts.get(functionPublicId) !== startToken) {
+      return;
+    }
+    this.pendingStarts.delete(functionPublicId);
     if (!row) {
       return;
     }
@@ -64,6 +72,7 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
   }
 
   public stop(functionPublicId: string): void {
+    this.pendingStarts.delete(functionPublicId);
     if (!this.runners.delete(functionPublicId)) {
       return;
     }

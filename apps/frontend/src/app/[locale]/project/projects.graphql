@@ -37,6 +37,21 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
   buttonMode
   functionPublicId
   functionName
+  midiEntryPublicId
+  feedback {
+    off {
+      behavior
+      color
+    }
+    on {
+      behavior
+      color
+    }
+    monitor {
+      behavior
+      color
+    }
+  }
 }
 
 fragment VirtualConsoleFields on VirtualConsoleDto {
@@ -359,6 +374,7 @@ fragment IoDeviceFields on IoDeviceDto {
   vendorId
   productId
   usbLocation
+  midiMappingPublicId
 }
 
 query GetProjectIoDevices($publicId: UUID!) {

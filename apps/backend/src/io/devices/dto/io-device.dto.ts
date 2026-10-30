@@ -1,5 +1,6 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { IsEnum, IsNotEmpty, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
+import { GraphQLUUID } from 'graphql-scalars';
 import { IoDeviceKind, IoDeviceStatus } from '../match-io-devices';
 
 @ObjectType()
@@ -27,6 +28,12 @@ export class IoDeviceDto {
     description: 'OS-specific USB port location; only used to tell identical devices apart',
   })
   public usbLocation: string | null;
+
+  @Field(() => GraphQLUUID, {
+    nullable: true,
+    description: 'Public ID of the MIDI mapping assigned to this MIDI device in the project',
+  })
+  public midiMappingPublicId: string | null;
 }
 
 @ObjectType()
@@ -80,4 +87,12 @@ export class IoDeviceInput {
   @IsOptional()
   @Matches(USB_LOCATION_PATTERN, { message: 'usbLocation contains unsupported characters' })
   public usbLocation: string | null;
+
+  @Field(() => GraphQLUUID, {
+    nullable: true,
+    description: 'Public ID of the MIDI mapping assigned to this MIDI device in the project',
+  })
+  @IsOptional()
+  @IsUUID('4')
+  public midiMappingPublicId?: string | null;
 }

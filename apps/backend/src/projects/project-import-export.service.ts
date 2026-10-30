@@ -3,6 +3,8 @@ import { optionalImportTimestamps } from '@/db/import-timestamps.input';
 import { relations } from '@/db/relations';
 import { fixture, fixtureChannelAssignment, fixtureChannelMode } from '@/fixtures/entities';
 import { IoDeviceInput } from '@/io/devices/dto/io-device.dto';
+import { midiMappingPublicIds } from '@/io/devices/match-io-devices';
+import { MidiMappingRepository } from '@/midi-mappings/repositories/midi-mapping.repository';
 import { ImportProject3dObjectInput, ImportProjectsInput } from '@/projects/dto/import-projects.dto';
 import { project, project3dObject, projectFixture, projectFunction, sceneObjectType } from '@/projects/entities';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from '@/projects/project-3d-object-name';
@@ -75,11 +77,6 @@ function virtualConsolePatchForUpdate(virtualConsole: VirtualConsoleDocument | n
   return { virtualConsole };
 }
 
-// Exports before schema v11 carry no devices; keep the stored ones instead of clearing them.
-function optionalIoDevices(incoming: ImportProjectsInput['projects'][number]): { ioDevices?: IoDeviceInput[] } {
-  return incoming.ioDevices ? { ioDevices: incoming.ioDevices } : {};
-}
-
 function virtualConsolePatchForInsert(virtualConsole: VirtualConsoleDocument | null | undefined) {
   if (virtualConsole === undefined) {
     return {};
@@ -96,6 +93,7 @@ export class ProjectImportExportService {
     @InjectDb() private readonly db: Db,
     private readonly projectRepository: ProjectRepository,
     private readonly projectFixtureRepository: ProjectFixtureRepository,
+    private readonly midiMappingRepository: MidiMappingRepository,
   ) {}
 
   public async exportProjects(): Promise<ProjectExportDocument> {
@@ -141,6 +139,7 @@ export class ProjectImportExportService {
     }
 
     const preparedVirtualConsole = await this.prepareVirtualConsoleForImport(tx, incoming);
+    const ioDevices = await this.ioDevicesForImport(incoming);
 
     const existing = byPublicId ?? byName;
     if (existing) {
@@ -156,7 +155,7 @@ export class ProjectImportExportService {
           ...optionalRoomDimensions(incoming),
           ...optionalImportTimestamps(incoming),
           ...virtualConsolePatchForUpdate(preparedVirtualConsole),
-          ...optionalIoDevices(incoming),
+          ...ioDevices,
         })
         .where(eq(project.id, existingId))
         .returning();
@@ -177,7 +176,7 @@ export class ProjectImportExportService {
           ...optionalRoomDimensions(incoming),
           ...optionalImportTimestamps(incoming),
           ...virtualConsolePatchForInsert(preparedVirtualConsole),
-          ...optionalIoDevices(incoming),
+          ...ioDevices,
         })
         .returning();
       const row = inserted[0];
@@ -191,6 +190,21 @@ export class ProjectImportExportService {
       }
       throw error;
     }
+  }
+
+  // Exports before schema v11 carry no devices: keep the stored ones. The mapping catalog is not exported,
+  // so a mapping id unknown to this database is dropped instead of failing the import.
+  private async ioDevicesForImport(
+    incoming: ImportProjectsInput['projects'][number],
+  ): Promise<{ ioDevices?: IoDeviceInput[] }> {
+    if (!incoming.ioDevices) return {};
+    const existing = await this.midiMappingRepository.findExistingPublicIds(midiMappingPublicIds(incoming.ioDevices));
+    return {
+      ioDevices: incoming.ioDevices.map(({ midiMappingPublicId, ...identity }) => ({
+        ...identity,
+        midiMappingPublicId: midiMappingPublicId && existing.has(midiMappingPublicId) ? midiMappingPublicId : null,
+      })),
+    };
   }
 
   private async replaceProjectFixtures(

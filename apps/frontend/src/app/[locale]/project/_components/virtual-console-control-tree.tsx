@@ -10,6 +10,7 @@ import {
   type VirtualConsoleControl,
   type VirtualConsoleResizeHandle,
 } from '@/app/[locale]/project/_components/virtual-console-document';
+import { useDmxStore } from '@/lib/dmx/dmx-store';
 import type { PointerEvent } from 'react';
 
 type VirtualConsoleControlTreeProperties = {
@@ -39,6 +40,7 @@ const VirtualConsoleControlTree = ({
   onResizePointerDown,
   onPlayValue,
 }: VirtualConsoleControlTreeProperties) => {
+  const controlValues = useDmxStore(state => state.controlValues);
   return (
     <>
       {controls.map(control => {
@@ -97,6 +99,7 @@ const VirtualConsoleControlTree = ({
                 control={control}
                 mode={mode}
                 selected={selected}
+                value={controlValues[control.id]}
                 onPlayValue={value => {
                   onPlayValue?.(control, value);
                 }}

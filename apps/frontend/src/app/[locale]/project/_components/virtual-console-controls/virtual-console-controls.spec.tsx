@@ -1,8 +1,7 @@
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
-import * as dmxSocketConnector from '@/lib/dmx/dmx-socket-connector';
-import { dmxStore } from '@/lib/dmx/dmx-store';
-import { fireEvent, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { dmxStore, resetDmxStore } from '@/lib/dmx/dmx-store';
+import { act, fireEvent, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createControl } from '../virtual-console-document';
 import ButtonControl from './button-control';
 import FrameControl from './frame-control';
@@ -23,6 +22,10 @@ const mockRailRect = (rail: HTMLElement, rect: Pick<DOMRect, 'top' | 'left' | 'w
 };
 
 describe('virtual console controls', () => {
+  afterEach(() => {
+    resetDmxStore();
+  });
+
   it('renders a frame label', () => {
     const control = { ...createControl('frame', 0, 0), label: 'Group' };
     renderWithProviders(<FrameControl control={control} mode="edit" />);
@@ -36,16 +39,20 @@ describe('virtual console controls', () => {
     expect(screen.getByRole('button', { name: 'Go' })).toBeDisabled();
   });
 
-  it('marks the button as pressed while the pointer is down in play mode', () => {
+  it('GIVEN the backend control state WHEN it changes THEN the play-mode button shows it as pressed', () => {
     const control = { ...createControl('button', 0, 0), label: 'Go' };
     renderWithProviders(<ButtonControl control={control} mode="play" />);
     const button = screen.getByRole('button', { name: 'Go' });
     expect(button).not.toHaveAttribute('data-pressed');
 
-    fireEvent.pointerDown(button, { pointerId: 1 });
+    act(() => {
+      dmxStore.getState().setControlValues({ [control.id]: 255 });
+    });
     expect(button).toHaveAttribute('data-pressed', 'true');
 
-    fireEvent.pointerUp(button, { pointerId: 1 });
+    act(() => {
+      dmxStore.getState().setControlValues({ [control.id]: 0 });
+    });
     expect(button).not.toHaveAttribute('data-pressed');
   });
 
@@ -230,50 +237,29 @@ describe('virtual console controls', () => {
     expect(onPlayValue).toHaveBeenLastCalledWith(100);
   });
 
-  it('publishes a button upper limit while pressed', () => {
+  it('GIVEN play mode WHEN a button is pressed, released or cancelled THEN it sends 1 then 0', () => {
     const onPlayValue = vi.fn();
-    const control = { ...createControl('button', 0, 0), label: 'Go', upperLimit: 180 };
+    const control = { ...createControl('button', 0, 0), label: 'Go', buttonMode: 'toggle' as const };
     renderWithProviders(<ButtonControl control={control} mode="play" onPlayValue={onPlayValue} />);
     const button = screen.getByRole('button', { name: 'Go' });
+
     fireEvent.pointerDown(button, { pointerId: 1 });
-    expect(onPlayValue).toHaveBeenCalledWith(180);
     fireEvent.pointerUp(button, { pointerId: 1 });
-    expect(onPlayValue).toHaveBeenLastCalledWith(0);
     fireEvent.pointerDown(button, { pointerId: 1 });
     fireEvent.pointerCancel(button);
-    expect(onPlayValue).toHaveBeenLastCalledWith(0);
+
+    expect(onPlayValue.mock.calls).toEqual([[1], [0], [1], [0]]);
   });
 
-  it('latches a toggle button and starts a bound function', () => {
-    const onPlayValue = vi.fn();
-    const toggle = { ...createControl('button', 0, 0), label: 'Latch', buttonMode: 'toggle' as const, upperLimit: 90 };
-    renderWithProviders(<ButtonControl control={toggle} mode="play" onPlayValue={onPlayValue} />);
-    const latch = screen.getByRole('button', { name: 'Latch' });
-    fireEvent.pointerDown(latch, { pointerId: 1 });
-    fireEvent.pointerUp(latch, { pointerId: 1 });
-    expect(onPlayValue).toHaveBeenLastCalledWith(90);
-    fireEvent.pointerDown(latch, { pointerId: 1 });
-    expect(onPlayValue).toHaveBeenLastCalledWith(0);
-
-    const startFunction = vi.fn();
-    const stopFunction = vi.fn();
-    vi.spyOn(dmxSocketConnector, 'getDmxWebsocketClient').mockReturnValue({
-      startFunction,
-      stopFunction,
-    } as unknown as ReturnType<typeof dmxSocketConnector.getDmxWebsocketClient>);
-    dmxStore.getState().setRunningFunctionIds([]);
-    const bound = {
-      ...createControl('button', 0, 0),
-      label: 'Run',
-      buttonMode: 'flash' as const,
-      functionPublicId: 'fn-1',
-    };
+  it('GIVEN a function button WHEN its function runs THEN it shows as pressed', () => {
+    const bound = { ...createControl('button', 0, 0), label: 'Run', functionPublicId: 'fn-1' };
     renderWithProviders(<ButtonControl control={bound} mode="play" />);
-    const run = screen.getByRole('button', { name: 'Run' });
-    fireEvent.pointerDown(run, { pointerId: 1 });
-    expect(startFunction).toHaveBeenCalledWith('fn-1');
-    fireEvent.pointerUp(run, { pointerId: 1 });
-    expect(stopFunction).toHaveBeenCalledWith('fn-1');
+
+    act(() => {
+      dmxStore.getState().setRunningFunctionIds(['fn-1']);
+    });
+
+    expect(screen.getByRole('button', { name: 'Run' })).toHaveAttribute('data-pressed', 'true');
   });
 
   it('steps a play-mode slider with arrow keys and ignores other keys', () => {
@@ -308,16 +294,6 @@ describe('virtual console controls', () => {
     expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('255');
   });
 
-  it('clears a play-mode button press on pointer cancel', () => {
-    const control = { ...createControl('button', 0, 0), label: 'Go' };
-    renderWithProviders(<ButtonControl control={control} mode="play" selected />);
-    const button = screen.getByRole('button', { name: 'Go' });
-    fireEvent.pointerDown(button, { pointerId: 1 });
-    expect(button).toHaveAttribute('data-pressed', 'true');
-    fireEvent.pointerCancel(button);
-    expect(button).not.toHaveAttribute('data-pressed');
-  });
-
   it('does not press a button in edit mode', () => {
     const control = { ...createControl('button', 0, 0), label: 'Go' };
     renderWithProviders(<ButtonControl control={control} mode="edit" selected />);
@@ -346,7 +322,7 @@ describe('virtual console controls', () => {
 
     const playButton = screen.getByRole('button', { name: 'Go' });
     fireEvent.pointerDown(playButton, { pointerId: 1 });
-    expect(onButton).toHaveBeenCalledWith(255);
+    expect(onButton).toHaveBeenCalledWith(1);
     fireEvent.pointerUp(playButton, { pointerId: 1 });
     expect(onButton).toHaveBeenLastCalledWith(0);
     unmount();

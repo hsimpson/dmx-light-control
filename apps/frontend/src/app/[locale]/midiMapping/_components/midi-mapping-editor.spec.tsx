@@ -14,6 +14,11 @@ import { ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import MidiMappingEditor from './midi-mapping-editor';
 
+// The Learn dialog opens the live /dmx socket; MIDI input is driven through the store instead.
+vi.mock('@/lib/dmx/dmx-socket-connector', () => ({
+  DmxSocketConnector: () => null,
+}));
+
 vi.mock('mantine-datatable', () => ({
   DataTable: ({
     records,

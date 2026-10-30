@@ -1,5 +1,7 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
-import type { IoDeviceIdentity } from '@/io/devices/match-io-devices';
+import { midiMappingPublicIds, type ProjectIoDevice } from '@/io/devices/match-io-devices';
+import { MidiMappingNotFoundException } from '@/midi-mappings/midi-mapping.exceptions';
+import { MidiMappingRepository } from '@/midi-mappings/repositories/midi-mapping.repository';
 import { ChannelModeNotFoundException, FixtureNotFoundException } from '@/fixtures/fixture.exceptions';
 import { FixtureChannelModeRepository } from '@/fixtures/repositories/fixture-channel-mode.repository';
 import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
@@ -242,6 +244,7 @@ export class ProjectService {
     private readonly eventEmitter: AppEventEmitter,
     private readonly fixtureRepository: FixtureRepository,
     private readonly fixtureChannelModeRepository: FixtureChannelModeRepository,
+    private readonly midiMappingRepository: MidiMappingRepository,
   ) {}
 
   public async getAllProjects() {
@@ -265,7 +268,7 @@ export class ProjectService {
       throw new ProjectNotFoundException(publicId);
     }
     this.activeProjectPublicId = publicId;
-    this.emitActiveIoDevices(project.ioDevices);
+    this.emitActiveProject(project.ioDevices);
     return mapProjectToDto(project);
   }
 
@@ -278,7 +281,7 @@ export class ProjectService {
     if (!project) {
       this.activeProjectPublicId = null;
     }
-    this.emitActiveIoDevices(project?.ioDevices ?? []);
+    this.emitActiveProject(project?.ioDevices ?? []);
   }
 
   public async createProject(input: CreateProjectInput) {
@@ -332,16 +335,25 @@ export class ProjectService {
     if (!updated) {
       throw new ProjectNotFoundException(input.publicId);
     }
+    if (input.publicId === this.activeProjectPublicId) {
+      this.refreshActiveVirtualConsole();
+    }
     return withVirtualConsole({ ...updated, ...emptyProjectExtras() });
   }
 
   public async updateProjectIoDevices(input: UpdateProjectIoDevicesInput) {
+    const mappingIds = midiMappingPublicIds(input.ioDevices);
+    const existing = await this.midiMappingRepository.findExistingPublicIds(mappingIds);
+    const unknown = mappingIds.find(publicId => !existing.has(publicId));
+    if (unknown) {
+      throw new MidiMappingNotFoundException(unknown);
+    }
     const updated = await this.projectRepository.updateOneByPublicId(input.publicId, { ioDevices: input.ioDevices });
     if (!updated) {
       throw new ProjectNotFoundException(input.publicId);
     }
     if (input.publicId === this.activeProjectPublicId) {
-      this.emitActiveIoDevices(updated.ioDevices);
+      this.emitActiveProject(updated.ioDevices);
     }
     return withVirtualConsole({ ...updated, ...emptyProjectExtras() });
   }
@@ -350,7 +362,7 @@ export class ProjectService {
     const deleted = await this.projectRepository.deleteOneByPublicId(publicId);
     if (deleted && publicId === this.activeProjectPublicId) {
       this.activeProjectPublicId = null;
-      this.emitActiveIoDevices([]);
+      this.emitActiveProject([]);
     }
     return { publicId, deleted };
   }
@@ -390,6 +402,7 @@ export class ProjectService {
     if (!loaded) {
       throw new ProjectFixtureNotFoundException(created.publicId);
     }
+    this.refreshActiveVirtualConsole();
     return mapProjectFixtureToDto(loaded as LoadedProjectFixture);
   }
 
@@ -439,11 +452,15 @@ export class ProjectService {
     if (!loaded) {
       throw new ProjectFixtureNotFoundException(updated.publicId);
     }
+    this.refreshActiveVirtualConsole();
     return mapProjectFixtureToDto(loaded as LoadedProjectFixture);
   }
 
   public async deleteProjectFixtureByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {
     const deleted = await this.projectFixtureRepository.deleteOneByPublicId(publicId);
+    if (deleted) {
+      this.refreshActiveVirtualConsole();
+    }
     return { publicId, deleted };
   }
 
@@ -650,7 +667,15 @@ export class ProjectService {
     return mode;
   }
 
-  private emitActiveIoDevices(devices: IoDeviceIdentity[]): void {
+  private emitActiveProject(devices: ProjectIoDevice[]): void {
     this.eventEmitter.emit('project.ioDevicesActivated', { devices });
+    this.eventEmitter.emit('project.virtualConsoleUpdated', { projectPublicId: this.activeProjectPublicId });
+  }
+
+  /** Fixture patch changes only know the internal project id, so any change re-reads the active project. */
+  private refreshActiveVirtualConsole(): void {
+    if (this.activeProjectPublicId) {
+      this.eventEmitter.emit('project.virtualConsoleUpdated', { projectPublicId: this.activeProjectPublicId });
+    }
   }
 }

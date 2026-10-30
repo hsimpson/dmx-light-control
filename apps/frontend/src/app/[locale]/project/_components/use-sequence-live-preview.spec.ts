@@ -5,14 +5,9 @@ import type { SequenceStepDraft } from './sequence-steps';
 import { useSequenceLivePreview } from './use-sequence-live-preview';
 
 const setChannels = vi.hoisted(() => vi.fn());
-const resetVirtualConsoleChannelOutput = vi.hoisted(() => vi.fn());
 
 vi.mock('@/lib/dmx/dmx-socket-connector', () => ({
   getDmxWebsocketClient: () => ({ setChannels }),
-}));
-
-vi.mock('./virtual-console-channel-output', () => ({
-  resetVirtualConsoleChannelOutput,
 }));
 
 const step = (channel: number, value: number): SequenceStepDraft => ({
@@ -28,7 +23,6 @@ const steps = [step(1, 255), step(2, 128)];
 describe('useSequenceLivePreview', () => {
   beforeEach(() => {
     setChannels.mockClear();
-    resetVirtualConsoleChannelOutput.mockClear();
     resetDmxStore();
     dmxStore.getState().applySnapshot([10, 20, 30, 40]);
     dmxStore.getState().setStatus('open');
@@ -59,7 +53,6 @@ describe('useSequenceLivePreview', () => {
       { channel: 2, value: 20 },
     ]);
     expect(result.current.sentValues.current.get(2)).toBe(20);
-    expect(resetVirtualConsoleChannelOutput).toHaveBeenCalledTimes(1);
   });
 
   it('zeros fixture and virtual console channels the selected step does not set', () => {

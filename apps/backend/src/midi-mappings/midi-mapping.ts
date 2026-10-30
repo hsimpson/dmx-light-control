@@ -27,7 +27,9 @@ export type MidiLedState = {
   color: number;
 };
 
+/** `monitor`: the bound button's function runs but was started by something else (falls back to `on`). */
 export type MidiFeedback = {
   off: MidiLedState;
   on: MidiLedState;
+  monitor?: MidiLedState | null;
 };

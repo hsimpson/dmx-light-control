@@ -7,6 +7,25 @@ import {
 
 export type MidiLedStateValues = { behavior: number; color: number };
 
+export type MidiFeedbackValues = {
+  off: MidiLedStateValues;
+  on: MidiLedStateValues;
+  monitor: MidiLedStateValues | null;
+};
+
+type MidiFeedbackLike = {
+  off: MidiLedStateValues;
+  on: MidiLedStateValues;
+  monitor?: MidiLedStateValues | null;
+} | null;
+
+/** Copies only the LED fields, dropping GraphQL `__typename`, so the result can be sent back as input. */
+export const feedbackValues = (feedback: MidiFeedbackLike | undefined): MidiFeedbackValues => ({
+  off: { behavior: feedback?.off.behavior ?? 0, color: feedback?.off.color ?? 0 },
+  on: { behavior: feedback?.on.behavior ?? 0, color: feedback?.on.color ?? 1 },
+  monitor: feedback?.monitor ? { behavior: feedback.monitor.behavior, color: feedback.monitor.color } : null,
+});
+
 export type MidiMappingEntryValues = {
   name: string;
   controlType: MidiControlType;
@@ -14,8 +33,7 @@ export type MidiMappingEntryValues = {
   channel: number;
   number: number;
   hasFeedback: boolean;
-  off: MidiLedStateValues;
-  on: MidiLedStateValues;
+  feedback: MidiFeedbackValues;
 };
 
 export type MidiMappingEntryInput = Omit<AddMidiMappingEntryInput, 'midiMappingPublicId'>;
@@ -27,20 +45,18 @@ export const entryValues = (entry?: MidiMappingEntryFieldsFragment): MidiMapping
   channel: entry?.channel ?? 0,
   number: entry?.number ?? 0,
   hasFeedback: Boolean(entry?.feedback),
-  off: { behavior: entry?.feedback?.off.behavior ?? 0, color: entry?.feedback?.off.color ?? 0 },
-  on: { behavior: entry?.feedback?.on.behavior ?? 0, color: entry?.feedback?.on.color ?? 1 },
+  feedback: feedbackValues(entry?.feedback),
 });
 
 export const entryInput = ({
   hasFeedback,
-  off,
-  on,
+  feedback,
   name,
   ...values
 }: MidiMappingEntryValues): MidiMappingEntryInput => ({
   ...values,
   name: name.trim(),
-  feedback: hasFeedback ? { off, on } : null,
+  feedback: hasFeedback ? feedback : null,
 });
 
 export const midiAddress = ({

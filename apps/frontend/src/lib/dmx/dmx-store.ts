@@ -21,11 +21,14 @@ export type DmxStoreState = {
   channels: number[];
   status: DmxConnectionStatus;
   runningFunctionIds: string[];
+  /** Virtual console button/slider values, owned by the backend. */
+  controlValues: Record<string, number>;
   lastMidiInput: MidiInput | null;
   applySnapshot: (values: ArrayLike<number>) => void;
   applyDelta: (updates: DmxChannelUpdate[]) => void;
   setStatus: (status: DmxConnectionStatus) => void;
   setRunningFunctionIds: (ids: string[]) => void;
+  setControlValues: (values: Record<string, number>) => void;
   setLastMidiInput: (input: MidiInput) => void;
 };
 
@@ -42,6 +45,7 @@ export function createDmxStore() {
     channels: createZeroChannels(),
     status: 'idle',
     runningFunctionIds: [],
+    controlValues: {},
     lastMidiInput: null,
     applySnapshot: values => {
       const next = createZeroChannels();
@@ -80,6 +84,9 @@ export function createDmxStore() {
     setRunningFunctionIds: runningFunctionIds => {
       set({ runningFunctionIds });
     },
+    setControlValues: controlValues => {
+      set({ controlValues });
+    },
     setLastMidiInput: lastMidiInput => {
       set({ lastMidiInput });
     },
@@ -96,6 +103,7 @@ export function resetDmxStore(): void {
   dmxStore.setState({
     channels: createZeroChannels(),
     runningFunctionIds: [],
+    controlValues: {},
     lastMidiInput: null,
     status: 'idle',
   });

@@ -1,3 +1,4 @@
+import type { MidiFeedbackValues } from '@/app/[locale]/midiMapping/_components/midi-mapping-entry-values';
 import type { VirtualConsoleControlInput, VirtualConsoleInput } from '@/shared/types/graphql/graphql';
 import {
   VirtualConsoleButtonMode as GqlVirtualConsoleButtonMode,
@@ -59,6 +60,8 @@ export type VirtualConsoleControl = {
   buttonMode?: VirtualConsoleButtonMode;
   functionPublicId?: string;
   functionName?: string;
+  midiEntryPublicId?: string;
+  feedback?: MidiFeedbackValues;
 };
 
 export type VirtualConsolePage = {

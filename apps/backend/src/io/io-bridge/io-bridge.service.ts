@@ -1,102 +1,109 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { IoDeviceManagerService } from '@/io/devices/io-device-manager.service';
+import type { ProjectIoDevice } from '@/io/devices/match-io-devices';
+import type { VirtualConsoleFeedback } from '@/io/virtual-console-playback/virtual-console-events';
+import { MidiMessageType, type MidiFeedback } from '@/midi-mappings/midi-mapping';
+import { MidiMappingRepository, type LoadedMidiMapping } from '@/midi-mappings/repositories/midi-mapping.repository';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { MidiMessage } from 'midi';
 
-// this is for testing with the Akai APC mini mk2
-const noteDmxMapping: Record<number, number[]> = {
-  // Map MIDI note numbers to DMX channel values (example mapping)
-  0: [1], // button 0 maps to DMX channel 1
-  1: [2], // button 1 maps to DMX channel 2
-  2: [3], // button 2 maps to DMX channel 3
-  3: [4], // button 3 maps to DMX channel 4
+const NOTE_OFF = 0x80;
+const NOTE_ON = 0x90;
+const CONTROL_CHANGE = 0xb0;
 
-  48: [1, 10], // 1st fader maps to DMX channel 1, 10
-  49: [2, 11], // 2nd fader maps to DMX channel 2, 11
-  50: [3, 12], // 3rd fader maps to DMX channel 3, 12
-  51: [4, 13], // 4th fader maps to DMX channel 4, 13
-  52: [5, 14], // 5th fader maps to DMX channel 5, 14
+type MidiMappingEntry = LoadedMidiMapping['midiMappingEntries'][number];
 
-  56: [6, 15], // 9th fader maps to DMX channel 6, 15
-};
-
-// format: [behavior, button, color]
-const ledMidiMapping: MidiMessage[] = [
-  // [0x96, 0, 0x5], // 100% brightness for button 1 with red color (#FF0000)
-  // [0x96, 1, 0x15], // 100% brightness for button 2 with green color (#00FF00)
-  // [0x96, 2, 0x2d], // 100% brightness for button 3 with blue color  (#0000FF)
-  // [0x9d, 3, 0x5], // Blinking 1/8 for button 4 with red color (#FF0000)
-  // [0x9d, 4, 0x15], // Blinking 1/8 for button 5 with green color (#00FF00)
-  // [0x9d, 5, 0x2d], // Blinking 1/8 for button 6 with blue color (#0000FF)
-  // [0x90, 0x64, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 1 on
-  // [0x90, 0x65, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 2 on
-  // [0x90, 0x66, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 3 on
-  // [0x90, 0x67, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 4 on
-  // [0x90, 0x68, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 5 on
-  // [0x90, 0x69, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 6 on
-  // [0x90, 0x6a, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 7 on
-  // [0x90, 0x6b, 0x1], // single-color LEDs only listen on channel 0 (0x90): Track Button 8 on
-  // [0x90, 0x70, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 1 on
-  // [0x90, 0x71, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 2 on
-  // [0x90, 0x72, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 3 on
-  // [0x90, 0x73, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 4 on
-  // [0x90, 0x74, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 5 on
-  // [0x90, 0x75, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 6 on
-  // [0x90, 0x76, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 7 on
-  // [0x90, 0x77, 0x1], // single-color LEDs only listen on channel 0 (0x90): Scene Launch 8 on
-  // [0x90, 0x7a, 0x1], // single-color LEDs only listen on channel 0 (0x90): Shift Button on
-];
-
+/** Translates MIDI bytes of the active project's controllers to mapping entries, and LED feedback back to bytes. */
 @Injectable()
 export class IoBridgeService implements OnModuleInit {
-  private readonly logger = new Logger(IoBridgeService.name);
+  private readonly mappings = new Map<string, Promise<LoadedMidiMapping | undefined>>();
+  private feedback = new Map<string, VirtualConsoleFeedback>();
+  /** Last LED message per port and note, so only changes are sent. */
+  private readonly sentLeds = new Map<string, Map<number, string>>();
 
-  public constructor(private readonly eventEmitter: AppEventEmitter) {}
+  public constructor(
+    private readonly eventEmitter: AppEventEmitter,
+    private readonly devices: IoDeviceManagerService,
+    private readonly mappingRepository: MidiMappingRepository,
+  ) {}
 
   public onModuleInit(): void {
-    // shortcut: every controller shares the APC mapping; per-device mappings are a planned follow-up.
-    this.eventEmitter.on('midi.inputMessage', ({ message }) => {
-      this.handleMidiMessage(message);
+    this.eventEmitter.on('midi.inputMessage', async ({ portName, message }) => {
+      await this.handleInput(portName, message);
     });
-
-    this.eventEmitter.on('midi.outputOpened', ({ portName }) => {
-      // create the outbound events to control the LEDs on the MIDI controller that just connected
-      for (const ledMessage of ledMidiMapping) {
-        this.eventEmitter.emit('midi.sendMessage', { portName, message: ledMessage });
-      }
+    this.eventEmitter.on('virtualConsole.feedback', async ({ entries }) => {
+      this.feedback = new Map(entries.map(item => [item.entryPublicId, item]));
+      await this.syncLeds();
+    });
+    this.eventEmitter.on('midi.outputOpened', async ({ portName }) => {
+      this.sentLeds.delete(portName);
+      await this.syncLeds();
+    });
+    this.eventEmitter.on('midiMapping.changed', async () => {
+      this.mappings.clear();
+      await this.syncLeds();
     });
   }
 
-  private handleMidiMessage(message: MidiMessage): void {
-    const [status, data1, data2] = message;
-
-    let dmxValue = 0;
-    const dmxChannels = noteDmxMapping[data1] ?? []; // Get DMX channels based on MIDI note number
-
-    if (dmxChannels.length === 0) {
-      // If the MIDI note is not mapped, ignore the message
-      this.logger.warn(`Received MIDI message with unmapped note: ${data1}. Ignoring.`);
+  private async handleInput(portName: string, message: MidiMessage): Promise<void> {
+    const mapping = await this.mappingFor(this.connectedDevices().get(portName));
+    const [status, number, value] = message;
+    const kind = status & 0xf0;
+    const messageType = kind === CONTROL_CHANGE ? MidiMessageType.ControlChange : MidiMessageType.Note;
+    if (kind !== NOTE_ON && kind !== NOTE_OFF && kind !== CONTROL_CHANGE) {
       return;
     }
-
-    if (status >= 128 && status <= 143) {
-      // Note Off message
-      dmxValue = 0;
-    } else if (status >= 144 && status <= 159) {
-      // Note On message
-      dmxValue = data2; // Use velocity as DMX value
-    } else if (status >= 160 && status <= 175) {
-      // Poly Key Pressure
-      dmxValue = data2; // Use pressure as DMX value
-    } else if (status >= 176 && status <= 191) {
-      // Control Change
-      dmxValue = data2; // Use control value as DMX value
+    const entry = mapping?.midiMappingEntries.find(
+      candidate =>
+        candidate.messageType === messageType && candidate.channel === (status & 0x0f) && candidate.number === number,
+    );
+    if (entry?.publicId) {
+      this.eventEmitter.emit('virtualConsole.midiInput', {
+        entryPublicId: entry.publicId,
+        value: kind === NOTE_OFF ? 0 : value,
+      });
     }
+  }
 
-    // normalize DMX value to 0-255
-    dmxValue = Math.round((dmxValue / 127) * 255);
-
-    for (const dmxChannel of dmxChannels) {
-      this.eventEmitter.emit('dmx.manualValues', [{ channel: dmxChannel, value: dmxValue }]);
+  // shortcut: assigning another mapping to an already open controller shows its LEDs on the next state change or reconnect.
+  private async syncLeds(): Promise<void> {
+    for (const [portName, device] of this.connectedDevices()) {
+      const mapping = await this.mappingFor(device);
+      const sent = this.sentLeds.get(portName) ?? new Map<number, string>();
+      this.sentLeds.set(portName, sent);
+      for (const entry of mapping?.midiMappingEntries ?? []) {
+        const message = this.ledMessage(entry);
+        if (message && sent.get(entry.number) !== message.join()) {
+          sent.set(entry.number, message.join());
+          this.eventEmitter.emit('midi.sendMessage', { portName, message });
+        }
+      }
     }
+  }
+
+  /** Unbound entries show their default `off` state; `monitor` falls back to `on`. */
+  private ledMessage(entry: MidiMappingEntry): MidiMessage | undefined {
+    const item = entry.publicId ? this.feedback.get(entry.publicId) : undefined;
+    const feedback: MidiFeedback | null | undefined = item?.feedback ?? entry.feedback;
+    if (entry.messageType !== MidiMessageType.Note || !feedback) {
+      return undefined;
+    }
+    const state = item?.state ?? 'off';
+    const led = state === 'monitor' ? (feedback.monitor ?? feedback.on) : feedback[state];
+    return [NOTE_ON | led.behavior, entry.number, led.color];
+  }
+
+  private connectedDevices(): Map<string, ProjectIoDevice> {
+    return new Map(this.devices.statuses().flatMap(({ device, handle }) => (handle ? [[handle, device]] : [])));
+  }
+
+  private async mappingFor(device: ProjectIoDevice | undefined): Promise<LoadedMidiMapping | undefined> {
+    const publicId = device?.midiMappingPublicId;
+    if (!publicId) {
+      return undefined;
+    }
+    const cached = this.mappings.get(publicId) ?? this.mappingRepository.findOneWithEntries(publicId);
+    this.mappings.set(publicId, cached);
+    return cached;
   }
 }

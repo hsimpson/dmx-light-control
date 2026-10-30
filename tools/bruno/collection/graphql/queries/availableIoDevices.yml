@@ -13,6 +13,7 @@ graphql:
         availableIoDevices {
           kind
           manufacturer
+          midiMappingPublicId
           name
           productId
           serial

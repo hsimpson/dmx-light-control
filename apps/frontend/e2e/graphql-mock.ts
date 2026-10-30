@@ -162,6 +162,7 @@ type MockedIoDevice = {
   vendorId: string | null;
   productId: string | null;
   usbLocation: string | null;
+  midiMappingPublicId?: string | null;
 };
 
 export const mockedAvailableIoDevices: MockedIoDevice[] = [
@@ -185,7 +186,7 @@ export const mockedAvailableIoDevices: MockedIoDevice[] = [
   },
 ];
 
-const ioDeviceDto = (device: MockedIoDevice) => ({ __typename: 'IoDeviceDto', ...device });
+const ioDeviceDto = (device: MockedIoDevice) => ({ __typename: 'IoDeviceDto', midiMappingPublicId: null, ...device });
 
 const isPluggedIn = (device: MockedIoDevice) =>
   mockedAvailableIoDevices.some(

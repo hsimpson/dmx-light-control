@@ -1,4 +1,5 @@
 import { isPostgresUniqueViolation } from '@/db/postgres-errors';
+import { AppEventEmitter } from '@/events/app-event-emitter';
 import { Injectable } from '@nestjs/common';
 import {
   AddMidiMappingEntryInput,
@@ -13,6 +14,7 @@ import {
   MidiMappingAlreadyExistsException,
   MidiMappingEntryConflictException,
   MidiMappingEntryNotFoundException,
+  MidiMappingInUseException,
   MidiMappingNotFoundException,
 } from './midi-mapping.exceptions';
 import { MidiMappingEntryRepository } from './repositories/midi-mapping-entry.repository';
@@ -24,7 +26,13 @@ function toMidiMapping({ midiMappingEntries, ...mapping }: LoadedMidiMapping) {
 
 /** GraphQL inputs have a null prototype; DrizzleQueryError stringifies params and throws on them, hiding the pg error. */
 function toFeedback(feedback: MidiFeedbackInput | null | undefined): MidiFeedback | null | undefined {
-  return feedback && { off: toLedState(feedback.off), on: toLedState(feedback.on) };
+  return (
+    feedback && {
+      off: toLedState(feedback.off),
+      on: toLedState(feedback.on),
+      monitor: feedback.monitor ? toLedState(feedback.monitor) : null,
+    }
+  );
 }
 
 function toLedState({ behavior, color }: MidiLedStateInput): MidiLedState {
@@ -44,6 +52,7 @@ export class MidiMappingService {
   public constructor(
     private readonly mappingRepository: MidiMappingRepository,
     private readonly entryRepository: MidiMappingEntryRepository,
+    private readonly eventEmitter: AppEventEmitter,
   ) {}
 
   public async getAll() {
@@ -81,6 +90,9 @@ export class MidiMappingService {
   }
 
   public async delete(publicId: string) {
+    if (await this.mappingRepository.isAssignedToProject(publicId)) {
+      throw new MidiMappingInUseException(publicId);
+    }
     return { publicId, deleted: await this.mappingRepository.deleteOneByPublicId(publicId) };
   }
 
@@ -102,6 +114,7 @@ export class MidiMappingService {
     if (!created) {
       throw new MidiMappingEntryNotFoundException(midiMappingPublicId);
     }
+    this.eventEmitter.emit('midiMapping.changed');
     return created;
   }
 
@@ -117,10 +130,15 @@ export class MidiMappingService {
     if (!updated) {
       throw new MidiMappingEntryNotFoundException(publicId);
     }
+    this.eventEmitter.emit('midiMapping.changed');
     return updated;
   }
 
   public async deleteEntry(publicId: string) {
-    return { publicId, deleted: await this.entryRepository.deleteOneByPublicId(publicId) };
+    const deleted = await this.entryRepository.deleteOneByPublicId(publicId);
+    if (deleted) {
+      this.eventEmitter.emit('midiMapping.changed');
+    }
+    return { publicId, deleted };
   }
 }
