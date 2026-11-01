@@ -114,7 +114,7 @@
     "@nestjs/platform-express": "^12.2.0",
     "@nestjs/platform-fastify": "^12.2.0",
     "@phosphor-icons/react": "^2.1.10",
-    "axios": "^1.20.0",
+    "axios": "^1.21.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "clsx": "^2.1.1",
