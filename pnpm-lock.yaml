@@ -185,8 +185,8 @@ importers:
         specifier: ^10.1.6
         version: 10.1.6
       '@fastify/static':
-        specifier: ^10.1.7
-        version: 10.1.7
+        specifier: ^10.1.8
+        version: 10.1.8
       '@fastify/websocket':
         specifier: ^11.3.4
         version: 11.3.4
@@ -231,7 +231,7 @@ importers:
         version: 12.2.0(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.2.0)(supports-color@7.2.0)
       '@nestjs/platform-fastify':
         specifier: ^12.2.0
-        version: 12.2.0(@fastify/multipart@10.1.6)(@fastify/static@10.1.7)(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.2.0)
+        version: 12.2.0(@fastify/multipart@10.1.6)(@fastify/static@10.1.8)(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.2.0)
       '@phosphor-icons/react':
         specifier: ^2.1.10
         version: 2.1.10(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2035,11 +2035,11 @@ packages:
   '@fastify/proxy-addr@5.1.0':
     resolution: {integrity: sha512-INS+6gh91cLUjB+PVHfu1UqcB76Sqtpyp7bnL+FYojhjygvOPA9ctiD/JDKsyD9Xgu4hUhCSJBPig/w7duNajw==}
 
-  '@fastify/send@4.1.1':
-    resolution: {integrity: sha512-BYo+EiaKwlxH+WetGk6hAs1d39iP0y1gqB8lGF/qwkJ9ZZ/cBY1vx5NvExb9Sc3yRMFjD5X4Eyh4e4+TzRkzdw==}
+  '@fastify/send@4.2.0':
+    resolution: {integrity: sha512-B5Hr+IFsPbqJJQu6FHE2MFpnHfbPlCOVQUPTdm6PxCcilYGrEQsulbO0z9blgbjndIyLJwa2NWFIIjXpPhbwUg==}
 
-  '@fastify/static@10.1.7':
-    resolution: {integrity: sha512-7+lUiPRraENCiULgjhcqZyWSW6qnwIT87Is0u3c2Z3iGEEEGB45wJhYxzrSdzu12gHM4qcviEYcPEiCe4J6MCQ==}
+  '@fastify/static@10.1.8':
+    resolution: {integrity: sha512-3CbgWOXJX8f46xxsuOgQl9h0lyQQiABMG40kxRF5PWJk4LyBW5m3mLZoW5glnm2TUTC1gVFCBnqOt5S6zIIIrg==}
 
   '@fastify/websocket@11.3.4':
     resolution: {integrity: sha512-firnJtEOv6pfdoXIzFDMbd+omgWwFNfLtdM8JejNFr/9lT/9DHkEhjTShuRFeE4phqrevD2B3JRW0v6uyzWhHQ==}
@@ -12652,7 +12652,7 @@ snapshots:
       '@fastify/forwarded': 3.0.1
       ipaddr.js: 2.4.0
 
-  '@fastify/send@4.1.1':
+  '@fastify/send@4.2.0':
     dependencies:
       '@lukeed/ms': 2.0.2
       escape-html: 1.0.3
@@ -12660,11 +12660,11 @@ snapshots:
       http-errors: 2.0.1
       mime: 3.0.0
 
-  '@fastify/static@10.1.7':
+  '@fastify/static@10.1.8':
     dependencies:
       '@fastify/accept-negotiator': 2.1.0
       '@fastify/error': 4.2.0
-      '@fastify/send': 4.1.1
+      '@fastify/send': 4.2.0
       content-disposition: 3.0.0
       fastify-plugin: 6.0.0
       fastq: 1.20.3
@@ -14117,7 +14117,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@nestjs/platform-fastify@12.2.0(@fastify/multipart@10.1.6)(@fastify/static@10.1.7)(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.2.0)':
+  '@nestjs/platform-fastify@12.2.0(@fastify/multipart@10.1.6)(@fastify/static@10.1.8)(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.2.0)':
     dependencies:
       '@fastify/cors': 11.3.1
       '@fastify/formbody': 9.0.1
@@ -14132,7 +14132,7 @@ snapshots:
       tslib: 2.8.1
     optionalDependencies:
       '@fastify/multipart': 10.1.6
-      '@fastify/static': 10.1.7
+      '@fastify/static': 10.1.8
 
   '@nestjs/schematics@11.1.0(prettier@3.9.10)(typescript@6.0.3)':
     dependencies:
@@ -16184,8 +16184,8 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  ajv-formats@2.1.1(ajv@8.20.0):
-    optionalDependencies:
+  ajv-formats@2.1.1:
+    dependencies:
       ajv: 8.20.0
 
   ajv-formats@3.0.1:
@@ -21237,7 +21237,7 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
       ajv: 8.20.0
-      ajv-formats: 2.1.1(ajv@8.20.0)
+      ajv-formats: 2.1.1
       ajv-keywords: 5.1.0(ajv@8.20.0)
 
   schema-utils@4.8.1(webpack@5.111.0):
@@ -22421,7 +22421,7 @@ snapshots:
       mime-types: 3.0.2
       on-finished: 2.4.1
       range-parser: 1.3.0
-      schema-utils: 4.3.3
+      schema-utils: 4.8.1(webpack@5.111.0)
     optionalDependencies:
       webpack: 5.111.0(@swc/core@1.16.20(@swc/helpers@0.5.23))(cssnano@7.1.9(postcss@8.5.31))(csso@5.0.5)(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.31)(sharp@0.35.5(@types/node@26.6.5))(svgo@4.0.2)(webpack-cli@7.2.3)
     optional: true
@@ -22449,7 +22449,7 @@ snapshots:
       launch-editor: 2.14.1
       open: 10.2.0
       p-retry: 6.2.1
-      schema-utils: 4.3.3
+      schema-utils: 4.8.1(webpack@5.111.0)
       selfsigned: 5.5.0
       serve-index: 1.9.2(supports-color@7.2.0)
       sockjs: 0.3.24
