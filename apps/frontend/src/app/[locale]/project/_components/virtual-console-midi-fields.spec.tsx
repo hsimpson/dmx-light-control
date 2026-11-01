@@ -1,3 +1,4 @@
+import { dmxStore, resetDmxStore } from '@/lib/dmx/dmx-store';
 import {
   GetMidiMappingsDocument,
   GetProjectIoDevicesDocument,
@@ -7,8 +8,8 @@ import {
   MidiMessageType,
 } from '@/shared/types/graphql/graphql';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
-import { screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { act, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createControl } from './virtual-console-document';
 import VirtualConsoleMidiFields from './virtual-console-midi-fields';
 
@@ -87,6 +88,31 @@ const mocks = [
 ];
 
 describe('VirtualConsoleMidiFields', () => {
+  afterEach(() => {
+    resetDmxStore();
+  });
+
+  it('GIVEN learn is active WHEN a mapped pad is pressed THEN the control is bound to its entry', async () => {
+    const onPatch = vi.fn();
+    const { user } = renderWithProviders(
+      <VirtualConsoleMidiFields projectPublicId="proj-1" control={createControl('button', 0, 0)} onPatch={onPatch} />,
+      { apolloMocks: mocks },
+    );
+    await screen.findByRole('combobox', { name: 'MIDI input' });
+
+    await user.click(screen.getByRole('button', { name: 'Learn' }));
+    act(() => {
+      dmxStore.getState().setLastMidiInput({ portName: 'APC', message: [0x90, 1, 0x7f] });
+    });
+    expect(onPatch).not.toHaveBeenCalled();
+
+    act(() => {
+      dmxStore.getState().setLastMidiInput({ portName: 'APC', message: [0x90, 0, 0x7f] });
+    });
+    expect(onPatch).toHaveBeenCalledWith({ midiEntryPublicId: 'pad-1' });
+    expect(screen.getByRole('button', { name: 'Learn' })).toBeInTheDocument();
+  });
+
   it('GIVEN mappings assigned to the project WHEN an entry is picked THEN the control is bound to it', async () => {
     const onPatch = vi.fn();
     const { user } = renderWithProviders(
