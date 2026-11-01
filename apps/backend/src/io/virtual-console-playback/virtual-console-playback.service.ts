@@ -3,7 +3,7 @@ import { LoadedProject, ProjectRepository } from '@/projects/repositories/projec
 import type { VirtualConsoleControl } from '@/projects/virtual-console';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import type { VirtualConsoleFeedback, VirtualConsoleLedState } from './virtual-console-events';
-import { VirtualConsoleOutput, type VirtualConsoleBoundFixture } from './virtual-console-output';
+import { controlToDmxValue, VirtualConsoleOutput, type VirtualConsoleBoundFixture } from './virtual-console-output';
 
 const DMX_MAX = 255;
 const MIDI_MAX = 127;
@@ -69,7 +69,19 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     if (!sameProject) {
       this.output = new VirtualConsoleOutput();
     }
+    this.applyInitialLevels();
     this.emitState();
+  }
+
+  /** Sliders whose lowest position still outputs light (lowerLimit > 0) must write it, not leave the channel at 0. */
+  private applyInitialLevels(): void {
+    for (const control of this.controls.values()) {
+      const min = sliderMin(control);
+      if (control.type === 'slider' && !this.values.has(control.id) && controlToDmxValue(control, min) > 0) {
+        this.values.set(control.id, min);
+        this.writeDmx(control, min);
+      }
+    }
   }
 
   private applyInput(controlId: string, value: number): void {
@@ -141,8 +153,9 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
       this.startedBy.delete(functionPublicId);
       this.eventEmitter.emit('function.stop', { functionPublicId });
     }
-    if ((this.values.get(control.id) ?? 0) > 0) {
-      this.writeDmx(control, 0);
+    if (controlToDmxValue(control, this.values.get(control.id) ?? 0) > 0) {
+      // As DMX, so a percentage slider goes dark instead of back to its lowerLimit.
+      this.writeDmx({ ...control, valueType: 'dmx' }, 0);
     }
     this.values.delete(control.id);
   }

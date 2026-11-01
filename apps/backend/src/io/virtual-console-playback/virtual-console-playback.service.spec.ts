@@ -180,6 +180,35 @@ describe('VirtualConsolePlaybackService', () => {
     expect(states.at(-1)).toEqual({});
   });
 
+  it('GIVEN sliders with a lower limit WHEN the project loads THEN they output and publish their lowest level', async () => {
+    const dmxSlider = control('strobe', 'slider', { channelBindings: red, valueType: 'dmx', lowerLimit: 63 });
+    const percentSlider = control('dimmer', 'slider', {
+      channelBindings: red,
+      valueType: 'percentage',
+      lowerLimit: 40,
+    });
+
+    const { dmx, states } = await build([dmxSlider, percentSlider, slider]);
+
+    expect(dmx).toEqual([[{ channel: 10, value: 63 }], [{ channel: 10, value: 40 }]]);
+    expect(states.at(-1)).toEqual({ strobe: 63, dimmer: 0 });
+  });
+
+  it('GIVEN a percentage slider at its lower limit WHEN another project loads THEN its channel is released', async () => {
+    const percentSlider = control('dimmer', 'slider', {
+      channelBindings: red,
+      valueType: 'percentage',
+      lowerLimit: 40,
+    });
+    const { service, projects, dmx } = await build([percentSlider]);
+    projects.findOneByPublicIdWithFixtures.mockResolvedValue({ ...loadedProject([]), publicId: OTHER_PROJECT_ID });
+    dmx.length = 0;
+
+    await service.reload(OTHER_PROJECT_ID);
+
+    expect(dmx).toEqual([[{ channel: 10, value: 0 }]]);
+  });
+
   it('GIVEN a project without a saved console WHEN loaded THEN no control reacts', async () => {
     const { service, projects, dmx, input } = await build();
     projects.findOneByPublicIdWithFixtures.mockResolvedValue({ ...loadedProject([]), virtualConsole: null });
