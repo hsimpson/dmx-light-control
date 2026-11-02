@@ -1,6 +1,7 @@
 import { ExportTimestampsDto } from '@/db/export-timestamps.dto';
 import { SequencePropertiesDto } from '@/projects/dto/project-function.dto';
 import { VirtualConsoleDto } from '@/projects/dto/virtual-console.dto';
+import { IoDeviceDto } from '@/io/devices/dto/io-device.dto';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { ProjectFunctionType } from '@/projects/project-function';
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
@@ -97,6 +98,13 @@ export class ProjectExportProjectDto extends ExportTimestampsDto {
   })
   @Type(() => VirtualConsoleDto)
   public virtualConsole: VirtualConsoleDto | null;
+
+  @Field(() => [IoDeviceDto], {
+    description: 'The input/output devices used by this project',
+    defaultValue: [],
+  })
+  @Type(() => IoDeviceDto)
+  public ioDevices: IoDeviceDto[];
 
   @Field(() => [ProjectExportFixtureDto], {
     description: 'The fixture instances patched into this project',

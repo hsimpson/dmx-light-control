@@ -10,7 +10,7 @@ vi.mock('@mantine/notifications', () => ({
   notifications: { show: vi.fn() },
 }));
 
-vi.mock('@/app/[locale]/fixture/_components/download-json-file', () => ({
+vi.mock('@/lib/download-json-file', () => ({
   downloadJsonFile: vi.fn(),
 }));
 
@@ -33,7 +33,7 @@ describe('ProjectListToolbar', () => {
   });
 
   it('exports projects as JSON', async () => {
-    const { downloadJsonFile } = await import('@/app/[locale]/fixture/_components/download-json-file');
+    const { downloadJsonFile } = await import('@/lib/download-json-file');
     const { user } = renderWithProviders(<ProjectListToolbar />, {
       apolloMocks: [
         {

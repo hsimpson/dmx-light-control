@@ -24,6 +24,7 @@ import { ProjectService } from './project.service';
 import { Project3dObjectRepository } from './repositories/project-3d-object.repository';
 import { ProjectFixtureRepository } from './repositories/project-fixture.repository';
 import { ProjectFunctionRepository } from './repositories/project-function.repository';
+import { MidiMappingRepository } from '@/midi-mappings/repositories/midi-mapping.repository';
 import { ProjectRepository } from './repositories/project.repository';
 import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
 
@@ -68,6 +69,7 @@ function build() {
     listByProjectId: vi.fn().mockResolvedValue([]),
   };
   const eventEmitter = { emit: vi.fn(), on: vi.fn() };
+  const midiMappingRepository = { findExistingPublicIds: vi.fn().mockResolvedValue(new Set()) };
   const service = new ProjectService(
     projectRepository as unknown as ProjectRepository,
     projectFixtureRepository as unknown as ProjectFixtureRepository,
@@ -77,6 +79,7 @@ function build() {
     eventEmitter as never,
     fixtureRepository as unknown as FixtureRepository,
     fixtureChannelModeRepository as unknown as FixtureChannelModeRepository,
+    midiMappingRepository as unknown as MidiMappingRepository,
   );
   return {
     service,

@@ -1,3 +1,4 @@
+import type { MidiFeedback } from '@/midi-mappings/midi-mapping';
 import { registerEnumType } from '@nestjs/graphql';
 
 export const VIRTUAL_CONSOLE_SCHEMA_VERSION = 1;
@@ -100,6 +101,10 @@ export type VirtualConsoleControl = {
   functionPublicId?: string;
   /** Present in export documents to remap a function binding after re-import. */
   functionName?: string;
+  /** MIDI mapping entry that drives this button or slider; ignored when no project device uses its mapping. */
+  midiEntryPublicId?: string | null;
+  /** Overrides the entry's default LED feedback. */
+  feedback?: MidiFeedback | null;
 };
 
 export type VirtualConsolePage = {

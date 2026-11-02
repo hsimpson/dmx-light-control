@@ -15,7 +15,7 @@ vi.mock('@mantine/notifications', () => ({
   notifications: { show: vi.fn() },
 }));
 
-vi.mock('./download-json-file', () => ({
+vi.mock('@/lib/download-json-file', () => ({
   downloadJsonFile: vi.fn(),
 }));
 
@@ -39,7 +39,7 @@ describe('FixtureListToolbar', () => {
   });
 
   it('exports fixtures as JSON', async () => {
-    const { downloadJsonFile } = await import('./download-json-file');
+    const { downloadJsonFile } = await import('@/lib/download-json-file');
     const { user } = renderWithProviders(<FixtureListToolbar />, {
       apolloMocks: [
         {

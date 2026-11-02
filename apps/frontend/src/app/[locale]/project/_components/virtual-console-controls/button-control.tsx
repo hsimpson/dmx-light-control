@@ -1,28 +1,28 @@
 'use client';
 
-import { getDmxWebsocketClient } from '@/lib/dmx/dmx-socket-connector';
 import { useDmxStore } from '@/lib/dmx/dmx-store';
-import { useState } from 'react';
 import { controlFontStyle } from '../virtual-console-fonts';
 import classes from './button-control.module.css';
 import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
 
+/** Sends press (1) and release (0); flash/toggle and function start/stop run on the backend. */
 const ButtonControl = ({ control, mode, selected = false, onPlayValue }: VirtualConsoleControlProperties) => {
-  const [pressed, setPressed] = useState(false);
-  const [latched, setLatched] = useState(false);
-  const functionRunning = useDmxStore(state =>
-    control.functionPublicId ? state.runningFunctionIds.includes(control.functionPublicId) : false,
+  const on = useDmxStore(state =>
+    control.functionPublicId
+      ? state.runningFunctionIds.includes(control.functionPublicId)
+      : (state.controlValues[control.id] ?? 0) > 0,
   );
   const play = mode === 'play';
-  const upperLimit = control.upperLimit ?? 255;
-  const buttonMode = control.buttonMode ?? 'flash';
-  const functionPublicId = control.functionPublicId;
-  const active = play && (functionPublicId ? functionRunning : buttonMode === 'toggle' ? latched : pressed);
+  const release = () => {
+    if (play) {
+      onPlayValue?.(0);
+    }
+  };
 
   return (
     <button
       className={`${classes.button}${play ? ` ${classes.play}` : ''}${selected ? ` ${classes.selected}` : ''}`}
-      data-pressed={active ? 'true' : undefined}
+      data-pressed={play && on ? 'true' : undefined}
       data-testid="virtual-console-button"
       style={{
         backgroundColor: control.backgroundColor,
@@ -31,18 +31,7 @@ const ButtonControl = ({ control, mode, selected = false, onPlayValue }: Virtual
       }}
       type="button"
       disabled={mode === 'edit'}
-      onPointerCancel={() => {
-        if (!play || buttonMode === 'toggle') {
-          setPressed(false);
-          return;
-        }
-        setPressed(false);
-        if (functionPublicId) {
-          getDmxWebsocketClient()?.stopFunction(functionPublicId);
-          return;
-        }
-        onPlayValue?.(0);
-      }}
+      onPointerCancel={release}
       onPointerDown={event => {
         if (!play) {
           return;
@@ -50,41 +39,9 @@ const ButtonControl = ({ control, mode, selected = false, onPlayValue }: Virtual
         if (typeof event.currentTarget.setPointerCapture === 'function') {
           event.currentTarget.setPointerCapture(event.pointerId);
         }
-        if (functionPublicId) {
-          const client = getDmxWebsocketClient();
-          if (buttonMode === 'toggle') {
-            if (functionRunning) {
-              client?.stopFunction(functionPublicId);
-            } else {
-              client?.startFunction(functionPublicId);
-            }
-          } else {
-            setPressed(true);
-            client?.startFunction(functionPublicId);
-          }
-          return;
-        }
-        if (buttonMode === 'toggle') {
-          const next = !latched;
-          setLatched(next);
-          onPlayValue?.(next ? upperLimit : 0);
-          return;
-        }
-        setPressed(true);
-        onPlayValue?.(upperLimit);
+        onPlayValue?.(1);
       }}
-      onPointerUp={() => {
-        if (!play || buttonMode === 'toggle') {
-          setPressed(false);
-          return;
-        }
-        setPressed(false);
-        if (functionPublicId) {
-          getDmxWebsocketClient()?.stopFunction(functionPublicId);
-          return;
-        }
-        onPlayValue?.(0);
-      }}
+      onPointerUp={release}
     >
       {control.label}
     </button>

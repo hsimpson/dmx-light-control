@@ -1,6 +1,7 @@
 'use client';
 
-import { downloadJsonFile } from '@/app/[locale]/fixture/_components/download-json-file';
+import { downloadJsonFile } from '@/lib/download-json-file';
+import { importErrorMessage } from '@/lib/graphql/import-error-message';
 import { ICON_SIZE } from '@/lib/constants';
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
@@ -10,21 +11,10 @@ import {
   ImportProjectsDocument,
   ImportProjectsInput,
 } from '@/shared/types/graphql/graphql';
-import { CombinedGraphQLErrors } from '@apollo/client';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 import { Button, FileButton, Group } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { DownloadSimpleIcon, UploadSimpleIcon } from '@phosphor-icons/react';
-
-function importErrorMessage(error: unknown, fallback: string): string {
-  if (CombinedGraphQLErrors.is(error)) {
-    const message = error.errors.find(graphQLError => graphQLError.message)?.message;
-    if (message) {
-      return message;
-    }
-  }
-  return fallback;
-}
 
 const ProjectListToolbar = () => {
   const { t } = useTranslation();

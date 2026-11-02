@@ -1,3 +1,4 @@
+import type { MidiLedState } from '@/midi-mappings/midi-mapping';
 import { InvalidVirtualConsoleException } from '@/projects/project.exceptions';
 import {
   VIRTUAL_CONSOLE_CONTROL_SIZE_MIN,
@@ -145,6 +146,7 @@ function assertControl(control: VirtualConsoleControl, ids: Set<string>, depth: 
   assertTypography(control);
   assertChannelBindings(control);
   assertFunctionBinding(control);
+  assertMidiBinding(control);
 
   switch (control.type) {
     case VIRTUAL_CONSOLE_CONTROL_TYPE.Frame:
@@ -291,6 +293,38 @@ function assertFunctionBinding(control: VirtualConsoleControl): void {
     throw new InvalidVirtualConsoleException('A button cannot bind both channels and a function.');
   }
 }
+
+function assertMidiBinding(control: VirtualConsoleControl): void {
+  const midiEntryPublicId = control.midiEntryPublicId ?? undefined;
+  const feedback = control.feedback ?? undefined;
+  if (midiEntryPublicId === undefined && feedback === undefined) {
+    return;
+  }
+  if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame) {
+    throw new InvalidVirtualConsoleException('A frame cannot have a MIDI input.');
+  }
+  if (midiEntryPublicId !== undefined && !UUID_PATTERN.test(midiEntryPublicId)) {
+    throw new InvalidVirtualConsoleException('Control midiEntryPublicId must be a UUID.');
+  }
+  if (feedback !== undefined) {
+    assertLedState(feedback.off, 'off');
+    assertLedState(feedback.on, 'on');
+    if (feedback.monitor !== undefined && feedback.monitor !== null) {
+      assertLedState(feedback.monitor, 'monitor');
+    }
+  }
+}
+
+function assertLedState(state: MidiLedState | undefined, name: string): void {
+  if (!state || !isIntegerBetween(state.behavior, 0, 15) || !isIntegerBetween(state.color, 0, 127)) {
+    throw new InvalidVirtualConsoleException(
+      `Feedback ${name} needs a behavior between 0 and 15 and a color between 0 and 127.`,
+    );
+  }
+}
+
+const isIntegerBetween = (value: number, min: number, max: number) =>
+  Number.isInteger(value) && value >= min && value <= max;
 
 export type VirtualConsoleBindingFixture = {
   publicId: string;

@@ -106,4 +106,57 @@ describe('DmxWebsocketService', () => {
 
     service.onModuleDestroy();
   });
+
+  it('GIVEN a connected client WHEN MIDI input arrives THEN broadcasts it for MIDI learn', () => {
+    const listeners = new Map<string, (payload: unknown) => void>();
+    const eventEmitter = {
+      on: (event: string, listener: (payload: unknown) => void) => {
+        listeners.set(event, listener);
+      },
+      emit: () => true,
+    };
+    const service = new DmxWebsocketService(new DmxUniverseService(), eventEmitter as unknown as AppEventEmitter);
+    service.onModuleInit();
+    const client = new FakeSocket();
+    handleDmxWebsocketConnection(client);
+    client.sent.length = 0;
+
+    listeners.get('midi.inputMessage')?.({ portName: 'APC mini mk2', message: [0x90, 0x64, 0x7f] });
+
+    expect(client.sent).toEqual([
+      JSON.stringify({ type: 'midiInput', portName: 'APC mini mk2', message: [0x90, 0x64, 0x7f] }),
+    ]);
+    service.onModuleDestroy();
+  });
+
+  it('GIVEN clients WHEN control input and state flow THEN input is forwarded, state broadcast and held buttons released on close', () => {
+    const listeners = new Map<string, (payload: unknown) => void>();
+    const emitted: [string, unknown][] = [];
+    const eventEmitter = {
+      on: (event: string, listener: (payload: unknown) => void) => {
+        listeners.set(event, listener);
+      },
+      emit: (event: string, payload: unknown) => {
+        emitted.push([event, payload]);
+        return true;
+      },
+    };
+    const service = new DmxWebsocketService(new DmxUniverseService(), eventEmitter as unknown as AppEventEmitter);
+    service.onModuleInit();
+    const client = new FakeSocket();
+    handleDmxWebsocketConnection(client);
+    client.sent.length = 0;
+
+    client.emit('message', JSON.stringify({ type: 'controlValue', controlId: 'held', value: 1 }));
+    client.emit('message', JSON.stringify({ type: 'controlValue', controlId: 'let-go', value: 1 }));
+    client.emit('message', JSON.stringify({ type: 'controlValue', controlId: 'let-go', value: 0 }));
+    listeners.get('virtualConsole.state')?.({ values: { held: 255 } });
+    client.close();
+
+    expect(emitted).toContainEqual(['virtualConsole.state.request', undefined]);
+    expect(emitted).toContainEqual(['virtualConsole.input', { controlId: 'held', value: 1 }]);
+    expect(emitted.at(-1)).toEqual(['virtualConsole.inputsReleased', { controlIds: ['held'] }]);
+    expect(client.sent).toEqual([JSON.stringify({ type: 'controlState', values: { held: 255 } })]);
+    service.onModuleDestroy();
+  });
 });

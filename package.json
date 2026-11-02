@@ -5,13 +5,13 @@
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": "24.22.1"
+    "node": "26.13.0"
   },
-  "packageManager": "pnpm@12.16.1",
+  "packageManager": "pnpm@12.17.0",
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.16.1",
+      "version": "12.17.0",
       "onFail": "download"
     }
   },
@@ -52,6 +52,7 @@
     "@types/midi": "^2.0.4",
     "@types/node": "^26.6.5",
     "@types/pg": "^8.23.1",
+    "@types/plist": "^3.0.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/supertest": "^7.2.1",
@@ -129,6 +130,7 @@
     "next": "~16.4.3",
     "next-i18n-router": "^5.5.8",
     "pg": "^8.23.1",
+    "plist": "^3.1.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-intl": "^12.1.5",
@@ -137,7 +139,6 @@
     "serialport": "^13.0.0",
     "three": "^0.186.1",
     "tslib": "^2.8.1",
-    "usb": "^3.2.1",
     "ws": "^8.22.0",
     "zod": "^4.6.7",
     "zustand": "^5.0.16"

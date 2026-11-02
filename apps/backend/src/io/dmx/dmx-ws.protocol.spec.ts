@@ -36,4 +36,17 @@ describe('parseDmxWsSetMessage', () => {
     });
     expect(parseDmxWsClientMessage(JSON.stringify({ type: 'functionStop', functionPublicId: '' }))).toBeUndefined();
   });
+
+  it('GIVEN a control value WHEN parsed THEN keeps a string id and a finite value only', () => {
+    expect(parseDmxWsClientMessage(JSON.stringify({ type: 'controlValue', controlId: 'c-1', value: 42 }))).toEqual({
+      type: 'controlValue',
+      controlId: 'c-1',
+      value: 42,
+    });
+    expect(parseDmxWsClientMessage(JSON.stringify({ type: 'controlValue', controlId: '', value: 1 }))).toBeUndefined();
+    expect(
+      parseDmxWsClientMessage(JSON.stringify({ type: 'controlValue', controlId: 'c-1', value: '1' })),
+    ).toBeUndefined();
+    expect(parseDmxWsClientMessage('{"type":"controlValue","controlId":"c-1","value":1e999}')).toBeUndefined();
+  });
 });

@@ -21,6 +21,7 @@ describe('ProjectResolver', () => {
       addProject3dObject: vi.fn(),
       updateProject3dObject: vi.fn(),
       deleteProject3dObjectByPublicId: vi.fn(),
+      refreshActiveProject: vi.fn(),
     };
     const projectImportExportService = {
       exportProjects: vi.fn(),
@@ -101,7 +102,7 @@ describe('ProjectResolver', () => {
   });
 
   it('importProjects maps imported projects into the payload', async () => {
-    const { resolver, projectImportExportService } = build();
+    const { resolver, projectService, projectImportExportService } = build();
     projectImportExportService.importProjects.mockResolvedValue({
       importedCount: 1,
       projects: [{ publicId: 'p', name: 'Imported' }],
@@ -112,6 +113,7 @@ describe('ProjectResolver', () => {
       importedCount: 1,
       projects: [{ publicId: 'p', name: 'Imported' }],
     });
+    expect(projectService.refreshActiveProject).toHaveBeenCalled();
   });
 
   it('fixture mutations map service rows to DTOs', async () => {

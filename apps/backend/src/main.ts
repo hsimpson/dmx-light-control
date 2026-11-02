@@ -1,4 +1,12 @@
-import { ClassSerializerInterceptor, INestApplication, Logger, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  ConsoleLogger,
+  INestApplication,
+  INestApplicationContext,
+  Logger,
+  LogLevel,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -23,14 +31,32 @@ function registerGlobals(app: INestApplication) {
   );
 }
 
+function useConfiguredLogLevels(app: INestApplicationContext) {
+  app.useLogger(app.get(ConfigService).getOrThrow<LogLevel[]>('logLevels'));
+}
+
 async function bootstrap() {
   // If CLI args are passed (e.g. `node main.js dmx-sniffer`), run as command
   if (process.argv.length > 2) {
-    await CommandFactory.run(AppModule, ['log', 'warn', 'error']);
+    // nest-commander disables logging unless a logger instance is passed
+    const cli = await CommandFactory.createWithoutRunning(AppModule, {
+      logger: new ConsoleLogger(),
+      bufferLogs: true,
+    });
+    useConfiguredLogLevels(cli);
+    try {
+      await CommandFactory.runApplication(cli);
+    } finally {
+      await cli.close();
+    }
     return;
   }
 
-  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
+  // Buffer until the configured log levels are applied; ConfigModule loads only with AppModule
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), {
+    bufferLogs: true,
+  });
+  useConfiguredLogLevels(app);
   registerGlobals(app);
   app.enableCors();
   await registerHttpPlugins(app);

@@ -1,3 +1,4 @@
+import { ConsoleLogger } from '@nestjs/common';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
@@ -9,14 +10,18 @@ const {
   mockGetOrThrow,
   mockCreate,
   mockLoggerLog,
-  mockCommandFactoryRun,
+  mockUseLogger,
+  mockCommandFactoryCreateWithoutRunning,
+  mockCommandFactoryRunApplication,
+  mockCliClose,
 } = vi.hoisted(() => {
   const useGlobalPipes = vi.fn();
   const useGlobalInterceptors = vi.fn();
   const enableCors = vi.fn();
   const register = vi.fn().mockResolvedValue(undefined);
   const listen = vi.fn().mockResolvedValue(undefined);
-  const getOrThrow = vi.fn().mockReturnValue(3000);
+  const getOrThrow = vi.fn().mockImplementation((key: string) => (key === 'port' ? 3000 : ['warn', 'error', 'fatal']));
+  const useLogger = vi.fn();
   const get = vi.fn().mockImplementation((token: { name?: string }) => {
     if (token.name === 'ConfigService') {
       return { getOrThrow };
@@ -31,9 +36,12 @@ const {
     register,
     listen,
     get,
+    useLogger,
   });
   const loggerLog = vi.fn();
-  const commandFactoryRun = vi.fn().mockResolvedValue(undefined);
+  const cliClose = vi.fn().mockResolvedValue(undefined);
+  const commandFactoryCreateWithoutRunning = vi.fn().mockResolvedValue({ get, useLogger, close: cliClose });
+  const commandFactoryRunApplication = vi.fn().mockResolvedValue(undefined);
 
   return {
     mockUseGlobalPipes: useGlobalPipes,
@@ -44,7 +52,10 @@ const {
     mockGetOrThrow: getOrThrow,
     mockCreate: create,
     mockLoggerLog: loggerLog,
-    mockCommandFactoryRun: commandFactoryRun,
+    mockUseLogger: useLogger,
+    mockCommandFactoryCreateWithoutRunning: commandFactoryCreateWithoutRunning,
+    mockCommandFactoryRunApplication: commandFactoryRunApplication,
+    mockCliClose: cliClose,
   };
 });
 
@@ -65,7 +76,8 @@ vi.mock('nest-commander', async importOriginal => {
   return {
     ...actual,
     CommandFactory: {
-      run: mockCommandFactoryRun,
+      createWithoutRunning: mockCommandFactoryCreateWithoutRunning,
+      runApplication: mockCommandFactoryRunApplication,
     },
   };
 });
@@ -107,7 +119,21 @@ describe('main bootstrap', () => {
     expect(mockListen).toHaveBeenCalledWith(3000);
     expect(mockGetOrThrow).toHaveBeenCalledWith('port');
     expect(mockLoggerLog).toHaveBeenCalledWith(expect.stringContaining('http://localhost:3000'));
-    expect(mockCommandFactoryRun).not.toHaveBeenCalled();
+    expect(mockCommandFactoryCreateWithoutRunning).not.toHaveBeenCalled();
+  });
+
+  it('should buffer startup logs and apply the configured log levels before listening', async () => {
+    vi.resetModules();
+
+    await import('./main');
+
+    await vi.waitFor(() => {
+      expect(mockListen).toHaveBeenCalled();
+    });
+
+    expect(mockCreate).toHaveBeenCalledWith(expect.any(Function), expect.anything(), { bufferLogs: true });
+    expect(mockUseLogger).toHaveBeenCalledWith(['warn', 'error', 'fatal']);
+    expect(mockUseLogger.mock.invocationCallOrder[0]).toBeLessThan(mockListen.mock.invocationCallOrder[0] ?? 0);
   });
 
   it('should run CommandFactory when CLI args are present', async () => {
@@ -117,10 +143,13 @@ describe('main bootstrap', () => {
     await import('./main');
 
     await vi.waitFor(() => {
-      expect(mockCommandFactoryRun).toHaveBeenCalled();
+      expect(mockCliClose).toHaveBeenCalled();
     });
 
-    expect(mockCommandFactoryRun).toHaveBeenCalledWith(expect.any(Function), ['log', 'warn', 'error']);
+    const cliOptions: unknown = mockCommandFactoryCreateWithoutRunning.mock.lastCall?.[1];
+    expect(cliOptions).toStrictEqual({ logger: new ConsoleLogger(), bufferLogs: true });
+    expect(mockUseLogger).toHaveBeenCalledWith(['warn', 'error', 'fatal']);
+    expect(mockCommandFactoryRunApplication).toHaveBeenCalled();
     expect(mockCreate).not.toHaveBeenCalled();
   });
 });

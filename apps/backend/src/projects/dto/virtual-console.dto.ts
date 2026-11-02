@@ -1,3 +1,4 @@
+import { MidiFeedbackDto, MidiFeedbackInput } from '@/midi-mappings/dto/midi-mapping.dto';
 import {
   VIRTUAL_CONSOLE_CONTROL_SIZE_MIN,
   VIRTUAL_CONSOLE_FONT_SIZE_MAX,
@@ -163,6 +164,13 @@ export class VirtualConsoleControlDto {
 
   @Field({ nullable: true, description: 'Function name used to remap a button binding on import' })
   public functionName?: string;
+
+  @Field(() => GraphQLUUID, { nullable: true, description: 'MIDI mapping entry that drives this button or slider' })
+  public midiEntryPublicId?: string | null;
+
+  @Field(() => MidiFeedbackDto, { nullable: true, description: "Overrides the MIDI entry's default LED feedback" })
+  @Type(() => MidiFeedbackDto)
+  public feedback?: MidiFeedbackDto | null;
 }
 
 @ObjectType()
@@ -335,6 +343,17 @@ export class VirtualConsoleControlInput {
   @IsString()
   @Length(1, 255)
   public functionName?: string;
+
+  @Field(() => GraphQLUUID, { nullable: true, description: 'MIDI mapping entry that drives this button or slider' })
+  @IsOptional()
+  @Matches(UUID_PATTERN, { message: 'midiEntryPublicId must be a UUID' })
+  public midiEntryPublicId?: string | null;
+
+  @Field(() => MidiFeedbackInput, { nullable: true, description: "Overrides the MIDI entry's default LED feedback" })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => MidiFeedbackInput)
+  public feedback?: MidiFeedbackInput | null;
 }
 
 @InputType()

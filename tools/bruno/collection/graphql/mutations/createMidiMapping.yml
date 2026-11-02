@@ -1,0 +1,82 @@
+info:
+  name: createMidiMapping
+  type: graphql
+  seq: 8
+
+graphql:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body:
+    query: |
+      mutation($input: CreateMidiMappingInput!) {
+        createMidiMapping(input: $input) {
+          createdAt
+          entries {
+            channel
+            controlType
+            createdAt
+            feedback {
+              monitor {
+                behavior
+                color
+              }
+              off {
+                behavior
+                color
+              }
+              on {
+                behavior
+                color
+              }
+            }
+            ledType
+            messageType
+            name
+            number
+            publicId
+            updatedAt
+          }
+          ledPalettes {
+            rgb {
+              behaviors {
+                hex
+                name
+                value
+              }
+              colors {
+                hex
+                name
+                value
+              }
+            }
+            single {
+              behaviors {
+                hex
+                name
+                value
+              }
+              colors {
+                hex
+                name
+                value
+              }
+            }
+          }
+          name
+          publicId
+          updatedAt
+        }
+      }
+    variables: |
+      {
+        "input": {
+          "name": null
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

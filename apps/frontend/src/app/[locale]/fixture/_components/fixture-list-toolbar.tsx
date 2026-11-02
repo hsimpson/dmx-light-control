@@ -1,5 +1,7 @@
 'use client';
 
+import { downloadJsonFile } from '@/lib/download-json-file';
+import { importErrorMessage } from '@/lib/graphql/import-error-message';
 import { ICON_SIZE } from '@/lib/constants';
 import { globalMessages } from '@/lib/i18n/global-messages';
 import { useTranslation } from '@/lib/i18n/use-translation';
@@ -10,22 +12,10 @@ import {
   ImportFixturesDocument,
   ImportFixturesInput,
 } from '@/shared/types/graphql/graphql';
-import { CombinedGraphQLErrors } from '@apollo/client';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 import { Button, FileButton, Group } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { DownloadSimpleIcon, UploadSimpleIcon } from '@phosphor-icons/react';
-import { downloadJsonFile } from './download-json-file';
-
-function importErrorMessage(error: unknown, fallback: string): string {
-  if (CombinedGraphQLErrors.is(error)) {
-    const message = error.errors.find(graphQLError => graphQLError.message)?.message;
-    if (message) {
-      return message;
-    }
-  }
-  return fallback;
-}
 
 const FixtureListToolbar = () => {
   const { t } = useTranslation();

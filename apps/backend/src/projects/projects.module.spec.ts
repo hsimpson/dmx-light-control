@@ -26,6 +26,6 @@ describe('ProjectsModule', () => {
     expect(providers).toContain(ProjectImportExportService);
     expect(providers).toContain(ProjectResolver);
     expect(imports).toBeDefined();
-    expect(exports).toEqual([ProjectFunctionRepository]);
+    expect(exports).toEqual([ProjectFunctionRepository, ProjectRepository]);
   });
 });

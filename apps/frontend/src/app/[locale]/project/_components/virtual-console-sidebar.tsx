@@ -30,6 +30,7 @@ import {
   type VirtualConsolePage,
 } from './virtual-console-document';
 import VirtualConsoleFontModal from './virtual-console-font-modal';
+import VirtualConsoleMidiFields from './virtual-console-midi-fields';
 import {
   VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE,
   findVirtualConsoleFont,
@@ -52,6 +53,7 @@ export type VirtualConsoleSelection =
   { kind: 'canvas' } | { kind: 'page'; pageId: string } | { kind: 'control'; controlId: string };
 
 type VirtualConsoleSidebarProperties = {
+  projectPublicId: string;
   document: VirtualConsoleDocument;
   selection: VirtualConsoleSelection;
   selectedPage: VirtualConsolePage | undefined;
@@ -93,6 +95,7 @@ const PaletteItem = ({ type, label }: { type: VirtualConsoleControlType; label: 
 };
 
 const VirtualConsoleSidebar = ({
+  projectPublicId,
   document,
   selection,
   selectedPage,
@@ -203,7 +206,12 @@ const VirtualConsoleSidebar = ({
         ) : null}
 
         {selectedControl ? (
-          <ControlFields control={selectedControl} onDelete={onDeleteControl} onPatch={onControlPatch} />
+          <ControlFields
+            projectPublicId={projectPublicId}
+            control={selectedControl}
+            onDelete={onDeleteControl}
+            onPatch={onControlPatch}
+          />
         ) : null}
 
         <Button disabled={!dirty} loading={saving} onClick={onSave}>
@@ -215,12 +223,13 @@ const VirtualConsoleSidebar = ({
 };
 
 type ControlFieldsProperties = {
+  projectPublicId: string;
   control: VirtualConsoleControl;
   onDelete: () => void;
   onPatch: (patch: Partial<VirtualConsoleControl>) => void;
 };
 
-const ControlFields = ({ control, onDelete, onPatch }: ControlFieldsProperties) => {
+const ControlFields = ({ projectPublicId, control, onDelete, onPatch }: ControlFieldsProperties) => {
   const { t } = useTranslation();
   const [fontOpened, setFontOpened] = useState(false);
   const fontLabel =
@@ -464,6 +473,9 @@ const ControlFields = ({ control, onDelete, onPatch }: ControlFieldsProperties) 
             }
           }}
         />
+      ) : null}
+      {control.type === 'button' || control.type === 'slider' ? (
+        <VirtualConsoleMidiFields projectPublicId={projectPublicId} control={control} onPatch={onPatch} />
       ) : null}
       <Button color="red" variant="light" onClick={onDelete}>
         {t({ id: 'ProjectDetail.virtualConsole.deleteControl', defaultMessage: 'Delete control' })}

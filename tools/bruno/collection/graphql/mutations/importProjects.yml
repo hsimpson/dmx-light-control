@@ -1,7 +1,7 @@
 info:
   name: importProjects
   type: graphql
-  seq: 15
+  seq: 20
 
 graphql:
   method: POST
@@ -15,6 +15,16 @@ graphql:
           projects {
             createdAt
             environmentType
+            ioDevices {
+              kind
+              manufacturer
+              midiMappingPublicId
+              name
+              productId
+              serial
+              usbLocation
+              vendorId
+            }
             name
             project3dObjects {
               createdAt

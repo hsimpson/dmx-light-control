@@ -1,7 +1,7 @@
 import { ICON_SIZE } from '@/lib/constants';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { NavLink } from '@mantine/core';
-import { FactoryIcon, FolderIcon, HeadlightsIcon, HouseIcon } from '@phosphor-icons/react';
+import { FactoryIcon, FolderIcon, HeadlightsIcon, HouseIcon, PianoKeysIcon } from '@phosphor-icons/react';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
@@ -83,6 +83,12 @@ const NavBar = () => {
         detailHref={isFixtureDetail ? `/fixture/${detailPublicId}/general` : undefined}
         detailLabel={t({ id: 'NavBar.FixtureDetail', defaultMessage: 'Fixture detail' })}
         leftSection={<HeadlightsIcon size={ICON_SIZE} weight="duotone" />}
+      />
+      <NavLink
+        label={t({ id: 'NavBar.MidiMappings', defaultMessage: 'MIDI Mappings' })}
+        href="/midiMapping/list"
+        active={currentPath.startsWith('/midiMapping')}
+        leftSection={<PianoKeysIcon size={ICON_SIZE} weight="duotone" />}
       />
     </>
   );

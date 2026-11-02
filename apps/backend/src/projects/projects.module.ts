@@ -1,5 +1,6 @@
 import { EventsModule } from '@/events/events.module';
 import { FixturesModule } from '@/fixtures/fixtures.module';
+import { MidiMappingsModule } from '@/midi-mappings/midi-mappings.module';
 import { Module } from '@nestjs/common';
 import { ProjectImportExportService } from './project-import-export.service';
 import { ProjectResolver } from './project.resolver';
@@ -11,7 +12,7 @@ import { ProjectRepository } from './repositories/project.repository';
 import { SceneObjectTypeRepository } from './repositories/scene-object-type.repository';
 
 @Module({
-  imports: [FixturesModule, EventsModule],
+  imports: [FixturesModule, EventsModule, MidiMappingsModule],
   providers: [
     ProjectRepository,
     ProjectFixtureRepository,
@@ -22,6 +23,6 @@ import { SceneObjectTypeRepository } from './repositories/scene-object-type.repo
     ProjectImportExportService,
     ProjectResolver,
   ],
-  exports: [ProjectFunctionRepository],
+  exports: [ProjectFunctionRepository, ProjectRepository],
 })
 export class ProjectsModule {}

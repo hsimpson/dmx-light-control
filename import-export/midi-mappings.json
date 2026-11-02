@@ -1,0 +1,2467 @@
+{
+  "mappings": [
+    {
+      "createdAt": "2026-10-30T12:28:43.496Z",
+      "entries": [
+        {
+          "channel": 0,
+          "controlType": "Slider",
+          "feedback": null,
+          "ledType": null,
+          "messageType": "ControlChange",
+          "name": "Fader 1",
+          "number": 48,
+          "publicId": "a495daeb-6e47-4248-a260-fa5647fc0a37"
+        },
+        {
+          "channel": 0,
+          "controlType": "Slider",
+          "feedback": null,
+          "ledType": null,
+          "messageType": "ControlChange",
+          "name": "Fader 2",
+          "number": 49,
+          "publicId": "56aa1b4b-ed1a-4876-ad06-44ae35956693"
+        },
+        {
+          "channel": 0,
+          "controlType": "Slider",
+          "feedback": null,
+          "ledType": null,
+          "messageType": "ControlChange",
+          "name": "Fader 3",
+          "number": 50,
+          "publicId": "0fbd8f90-d8ac-4767-b2d0-150c5e6e03b4"
+        },
+        {
+          "channel": 0,
+          "controlType": "Slider",
+          "feedback": null,
+          "ledType": null,
+          "messageType": "ControlChange",
+          "name": "Fader 4",
+          "number": 51,
+          "publicId": "2f2c2f3f-4f9a-4971-8920-34bd561eb59e"
+        },
+        {
+          "channel": 0,
+          "controlType": "Slider",
+          "feedback": null,
+          "ledType": null,
+          "messageType": "ControlChange",
+          "name": "Fader 5",
+          "number": 52,
+          "publicId": "b682d2d0-382f-4028-99a7-9f572fd1c6b7"
+        },
+        {
+          "channel": 0,
+          "controlType": "Slider",
+          "feedback": null,
+          "ledType": null,
+          "messageType": "ControlChange",
+          "name": "Fader 6",
+          "number": 53,
+          "publicId": "be7b0a78-2e33-4e00-bf32-8254a510e9e9"
+        },
+        {
+          "channel": 0,
+          "controlType": "Slider",
+          "feedback": null,
+          "ledType": null,
+          "messageType": "ControlChange",
+          "name": "Fader 7",
+          "number": 54,
+          "publicId": "43df8ccc-e8e3-4f96-806c-08ecb05ee171"
+        },
+        {
+          "channel": 0,
+          "controlType": "Slider",
+          "feedback": null,
+          "ledType": null,
+          "messageType": "ControlChange",
+          "name": "Fader 8",
+          "number": 55,
+          "publicId": "128690f9-65e7-41a9-a909-4556048a60ac"
+        },
+        {
+          "channel": 0,
+          "controlType": "Slider",
+          "feedback": null,
+          "ledType": null,
+          "messageType": "ControlChange",
+          "name": "Master Fader",
+          "number": 56,
+          "publicId": "09ff59ec-8ad4-436d-a3b3-1eb74c7b8627"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 1",
+          "number": 0,
+          "publicId": "562d9a63-04b0-4f89-9086-f4b39c182b9c"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 2",
+          "number": 1,
+          "publicId": "c0bbcea9-7b1e-49aa-85bf-ca91fb79ff8b"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 3",
+          "number": 2,
+          "publicId": "bcb55c86-1deb-478f-bb93-e07160a0d355"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 4",
+          "number": 3,
+          "publicId": "9245a127-16f2-4158-8d6e-fe2ac85d6076"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 5",
+          "number": 4,
+          "publicId": "93a21e1b-8c3e-4725-a848-4cdf5c958a65"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 6",
+          "number": 5,
+          "publicId": "37314b0c-8601-408c-a47f-15027662cc68"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 7",
+          "number": 6,
+          "publicId": "3ff3b91a-8af2-4b36-a89d-d9853a797fad"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 8",
+          "number": 7,
+          "publicId": "632dedc5-9469-4f54-acd6-26cf169ee356"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 9",
+          "number": 8,
+          "publicId": "ab8ef8c4-6011-4f2b-92f0-fe28a584a265"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 10",
+          "number": 9,
+          "publicId": "4be3743f-4224-42d1-9d17-23f4f47c411d"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 11",
+          "number": 10,
+          "publicId": "a70cadff-fd70-45d7-89f3-d553ddc14350"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 12",
+          "number": 11,
+          "publicId": "9aaf8dac-1332-4fd3-9d53-94c0e8c6bbb2"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 13",
+          "number": 12,
+          "publicId": "3e214671-b9a4-4ea0-bd2f-8e54a0d4b813"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 14",
+          "number": 13,
+          "publicId": "03dfebba-22e1-459b-9a76-62eba921b486"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 15",
+          "number": 14,
+          "publicId": "ddab8e0a-4dde-4d13-a294-119fde6ccbb8"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 16",
+          "number": 15,
+          "publicId": "d31f6ceb-0e5f-476f-914e-08888671aaeb"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 17",
+          "number": 16,
+          "publicId": "9d28455d-0d50-4f0a-a954-0b93e8f9c88f"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 18",
+          "number": 17,
+          "publicId": "16d7733c-3462-4d3d-9ea4-8ec215af0b4a"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 19",
+          "number": 18,
+          "publicId": "415cc355-d4b2-404f-9575-c1f93d0ba208"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 20",
+          "number": 19,
+          "publicId": "0c51b71c-1c47-4d17-a019-042633b2d95a"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 21",
+          "number": 20,
+          "publicId": "978861ec-0a60-493d-bdc3-0d5523401237"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 22",
+          "number": 21,
+          "publicId": "3874b86a-4923-4430-8238-144be6a1e4e4"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 23",
+          "number": 22,
+          "publicId": "e0dc9167-f5bb-4fdb-b736-f23813876e78"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 24",
+          "number": 23,
+          "publicId": "1da740f4-a6a7-40a6-9c64-4390b9e59a64"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 25",
+          "number": 24,
+          "publicId": "e3a2fdbf-ffc2-4c4b-abc4-f19f28db29f0"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 26",
+          "number": 25,
+          "publicId": "8ae80fa6-da66-437c-9ee0-ba38623e6144"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 27",
+          "number": 26,
+          "publicId": "3cbd8470-03d5-4a5a-a9f5-41edc0802292"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 28",
+          "number": 27,
+          "publicId": "a0efc9d7-787f-419a-b01a-68d48af50821"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 29",
+          "number": 28,
+          "publicId": "0542c9a8-905a-4235-9af8-782c60c6f876"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 30",
+          "number": 29,
+          "publicId": "87a17f99-12db-49a4-ad4e-b4923beed1a1"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 31",
+          "number": 30,
+          "publicId": "35d81985-af33-4a92-9611-848d73414ca0"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 32",
+          "number": 31,
+          "publicId": "55693152-c542-4b13-90ad-94b0990f6975"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 33",
+          "number": 32,
+          "publicId": "9c0adfee-3e20-4846-859c-478d9ba5028f"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 34",
+          "number": 33,
+          "publicId": "518a2d36-9d3c-469e-b276-b05973489cd8"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 35",
+          "number": 34,
+          "publicId": "8e7f8ca9-151c-4c4c-b693-a90b22cae62f"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 36",
+          "number": 35,
+          "publicId": "310472c5-3687-4e63-8805-a8fa79efdaac"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 37",
+          "number": 36,
+          "publicId": "5e5eb7d9-48e4-490f-9d59-223a31d38fc0"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 38",
+          "number": 37,
+          "publicId": "7515092c-71bf-424c-95b4-79562a156690"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 39",
+          "number": 38,
+          "publicId": "6ef7b6fe-ca39-463d-9593-6d24cbc58265"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 40",
+          "number": 39,
+          "publicId": "8e3d2994-ca15-4b88-8b26-80fd3d7e5fc3"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 41",
+          "number": 40,
+          "publicId": "d7b52797-a180-4ce2-9038-6ba961dcae56"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 42",
+          "number": 41,
+          "publicId": "7ef64fed-12df-4224-8c12-d19f34736ad4"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 43",
+          "number": 42,
+          "publicId": "9f97c36b-dea5-41bb-8610-f0cfc7071a58"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 44",
+          "number": 43,
+          "publicId": "112de78e-76ae-4528-a14a-b0022fbe3e34"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 45",
+          "number": 44,
+          "publicId": "914ac0e4-3206-40fa-9e20-8c42fe633865"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 46",
+          "number": 45,
+          "publicId": "89ed6389-53ae-4a7c-8316-690cd7fc15b9"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 47",
+          "number": 46,
+          "publicId": "f009b719-ac7b-44b2-9c54-a17b092c412d"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 48",
+          "number": 47,
+          "publicId": "aaaaa85b-c03c-41dd-bcad-a0388a54d887"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 49",
+          "number": 48,
+          "publicId": "db470325-9847-4928-9d06-d523369248b0"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 50",
+          "number": 49,
+          "publicId": "ae73d643-ba01-46ea-98a4-fa3b098cb545"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 51",
+          "number": 50,
+          "publicId": "b92c8f8b-dd9e-40f8-91eb-c79ddf55b151"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 52",
+          "number": 51,
+          "publicId": "3bcc1e73-f7e9-4f00-b95a-4aad4a2a2d13"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 53",
+          "number": 52,
+          "publicId": "6ec6ca4a-b7fa-422a-a611-66a70323ae65"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 54",
+          "number": 53,
+          "publicId": "5e7edf85-1702-4c86-8bb7-896330fa6fb1"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 55",
+          "number": 54,
+          "publicId": "d2f0f030-8759-4c7f-aeba-c393095c6abc"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 56",
+          "number": 55,
+          "publicId": "f322629a-8f92-4193-805f-bfd0fe98c4b1"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 57",
+          "number": 56,
+          "publicId": "aa80f03a-b8ce-406e-9b2e-16e01469dbe5"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 58",
+          "number": 57,
+          "publicId": "d19b15f7-30a2-4824-9b11-8d3cc34d5a76"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 59",
+          "number": 58,
+          "publicId": "c2bb882c-6d3e-4d1d-83a2-8f6ac869515c"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 60",
+          "number": 59,
+          "publicId": "37b0ffd5-af16-43dd-a9f6-84d93b68157a"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 61",
+          "number": 60,
+          "publicId": "c394e970-7c2f-4120-b245-e434432ab2d6"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 62",
+          "number": 61,
+          "publicId": "dd13a3d4-735e-42ff-8965-ba92ee11cc02"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 63",
+          "number": 62,
+          "publicId": "e8869be7-6ab6-447a-9183-98dfe4f714ce"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 6,
+              "color": 0
+            },
+            "on": {
+              "behavior": 6,
+              "color": 3
+            }
+          },
+          "ledType": "Rgb",
+          "messageType": "Note",
+          "name": "Button 64",
+          "number": 63,
+          "publicId": "3b44d4cb-c15f-40c8-b133-0e9892bdbc74"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Track Button 1",
+          "number": 100,
+          "publicId": "80c39308-4b68-4aa7-9729-f42283a6cc3a"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Track Button 2",
+          "number": 101,
+          "publicId": "821456af-c4da-43b5-9ee0-cd95b576ebdb"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Track Button 3",
+          "number": 102,
+          "publicId": "7fe3d4aa-b19b-4cdd-aebc-cef00cbb9f38"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Track Button 4",
+          "number": 103,
+          "publicId": "52e69ad1-c0b1-42b7-afae-27df55ab98da"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Track Button 5",
+          "number": 104,
+          "publicId": "cbc0a65c-9a31-4fd6-8217-875a8507c198"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Track Button 6",
+          "number": 105,
+          "publicId": "d5361518-a1f1-4037-9d47-99839f7efb41"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Track Button 7",
+          "number": 106,
+          "publicId": "4981b4f6-5213-4f8a-88e4-5a28f5aa7ccb"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Track Button 8",
+          "number": 107,
+          "publicId": "e6e6d705-a4e8-49cd-a946-91eb210e7d04"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Scene Launch 1",
+          "number": 112,
+          "publicId": "9b24eb4a-b458-4c1b-96a0-2f854d08134d"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Scene Launch 2",
+          "number": 113,
+          "publicId": "9a13aae7-d7b4-4792-a8a0-0c5068489c5d"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Scene Launch 3",
+          "number": 114,
+          "publicId": "b60a57ff-3151-45dd-9482-5ef2ea34c40f"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Scene Launch 4",
+          "number": 115,
+          "publicId": "64194651-1752-4217-b660-6dd2573697a5"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Scene Launch 5",
+          "number": 116,
+          "publicId": "54da80a5-59ce-4bfc-8223-ea4aa0a84d88"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Scene Launch 6",
+          "number": 117,
+          "publicId": "03645663-9bc5-4e71-b051-907d9586e2c6"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Scene Launch 7",
+          "number": 118,
+          "publicId": "c7d1c05d-535b-4e2c-a9b7-3ec5b4fa8ad5"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": {
+            "monitor": null,
+            "off": {
+              "behavior": 0,
+              "color": 0
+            },
+            "on": {
+              "behavior": 0,
+              "color": 1
+            }
+          },
+          "ledType": "Single",
+          "messageType": "Note",
+          "name": "Scene Launch 8",
+          "number": 119,
+          "publicId": "fa00dca3-494f-4a80-97db-ca9754a94c96"
+        },
+        {
+          "channel": 0,
+          "controlType": "Button",
+          "feedback": null,
+          "ledType": null,
+          "messageType": "Note",
+          "name": "Shift",
+          "number": 122,
+          "publicId": "8ed509ab-0775-49f5-ac6d-dec09cf798f8"
+        }
+      ],
+      "ledPalettes": {
+        "rgb": {
+          "behaviors": [
+            {
+              "hex": null,
+              "name": "Solid 10 %",
+              "value": 0
+            },
+            {
+              "hex": null,
+              "name": "Solid 25 %",
+              "value": 1
+            },
+            {
+              "hex": null,
+              "name": "Solid 50 %",
+              "value": 2
+            },
+            {
+              "hex": null,
+              "name": "Solid 65 %",
+              "value": 3
+            },
+            {
+              "hex": null,
+              "name": "Solid 75 %",
+              "value": 4
+            },
+            {
+              "hex": null,
+              "name": "Solid 90 %",
+              "value": 5
+            },
+            {
+              "hex": null,
+              "name": "Solid 100 %",
+              "value": 6
+            },
+            {
+              "hex": null,
+              "name": "Pulse 1/16",
+              "value": 7
+            },
+            {
+              "hex": null,
+              "name": "Pulse 1/8",
+              "value": 8
+            },
+            {
+              "hex": null,
+              "name": "Pulse 1/4",
+              "value": 9
+            },
+            {
+              "hex": null,
+              "name": "Pulse 1/2",
+              "value": 10
+            },
+            {
+              "hex": null,
+              "name": "Blink 1/24",
+              "value": 11
+            },
+            {
+              "hex": null,
+              "name": "Blink 1/16",
+              "value": 12
+            },
+            {
+              "hex": null,
+              "name": "Blink 1/8",
+              "value": 13
+            },
+            {
+              "hex": null,
+              "name": "Blink 1/4",
+              "value": 14
+            },
+            {
+              "hex": null,
+              "name": "Blink 1/2",
+              "value": 15
+            }
+          ],
+          "colors": [
+            {
+              "hex": "#000000",
+              "name": "Off",
+              "value": 0
+            },
+            {
+              "hex": "#1E1E1E",
+              "name": "#1E1E1E",
+              "value": 1
+            },
+            {
+              "hex": "#7F7F7F",
+              "name": "#7F7F7F",
+              "value": 2
+            },
+            {
+              "hex": "#FFFFFF",
+              "name": "White",
+              "value": 3
+            },
+            {
+              "hex": "#FF4C4C",
+              "name": "#FF4C4C",
+              "value": 4
+            },
+            {
+              "hex": "#FF0000",
+              "name": "Red",
+              "value": 5
+            },
+            {
+              "hex": "#590000",
+              "name": "#590000",
+              "value": 6
+            },
+            {
+              "hex": "#190000",
+              "name": "#190000",
+              "value": 7
+            },
+            {
+              "hex": "#FFBD6C",
+              "name": "#FFBD6C",
+              "value": 8
+            },
+            {
+              "hex": "#FF5400",
+              "name": "Orange",
+              "value": 9
+            },
+            {
+              "hex": "#591D00",
+              "name": "#591D00",
+              "value": 10
+            },
+            {
+              "hex": "#271B00",
+              "name": "#271B00",
+              "value": 11
+            },
+            {
+              "hex": "#FFFF4C",
+              "name": "#FFFF4C",
+              "value": 12
+            },
+            {
+              "hex": "#FFFF00",
+              "name": "Yellow",
+              "value": 13
+            },
+            {
+              "hex": "#595900",
+              "name": "#595900",
+              "value": 14
+            },
+            {
+              "hex": "#191900",
+              "name": "#191900",
+              "value": 15
+            },
+            {
+              "hex": "#88FF4C",
+              "name": "#88FF4C",
+              "value": 16
+            },
+            {
+              "hex": "#54FF00",
+              "name": "#54FF00",
+              "value": 17
+            },
+            {
+              "hex": "#1D5900",
+              "name": "#1D5900",
+              "value": 18
+            },
+            {
+              "hex": "#142B00",
+              "name": "#142B00",
+              "value": 19
+            },
+            {
+              "hex": "#4CFF4C",
+              "name": "#4CFF4C",
+              "value": 20
+            },
+            {
+              "hex": "#00FF00",
+              "name": "Green",
+              "value": 21
+            },
+            {
+              "hex": "#005900",
+              "name": "#005900",
+              "value": 22
+            },
+            {
+              "hex": "#001900",
+              "name": "#001900",
+              "value": 23
+            },
+            {
+              "hex": "#4CFF5E",
+              "name": "#4CFF5E",
+              "value": 24
+            },
+            {
+              "hex": "#00FF19",
+              "name": "#00FF19",
+              "value": 25
+            },
+            {
+              "hex": "#00590D",
+              "name": "#00590D",
+              "value": 26
+            },
+            {
+              "hex": "#001902",
+              "name": "#001902",
+              "value": 27
+            },
+            {
+              "hex": "#4CFF88",
+              "name": "#4CFF88",
+              "value": 28
+            },
+            {
+              "hex": "#00FF55",
+              "name": "#00FF55",
+              "value": 29
+            },
+            {
+              "hex": "#00591D",
+              "name": "#00591D",
+              "value": 30
+            },
+            {
+              "hex": "#001F12",
+              "name": "#001F12",
+              "value": 31
+            },
+            {
+              "hex": "#4CFFB7",
+              "name": "#4CFFB7",
+              "value": 32
+            },
+            {
+              "hex": "#00FF99",
+              "name": "#00FF99",
+              "value": 33
+            },
+            {
+              "hex": "#005935",
+              "name": "#005935",
+              "value": 34
+            },
+            {
+              "hex": "#001912",
+              "name": "#001912",
+              "value": 35
+            },
+            {
+              "hex": "#4CC3FF",
+              "name": "#4CC3FF",
+              "value": 36
+            },
+            {
+              "hex": "#00A9FF",
+              "name": "#00A9FF",
+              "value": 37
+            },
+            {
+              "hex": "#004152",
+              "name": "#004152",
+              "value": 38
+            },
+            {
+              "hex": "#001019",
+              "name": "#001019",
+              "value": 39
+            },
+            {
+              "hex": "#4C88FF",
+              "name": "#4C88FF",
+              "value": 40
+            },
+            {
+              "hex": "#0055FF",
+              "name": "#0055FF",
+              "value": 41
+            },
+            {
+              "hex": "#001D59",
+              "name": "#001D59",
+              "value": 42
+            },
+            {
+              "hex": "#000819",
+              "name": "#000819",
+              "value": 43
+            },
+            {
+              "hex": "#4C4CFF",
+              "name": "#4C4CFF",
+              "value": 44
+            },
+            {
+              "hex": "#0000FF",
+              "name": "Blue",
+              "value": 45
+            },
+            {
+              "hex": "#000059",
+              "name": "#000059",
+              "value": 46
+            },
+            {
+              "hex": "#000019",
+              "name": "#000019",
+              "value": 47
+            },
+            {
+              "hex": "#874CFF",
+              "name": "#874CFF",
+              "value": 48
+            },
+            {
+              "hex": "#5400FF",
+              "name": "#5400FF",
+              "value": 49
+            },
+            {
+              "hex": "#190064",
+              "name": "#190064",
+              "value": 50
+            },
+            {
+              "hex": "#0F0030",
+              "name": "#0F0030",
+              "value": 51
+            },
+            {
+              "hex": "#FF4CFF",
+              "name": "#FF4CFF",
+              "value": 52
+            },
+            {
+              "hex": "#FF00FF",
+              "name": "Magenta",
+              "value": 53
+            },
+            {
+              "hex": "#590059",
+              "name": "#590059",
+              "value": 54
+            },
+            {
+              "hex": "#190019",
+              "name": "#190019",
+              "value": 55
+            },
+            {
+              "hex": "#FF4C87",
+              "name": "#FF4C87",
+              "value": 56
+            },
+            {
+              "hex": "#FF0054",
+              "name": "#FF0054",
+              "value": 57
+            },
+            {
+              "hex": "#59001D",
+              "name": "#59001D",
+              "value": 58
+            },
+            {
+              "hex": "#220013",
+              "name": "#220013",
+              "value": 59
+            },
+            {
+              "hex": "#FF1500",
+              "name": "#FF1500",
+              "value": 60
+            },
+            {
+              "hex": "#993500",
+              "name": "#993500",
+              "value": 61
+            },
+            {
+              "hex": "#795100",
+              "name": "#795100",
+              "value": 62
+            },
+            {
+              "hex": "#436400",
+              "name": "#436400",
+              "value": 63
+            },
+            {
+              "hex": "#033900",
+              "name": "#033900",
+              "value": 64
+            },
+            {
+              "hex": "#005735",
+              "name": "#005735",
+              "value": 65
+            },
+            {
+              "hex": "#00547F",
+              "name": "#00547F",
+              "value": 66
+            },
+            {
+              "hex": "#0000FF",
+              "name": "#0000FF",
+              "value": 67
+            },
+            {
+              "hex": "#00454F",
+              "name": "#00454F",
+              "value": 68
+            },
+            {
+              "hex": "#2500CC",
+              "name": "#2500CC",
+              "value": 69
+            },
+            {
+              "hex": "#7F7F7F",
+              "name": "#7F7F7F",
+              "value": 70
+            },
+            {
+              "hex": "#202020",
+              "name": "#202020",
+              "value": 71
+            },
+            {
+              "hex": "#FF0000",
+              "name": "#FF0000",
+              "value": 72
+            },
+            {
+              "hex": "#BDFF2D",
+              "name": "#BDFF2D",
+              "value": 73
+            },
+            {
+              "hex": "#AFED06",
+              "name": "#AFED06",
+              "value": 74
+            },
+            {
+              "hex": "#64FF09",
+              "name": "#64FF09",
+              "value": 75
+            },
+            {
+              "hex": "#108B00",
+              "name": "#108B00",
+              "value": 76
+            },
+            {
+              "hex": "#00FF87",
+              "name": "#00FF87",
+              "value": 77
+            },
+            {
+              "hex": "#00A9FF",
+              "name": "#00A9FF",
+              "value": 78
+            },
+            {
+              "hex": "#002AFF",
+              "name": "#002AFF",
+              "value": 79
+            },
+            {
+              "hex": "#3F00FF",
+              "name": "#3F00FF",
+              "value": 80
+            },
+            {
+              "hex": "#7A00FF",
+              "name": "#7A00FF",
+              "value": 81
+            },
+            {
+              "hex": "#B21A7D",
+              "name": "#B21A7D",
+              "value": 82
+            },
+            {
+              "hex": "#402100",
+              "name": "#402100",
+              "value": 83
+            },
+            {
+              "hex": "#FF4A00",
+              "name": "#FF4A00",
+              "value": 84
+            },
+            {
+              "hex": "#88E106",
+              "name": "#88E106",
+              "value": 85
+            },
+            {
+              "hex": "#72FF15",
+              "name": "#72FF15",
+              "value": 86
+            },
+            {
+              "hex": "#00FF00",
+              "name": "#00FF00",
+              "value": 87
+            },
+            {
+              "hex": "#3BFF26",
+              "name": "#3BFF26",
+              "value": 88
+            },
+            {
+              "hex": "#59FF71",
+              "name": "#59FF71",
+              "value": 89
+            },
+            {
+              "hex": "#38FFCC",
+              "name": "#38FFCC",
+              "value": 90
+            },
+            {
+              "hex": "#5B8AFF",
+              "name": "#5B8AFF",
+              "value": 91
+            },
+            {
+              "hex": "#3151C6",
+              "name": "#3151C6",
+              "value": 92
+            },
+            {
+              "hex": "#877FE9",
+              "name": "#877FE9",
+              "value": 93
+            },
+            {
+              "hex": "#D31DFF",
+              "name": "#D31DFF",
+              "value": 94
+            },
+            {
+              "hex": "#FF005D",
+              "name": "#FF005D",
+              "value": 95
+            },
+            {
+              "hex": "#FF7F00",
+              "name": "#FF7F00",
+              "value": 96
+            },
+            {
+              "hex": "#B9B000",
+              "name": "#B9B000",
+              "value": 97
+            },
+            {
+              "hex": "#90FF00",
+              "name": "#90FF00",
+              "value": 98
+            },
+            {
+              "hex": "#835D07",
+              "name": "#835D07",
+              "value": 99
+            },
+            {
+              "hex": "#392B00",
+              "name": "#392B00",
+              "value": 100
+            },
+            {
+              "hex": "#144C10",
+              "name": "#144C10",
+              "value": 101
+            },
+            {
+              "hex": "#0D5038",
+              "name": "#0D5038",
+              "value": 102
+            },
+            {
+              "hex": "#15152A",
+              "name": "#15152A",
+              "value": 103
+            },
+            {
+              "hex": "#16205A",
+              "name": "#16205A",
+              "value": 104
+            },
+            {
+              "hex": "#693C1C",
+              "name": "#693C1C",
+              "value": 105
+            },
+            {
+              "hex": "#A8000A",
+              "name": "#A8000A",
+              "value": 106
+            },
+            {
+              "hex": "#DE513D",
+              "name": "#DE513D",
+              "value": 107
+            },
+            {
+              "hex": "#D86A1C",
+              "name": "#D86A1C",
+              "value": 108
+            },
+            {
+              "hex": "#FFE126",
+              "name": "#FFE126",
+              "value": 109
+            },
+            {
+              "hex": "#9EE12F",
+              "name": "#9EE12F",
+              "value": 110
+            },
+            {
+              "hex": "#67B50F",
+              "name": "#67B50F",
+              "value": 111
+            },
+            {
+              "hex": "#1E1E30",
+              "name": "#1E1E30",
+              "value": 112
+            },
+            {
+              "hex": "#DCFF6B",
+              "name": "#DCFF6B",
+              "value": 113
+            },
+            {
+              "hex": "#80FFBD",
+              "name": "#80FFBD",
+              "value": 114
+            },
+            {
+              "hex": "#9A99FF",
+              "name": "#9A99FF",
+              "value": 115
+            },
+            {
+              "hex": "#8E66FF",
+              "name": "#8E66FF",
+              "value": 116
+            },
+            {
+              "hex": "#404040",
+              "name": "#404040",
+              "value": 117
+            },
+            {
+              "hex": "#757575",
+              "name": "#757575",
+              "value": 118
+            },
+            {
+              "hex": "#E0FFFF",
+              "name": "#E0FFFF",
+              "value": 119
+            },
+            {
+              "hex": "#A00000",
+              "name": "#A00000",
+              "value": 120
+            },
+            {
+              "hex": "#350000",
+              "name": "#350000",
+              "value": 121
+            },
+            {
+              "hex": "#1AD000",
+              "name": "#1AD000",
+              "value": 122
+            },
+            {
+              "hex": "#074200",
+              "name": "#074200",
+              "value": 123
+            },
+            {
+              "hex": "#B9B000",
+              "name": "#B9B000",
+              "value": 124
+            },
+            {
+              "hex": "#3F3100",
+              "name": "#3F3100",
+              "value": 125
+            },
+            {
+              "hex": "#B35F00",
+              "name": "#B35F00",
+              "value": 126
+            },
+            {
+              "hex": "#4B1502",
+              "name": "#4B1502",
+              "value": 127
+            }
+          ]
+        },
+        "single": {
+          "behaviors": [
+            {
+              "hex": null,
+              "name": "Single LED",
+              "value": 0
+            }
+          ],
+          "colors": [
+            {
+              "hex": null,
+              "name": "Off",
+              "value": 0
+            },
+            {
+              "hex": null,
+              "name": "On",
+              "value": 1
+            },
+            {
+              "hex": null,
+              "name": "Blink",
+              "value": 2
+            }
+          ]
+        }
+      },
+      "name": "AKAI APCmini MK2",
+      "publicId": "53e6118d-be14-4c2b-8fc0-5898253ef422",
+      "updatedAt": "2026-10-30T20:46:37.960Z"
+    }
+  ],
+  "schemaVersion": 1
+}

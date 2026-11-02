@@ -8,6 +8,7 @@ import { Box, Text, Title } from '@mantine/core';
 import { useParams } from 'next/navigation';
 import type { ReactNode } from 'react';
 import ProjectDetailTabs from '../../_components/project-detail-tabs';
+import { useActivateProject } from '../../_components/use-activate-project';
 
 type ProjectDetailLayoutProperties = {
   children: ReactNode;
@@ -17,6 +18,7 @@ const ProjectDetailLayout = ({ children }: ProjectDetailLayoutProperties) => {
   const { t } = useTranslation();
   const { publicId } = useParams<{ publicId: string }>();
   const { data, loading } = useQuery(GetProjectDocument, publicId ? { variables: { publicId } } : skipToken);
+  useActivateProject(publicId);
 
   if (loading) {
     return <Loading />;

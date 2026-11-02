@@ -1,8 +1,7 @@
 import { MidiMessage } from 'midi';
 
 export type MidiEvents = {
-  'midi.inputOpened': undefined;
-  'midi.outputOpened': undefined;
-  'midi.inputMessage': MidiMessage;
-  'midi.sendMessage': MidiMessage;
+  'midi.outputOpened': { portName: string };
+  'midi.inputMessage': { portName: string; message: MidiMessage };
+  'midi.sendMessage': { portName: string; message: MidiMessage };
 };

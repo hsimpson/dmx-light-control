@@ -1,4 +1,7 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
+import { midiMappingPublicIds, type ProjectIoDevice } from '@/io/devices/match-io-devices';
+import { MidiMappingNotFoundException } from '@/midi-mappings/midi-mapping.exceptions';
+import { MidiMappingRepository } from '@/midi-mappings/repositories/midi-mapping.repository';
 import { ChannelModeNotFoundException, FixtureNotFoundException } from '@/fixtures/fixture.exceptions';
 import { FixtureChannelModeRepository } from '@/fixtures/repositories/fixture-channel-mode.repository';
 import { FixtureRepository } from '@/fixtures/repositories/fixture.repository';
@@ -10,6 +13,7 @@ import { CreateProjectInput } from './dto/create-project.dto';
 import { UpdateProject3dObjectInput } from './dto/update-project-3d-object.dto';
 import { UpdateProjectFixtureInput } from './dto/update-project-fixture.dto';
 import { UpdateProjectInput } from './dto/update-project.dto';
+import { UpdateProjectIoDevicesInput } from './dto/update-project-io-devices.dto';
 import { UpdateProjectVirtualConsoleInput } from './dto/virtual-console.dto';
 import { nextUniqueSceneObjectName, normalizeSceneObjectName } from './project-3d-object-name';
 import { defaultTransformForObject, identityTransform } from './project-3d-object.transform';
@@ -229,6 +233,8 @@ function mapProjectToDto(project: LoadedProject | undefined) {
 
 @Injectable()
 export class ProjectService {
+  private activeProjectPublicId: string | null = null;
+
   public constructor(
     private readonly projectRepository: ProjectRepository,
     private readonly projectFixtureRepository: ProjectFixtureRepository,
@@ -238,6 +244,7 @@ export class ProjectService {
     private readonly eventEmitter: AppEventEmitter,
     private readonly fixtureRepository: FixtureRepository,
     private readonly fixtureChannelModeRepository: FixtureChannelModeRepository,
+    private readonly midiMappingRepository: MidiMappingRepository,
   ) {}
 
   public async getAllProjects() {
@@ -253,6 +260,28 @@ export class ProjectService {
   public async getProjectByPublicId(publicId: string) {
     const project = await this.projectRepository.findOneByPublicIdWithFixtures(publicId);
     return mapProjectToDto(project ?? undefined);
+  }
+
+  public async activateProject(publicId: string) {
+    const project = await this.projectRepository.findOneByPublicIdWithFixtures(publicId);
+    if (!project) {
+      throw new ProjectNotFoundException(publicId);
+    }
+    this.activeProjectPublicId = publicId;
+    this.emitActiveProject(project.ioDevices);
+    return mapProjectToDto(project);
+  }
+
+  /** Re-reads the active project after bulk changes (e.g. import) so the IO layer sees its current devices. */
+  public async refreshActiveProject(): Promise<void> {
+    if (!this.activeProjectPublicId) {
+      return;
+    }
+    const project = await this.projectRepository.findOneByPublicId(this.activeProjectPublicId);
+    if (!project) {
+      this.activeProjectPublicId = null;
+    }
+    this.emitActiveProject(project?.ioDevices ?? []);
   }
 
   public async createProject(input: CreateProjectInput) {
@@ -306,11 +335,35 @@ export class ProjectService {
     if (!updated) {
       throw new ProjectNotFoundException(input.publicId);
     }
+    if (input.publicId === this.activeProjectPublicId) {
+      this.refreshActiveVirtualConsole();
+    }
+    return withVirtualConsole({ ...updated, ...emptyProjectExtras() });
+  }
+
+  public async updateProjectIoDevices(input: UpdateProjectIoDevicesInput) {
+    const mappingIds = midiMappingPublicIds(input.ioDevices);
+    const existing = await this.midiMappingRepository.findExistingPublicIds(mappingIds);
+    const unknown = mappingIds.find(publicId => !existing.has(publicId));
+    if (unknown) {
+      throw new MidiMappingNotFoundException(unknown);
+    }
+    const updated = await this.projectRepository.updateOneByPublicId(input.publicId, { ioDevices: input.ioDevices });
+    if (!updated) {
+      throw new ProjectNotFoundException(input.publicId);
+    }
+    if (input.publicId === this.activeProjectPublicId) {
+      this.emitActiveProject(updated.ioDevices);
+    }
     return withVirtualConsole({ ...updated, ...emptyProjectExtras() });
   }
 
   public async deleteProjectByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {
     const deleted = await this.projectRepository.deleteOneByPublicId(publicId);
+    if (deleted && publicId === this.activeProjectPublicId) {
+      this.activeProjectPublicId = null;
+      this.emitActiveProject([]);
+    }
     return { publicId, deleted };
   }
 
@@ -349,6 +402,7 @@ export class ProjectService {
     if (!loaded) {
       throw new ProjectFixtureNotFoundException(created.publicId);
     }
+    this.refreshActiveVirtualConsole();
     return mapProjectFixtureToDto(loaded as LoadedProjectFixture);
   }
 
@@ -398,11 +452,15 @@ export class ProjectService {
     if (!loaded) {
       throw new ProjectFixtureNotFoundException(updated.publicId);
     }
+    this.refreshActiveVirtualConsole();
     return mapProjectFixtureToDto(loaded as LoadedProjectFixture);
   }
 
   public async deleteProjectFixtureByPublicId(publicId: string): Promise<{ publicId: string; deleted: boolean }> {
     const deleted = await this.projectFixtureRepository.deleteOneByPublicId(publicId);
+    if (deleted) {
+      this.refreshActiveVirtualConsole();
+    }
     return { publicId, deleted };
   }
 
@@ -607,5 +665,17 @@ export class ProjectService {
       throw new ChannelModeNotFoundException(String(modeId));
     }
     return mode;
+  }
+
+  private emitActiveProject(devices: ProjectIoDevice[]): void {
+    this.eventEmitter.emit('project.ioDevicesActivated', { devices });
+    this.eventEmitter.emit('project.virtualConsoleUpdated', { projectPublicId: this.activeProjectPublicId });
+  }
+
+  /** Fixture patch changes only know the internal project id, so any change re-reads the active project. */
+  private refreshActiveVirtualConsole(): void {
+    if (this.activeProjectPublicId) {
+      this.eventEmitter.emit('project.virtualConsoleUpdated', { projectPublicId: this.activeProjectPublicId });
+    }
   }
 }

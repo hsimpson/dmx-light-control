@@ -1,0 +1,61 @@
+info:
+  name: importMidiMappings
+  type: graphql
+  seq: 19
+
+graphql:
+  method: POST
+  url: "{{backendUrl}}/graphql"
+  auth: inherit
+  body:
+    query: |
+      mutation($document: ImportMidiMappingsInput!) {
+        importMidiMappings(document: $document) {
+          importedCount
+          mappings {
+            createdAt
+            entries {
+              channel
+              controlType
+              createdAt
+              feedback {
+                monitor
+                off
+                on
+              }
+              ledType
+              messageType
+              name
+              number
+              publicId
+              updatedAt
+            }
+            ledPalettes {
+              rgb {
+                behaviors
+                colors
+              }
+              single {
+                behaviors
+                colors
+              }
+            }
+            name
+            publicId
+            updatedAt
+          }
+        }
+      }
+    variables: |
+      {
+        "document": {
+          "mappings": [],
+          "schemaVersion": null
+        }
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

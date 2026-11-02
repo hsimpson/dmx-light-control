@@ -1,3 +1,4 @@
+import { LOG_LEVELS, LogLevel } from '@nestjs/common';
 import { Config } from './types/config.types';
 
 function getEnvVariable(name: string): string {
@@ -8,10 +9,19 @@ function getEnvVariable(name: string): string {
   return value;
 }
 
+function loadLogLevels(): LogLevel[] {
+  const value = process.env.LOG_LEVEL ?? 'log';
+  const index = LOG_LEVELS.findIndex(level => level === value);
+  if (index === -1) {
+    throw new Error(`Environment variable LOG_LEVEL must be one of ${LOG_LEVELS.join(', ')}`);
+  }
+  return LOG_LEVELS.slice(index);
+}
+
 export function loadConfig(): Config {
-  const serialPath = process.env.DMX_SERIAL_PATH?.trim();
   return {
     port: parseInt(getEnvVariable('BACKEND_PORT'), 10),
+    logLevels: loadLogLevels(),
     database: {
       user: getEnvVariable('POSTGRES_USER'),
       password: getEnvVariable('POSTGRES_PASSWORD'),
@@ -19,6 +29,5 @@ export function loadConfig(): Config {
       port: parseInt(getEnvVariable('POSTGRES_PORT'), 10),
       name: getEnvVariable('POSTGRES_DB'),
     },
-    ...(serialPath ? { serialPath } : {}),
   };
 }

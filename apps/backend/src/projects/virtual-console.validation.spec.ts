@@ -597,4 +597,72 @@ describe('assertValidVirtualConsole', () => {
       assertVirtualConsoleFunctionBindings(document, new Set());
     }).toThrow(/does not belong to this project/);
   });
+
+  describe('MIDI input binding', () => {
+    const ENTRY_ID = '99999999-9999-4999-8999-999999999999';
+    const feedback = {
+      off: { behavior: 0, color: 0 },
+      on: { behavior: 6, color: 5 },
+      monitor: { behavior: 13, color: 9 },
+    };
+
+    function controls() {
+      const document = validDocument();
+      const frame = document.pages[0]?.controls[0];
+      const slider = frame?.children?.[0];
+      const button = document.pages[0]?.controls[1];
+      if (!frame || !slider || !button) {
+        throw new Error('missing controls');
+      }
+      return { document, frame, slider, button };
+    }
+
+    it('GIVEN a button and a slider WHEN bound to a MIDI entry with feedback THEN the document is valid', () => {
+      const { document, slider, button } = controls();
+      Object.assign(button, { midiEntryPublicId: ENTRY_ID, feedback });
+      Object.assign(slider, { midiEntryPublicId: ENTRY_ID, feedback: { off: feedback.off, on: feedback.on } });
+
+      expect(() => {
+        assertValidVirtualConsole(document);
+      }).not.toThrow();
+    });
+
+    it('GIVEN a frame from an export WHEN its MIDI fields are null THEN the document is valid', () => {
+      const { document, frame } = controls();
+      Object.assign(frame, { midiEntryPublicId: null, feedback: null });
+
+      expect(() => {
+        assertValidVirtualConsole(document);
+      }).not.toThrow();
+    });
+
+    it.each([
+      [
+        'a MIDI binding on a frame',
+        (c: ReturnType<typeof controls>) => Object.assign(c.frame, { midiEntryPublicId: ENTRY_ID }),
+      ],
+      ['a non-UUID entry id', (c: ReturnType<typeof controls>) => Object.assign(c.button, { midiEntryPublicId: 'x' })],
+      [
+        'a behavior above 15',
+        (c: ReturnType<typeof controls>) =>
+          Object.assign(c.button, { feedback: { ...feedback, on: { behavior: 16, color: 0 } } }),
+      ],
+      [
+        'a color above 127',
+        (c: ReturnType<typeof controls>) =>
+          Object.assign(c.button, { feedback: { ...feedback, monitor: { behavior: 0, color: 128 } } }),
+      ],
+      [
+        'feedback without an off state',
+        (c: ReturnType<typeof controls>) => Object.assign(c.button, { feedback: { on: feedback.on } }),
+      ],
+    ])('GIVEN %s WHEN validated THEN it is rejected', (_case, change) => {
+      const parts = controls();
+      change(parts);
+
+      expect(() => {
+        assertValidVirtualConsole(parts.document);
+      }).toThrow(InvalidVirtualConsoleException);
+    });
+  });
 });

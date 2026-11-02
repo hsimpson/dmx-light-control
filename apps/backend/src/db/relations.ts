@@ -52,6 +52,17 @@ export const relations = defineRelations(schema, r => ({
     }),
   },
 
+  midiMapping: {
+    midiMappingEntries: r.many.midiMappingEntry(),
+  },
+
+  midiMappingEntry: {
+    midiMapping: r.one.midiMapping({
+      from: r.midiMappingEntry.midiMappingId,
+      to: r.midiMapping.id,
+    }),
+  },
+
   project: {
     projectFixtures: r.many.projectFixture(),
     project3dObjects: r.many.project3dObject(),

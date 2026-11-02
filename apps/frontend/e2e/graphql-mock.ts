@@ -154,6 +154,82 @@ const toMockedSequence = (sequence: MockedSequenceInput): MockedProjectFunction[
   fixturePublicIds: sequence.fixturePublicIds ?? null,
 });
 
+type MockedIoDevice = {
+  kind: 'DmxSerial' | 'Midi';
+  name: string;
+  manufacturer: string | null;
+  serial: string | null;
+  vendorId: string | null;
+  productId: string | null;
+  usbLocation: string | null;
+  midiMappingPublicId?: string | null;
+};
+
+export const mockedAvailableIoDevices: MockedIoDevice[] = [
+  {
+    kind: 'DmxSerial',
+    name: 'FT232R USB UART',
+    manufacturer: 'FTDI',
+    serial: 'A50285BI',
+    vendorId: '0403',
+    productId: '6001',
+    usbLocation: '3-10',
+  },
+  {
+    kind: 'Midi',
+    name: 'APC mini mk2',
+    manufacturer: 'AKAI professional',
+    serial: 'Ver00.10',
+    vendorId: '09e8',
+    productId: '004f',
+    usbLocation: '3-9',
+  },
+];
+
+const ioDeviceDto = (device: MockedIoDevice) => ({ __typename: 'IoDeviceDto', midiMappingPublicId: null, ...device });
+
+const isPluggedIn = (device: MockedIoDevice) =>
+  mockedAvailableIoDevices.some(
+    available => available.name === device.name && available.serial === device.serial && available.kind === device.kind,
+  );
+
+type MockedMidiMappingEntry = {
+  __typename: 'MidiMappingEntryDto';
+  publicId: string;
+  name: string;
+  controlType: string;
+  messageType: string;
+  channel: number;
+  number: number;
+  feedback: { off: { behavior: number; color: number }; on: { behavior: number; color: number } } | null;
+  ledType: string | null;
+};
+
+export const mockedMidiMapping = {
+  __typename: 'MidiMappingDto',
+  publicId: 'midi-1',
+  name: 'APC mini mk2',
+  createdAt: now,
+  updatedAt: now,
+  ledPalettes: { __typename: 'MidiLedPalettesDto', rgb: null, single: null } as unknown,
+};
+
+type MockedLedOption = { name: string; value: number; hex?: string | null };
+type MockedLedPalette = { behaviors: MockedLedOption[]; colors: MockedLedOption[] } | null | undefined;
+
+// Same shape as the server response, so Apollo can cache the saved palettes.
+const ledPalettesDto = ({ rgb, single }: { rgb?: MockedLedPalette; single?: MockedLedPalette }) => {
+  const palette = (value: MockedLedPalette) =>
+    value
+      ? {
+          __typename: 'MidiLedPaletteDto',
+          behaviors: value.behaviors.map(option => ({ __typename: 'MidiLedOptionDto', hex: null, ...option })),
+          colors: value.colors.map(option => ({ __typename: 'MidiLedOptionDto', hex: null, ...option })),
+        }
+      : null;
+  return { __typename: 'MidiLedPalettesDto', rgb: palette(rgb), single: palette(single) };
+};
+
 export const mockGraphql = async (page: Page) => {
   const fixtures = [mockedFixture];
   const projects: (typeof mockedProject)[] = [{ ...mockedProject }];
@@ -161,6 +237,9 @@ export const mockGraphql = async (page: Page) => {
     [mockedProject.publicId]: [],
   };
   const projectFunctions: Record<string, MockedProjectFunction[]> = { [mockedProject.publicId]: [] };
+  const projectIoDevices: Record<string, MockedIoDevice[]> = { [mockedProject.publicId]: [] };
+  let activeProjectPublicId: string | null = null;
+  const midiMappings = [{ ...mockedMidiMapping, entries: [] as MockedMidiMappingEntry[] }];
 
   await page.route('**/graphql', async route => {
     if (route.request().method() === 'OPTIONS') {
@@ -188,13 +267,111 @@ export const mockGraphql = async (page: Page) => {
           transform?: number[];
           channelModePublicId?: string;
           sequence?: MockedSequenceInput;
+          ioDevices?: MockedIoDevice[];
+          midiMappingPublicId?: string;
+          controlType?: string;
+          messageType?: string;
+          channel?: number;
+          number?: number;
+          feedback?: MockedMidiMappingEntry['feedback'];
+          ledType?: string | null;
+          ledPalettes?: { rgb?: MockedLedPalette; single?: MockedLedPalette };
         };
         document?: { schemaVersion: number; projects: { publicId?: string; name: string }[] };
       };
     };
 
     let body: unknown = { data: {} };
-    if (postData.operationName === 'ExportProjects' || postData.query?.includes('exportProjects')) {
+    // Matched by operationName first: their queries also contain the `project(publicId` / `updateProject` fallbacks below.
+    if (postData.operationName === 'GetMidiMappings') {
+      body = { data: { midiMappings } };
+    } else if (postData.operationName === 'ExportMidiMappings') {
+      body = { data: { exportMidiMappings: { schemaVersion: 1, mappings: midiMappings } } };
+    } else if (postData.operationName === 'ImportMidiMappings') {
+      const imported = { ...mockedMidiMapping, publicId: 'midi-imported', name: 'Imported APC', entries: [] };
+      midiMappings.push(imported);
+      body = { data: { importMidiMappings: { importedCount: 1, mappings: [imported] } } };
+    } else if (postData.operationName === 'UpdateMidiMapping') {
+      const input = postData.variables?.input;
+      const mapping = midiMappings.find(candidate => candidate.publicId === input?.publicId);
+      if (mapping) {
+        mapping.name = input?.name ?? mapping.name;
+        mapping.ledPalettes = input?.ledPalettes ? ledPalettesDto(input.ledPalettes) : mapping.ledPalettes;
+      }
+      body = { data: { updateMidiMapping: mapping ?? null } };
+    } else if (postData.operationName === 'GetMidiMapping') {
+      body = {
+        data: { midiMapping: midiMappings.find(mapping => mapping.publicId === postData.variables?.publicId) ?? null },
+      };
+    } else if (postData.operationName === 'CreateMidiMapping') {
+      const created = {
+        ...mockedMidiMapping,
+        publicId: `midi-${midiMappings.length + 1}`,
+        name: postData.variables?.name ?? '',
+        entries: [],
+      };
+      midiMappings.push(created);
+      body = { data: { createMidiMapping: created } };
+    } else if (postData.operationName === 'DeleteMidiMapping') {
+      const index = midiMappings.findIndex(mapping => mapping.publicId === postData.variables?.publicId);
+      if (index >= 0) midiMappings.splice(index, 1);
+      body = { data: { deleteMidiMapping: { publicId: postData.variables?.publicId, deleted: index >= 0 } } };
+    } else if (postData.operationName === 'AddMidiMappingEntry') {
+      const input = postData.variables?.input;
+      const mapping = midiMappings.find(candidate => candidate.publicId === input?.midiMappingPublicId);
+      const entry: MockedMidiMappingEntry = {
+        __typename: 'MidiMappingEntryDto',
+        publicId: `entry-${(mapping?.entries.length ?? 0) + 1}`,
+        name: input?.name ?? '',
+        controlType: input?.controlType ?? 'Button',
+        messageType: input?.messageType ?? 'Note',
+        channel: input?.channel ?? 0,
+        number: input?.number ?? 0,
+        feedback: input?.feedback ?? null,
+        ledType: input?.ledType ?? null,
+      };
+      mapping?.entries.push(entry);
+      body = { data: { addMidiMappingEntry: entry } };
+    } else if (postData.operationName === 'ActivateProject') {
+      activeProjectPublicId = postData.variables?.publicId ?? null;
+      body = { data: { activateProject: { __typename: 'ProjectDto', publicId: activeProjectPublicId } } };
+    } else if (postData.operationName === 'GetProjectIoDevices') {
+      const publicId = postData.variables?.publicId ?? mockedProject.publicId;
+      body = {
+        data: {
+          project: {
+            __typename: 'ProjectDto',
+            publicId,
+            ioDevices: (projectIoDevices[publicId] ?? []).map(ioDeviceDto),
+          },
+        },
+      };
+    } else if (postData.operationName === 'AvailableIoDevices') {
+      body = { data: { availableIoDevices: mockedAvailableIoDevices.map(ioDeviceDto) } };
+    } else if (postData.operationName === 'ActiveIoDeviceStates') {
+      const active = activeProjectPublicId ? (projectIoDevices[activeProjectPublicId] ?? []) : [];
+      body = {
+        data: {
+          ioDevices: active.map(device => ({
+            __typename: 'IoDeviceStateDto',
+            ...device,
+            status: isPluggedIn(device) ? 'Connected' : 'Missing',
+          })),
+        },
+      };
+    } else if (postData.operationName === 'UpdateProjectIoDevices') {
+      const publicId = postData.variables?.input?.publicId ?? mockedProject.publicId;
+      projectIoDevices[publicId] = postData.variables?.input?.ioDevices ?? [];
+      body = {
+        data: {
+          updateProjectIoDevices: {
+            __typename: 'ProjectDto',
+            publicId,
+            ioDevices: projectIoDevices[publicId].map(ioDeviceDto),
+          },
+        },
+      };
+    } else if (postData.operationName === 'ExportProjects' || postData.query?.includes('exportProjects')) {
       body = {
         data: {
           exportProjects: {

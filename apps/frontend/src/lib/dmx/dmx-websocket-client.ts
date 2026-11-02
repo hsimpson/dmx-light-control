@@ -44,12 +44,9 @@ export class DmxWebsocketClient {
     this.store.getState().setStatus('idle');
   }
 
-  public startFunction(functionPublicId: string): void {
-    this.send({ type: 'functionStart', functionPublicId });
-  }
-
-  public stopFunction(functionPublicId: string): void {
-    this.send({ type: 'functionStop', functionPublicId });
+  /** Buttons send 1 on press and 0 on release; sliders send their raw value. The backend owns the result. */
+  public sendControlValue(controlId: string, value: number): void {
+    this.send({ type: 'controlValue', controlId, value });
   }
 
   public setChannels(values: DmxChannelUpdate[]): void {
@@ -106,7 +103,14 @@ export class DmxWebsocketClient {
     if (typeof parsed !== 'object' || parsed === null) {
       return;
     }
-    const message = parsed as { type?: unknown; channels?: unknown; values?: unknown; running?: unknown };
+    const message = parsed as {
+      type?: unknown;
+      channels?: unknown;
+      values?: unknown;
+      running?: unknown;
+      portName?: unknown;
+      message?: unknown;
+    };
     if (message.type === 'snapshot' && Array.isArray(message.channels)) {
       this.store.getState().applySnapshot(message.channels as number[]);
       this.sawSnapshot = true;
@@ -117,8 +121,22 @@ export class DmxWebsocketClient {
       this.store.getState().applyDelta(message.values as DmxChannelUpdate[]);
       return;
     }
+    if (message.type === 'midiInput' && typeof message.portName === 'string' && Array.isArray(message.message)) {
+      this.store.getState().setLastMidiInput({
+        portName: message.portName,
+        message: message.message.filter((byte): byte is number => typeof byte === 'number'),
+      });
+      return;
+    }
     if (message.type === 'functionState' && Array.isArray(message.running)) {
       this.store.getState().setRunningFunctionIds(message.running.filter((id): id is string => typeof id === 'string'));
+      return;
+    }
+    if (message.type === 'controlState' && typeof message.values === 'object' && message.values !== null) {
+      const values = Object.entries(message.values).flatMap(([controlId, value]) =>
+        typeof value === 'number' ? [[controlId, value] as const] : [],
+      );
+      this.store.getState().setControlValues(Object.fromEntries(values));
     }
   }
 

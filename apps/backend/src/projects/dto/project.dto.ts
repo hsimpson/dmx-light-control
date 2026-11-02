@@ -1,4 +1,5 @@
 import { BaseDto } from '@/db/base.dto';
+import { IoDeviceDto } from '@/io/devices/dto/io-device.dto';
 import { Project3dObjectDto } from '@/projects/dto/project-3d-object.dto';
 import { ProjectFunctionDto } from '@/projects/dto/project-function.dto';
 import { ProjectFixtureDto } from '@/projects/dto/project-fixture.dto';
@@ -27,6 +28,10 @@ export class ProjectDto extends BaseDto {
   @Field(() => VirtualConsoleDto, { description: 'The virtual console layout for this project' })
   @Type(() => VirtualConsoleDto)
   public virtualConsole: VirtualConsoleDto;
+
+  @Field(() => [IoDeviceDto], { description: 'The input/output devices used by this project' })
+  @Type(() => IoDeviceDto)
+  public ioDevices: IoDeviceDto[];
 
   @Field(() => [ProjectFixtureDto], {
     description: 'The fixture instances patched into this project',

@@ -2,7 +2,9 @@ import { relations } from '@/db/relations';
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { DmxModule } from '@/io/dmx/dmx.module';
 import { FunctionPlaybackModule } from '@/io/function-playback/function-playback.module';
+import { VirtualConsolePlaybackModule } from '@/io/virtual-console-playback/virtual-console-playback.module';
 import { IoBridgeModule } from '@/io/io-bridge/io-bridge.module';
+import { IoDevicesModule } from '@/io/devices/io-devices.module';
 import { MidiModule } from '@/io/midi/midi.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
@@ -17,6 +19,7 @@ import { DrizzleDbModule } from './db/drizzle-db/drizzle-db.module';
 import { FixturesModule } from './fixtures/fixtures.module';
 import { GlobalGqlExceptionFilter } from './graphql/graphql-exception.filter';
 import { formatErrorHandler } from './graphql/graphql-format-error';
+import { MidiMappingsModule } from './midi-mappings/midi-mappings.module';
 import { ProjectsModule } from './projects/projects.module';
 
 @Module({
@@ -42,9 +45,12 @@ import { ProjectsModule } from './projects/projects.module';
     EventEmitterModule.forRoot(),
     DmxModule,
     FunctionPlaybackModule,
+    VirtualConsolePlaybackModule,
     MidiModule,
     IoBridgeModule,
+    IoDevicesModule,
     FixturesModule,
+    MidiMappingsModule,
     ProjectsModule,
   ],
   providers: [
