@@ -21,7 +21,7 @@
     "@formatjs/cli": "^6.16.35",
     "@graphql-codegen/cli": "^7.4.6",
     "@graphql-tools/load": "^8.1.19",
-    "@graphql-tools/url-loader": "^9.1.12",
+    "@graphql-tools/url-loader": "^10.0.7",
     "@nestjs/schematics": "^12.0.10",
     "@nestjs/testing": "^12.2.0",
     "@next/eslint-plugin-next": "^16.4.3",
