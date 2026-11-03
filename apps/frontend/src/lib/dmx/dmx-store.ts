@@ -26,6 +26,8 @@ export type DmxStoreState = {
   lastMidiInput: MidiInput | null;
   /** Per-channel peak (0..1) of the project's sound input, null until the backend sends one. */
   soundLevels: number[] | null;
+  /** Smoothed bar levels (0..1, volume first) per enabled audio triggers control. */
+  audioLevels: Record<string, number[]>;
   applySnapshot: (values: ArrayLike<number>) => void;
   applyDelta: (updates: DmxChannelUpdate[]) => void;
   setStatus: (status: DmxConnectionStatus) => void;
@@ -33,6 +35,7 @@ export type DmxStoreState = {
   setControlValues: (values: Record<string, number>) => void;
   setLastMidiInput: (input: MidiInput) => void;
   setSoundLevels: (levels: number[]) => void;
+  setAudioLevels: (levels: Record<string, number[]>) => void;
 };
 
 function createZeroChannels(): number[] {
@@ -51,6 +54,7 @@ export function createDmxStore() {
     controlValues: {},
     lastMidiInput: null,
     soundLevels: null,
+    audioLevels: {},
     applySnapshot: values => {
       const next = createZeroChannels();
       const length = Math.min(DMX_CHANNEL_COUNT, values.length);
@@ -97,6 +101,9 @@ export function createDmxStore() {
     setSoundLevels: soundLevels => {
       set({ soundLevels });
     },
+    setAudioLevels: audioLevels => {
+      set({ audioLevels });
+    },
   }));
 }
 
@@ -113,6 +120,7 @@ export function resetDmxStore(): void {
     controlValues: {},
     lastMidiInput: null,
     soundLevels: null,
+    audioLevels: {},
     status: 'idle',
   });
 }

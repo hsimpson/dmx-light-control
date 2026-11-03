@@ -129,6 +129,10 @@ export class DmxWebsocketClient {
       });
       return;
     }
+    if (message.type === 'audioLevels' && typeof message.levels === 'object' && message.levels !== null) {
+      this.store.getState().setAudioLevels(parseAudioLevels(message.levels));
+      return;
+    }
     if (message.type === 'soundLevel' && Array.isArray(message.levels)) {
       this.store
         .getState()
@@ -176,4 +180,14 @@ export class DmxWebsocketClient {
       this.reconnectTimer = undefined;
     }
   }
+}
+
+function parseAudioLevels(levels: object): Record<string, number[]> {
+  return Object.fromEntries(
+    Object.entries(levels).flatMap(([controlId, bars]) =>
+      Array.isArray(bars)
+        ? [[controlId, bars.flatMap(level => (typeof level === 'number' ? [Math.min(1, Math.max(0, level))] : []))]]
+        : [],
+    ),
+  );
 }

@@ -1,11 +1,15 @@
 import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createControl } from './virtual-console-document';
 import VirtualConsoleChannelSidebar, { type VirtualConsoleAssignableFixture } from './virtual-console-channel-sidebar';
 
 describe('virtual console channel sidebar', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = vi.fn();
+  });
+
   it('assigns and removes fixture channels', async () => {
     const control = createControl('slider', 0, 0);
     const onPatch = vi.fn();
@@ -88,5 +92,34 @@ describe('virtual console channel sidebar', () => {
 
     await user.click(par);
     expect(par).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('GIVEN an audio bar in function mode WHEN a function is picked THEN only the function select is shown', async () => {
+    const onPatch = vi.fn();
+    const { user } = renderWithProviders(
+      <VirtualConsoleChannelSidebar
+        control={{ channelBindings: undefined }}
+        fixedKind="function"
+        fixtures={[]}
+        functions={[{ publicId: 'fn-1', name: 'Chase' }]}
+        onPatch={onPatch}
+      />,
+    );
+
+    expect(screen.queryByRole('combobox', { name: 'Binding' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Clear assignments' })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('combobox', { name: 'Function' }));
+    await user.click(await screen.findByRole('option', { name: 'Chase', hidden: true }));
+
+    expect(onPatch).toHaveBeenCalledWith({ functionPublicId: 'fn-1', channelBindings: undefined });
+  });
+
+  it('GIVEN an audio bar in channels mode WHEN rendered THEN it lists channels without a binding kind', () => {
+    renderWithProviders(
+      <VirtualConsoleChannelSidebar control={{}} fixedKind="channels" fixtures={[]} onPatch={vi.fn()} />,
+    );
+
+    expect(screen.queryByRole('combobox', { name: 'Binding' })).not.toBeInTheDocument();
+    expect(screen.getByText('No patched fixtures')).toBeInTheDocument();
   });
 });

@@ -29,6 +29,7 @@ import {
   type VirtualConsoleDocument,
   type VirtualConsolePage,
 } from './virtual-console-document';
+import VirtualConsoleAudioFields from './virtual-console-audio-fields';
 import VirtualConsoleFontModal from './virtual-console-font-modal';
 import VirtualConsoleMidiFields from './virtual-console-midi-fields';
 import {
@@ -63,6 +64,8 @@ type VirtualConsoleSidebarProperties = {
   onSelectCanvas: () => void;
   onCanvasSizeChange: (field: 'width' | 'height' | 'snap', value: number) => void;
   onPageNameChange: (name: string) => void;
+  audioBarIndex: number;
+  onAudioBarIndexChange: (index: number) => void;
   onControlPatch: (patch: Partial<VirtualConsoleControl>) => void;
   onDeleteControl: () => void;
   onSave: () => void;
@@ -105,6 +108,8 @@ const VirtualConsoleSidebar = ({
   onSelectCanvas,
   onCanvasSizeChange,
   onPageNameChange,
+  audioBarIndex,
+  onAudioBarIndexChange,
   onControlPatch,
   onDeleteControl,
   onSave,
@@ -143,6 +148,10 @@ const VirtualConsoleSidebar = ({
           <PaletteItem
             type="button"
             label={t({ id: 'ProjectDetail.virtualConsole.control.button', defaultMessage: 'Button' })}
+          />
+          <PaletteItem
+            type="audioTriggers"
+            label={t({ id: 'ProjectDetail.virtualConsole.control.audioTriggers', defaultMessage: 'Audio triggers' })}
           />
         </Stack>
 
@@ -209,6 +218,8 @@ const VirtualConsoleSidebar = ({
           <ControlFields
             projectPublicId={projectPublicId}
             control={selectedControl}
+            audioBarIndex={audioBarIndex}
+            onAudioBarIndexChange={onAudioBarIndexChange}
             onDelete={onDeleteControl}
             onPatch={onControlPatch}
           />
@@ -225,11 +236,26 @@ const VirtualConsoleSidebar = ({
 type ControlFieldsProperties = {
   projectPublicId: string;
   control: VirtualConsoleControl;
+  audioBarIndex: number;
+  onAudioBarIndexChange: (index: number) => void;
   onDelete: () => void;
   onPatch: (patch: Partial<VirtualConsoleControl>) => void;
 };
 
-const ControlFields = ({ projectPublicId, control, onDelete, onPatch }: ControlFieldsProperties) => {
+const DEFAULT_FOREGROUND: Partial<Record<VirtualConsoleControl['type'], string>> = {
+  slider: '#4dabf7',
+  button: '#ffffff',
+  audioTriggers: '#40c057',
+};
+
+const ControlFields = ({
+  projectPublicId,
+  control,
+  audioBarIndex,
+  onAudioBarIndexChange,
+  onDelete,
+  onPatch,
+}: ControlFieldsProperties) => {
   const { t } = useTranslation();
   const [fontOpened, setFontOpened] = useState(false);
   const fontLabel =
@@ -357,11 +383,11 @@ const ControlFields = ({ projectPublicId, control, onDelete, onPatch }: ControlF
           />
         </>
       ) : null}
-      {control.type === 'slider' || control.type === 'button' ? (
+      {control.type !== 'frame' ? (
         <ColorInput
           {...COLOR_INPUT_SWATCHES}
           label={t({ id: 'ProjectDetail.virtualConsole.foregroundColor', defaultMessage: 'Foreground' })}
-          value={control.foregroundColor ?? (control.type === 'slider' ? '#4dabf7' : '#ffffff')}
+          value={control.foregroundColor ?? DEFAULT_FOREGROUND[control.type]}
           onChange={value => {
             onPatch({ foregroundColor: value });
           }}
@@ -474,7 +500,15 @@ const ControlFields = ({ projectPublicId, control, onDelete, onPatch }: ControlF
           }}
         />
       ) : null}
-      {control.type === 'button' || control.type === 'slider' ? (
+      {control.type === 'audioTriggers' ? (
+        <VirtualConsoleAudioFields
+          control={control}
+          barIndex={audioBarIndex}
+          onBarIndexChange={onAudioBarIndexChange}
+          onPatch={onPatch}
+        />
+      ) : null}
+      {control.type !== 'frame' ? (
         <VirtualConsoleMidiFields projectPublicId={projectPublicId} control={control} onPatch={onPatch} />
       ) : null}
       <Button color="red" variant="light" onClick={onDelete}>

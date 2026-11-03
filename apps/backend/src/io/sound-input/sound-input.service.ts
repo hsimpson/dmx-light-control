@@ -1,12 +1,13 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { RtAudio, RtAudioApi, RtAudioErrorType, RtAudioFormat, RtAudioStreamFlags } from 'audify';
+import { FFT_HOP, monoSamples, SpectrumAnalyser } from './spectrum';
 
 export type SoundInputChannels = 1 | 2;
 export type SoundInputTarget = { handle: string; channels: SoundInputChannels };
 export type SoundInputDevice = { name: string; maxInputChannels: number };
 
-const FRAMES_PER_BUFFER = 1024;
+const FRAMES_PER_BUFFER = FFT_HOP;
 const FALLBACK_SAMPLE_RATE = 48000;
 const LEVEL_INTERVAL_MS = 50;
 const INT16_FULL_SCALE = 32768;
@@ -19,6 +20,7 @@ export class SoundInputService implements OnModuleDestroy {
   private readonly rtAudio = createRtAudio();
   private current: SoundInputTarget | null = null;
   private peaks: number[] = [];
+  private analyser = new SpectrumAnalyser(FALLBACK_SAMPLE_RATE);
   private lastEmit = 0;
 
   public constructor(private readonly eventEmitter: AppEventEmitter) {
@@ -61,12 +63,13 @@ export class SoundInputService implements OnModuleDestroy {
     }
     // A mono-only device configured as stereo still captures, in mono.
     const channels = Math.min(target.channels, device.inputChannels);
+    const sampleRate = device.preferredSampleRate || FALLBACK_SAMPLE_RATE;
     try {
       rtAudio.openStream(
         null,
         { deviceId: device.id, nChannels: channels },
         RtAudioFormat.RTAUDIO_SINT16,
-        device.preferredSampleRate || FALLBACK_SAMPLE_RATE,
+        sampleRate,
         FRAMES_PER_BUFFER,
         'dmx-light-control',
         pcm => {
@@ -85,6 +88,7 @@ export class SoundInputService implements OnModuleDestroy {
       return;
     }
     this.current = target;
+    this.analyser = new SpectrumAnalyser(sampleRate);
     this.peaks = [];
     this.logger.log(`Opened sound input ${JSON.stringify(target.handle)} (${channels} channel(s))`);
   }
@@ -97,6 +101,7 @@ export class SoundInputService implements OnModuleDestroy {
     this.logger.log(`Closed sound input ${JSON.stringify(handle)}`);
     // Drops the meter to silence instead of freezing it at the last peak.
     this.eventEmitter.emit('soundInput.level', { levels: Array.from({ length: channels }, () => 0) });
+    this.eventEmitter.emit('soundInput.spectrum', { power: [], sampleRate: 0, meanSquare: 0 });
   }
 
   private closeStream(): void {
@@ -106,11 +111,14 @@ export class SoundInputService implements OnModuleDestroy {
   private onInput(pcm: Buffer, channels: number): void {
     const levels = peakLevels(pcm, channels);
     this.peaks = levels.map((level, channel) => Math.max(level, this.peaks[channel] ?? 0));
+    this.analyser.push(monoSamples(pcm, channels));
     const now = Date.now();
     if (now - this.lastEmit < LEVEL_INTERVAL_MS) return;
     this.lastEmit = now;
     this.eventEmitter.emit('soundInput.level', { levels: this.peaks });
     this.peaks = [];
+    const spectrum = this.analyser.take();
+    if (spectrum) this.eventEmitter.emit('soundInput.spectrum', spectrum);
   }
 
   // Warnings are informational; anything else ends the stream, the next device poll reopens it.

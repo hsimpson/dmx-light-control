@@ -52,6 +52,20 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
       color
     }
   }
+  bandCount
+  audioBars {
+    mode
+    minThreshold
+    maxThreshold
+    channelBindings {
+      projectFixturePublicId
+      channelAssignmentPublicId
+      channelNumber
+      channelDefinitionPublicId
+    }
+    functionPublicId
+    functionName
+  }
 }
 
 fragment VirtualConsoleFields on VirtualConsoleDto {

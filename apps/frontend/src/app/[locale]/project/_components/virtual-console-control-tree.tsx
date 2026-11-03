@@ -1,5 +1,6 @@
 'use client';
 
+import AudioTriggersControl from '@/app/[locale]/project/_components/virtual-console-controls/audio-triggers-control';
 import ButtonControl from '@/app/[locale]/project/_components/virtual-console-controls/button-control';
 import FrameControl from '@/app/[locale]/project/_components/virtual-console-controls/frame-control';
 import ResizeHandles from '@/app/[locale]/project/_components/virtual-console-controls/resize-handles';
@@ -107,6 +108,16 @@ const VirtualConsoleControlTree = ({
             ) : null}
             {control.type === 'button' ? (
               <ButtonControl
+                control={control}
+                mode={mode}
+                selected={selected}
+                onPlayValue={value => {
+                  onPlayValue?.(control, value);
+                }}
+              />
+            ) : null}
+            {control.type === 'audioTriggers' ? (
+              <AudioTriggersControl
                 control={control}
                 mode={mode}
                 selected={selected}

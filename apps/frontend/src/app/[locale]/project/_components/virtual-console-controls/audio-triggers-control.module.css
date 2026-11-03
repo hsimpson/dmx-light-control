@@ -1,0 +1,82 @@
+.root {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  padding: 4px;
+  width: 100%;
+}
+
+.selected {
+  outline: 2px solid var(--mantine-color-blue-filled);
+  outline-offset: 1px;
+}
+
+.toggle {
+  background: transparent;
+  border: 1px solid currentcolor;
+  border-radius: 4px;
+  color: inherit;
+  cursor: default;
+  font: inherit;
+  padding: 2px 6px;
+}
+
+.toggle[data-play='true'] {
+  cursor: pointer;
+}
+
+.toggle[data-on='true'] {
+  background: currentcolor;
+}
+
+.toggle[data-on='true'] > span {
+  color: var(--mantine-color-black);
+}
+
+.bars {
+  display: flex;
+  flex: 1;
+  gap: 2px;
+  min-height: 0;
+}
+
+.bar {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.track {
+  background: rgb(255 255 255 / 8%);
+  flex: 1;
+  position: relative;
+}
+
+.idle {
+  opacity: 0.35;
+}
+
+.fill {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.threshold {
+  border-top: 1px dashed rgb(255 255 255 / 60%);
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.caption {
+  font-size: 0.6rem;
+  overflow: hidden;
+  text-align: center;
+  white-space: nowrap;
+}

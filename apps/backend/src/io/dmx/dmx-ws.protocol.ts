@@ -49,6 +49,11 @@ export type DmxWsSoundLevelMessage = {
   levels: number[];
 };
 
+export type DmxWsAudioLevelsMessage = {
+  type: 'audioLevels';
+  levels: Record<string, number[]>;
+};
+
 export type DmxWsClientMessage = DmxWsSetMessage | DmxWsFunctionMessage | DmxWsControlValueMessage;
 
 export function dmxWsSnapshotMessage(channels: number[]): DmxWsSnapshotMessage {
@@ -73,6 +78,10 @@ export function dmxWsControlStateMessage(values: Record<string, number>): DmxWsC
 
 export function dmxWsSoundLevelMessage(levels: number[]): DmxWsSoundLevelMessage {
   return { type: 'soundLevel', levels };
+}
+
+export function dmxWsAudioLevelsMessage(levels: Record<string, number[]>): DmxWsAudioLevelsMessage {
+  return { type: 'audioLevels', levels };
 }
 
 export function parseDmxWsClientMessage(raw: string): DmxWsClientMessage | undefined {

@@ -2,6 +2,7 @@ import { AppEventEmitter } from '@/events/app-event-emitter';
 import { EventEmitter2 } from 'eventemitter2';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { peakLevels, SoundInputService } from './sound-input.service';
+import { type SpectrumFrame, volumeLevel } from './spectrum';
 
 const { audio } = vi.hoisted(() => {
   type Stream = {
@@ -78,6 +79,7 @@ describe('peakLevels', () => {
 
 describe('SoundInputService', () => {
   let levels: number[][];
+  let spectra: SpectrumFrame[];
   let service: SoundInputService;
 
   beforeEach(() => {
@@ -90,9 +92,13 @@ describe('SoundInputService', () => {
       opened: 0,
     });
     levels = [];
+    spectra = [];
     const eventEmitter = new AppEventEmitter(new EventEmitter2());
     eventEmitter.on('soundInput.level', payload => {
       levels.push(payload.levels);
+    });
+    eventEmitter.on('soundInput.spectrum', payload => {
+      spectra.push(payload);
     });
     service = new SoundInputService(eventEmitter);
   });
@@ -166,6 +172,19 @@ describe('SoundInputService', () => {
       [0.25, 0],
       [0.5, 0.125],
     ]);
+  });
+
+  it('GIVEN a full-scale stereo buffer WHEN it arrives THEN a spectrum with the device sample rate is emitted, empty on close', () => {
+    service.sync({ handle: 'StreamCam', channels: 2 });
+
+    audio.state.stream?.onInput(pcm(...Array.from({ length: 4096 }, (_, index) => (index % 4 < 2 ? 32767 : -32767))));
+    service.sync(null);
+
+    expect(spectra).toHaveLength(2);
+    expect(spectra[0]).toMatchObject({ sampleRate: 44100 });
+    expect(volumeLevel(spectra[0] ?? { power: [], sampleRate: 0, meanSquare: 0 })).toBeGreaterThan(0.95);
+    expect(spectra[0]?.power).toHaveLength(1025);
+    expect(spectra[1]).toEqual({ power: [], sampleRate: 0, meanSquare: 0 });
   });
 
   it('GIVEN an open stream WHEN the driver reports an error THEN the stream closes, warnings are ignored', async () => {

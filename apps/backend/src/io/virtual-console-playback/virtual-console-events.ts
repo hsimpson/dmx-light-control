@@ -19,6 +19,8 @@ export type VirtualConsoleEvents = {
   'virtualConsole.state.request': undefined;
   /** Current value per button/slider of the active project's saved console. */
   'virtualConsole.state': { values: Record<string, number> };
+  /** Smoothed bar levels (0..1, volume first) per enabled audio triggers control. */
+  'virtualConsole.audioLevels': { levels: Record<string, number[]> };
   /** LED state of every control bound to a MIDI entry. */
   'virtualConsole.feedback': { entries: VirtualConsoleFeedback[] };
 };

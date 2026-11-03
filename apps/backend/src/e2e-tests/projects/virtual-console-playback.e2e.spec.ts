@@ -126,4 +126,50 @@ describe('Virtual console playback of the active project', () => {
       { midiEntryPublicId, feedback },
     ]);
   });
+
+  describe('audio triggers', () => {
+    const saveAudioTriggers = async (audioBars: unknown[]) =>
+      graphqlQuery<{ updateProjectVirtualConsole: { virtualConsole: { pages: { controls: unknown[] }[] } } }>(
+        server,
+        `mutation ($input: UpdateProjectVirtualConsoleInput!) {
+          updateProjectVirtualConsole(input: $input) {
+            virtualConsole { pages { controls { type bandCount audioBars { mode minThreshold maxThreshold functionPublicId } } } }
+          }
+        }`,
+        {
+          variables: {
+            input: {
+              publicId: await createProject(`VC Audio ${audioBars.length}`),
+              virtualConsole: consoleWith([
+                { ...button, buttonMode: undefined, type: 'audioTriggers', bandCount: audioBars.length - 1, audioBars },
+              ]),
+            },
+          },
+        },
+      );
+
+    it('GIVEN a volume bar and two bands WHEN saved THEN they are returned', async () => {
+      const audioBars = [
+        { mode: 'function', minThreshold: 20, maxThreshold: 80, functionPublicId: null },
+        { mode: 'none', minThreshold: 10, maxThreshold: 90, functionPublicId: null },
+        { mode: 'channels', minThreshold: 0, maxThreshold: 100, functionPublicId: null },
+      ];
+
+      const body = await saveAudioTriggers(audioBars);
+
+      expect(body.errors).toBeUndefined();
+      expect(body.data?.updateProjectVirtualConsole.virtualConsole.pages[0]?.controls).toEqual([
+        { type: 'audioTriggers', bandCount: 2, audioBars },
+      ]);
+    });
+
+    it('GIVEN a bar whose min threshold is not below its max WHEN saved THEN the console is rejected', async () => {
+      const body = await saveAudioTriggers([
+        { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+        { mode: 'none', minThreshold: 60, maxThreshold: 60 },
+      ]);
+
+      expect(body.errors?.[0]?.message).toContain('minThreshold must be less than maxThreshold');
+    });
+  });
 });

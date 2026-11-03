@@ -3,7 +3,7 @@ import type { DmxValue } from '@/io/dmx/types/dmx.types';
 import type { VirtualConsoleControl } from '@/projects/virtual-console';
 import { ProjectRepository } from '@/projects/repositories/project.repository';
 import { EventEmitter2 } from 'eventemitter2';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { VirtualConsoleFeedback } from './virtual-console-events';
 import { VirtualConsolePlaybackService } from './virtual-console-playback.service';
 
@@ -311,5 +311,202 @@ describe('VirtualConsolePlaybackService', () => {
 
       expect(functions).toEqual([`start ${FUNCTION_ID}`, `stop ${FUNCTION_ID}`]);
     });
+  });
+});
+
+describe('VirtualConsolePlaybackService audio triggers', () => {
+  const OTHER_FUNCTION_ID = '88888888-8888-4888-8888-888888888888';
+  const audio = control('audio', 'audioTriggers', {
+    bandCount: 1,
+    audioBars: [
+      { mode: 'channels', minThreshold: 20, maxThreshold: 80, channelBindings: red },
+      { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+    ],
+  });
+  const audioFunction = control('audio-fn', 'audioTriggers', {
+    bandCount: 1,
+    audioBars: [
+      { mode: 'function', minThreshold: 20, maxThreshold: 80, functionPublicId: OTHER_FUNCTION_ID },
+      { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+    ],
+  });
+
+  // Mean square whose volume level reads `level` (0..1 over -60..0 dB).
+  const frameAt = (level: number) => ({
+    power: [],
+    sampleRate: 48000,
+    meanSquare: level === 0 ? 0 : 10 ** ((level * 60 - 60) / 10) / 2,
+  });
+
+  /** Plays `count` frames 50 ms apart, long enough for the smoothing to settle. */
+  const play = (eventEmitter: AppEventEmitter, level: number, count = 20) => {
+    for (let step = 0; step < count; step++) {
+      vi.setSystemTime(Date.now() + 50);
+      eventEmitter.emit('soundInput.spectrum', frameAt(level));
+    }
+  };
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  async function buildAudio(controls: VirtualConsoleControl[]) {
+    vi.useFakeTimers();
+    const built = await build(controls);
+    const levels: Record<string, number[]>[] = [];
+    built.eventEmitter.on('virtualConsole.audioLevels', payload => {
+      levels.push(payload.levels);
+    });
+    return { ...built, levels };
+  }
+
+  it('GIVEN a loaded audio control WHEN sound plays THEN nothing happens until it is enabled', async () => {
+    const { eventEmitter, dmx, levels } = await buildAudio([audio]);
+
+    play(eventEmitter, 1);
+
+    expect(dmx).toEqual([]);
+    expect(levels).toEqual([]);
+  });
+
+  it('GIVEN an enabled channels bar WHEN loud sound plays THEN its channel goes full and levels are published', async () => {
+    const { eventEmitter, dmx, states, levels, input } = await buildAudio([audio]);
+
+    input('audio', 1);
+    play(eventEmitter, 1);
+
+    expect(states.at(-1)).toEqual({ audio: 255 });
+    expect(dmx.at(-1)).toEqual([{ channel: 10, value: 255 }]);
+    expect(levels.at(-1)?.audio?.[0]).toBeCloseTo(1, 2);
+  });
+
+  it('GIVEN an enabled channels bar WHEN it is disabled THEN its channel goes dark and levels stop', async () => {
+    const { eventEmitter, dmx, states, levels, input } = await buildAudio([audio]);
+    input('audio', 1);
+    play(eventEmitter, 1);
+
+    input('audio', 0);
+    input('audio', 1);
+    const published = levels.length;
+    play(eventEmitter, 1, 3);
+
+    expect(states.at(-1)).toEqual({ audio: 0 });
+    expect(dmx.at(-1)).toEqual([{ channel: 10, value: 0 }]);
+    expect(levels).toHaveLength(published);
+  });
+
+  it('GIVEN a slider holding a channel WHEN an audio bar on it falls silent THEN the slider level stays (HTP)', async () => {
+    const { eventEmitter, dmx, input } = await buildAudio([slider, audio]);
+    input('slider', 50);
+    input('audio', 1);
+    play(eventEmitter, 1);
+
+    play(eventEmitter, 0, 40);
+
+    expect(dmx.at(-1)).toEqual([{ channel: 10, value: 128 }]);
+  });
+
+  it('GIVEN a function bar WHEN the level crosses max, wobbles and drops below min THEN it starts and stops once', async () => {
+    const { eventEmitter, functions, input } = await buildAudio([audioFunction]);
+    input('audio-fn', 1);
+
+    play(eventEmitter, 1);
+    play(eventEmitter, 0.5);
+    play(eventEmitter, 0, 40);
+
+    expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`, `stop ${OTHER_FUNCTION_ID}`]);
+  });
+
+  it('GIVEN a running bar function WHEN the control is removed from the console THEN the function stops', async () => {
+    const { eventEmitter, functions, input, projects, service } = await buildAudio([audioFunction]);
+    input('audio-fn', 1);
+    play(eventEmitter, 1);
+
+    projects.findOneByPublicIdWithFixtures.mockResolvedValue(loadedProject([]));
+    await service.reload(PROJECT_ID);
+
+    expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`, `stop ${OTHER_FUNCTION_ID}`]);
+  });
+
+  it('GIVEN a function already running elsewhere WHEN a bar crosses max THEN it neither restarts nor stops it', async () => {
+    const { eventEmitter, functions, input } = await buildAudio([audioFunction]);
+    eventEmitter.emit('function.state', { running: [OTHER_FUNCTION_ID] });
+    input('audio-fn', 1);
+
+    play(eventEmitter, 1);
+    play(eventEmitter, 0, 40);
+
+    expect(functions).toEqual([]);
+  });
+
+  it('GIVEN a bar start still pending WHEN a stale function state arrives THEN the bar can still stop it', async () => {
+    const { eventEmitter, functions, input } = await buildAudio([audioFunction]);
+    input('audio-fn', 1);
+    play(eventEmitter, 1);
+
+    eventEmitter.emit('function.state', { running: [] });
+    play(eventEmitter, 0, 40);
+
+    expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`, `stop ${OTHER_FUNCTION_ID}`]);
+  });
+
+  it('GIVEN two audio controls on one function WHEN one is disabled THEN it runs until the other lets go', async () => {
+    const twin = { ...audioFunction, id: 'audio-fn-2' };
+    const { eventEmitter, functions, input } = await buildAudio([audioFunction, twin]);
+    input('audio-fn', 1);
+    input('audio-fn-2', 1);
+    play(eventEmitter, 1);
+    eventEmitter.emit('function.state', { running: [OTHER_FUNCTION_ID] });
+
+    input('audio-fn', 0);
+    input('audio-fn', 1);
+    const afterFirstDisabled = [...functions];
+    input('audio-fn-2', 0);
+    input('audio-fn-2', 1);
+
+    expect(afterFirstDisabled).toEqual([`start ${OTHER_FUNCTION_ID}`]);
+    expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`, `stop ${OTHER_FUNCTION_ID}`]);
+  });
+
+  it('GIVEN an enabled control WHEN the console is saved with the same bars THEN its output does not blink', async () => {
+    const { eventEmitter, dmx, input, service } = await buildAudio([audio]);
+    input('audio', 1);
+    play(eventEmitter, 1);
+    const written = dmx.length;
+
+    await service.reload(PROJECT_ID);
+
+    expect(dmx).toHaveLength(written);
+  });
+
+  it('GIVEN an enabled control WHEN its bars change on save THEN the old channels are released', async () => {
+    const { eventEmitter, dmx, input, projects, service } = await buildAudio([audio]);
+    input('audio', 1);
+    play(eventEmitter, 1);
+
+    projects.findOneByPublicIdWithFixtures.mockResolvedValue(
+      loadedProject([
+        {
+          ...audio,
+          audioBars: [
+            { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+            { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+          ],
+        },
+      ]),
+    );
+    await service.reload(PROJECT_ID);
+
+    expect(dmx.at(-1)).toEqual([{ channel: 10, value: 0 }]);
+  });
+
+  it('GIVEN an audio control on a MIDI knob WHEN the knob turns THEN it toggles once, on the rising edge', async () => {
+    const { states, midiInput } = await buildAudio([{ ...audio, midiEntryPublicId: 'entry' }]);
+
+    midiInput('entry', 10);
+    midiInput('entry', 40);
+    midiInput('entry', 90);
+
+    expect(states.at(-1)).toEqual({ audio: 255 });
   });
 });

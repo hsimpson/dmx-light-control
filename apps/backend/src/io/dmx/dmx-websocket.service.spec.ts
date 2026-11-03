@@ -149,6 +149,26 @@ describe('DmxWebsocketService', () => {
     service.onModuleDestroy();
   });
 
+  it('GIVEN a connected client WHEN audio trigger levels arrive THEN broadcasts them for the console', () => {
+    const listeners = new Map<string, (payload: unknown) => void>();
+    const eventEmitter = {
+      on: (event: string, listener: (payload: unknown) => void) => {
+        listeners.set(event, listener);
+      },
+      emit: () => true,
+    };
+    const service = new DmxWebsocketService(new DmxUniverseService(), eventEmitter as unknown as AppEventEmitter);
+    service.onModuleInit();
+    const client = new FakeSocket();
+    handleDmxWebsocketConnection(client);
+    client.sent.length = 0;
+
+    listeners.get('virtualConsole.audioLevels')?.({ levels: { audio: [0.5, 1] } });
+
+    expect(client.sent).toEqual([JSON.stringify({ type: 'audioLevels', levels: { audio: [0.5, 1] } })]);
+    service.onModuleDestroy();
+  });
+
   it('GIVEN clients WHEN control input and state flow THEN input is forwarded, state broadcast and held buttons released on close', () => {
     const listeners = new Map<string, (payload: unknown) => void>();
     const emitted: [string, unknown][] = [];

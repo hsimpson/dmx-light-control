@@ -51,6 +51,7 @@ const project = {
 
 describe('VirtualConsoleView', () => {
   beforeEach(() => {
+    Element.prototype.scrollIntoView = vi.fn();
     vi.mocked(notifications.show).mockClear();
     sessionStorage.clear();
   });
@@ -304,6 +305,65 @@ describe('VirtualConsoleView', () => {
     await user.click(screen.getByTestId(`virtual-console-control-${sliderId}`));
     expect(screen.getByTestId('virtual-console-channel-sidebar')).toBeInTheDocument();
     expect(screen.getByText('No patched fixtures')).toBeInTheDocument();
+  });
+
+  it('GIVEN an audio triggers control WHEN a driving bar is selected THEN the channel panel edits that bar', async () => {
+    const audioId = '55555555-5555-4555-8555-555555555555';
+    const bar = { __typename: 'VirtualConsoleAudioBarDto' as const, minThreshold: 20, maxThreshold: 80 };
+    const projectWithAudio = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto' as const,
+                id: audioId,
+                type: 'audioTriggers',
+                x: 40,
+                y: 50,
+                width: 320,
+                height: 180,
+                label: 'Sound',
+                backgroundColor: '#111111',
+                children: [],
+                bandCount: 1,
+                audioBars: [
+                  { ...bar, mode: 'none' },
+                  { ...bar, mode: 'function' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    };
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithAudio } },
+        },
+      ],
+    });
+
+    await user.click(await screen.findByTestId(`virtual-console-control-${audioId}`));
+    const volumeShowsPanel = screen.queryByTestId('virtual-console-channel-sidebar') !== null;
+    await user.click(screen.getByRole('combobox', { name: 'Bar' }));
+    await user.click(await screen.findByRole('option', { name: 'Band 1', hidden: true }));
+    const panel = screen.getByTestId('virtual-console-channel-sidebar');
+    const showsFunction = screen.queryByRole('combobox', { name: 'Function' }) !== null;
+
+    await user.click(screen.getByRole('combobox', { name: 'Drives' }));
+    await user.click(await screen.findByRole('option', { name: 'Channels', hidden: true }));
+
+    expect(volumeShowsPanel).toBe(false);
+    expect(panel).toBeInTheDocument();
+    expect(showsFunction).toBe(true);
+    expect(screen.getByText('No patched fixtures')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
   });
 
   it('resizes a selected control from every handle', async () => {

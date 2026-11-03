@@ -126,4 +126,19 @@ describe('virtual console output', () => {
   it('GIVEN no resolvable channels WHEN applied THEN nothing is written', () => {
     expect(new VirtualConsoleOutput().apply(control('slider'), 10, fixtures)).toEqual([]);
   });
+
+  it('GIVEN a slider holding a channel WHEN an audio bar rises above and then withdraws THEN the highest level wins', () => {
+    const output = new VirtualConsoleOutput();
+    const slider = control('slider', { channelBindings: [binding(FIXTURE_ID, RED_ID)] });
+    output.apply(slider, 100, fixtures);
+    const bindings = [binding(FIXTURE_ID, RED_ID)];
+
+    const above = output.applyLevel('audio:1', bindings, 200, fixtures);
+    const below = output.applyLevel('audio:1', bindings, 50, fixtures);
+    const withdrawn = output.applyLevel('audio:1', bindings, 0, fixtures);
+
+    expect(above).toEqual([{ channel: 10, value: 200 }]);
+    expect(below).toEqual([{ channel: 10, value: 100 }]);
+    expect(withdrawn).toEqual([{ channel: 10, value: 100 }]);
+  });
 });

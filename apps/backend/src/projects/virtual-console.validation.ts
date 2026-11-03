@@ -1,6 +1,8 @@
 import type { MidiLedState } from '@/midi-mappings/midi-mapping';
 import { InvalidVirtualConsoleException } from '@/projects/project.exceptions';
 import {
+  VIRTUAL_CONSOLE_AUDIO_BANDS_MAX,
+  VIRTUAL_CONSOLE_AUDIO_BANDS_MIN,
   VIRTUAL_CONSOLE_CONTROL_SIZE_MIN,
   VIRTUAL_CONSOLE_CONTROL_TYPE,
   VIRTUAL_CONSOLE_DEFAULT_HEIGHT,
@@ -17,6 +19,8 @@ import {
   VIRTUAL_CONSOLE_SIZE_MIN,
   VIRTUAL_CONSOLE_SNAP_MAX,
   VIRTUAL_CONSOLE_SNAP_MIN,
+  VirtualConsoleAudioBar,
+  VirtualConsoleAudioBarMode,
   VirtualConsoleChannelBinding,
   VirtualConsoleControl,
   VirtualConsoleControlType,
@@ -65,8 +69,26 @@ function sanitizeControlForImport(control: ImportVirtualConsoleControl): Virtual
   if (rest.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame) {
     sanitized.children = Array.isArray(children) ? children.map(sanitizeControlForImport) : [];
   }
+  if (Array.isArray(rest.audioBars)) {
+    sanitized.audioBars = rest.audioBars.map(({ channelBindings: barBindings, ...bar }) =>
+      Array.isArray(barBindings) && barBindings.length > 0 ? { ...bar, channelBindings: barBindings } : bar,
+    );
+  }
   return sanitized;
 }
+
+type BindingHolder = Pick<VirtualConsoleControl, 'channelBindings' | 'functionPublicId' | 'functionName'>;
+
+/** Applies a binding patch to the control and to each of its audio bars, which bind like small controls. */
+function mapBindingHolders(
+  control: VirtualConsoleControl,
+  patch: (holder: BindingHolder) => BindingHolder,
+): VirtualConsoleControl {
+  const next = { ...control, ...patch(control) };
+  return control.audioBars ? { ...next, audioBars: control.audioBars.map(bar => ({ ...bar, ...patch(bar) })) } : next;
+}
+
+const bindingHolders = (control: VirtualConsoleControl): BindingHolder[] => [control, ...(control.audioBars ?? [])];
 
 export function sanitizeVirtualConsoleForImport(document: VirtualConsoleDocument): VirtualConsoleDocument {
   return {
@@ -147,6 +169,7 @@ function assertControl(control: VirtualConsoleControl, ids: Set<string>, depth: 
   assertChannelBindings(control);
   assertFunctionBinding(control);
   assertMidiBinding(control);
+  assertAudioFieldsAllowed(control);
 
   switch (control.type) {
     case VIRTUAL_CONSOLE_CONTROL_TYPE.Frame:
@@ -158,6 +181,9 @@ function assertControl(control: VirtualConsoleControl, ids: Set<string>, depth: 
     case VIRTUAL_CONSOLE_CONTROL_TYPE.Button:
       assertButton(control);
       break;
+    case VIRTUAL_CONSOLE_CONTROL_TYPE.AudioTriggers:
+      assertAudioTriggers(control);
+      break;
   }
 }
 
@@ -165,7 +191,8 @@ function assertControlType(type: string): asserts type is VirtualConsoleControlT
   if (
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Frame &&
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Slider &&
-    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Button
+    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Button &&
+    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.AudioTriggers
   ) {
     throw new InvalidVirtualConsoleException(`Unknown virtual console control type ${type}.`);
   }
@@ -275,6 +302,71 @@ function assertButton(control: VirtualConsoleControl): void {
   assertColor(control.foregroundColor, 'foregroundColor');
 }
 
+function assertAudioFieldsAllowed(control: VirtualConsoleControl): void {
+  const hasAudioFields =
+    (control.bandCount ?? undefined) !== undefined || (control.audioBars ?? undefined) !== undefined;
+  if (hasAudioFields && control.type !== VIRTUAL_CONSOLE_CONTROL_TYPE.AudioTriggers) {
+    throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have audio bars.`);
+  }
+}
+
+function assertAudioTriggers(control: VirtualConsoleControl): void {
+  assertNoChildren(control);
+  const bandCount = control.bandCount;
+  if (
+    bandCount === undefined ||
+    !isIntegerBetween(bandCount, VIRTUAL_CONSOLE_AUDIO_BANDS_MIN, VIRTUAL_CONSOLE_AUDIO_BANDS_MAX)
+  ) {
+    throw new InvalidVirtualConsoleException(
+      `Audio triggers bandCount must be an integer between ${VIRTUAL_CONSOLE_AUDIO_BANDS_MIN} and ${VIRTUAL_CONSOLE_AUDIO_BANDS_MAX}.`,
+    );
+  }
+  if (!Array.isArray(control.audioBars) || control.audioBars.length !== bandCount + 1) {
+    throw new InvalidVirtualConsoleException('Audio triggers need one volume bar plus one bar per band.');
+  }
+  control.audioBars.forEach(assertAudioBar);
+}
+
+const AUDIO_BAR_MODES: readonly string[] = Object.values(VirtualConsoleAudioBarMode);
+
+function assertAudioBar(bar: VirtualConsoleAudioBar): void {
+  if (!AUDIO_BAR_MODES.includes(bar.mode)) {
+    throw new InvalidVirtualConsoleException('Audio bar mode must be none, channels or function.');
+  }
+  assertBarThresholds(bar);
+  assertBarChannels(bar);
+  assertBarFunction(bar);
+}
+
+function assertBarThresholds({ minThreshold, maxThreshold }: VirtualConsoleAudioBar): void {
+  if (!isIntegerBetween(minThreshold, 0, 100) || !isIntegerBetween(maxThreshold, 0, 100)) {
+    throw new InvalidVirtualConsoleException('Audio bar thresholds must be integers between 0 and 100.');
+  }
+  if (minThreshold >= maxThreshold) {
+    throw new InvalidVirtualConsoleException('Audio bar minThreshold must be less than maxThreshold.');
+  }
+}
+
+function assertBarChannels(bar: VirtualConsoleAudioBar): void {
+  const bindings = bar.channelBindings ?? [];
+  if (bar.mode !== 'channels' && bindings.length > 0) {
+    throw new InvalidVirtualConsoleException('Only an audio bar in channels mode can bind channels.');
+  }
+  assertBindingList(bindings);
+}
+
+// A stale functionName would rebind a function on import that the user never chose for this bar.
+function assertBarFunction(bar: VirtualConsoleAudioBar): void {
+  const functionPublicId = bar.functionPublicId ?? undefined;
+  const hasFunction = functionPublicId !== undefined || (bar.functionName ?? undefined) !== undefined;
+  if (hasFunction && bar.mode !== 'function') {
+    throw new InvalidVirtualConsoleException('Only an audio bar in function mode can bind a function.');
+  }
+  if (functionPublicId !== undefined && !UUID_PATTERN.test(functionPublicId)) {
+    throw new InvalidVirtualConsoleException('Audio bar functionPublicId must be a UUID.');
+  }
+}
+
 function assertFunctionBinding(control: VirtualConsoleControl): void {
   const functionPublicId = control.functionPublicId ?? undefined;
   const functionName = control.functionName ?? undefined;
@@ -377,9 +469,9 @@ export function enrichVirtualConsoleForExport(
 
   const functionNameById = new Map(functions.flatMap(fn => (fn.publicId ? [[fn.publicId, fn.name] as const] : [])));
 
-  const enrichControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
-    const functionName = control.functionPublicId ? functionNameById.get(control.functionPublicId) : undefined;
-    const withFunctionName: VirtualConsoleControl = functionName ? { ...control, functionName } : control;
+  const enrichHolder = (holder: BindingHolder): BindingHolder => {
+    const functionName = holder.functionPublicId ? functionNameById.get(holder.functionPublicId) : undefined;
+    const withFunctionName: BindingHolder = functionName ? { ...holder, functionName } : holder;
     const bindings = withFunctionName.channelBindings?.map(binding => {
       const metadata = metadataByKey.get(`${binding.projectFixturePublicId}:${binding.channelAssignmentPublicId}`);
       if (!metadata) {
@@ -393,11 +485,13 @@ export function enrichVirtualConsoleForExport(
           : {}),
       };
     });
-    const next: VirtualConsoleControl = bindings
-      ? { ...withFunctionName, channelBindings: bindings }
-      : withFunctionName;
-    if (withFunctionName.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && withFunctionName.children) {
-      return { ...next, children: withFunctionName.children.map(enrichControl) };
+    return bindings ? { ...withFunctionName, channelBindings: bindings } : withFunctionName;
+  };
+
+  const enrichControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
+    const next = mapBindingHolders(control, enrichHolder);
+    if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && control.children) {
+      return { ...next, children: control.children.map(enrichControl) };
     }
     return next;
   };
@@ -412,16 +506,16 @@ export function enrichVirtualConsoleForExport(
 }
 
 export function stripVirtualConsoleBindingHints(document: VirtualConsoleDocument): VirtualConsoleDocument {
-  const stripControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
-    const bindings = control.channelBindings?.map(binding => ({
+  const stripHolder = (holder: BindingHolder): BindingHolder => {
+    const bindings = holder.channelBindings?.map(binding => ({
       projectFixturePublicId: binding.projectFixturePublicId,
       channelAssignmentPublicId: binding.channelAssignmentPublicId,
     }));
-    const { functionName: _functionName, ...withoutFunctionName } = control;
-    const next: VirtualConsoleControl =
-      bindings && bindings.length > 0
-        ? { ...withoutFunctionName, channelBindings: bindings }
-        : { ...withoutFunctionName, channelBindings: undefined };
+    return { functionName: undefined, channelBindings: bindings && bindings.length > 0 ? bindings : undefined };
+  };
+
+  const stripControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
+    const next = mapBindingHolders(control, stripHolder);
     if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && control.children) {
       return { ...next, children: control.children.map(stripControl) };
     }
@@ -444,19 +538,16 @@ export function remapVirtualConsoleFunctionsForImport(
   const ids = new Set(functions.map(fn => fn.publicId));
   const idByName = new Map(functions.map(fn => [fn.name, fn.publicId]));
 
+  const remapHolder = ({ functionName, functionPublicId }: BindingHolder): BindingHolder => {
+    if (functionPublicId && ids.has(functionPublicId)) return { functionName: undefined, functionPublicId };
+    const remapped = functionName ? idByName.get(functionName) : undefined;
+    return { functionName: undefined, functionPublicId: remapped };
+  };
+
   const remapControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
-    const { functionName, functionPublicId, children, ...rest } = control;
-    let next: VirtualConsoleControl = { ...rest };
-    if (functionPublicId && ids.has(functionPublicId)) {
-      next = { ...next, functionPublicId };
-    } else if (functionName) {
-      const remapped = idByName.get(functionName);
-      if (remapped) {
-        next = { ...next, functionPublicId: remapped };
-      }
-    }
-    if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && children) {
-      next = { ...next, children: children.map(remapControl) };
+    const next = mapBindingHolders(control, remapHolder);
+    if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && control.children) {
+      return { ...next, children: control.children.map(remapControl) };
     }
     return next;
   };
@@ -474,16 +565,13 @@ export function removeFunctionBindings(
   document: VirtualConsoleDocument,
   functionPublicId: string,
 ): VirtualConsoleDocument {
+  const stripHolder = ({ functionPublicId: boundId }: BindingHolder): BindingHolder => ({
+    functionPublicId: boundId && boundId !== functionPublicId ? boundId : undefined,
+  });
+
   const stripControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
-    const { functionPublicId: boundId, children, ...rest } = control;
-    let next: VirtualConsoleControl = { ...rest };
-    if (boundId && boundId !== functionPublicId) {
-      next = { ...next, functionPublicId: boundId };
-    }
-    if (children) {
-      next = { ...next, children: children.map(stripControl) };
-    }
-    return next;
+    const next = mapBindingHolders(control, stripHolder);
+    return control.children ? { ...next, children: control.children.map(stripControl) } : next;
   };
 
   return {
@@ -500,8 +588,10 @@ export function assertVirtualConsoleFunctionBindings(
   functionPublicIds: ReadonlySet<string>,
 ): void {
   const assertControlFunction = (control: VirtualConsoleControl): void => {
-    if (control.functionPublicId && !functionPublicIds.has(control.functionPublicId)) {
-      throw new InvalidVirtualConsoleException(`Function ${control.functionPublicId} does not belong to this project.`);
+    for (const { functionPublicId } of bindingHolders(control)) {
+      if (functionPublicId && !functionPublicIds.has(functionPublicId)) {
+        throw new InvalidVirtualConsoleException(`Function ${functionPublicId} does not belong to this project.`);
+      }
     }
     for (const child of control.children ?? []) {
       assertControlFunction(child);
@@ -522,50 +612,53 @@ export async function remapVirtualConsoleBindingsForImport(
 ): Promise<VirtualConsoleDocument> {
   const byFixture = new Map(fixtures.map(fixture => [fixture.publicId, fixture]));
 
-  const remapControl = async (control: VirtualConsoleControl): Promise<VirtualConsoleControl> => {
-    const bindings = control.channelBindings;
-    let nextControl: VirtualConsoleControl = control;
-    if (bindings && bindings.length > 0) {
-      const remappedBindings: VirtualConsoleChannelBinding[] = [];
-      for (const binding of bindings) {
-        const fixture = byFixture.get(binding.projectFixturePublicId);
-        if (!fixture) {
-          continue;
-        }
-        if (fixture.channelAssignmentPublicIds.has(binding.channelAssignmentPublicId)) {
-          remappedBindings.push({
-            projectFixturePublicId: binding.projectFixturePublicId,
-            channelAssignmentPublicId: binding.channelAssignmentPublicId,
-          });
-          continue;
-        }
-        const hint = importHints.get(binding.projectFixturePublicId)?.get(binding.channelAssignmentPublicId);
-        const channelNumber =
-          (await assignmentChannelNumberByPublicId(binding.channelAssignmentPublicId)) ??
-          binding.channelNumber ??
-          hint?.channelNumber;
-        let replacement =
-          channelNumber === undefined
-            ? undefined
-            : fixture.channelAssignmentPublicIdByChannelNumber?.get(channelNumber);
-        if (!replacement) {
-          const definitionPublicId = binding.channelDefinitionPublicId ?? hint?.channelDefinitionPublicId;
-          if (definitionPublicId) {
-            replacement = fixture.channelAssignmentPublicIdByDefinitionPublicId?.get(definitionPublicId);
-          }
-        }
-        if (!replacement) {
-          continue;
-        }
+  const remapBindings = async (bindings: readonly VirtualConsoleChannelBinding[]) => {
+    const remappedBindings: VirtualConsoleChannelBinding[] = [];
+    for (const binding of bindings) {
+      const fixture = byFixture.get(binding.projectFixturePublicId);
+      if (!fixture) {
+        continue;
+      }
+      if (fixture.channelAssignmentPublicIds.has(binding.channelAssignmentPublicId)) {
         remappedBindings.push({
           projectFixturePublicId: binding.projectFixturePublicId,
-          channelAssignmentPublicId: replacement,
+          channelAssignmentPublicId: binding.channelAssignmentPublicId,
         });
+        continue;
       }
-      nextControl =
-        remappedBindings.length > 0
-          ? { ...control, channelBindings: remappedBindings }
-          : { ...control, channelBindings: undefined };
+      const hint = importHints.get(binding.projectFixturePublicId)?.get(binding.channelAssignmentPublicId);
+      const channelNumber =
+        (await assignmentChannelNumberByPublicId(binding.channelAssignmentPublicId)) ??
+        binding.channelNumber ??
+        hint?.channelNumber;
+      let replacement =
+        channelNumber === undefined ? undefined : fixture.channelAssignmentPublicIdByChannelNumber?.get(channelNumber);
+      if (!replacement) {
+        const definitionPublicId = binding.channelDefinitionPublicId ?? hint?.channelDefinitionPublicId;
+        if (definitionPublicId) {
+          replacement = fixture.channelAssignmentPublicIdByDefinitionPublicId?.get(definitionPublicId);
+        }
+      }
+      if (!replacement) {
+        continue;
+      }
+      remappedBindings.push({
+        projectFixturePublicId: binding.projectFixturePublicId,
+        channelAssignmentPublicId: replacement,
+      });
+    }
+    return remappedBindings.length > 0 ? remappedBindings : undefined;
+  };
+
+  const remapHolder = async <T extends BindingHolder>(holder: T): Promise<T> =>
+    holder.channelBindings && holder.channelBindings.length > 0
+      ? { ...holder, channelBindings: await remapBindings(holder.channelBindings) }
+      : holder;
+
+  const remapControl = async (control: VirtualConsoleControl): Promise<VirtualConsoleControl> => {
+    let nextControl = await remapHolder(control);
+    if (control.audioBars) {
+      nextControl = { ...nextControl, audioBars: await Promise.all(control.audioBars.map(remapHolder)) };
     }
     if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame && control.children) {
       const children = await Promise.all(control.children.map(remapControl));
@@ -599,7 +692,7 @@ function assertControlBindingsResolve(
   control: VirtualConsoleControl,
   assignmentsByFixture: ReadonlyMap<string, ReadonlySet<string>>,
 ): void {
-  for (const binding of control.channelBindings ?? []) {
+  for (const binding of bindingHolders(control).flatMap(holder => holder.channelBindings ?? [])) {
     const assignments = assignmentsByFixture.get(binding.projectFixturePublicId);
     if (!assignments?.has(binding.channelAssignmentPublicId)) {
       throw new InvalidVirtualConsoleException(
@@ -624,6 +717,13 @@ function assertChannelBindings(control: VirtualConsoleControl): void {
     control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Slider || control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Button;
   if (!allowsBindings && bindings.length > 0) {
     throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have channel bindings.`);
+  }
+  assertBindingList(bindings);
+}
+
+function assertBindingList(bindings: readonly VirtualConsoleChannelBinding[]): void {
+  if (!Array.isArray(bindings)) {
+    throw new InvalidVirtualConsoleException('Channel bindings must be an array.');
   }
   const seen = new Set<string>();
   for (const binding of bindings) {

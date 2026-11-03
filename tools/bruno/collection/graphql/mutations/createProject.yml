@@ -107,7 +107,9 @@ graphql:
             height
             pages {
               controls {
+                audioBars
                 backgroundColor
+                bandCount
                 borderColor
                 borderWidth
                 buttonMode

@@ -1,4 +1,5 @@
 import {
+  VirtualConsoleAudioBarMode,
   VirtualConsoleControlType,
   VirtualConsoleSliderOrientation,
   VirtualConsoleSliderValueType,
@@ -12,6 +13,8 @@ import {
   extractControl,
   findControl,
   findFunctionBindings,
+  patchAudioBar,
+  resizeAudioBars,
   findControlAbsolutePosition,
   findControlParentId,
   findDropTarget,
@@ -76,6 +79,40 @@ describe('virtual-console-document', () => {
     const withButton = virtualConsoleDocumentToInput(document);
     expect(withButton.pages[0]?.controls[1]?.upperLimit).toBe(255);
     expect(withButton.pages[0]?.controls[1]?.lowerLimit).toBeUndefined();
+  });
+
+  it('GIVEN a new audio triggers control WHEN converted to input THEN it has a volume bar plus one idle bar per band', () => {
+    const document = createDefaultVirtualConsoleDocument();
+    const binding = {
+      projectFixturePublicId: '55555555-5555-4555-8555-555555555555',
+      channelAssignmentPublicId: '66666666-6666-4666-8666-666666666666',
+    };
+    const audio = createControl('audioTriggers', 0, 0);
+    document.pages[0]?.controls.push({
+      ...audio,
+      audioBars: (audio.audioBars ?? []).map((bar, index) =>
+        index === 1
+          ? { ...bar, mode: 'channels' as const, channelBindings: [binding] }
+          : { ...bar, functionName: 'old' },
+      ),
+    });
+
+    const input = virtualConsoleDocumentToInput(document).pages[0]?.controls[0];
+
+    expect(input?.type).toBe(VirtualConsoleControlType.AudioTriggers);
+    expect(input?.bandCount).toBe(8);
+    expect(input?.audioBars).toHaveLength(9);
+    expect(input?.audioBars?.[0]).toEqual({
+      mode: VirtualConsoleAudioBarMode.None,
+      minThreshold: 20,
+      maxThreshold: 80,
+    });
+    expect(input?.audioBars?.[1]).toEqual({
+      mode: VirtualConsoleAudioBarMode.Channels,
+      minThreshold: 20,
+      maxThreshold: 80,
+      channelBindings: [binding],
+    });
   });
 
   it('keeps channel bindings and drops an empty list', () => {
@@ -352,4 +389,57 @@ describe('virtual-console-document', () => {
     expect(findFunctionBindings(document, 'fn-1')).toEqual([{ pageName: 'Page 1', label: 'Strobe button' }]);
     expect(findFunctionBindings(document, 'missing')).toEqual([]);
   });
+
+  it('GIVEN an audio bar bound to a function WHEN searched THEN the audio control is reported', () => {
+    const audio = createControl('audioTriggers', 0, 0);
+    const document: VirtualConsoleDocument = {
+      ...createDefaultVirtualConsoleDocument(),
+      pages: [
+        {
+          id: 'page-1',
+          name: 'Page 1',
+          controls: [
+            {
+              ...audio,
+              label: 'Sound',
+              audioBars: [{ mode: 'function', minThreshold: 20, maxThreshold: 80, functionPublicId: 'fn-1' }],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(findFunctionBindings(document, 'fn-1')).toEqual([{ pageName: 'Page 1', label: 'Sound' }]);
+  });
+
+  it('GIVEN configured bars WHEN the band count changes THEN existing bars are kept and new ones are idle', () => {
+    const bars = patchAudioBar(createAudioBarsFor(2), 1, { mode: 'function', functionPublicId: 'fn-1' });
+
+    const grown = resizeAudioBars(bars, 3);
+    const shrunk = resizeAudioBars(grown, 1);
+
+    expect(grown).toHaveLength(4);
+    expect(grown[1]).toMatchObject({ mode: 'function', functionPublicId: 'fn-1' });
+    expect(grown[3]).toEqual({ mode: 'none', minThreshold: 20, maxThreshold: 80 });
+    expect(shrunk).toEqual(grown.slice(0, 2));
+  });
+
+  it('GIVEN a bar with channels WHEN switched to function mode THEN its channels are dropped', () => {
+    const binding = { projectFixturePublicId: 'fixture', channelAssignmentPublicId: 'assignment' };
+    const bars = patchAudioBar(createAudioBarsFor(1), 1, { mode: 'channels', channelBindings: [binding] });
+
+    const switched = patchAudioBar(bars, 1, { mode: 'function' });
+
+    expect(bars[1]?.channelBindings).toEqual([binding]);
+    expect(switched[1]).toEqual({
+      mode: 'function',
+      minThreshold: 20,
+      maxThreshold: 80,
+      channelBindings: undefined,
+      functionPublicId: undefined,
+    });
+    expect(switched[0]).toBe(bars[0]);
+  });
 });
+
+const createAudioBarsFor = (bandCount: number) => resizeAudioBars([], bandCount);

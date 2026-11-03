@@ -1,6 +1,11 @@
 import type { MidiFeedbackValues } from '@/app/[locale]/midiMapping/_components/midi-mapping-entry-values';
-import type { VirtualConsoleControlInput, VirtualConsoleInput } from '@/shared/types/graphql/graphql';
+import type {
+  VirtualConsoleAudioBarInput,
+  VirtualConsoleControlInput,
+  VirtualConsoleInput,
+} from '@/shared/types/graphql/graphql';
 import {
+  VirtualConsoleAudioBarMode as GqlVirtualConsoleAudioBarMode,
   VirtualConsoleButtonMode as GqlVirtualConsoleButtonMode,
   VirtualConsoleControlType as GqlVirtualConsoleControlType,
   VirtualConsoleSliderOrientation as GqlVirtualConsoleSliderOrientation,
@@ -21,19 +26,33 @@ export const VIRTUAL_CONSOLE_SNAP_MIN = 1;
 export const VIRTUAL_CONSOLE_SNAP_MAX = 128;
 export const VIRTUAL_CONSOLE_PALETTE_MIME = 'application/x-virtual-console-control';
 export const VIRTUAL_CONSOLE_FRAME_HEADER_PADDING_Y = 4;
+export const VIRTUAL_CONSOLE_AUDIO_BANDS_MIN = 1;
+export const VIRTUAL_CONSOLE_AUDIO_BANDS_MAX = 16;
+export const VIRTUAL_CONSOLE_AUDIO_DEFAULT_BANDS = 8;
 
 export const VIRTUAL_CONSOLE_RESIZE_HANDLES = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as const;
 
 export type VirtualConsoleResizeHandle = (typeof VIRTUAL_CONSOLE_RESIZE_HANDLES)[number];
 
-export type VirtualConsoleControlType = 'frame' | 'slider' | 'button';
+export type VirtualConsoleControlType = 'frame' | 'slider' | 'button' | 'audioTriggers';
 export type VirtualConsoleSliderOrientation = 'vertical' | 'horizontal';
 export type VirtualConsoleSliderValueType = 'dmx' | 'percentage';
 export type VirtualConsoleButtonMode = 'flash' | 'toggle';
+export type VirtualConsoleAudioBarMode = 'none' | 'channels' | 'function';
 
 export type VirtualConsoleChannelBinding = {
   projectFixturePublicId: string;
   channelAssignmentPublicId: string;
+};
+
+/** Volume (index 0) or one spectrum band of an audio triggers control; thresholds in percent. */
+export type VirtualConsoleAudioBar = {
+  mode: VirtualConsoleAudioBarMode;
+  minThreshold: number;
+  maxThreshold: number;
+  channelBindings?: VirtualConsoleChannelBinding[];
+  functionPublicId?: string;
+  functionName?: string;
 };
 
 export type VirtualConsoleControl = {
@@ -62,6 +81,8 @@ export type VirtualConsoleControl = {
   functionName?: string;
   midiEntryPublicId?: string;
   feedback?: MidiFeedbackValues;
+  bandCount?: number;
+  audioBars?: VirtualConsoleAudioBar[];
 };
 
 export type VirtualConsolePage = {
@@ -149,8 +170,48 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         upperLimit: 255,
         ...font,
       };
+    case 'audioTriggers':
+      return {
+        id,
+        type,
+        x,
+        y,
+        width: 320,
+        height: 180,
+        label: 'Audio triggers',
+        backgroundColor: '#1a1b1e',
+        foregroundColor: '#40c057',
+        bandCount: VIRTUAL_CONSOLE_AUDIO_DEFAULT_BANDS,
+        audioBars: createAudioBars(VIRTUAL_CONSOLE_AUDIO_DEFAULT_BANDS),
+        ...font,
+      };
   }
 };
+
+/** Volume bar plus one idle bar per band. */
+export const createAudioBars = (bandCount: number): VirtualConsoleAudioBar[] =>
+  Array.from({ length: bandCount + 1 }, () => ({ mode: 'none', minThreshold: 20, maxThreshold: 80 }));
+
+/** Keeps the volume bar and the first `bandCount` band bars, adding idle bars for new bands. */
+export const resizeAudioBars = (bars: readonly VirtualConsoleAudioBar[], bandCount: number): VirtualConsoleAudioBar[] =>
+  createAudioBars(bandCount).map((idle, index) => bars[index] ?? idle);
+
+/** A bar's mode decides which binding it keeps; switching clears the other one. */
+export const patchAudioBar = (
+  bars: readonly VirtualConsoleAudioBar[],
+  index: number,
+  patch: Partial<VirtualConsoleAudioBar>,
+): VirtualConsoleAudioBar[] =>
+  bars.map((bar, current) => {
+    if (current !== index) return bar;
+    const next = { ...bar, ...patch };
+    return {
+      ...next,
+      channelBindings: next.mode === 'channels' ? next.channelBindings : undefined,
+      functionPublicId: next.mode === 'function' ? next.functionPublicId : undefined,
+      functionName: next.mode === 'function' ? next.functionName : undefined,
+    };
+  });
 
 const omitGraphqlArtifacts = (value: unknown): unknown => {
   if (Array.isArray(value)) {
@@ -177,8 +238,32 @@ const controlTypeToInput = (type: VirtualConsoleControlType): GqlVirtualConsoleC
       return GqlVirtualConsoleControlType.Frame;
     case 'slider':
       return GqlVirtualConsoleControlType.Slider;
+    case 'audioTriggers':
+      return GqlVirtualConsoleControlType.AudioTriggers;
   }
 };
+
+const audioBarModeToInput = (mode: VirtualConsoleAudioBarMode): GqlVirtualConsoleAudioBarMode => {
+  switch (mode) {
+    case 'none':
+      return GqlVirtualConsoleAudioBarMode.None;
+    case 'channels':
+      return GqlVirtualConsoleAudioBarMode.Channels;
+    case 'function':
+      return GqlVirtualConsoleAudioBarMode.Function;
+  }
+};
+
+const audioBarToInput = ({
+  mode,
+  channelBindings,
+  functionName: _functionName,
+  ...rest
+}: VirtualConsoleAudioBar): VirtualConsoleAudioBarInput => ({
+  ...rest,
+  mode: audioBarModeToInput(mode),
+  ...(channelBindings !== undefined && channelBindings.length > 0 ? { channelBindings } : {}),
+});
 
 const sliderOrientationToInput = (orientation: VirtualConsoleSliderOrientation): GqlVirtualConsoleSliderOrientation => {
   switch (orientation) {
@@ -210,6 +295,7 @@ type FunctionBindingNode = {
   pages?: readonly FunctionBindingNode[] | null;
   controls?: readonly FunctionBindingNode[] | null;
   children?: readonly FunctionBindingNode[] | null;
+  audioBars?: readonly { functionPublicId?: string | null }[] | null;
 };
 
 export const findFunctionBindings = (
@@ -222,7 +308,11 @@ export const findFunctionBindings = (
   const found: FunctionBindingLocation[] = [];
   const walk = (controls: readonly FunctionBindingNode[] | null | undefined, pageName: string) => {
     for (const control of controls ?? []) {
-      if (control.functionPublicId === functionPublicId) {
+      const bars = control.audioBars ?? [];
+      if (
+        control.functionPublicId === functionPublicId ||
+        bars.some(bar => bar.functionPublicId === functionPublicId)
+      ) {
         found.push({ pageName, label: control.label ?? '' });
       }
       walk(control.children, pageName);
@@ -246,6 +336,7 @@ const controlToInput = (control: VirtualConsoleControl): VirtualConsoleControlIn
     channelBindings,
     buttonMode,
     functionName: _functionName,
+    audioBars,
     ...rest
   } = control;
 
@@ -257,6 +348,7 @@ const controlToInput = (control: VirtualConsoleControl): VirtualConsoleControlIn
     ...(valueType !== undefined ? { valueType: sliderValueTypeToInput(valueType) } : {}),
     ...(children !== undefined ? { children: children.map(controlToInput) } : {}),
     ...(channelBindings !== undefined && channelBindings.length > 0 ? { channelBindings } : {}),
+    ...(audioBars !== undefined ? { audioBars: audioBars.map(audioBarToInput) } : {}),
   };
 };
 

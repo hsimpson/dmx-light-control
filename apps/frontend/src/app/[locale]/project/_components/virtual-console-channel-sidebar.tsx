@@ -26,11 +26,16 @@ type VirtualConsoleFunctionOption = {
   name: string;
 };
 
+type BindingPatch = Partial<Pick<VirtualConsoleControl, 'channelBindings' | 'functionPublicId'>>;
+
 type VirtualConsoleChannelSidebarProperties = {
-  control: VirtualConsoleControl;
+  /** A button or slider, or an audio bar (no `type`), whose bindings are edited. */
+  control: BindingPatch & { type?: VirtualConsoleControl['type'] };
+  /** Set for audio bars: their mode already decides between channels and a function. */
+  fixedKind?: 'channels' | 'function';
   fixtures: VirtualConsoleAssignableFixture[];
   functions?: VirtualConsoleFunctionOption[];
-  onPatch: (patch: Partial<VirtualConsoleControl>) => void;
+  onPatch: (patch: BindingPatch) => void;
 };
 
 const emptyFunctions: VirtualConsoleFunctionOption[] = [];
@@ -40,11 +45,14 @@ const bindingKey = (binding: VirtualConsoleChannelBinding) =>
 
 const VirtualConsoleChannelSidebar = ({
   control,
+  fixedKind,
   fixtures,
   functions = emptyFunctions,
   onPatch,
 }: VirtualConsoleChannelSidebarProperties) => {
   const { t } = useTranslation();
+  const choosesKind = fixedKind === undefined && control.type === 'button';
+  const bindsFunction = fixedKind === 'function' || (choosesKind && Boolean(control.functionPublicId));
   const bindings = control.channelBindings ?? [];
   const known = new Set(
     fixtures.flatMap(fixture =>
@@ -70,7 +78,7 @@ const VirtualConsoleChannelSidebar = ({
   return (
     <Paper className={classes.panel} data-testid="virtual-console-channel-sidebar" p="md" withBorder>
       <Stack gap="sm">
-        {control.type === 'button' ? (
+        {choosesKind ? (
           <Select
             allowDeselect={false}
             label={t({ id: 'ProjectDetail.virtualConsole.bindingKind', defaultMessage: 'Binding' })}
@@ -97,12 +105,12 @@ const VirtualConsoleChannelSidebar = ({
             }}
           />
         ) : null}
-        {control.type === 'button' && control.functionPublicId ? (
+        {bindsFunction ? (
           <Select
             allowDeselect={false}
             label={t({ id: 'ProjectDetail.virtualConsole.function', defaultMessage: 'Function' })}
             data={functions.map(fn => ({ value: fn.publicId, label: fn.name }))}
-            value={control.functionPublicId}
+            value={control.functionPublicId ?? null}
             onChange={value => {
               if (value) {
                 onPatch({ functionPublicId: value, channelBindings: undefined });
@@ -110,7 +118,7 @@ const VirtualConsoleChannelSidebar = ({
             }}
           />
         ) : null}
-        {control.type === 'button' && control.functionPublicId ? null : (
+        {bindsFunction ? null : (
           <>
             <Text size="sm" fw={600}>
               {t({ id: 'ProjectDetail.virtualConsole.channels', defaultMessage: 'Channels' })}

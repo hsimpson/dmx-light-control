@@ -682,6 +682,28 @@ export type UpdateProjectVirtualConsoleInput = {
   virtualConsole: VirtualConsoleInput;
 };
 
+export type VirtualConsoleAudioBarInput = {
+  /** Fixture channels this bar drives */
+  channelBindings?: Array<VirtualConsoleChannelBindingInput> | null | undefined;
+  /** Function name used to remap the binding on import */
+  functionName?: string | null | undefined;
+  /** Project function this bar starts and stops */
+  functionPublicId?: string | null | undefined;
+  /** Level in percent above which channels are full and a function starts */
+  maxThreshold: number;
+  /** Level in percent below which channels are 0 and a function stops */
+  minThreshold: number;
+  /** What this bar drives */
+  mode: VirtualConsoleAudioBarMode;
+};
+
+/** What an audio triggers bar drives */
+export const enum VirtualConsoleAudioBarMode {
+  Channels = 'channels',
+  Function = 'function',
+  None = 'none',
+}
+
 /** Whether a virtual console button latches or runs only while held */
 export const enum VirtualConsoleButtonMode {
   Flash = 'flash',
@@ -700,8 +722,12 @@ export type VirtualConsoleChannelBindingInput = {
 };
 
 export type VirtualConsoleControlInput = {
+  /** Volume bar followed by one bar per band of an audio triggers control */
+  audioBars?: Array<VirtualConsoleAudioBarInput> | null | undefined;
   /** Background color as hex */
   backgroundColor: string;
+  /** Number of spectrum bands of an audio triggers control */
+  bandCount?: number | null | undefined;
   /** Frame border color as hex */
   borderColor?: string | null | undefined;
   /** Frame border width in pixels */
@@ -754,6 +780,7 @@ export type VirtualConsoleControlInput = {
 
 /** Kind of virtual console control */
 export const enum VirtualConsoleControlType {
+  AudioTriggers = 'audioTriggers',
   Button = 'button',
   Frame = 'frame',
   Slider = 'slider',
@@ -1715,6 +1742,7 @@ export type VirtualConsoleControlFieldsFragment = {
   functionPublicId: string | null;
   functionName: string | null;
   midiEntryPublicId: string | null;
+  bandCount: number | null;
   channelBindings: Array<{
     projectFixturePublicId: string;
     channelAssignmentPublicId: string;
@@ -1726,6 +1754,19 @@ export type VirtualConsoleControlFieldsFragment = {
     on: { behavior: number; color: number };
     monitor: { behavior: number; color: number } | null;
   } | null;
+  audioBars: Array<{
+    mode: VirtualConsoleAudioBarMode;
+    minThreshold: number;
+    maxThreshold: number;
+    functionPublicId: string | null;
+    functionName: string | null;
+    channelBindings: Array<{
+      projectFixturePublicId: string;
+      channelAssignmentPublicId: string;
+      channelNumber: number | null;
+      channelDefinitionPublicId: string | null;
+    }> | null;
+  }> | null;
 };
 
 export type VirtualConsoleFieldsFragment = {
@@ -1759,6 +1800,7 @@ export type VirtualConsoleFieldsFragment = {
       functionPublicId: string | null;
       functionName: string | null;
       midiEntryPublicId: string | null;
+      bandCount: number | null;
       children: Array<{
         id: string;
         type: VirtualConsoleControlType;
@@ -1782,6 +1824,7 @@ export type VirtualConsoleFieldsFragment = {
         functionPublicId: string | null;
         functionName: string | null;
         midiEntryPublicId: string | null;
+        bandCount: number | null;
         children: Array<{
           id: string;
           type: VirtualConsoleControlType;
@@ -1805,6 +1848,7 @@ export type VirtualConsoleFieldsFragment = {
           functionPublicId: string | null;
           functionName: string | null;
           midiEntryPublicId: string | null;
+          bandCount: number | null;
           children: Array<{
             id: string;
             type: VirtualConsoleControlType;
@@ -1828,6 +1872,7 @@ export type VirtualConsoleFieldsFragment = {
             functionPublicId: string | null;
             functionName: string | null;
             midiEntryPublicId: string | null;
+            bandCount: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -1851,6 +1896,7 @@ export type VirtualConsoleFieldsFragment = {
               functionPublicId: string | null;
               functionName: string | null;
               midiEntryPublicId: string | null;
+              bandCount: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -1874,6 +1920,7 @@ export type VirtualConsoleFieldsFragment = {
                 functionPublicId: string | null;
                 functionName: string | null;
                 midiEntryPublicId: string | null;
+                bandCount: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -1897,6 +1944,7 @@ export type VirtualConsoleFieldsFragment = {
                   functionPublicId: string | null;
                   functionName: string | null;
                   midiEntryPublicId: string | null;
+                  bandCount: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -1920,6 +1968,7 @@ export type VirtualConsoleFieldsFragment = {
                     functionPublicId: string | null;
                     functionName: string | null;
                     midiEntryPublicId: string | null;
+                    bandCount: number | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
                       channelAssignmentPublicId: string;
@@ -1931,6 +1980,19 @@ export type VirtualConsoleFieldsFragment = {
                       on: { behavior: number; color: number };
                       monitor: { behavior: number; color: number } | null;
                     } | null;
+                    audioBars: Array<{
+                      mode: VirtualConsoleAudioBarMode;
+                      minThreshold: number;
+                      maxThreshold: number;
+                      functionPublicId: string | null;
+                      functionName: string | null;
+                      channelBindings: Array<{
+                        projectFixturePublicId: string;
+                        channelAssignmentPublicId: string;
+                        channelNumber: number | null;
+                        channelDefinitionPublicId: string | null;
+                      }> | null;
+                    }> | null;
                   }> | null;
                   channelBindings: Array<{
                     projectFixturePublicId: string;
@@ -1943,6 +2005,19 @@ export type VirtualConsoleFieldsFragment = {
                     on: { behavior: number; color: number };
                     monitor: { behavior: number; color: number } | null;
                   } | null;
+                  audioBars: Array<{
+                    mode: VirtualConsoleAudioBarMode;
+                    minThreshold: number;
+                    maxThreshold: number;
+                    functionPublicId: string | null;
+                    functionName: string | null;
+                    channelBindings: Array<{
+                      projectFixturePublicId: string;
+                      channelAssignmentPublicId: string;
+                      channelNumber: number | null;
+                      channelDefinitionPublicId: string | null;
+                    }> | null;
+                  }> | null;
                 }> | null;
                 channelBindings: Array<{
                   projectFixturePublicId: string;
@@ -1955,6 +2030,19 @@ export type VirtualConsoleFieldsFragment = {
                   on: { behavior: number; color: number };
                   monitor: { behavior: number; color: number } | null;
                 } | null;
+                audioBars: Array<{
+                  mode: VirtualConsoleAudioBarMode;
+                  minThreshold: number;
+                  maxThreshold: number;
+                  functionPublicId: string | null;
+                  functionName: string | null;
+                  channelBindings: Array<{
+                    projectFixturePublicId: string;
+                    channelAssignmentPublicId: string;
+                    channelNumber: number | null;
+                    channelDefinitionPublicId: string | null;
+                  }> | null;
+                }> | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -1967,6 +2055,19 @@ export type VirtualConsoleFieldsFragment = {
                 on: { behavior: number; color: number };
                 monitor: { behavior: number; color: number } | null;
               } | null;
+              audioBars: Array<{
+                mode: VirtualConsoleAudioBarMode;
+                minThreshold: number;
+                maxThreshold: number;
+                functionPublicId: string | null;
+                functionName: string | null;
+                channelBindings: Array<{
+                  projectFixturePublicId: string;
+                  channelAssignmentPublicId: string;
+                  channelNumber: number | null;
+                  channelDefinitionPublicId: string | null;
+                }> | null;
+              }> | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -1979,6 +2080,19 @@ export type VirtualConsoleFieldsFragment = {
               on: { behavior: number; color: number };
               monitor: { behavior: number; color: number } | null;
             } | null;
+            audioBars: Array<{
+              mode: VirtualConsoleAudioBarMode;
+              minThreshold: number;
+              maxThreshold: number;
+              functionPublicId: string | null;
+              functionName: string | null;
+              channelBindings: Array<{
+                projectFixturePublicId: string;
+                channelAssignmentPublicId: string;
+                channelNumber: number | null;
+                channelDefinitionPublicId: string | null;
+              }> | null;
+            }> | null;
           }> | null;
           channelBindings: Array<{
             projectFixturePublicId: string;
@@ -1991,6 +2105,19 @@ export type VirtualConsoleFieldsFragment = {
             on: { behavior: number; color: number };
             monitor: { behavior: number; color: number } | null;
           } | null;
+          audioBars: Array<{
+            mode: VirtualConsoleAudioBarMode;
+            minThreshold: number;
+            maxThreshold: number;
+            functionPublicId: string | null;
+            functionName: string | null;
+            channelBindings: Array<{
+              projectFixturePublicId: string;
+              channelAssignmentPublicId: string;
+              channelNumber: number | null;
+              channelDefinitionPublicId: string | null;
+            }> | null;
+          }> | null;
         }> | null;
         channelBindings: Array<{
           projectFixturePublicId: string;
@@ -2003,6 +2130,19 @@ export type VirtualConsoleFieldsFragment = {
           on: { behavior: number; color: number };
           monitor: { behavior: number; color: number } | null;
         } | null;
+        audioBars: Array<{
+          mode: VirtualConsoleAudioBarMode;
+          minThreshold: number;
+          maxThreshold: number;
+          functionPublicId: string | null;
+          functionName: string | null;
+          channelBindings: Array<{
+            projectFixturePublicId: string;
+            channelAssignmentPublicId: string;
+            channelNumber: number | null;
+            channelDefinitionPublicId: string | null;
+          }> | null;
+        }> | null;
       }> | null;
       channelBindings: Array<{
         projectFixturePublicId: string;
@@ -2015,6 +2155,19 @@ export type VirtualConsoleFieldsFragment = {
         on: { behavior: number; color: number };
         monitor: { behavior: number; color: number } | null;
       } | null;
+      audioBars: Array<{
+        mode: VirtualConsoleAudioBarMode;
+        minThreshold: number;
+        maxThreshold: number;
+        functionPublicId: string | null;
+        functionName: string | null;
+        channelBindings: Array<{
+          projectFixturePublicId: string;
+          channelAssignmentPublicId: string;
+          channelNumber: number | null;
+          channelDefinitionPublicId: string | null;
+        }> | null;
+      }> | null;
     }>;
   }>;
 };
@@ -2147,6 +2300,7 @@ export type GetProjectQuery = {
           functionPublicId: string | null;
           functionName: string | null;
           midiEntryPublicId: string | null;
+          bandCount: number | null;
           children: Array<{
             id: string;
             type: VirtualConsoleControlType;
@@ -2170,6 +2324,7 @@ export type GetProjectQuery = {
             functionPublicId: string | null;
             functionName: string | null;
             midiEntryPublicId: string | null;
+            bandCount: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -2193,6 +2348,7 @@ export type GetProjectQuery = {
               functionPublicId: string | null;
               functionName: string | null;
               midiEntryPublicId: string | null;
+              bandCount: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -2216,6 +2372,7 @@ export type GetProjectQuery = {
                 functionPublicId: string | null;
                 functionName: string | null;
                 midiEntryPublicId: string | null;
+                bandCount: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -2239,6 +2396,7 @@ export type GetProjectQuery = {
                   functionPublicId: string | null;
                   functionName: string | null;
                   midiEntryPublicId: string | null;
+                  bandCount: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -2262,6 +2420,7 @@ export type GetProjectQuery = {
                     functionPublicId: string | null;
                     functionName: string | null;
                     midiEntryPublicId: string | null;
+                    bandCount: number | null;
                     children: Array<{
                       id: string;
                       type: VirtualConsoleControlType;
@@ -2285,6 +2444,7 @@ export type GetProjectQuery = {
                       functionPublicId: string | null;
                       functionName: string | null;
                       midiEntryPublicId: string | null;
+                      bandCount: number | null;
                       children: Array<{
                         id: string;
                         type: VirtualConsoleControlType;
@@ -2308,6 +2468,7 @@ export type GetProjectQuery = {
                         functionPublicId: string | null;
                         functionName: string | null;
                         midiEntryPublicId: string | null;
+                        bandCount: number | null;
                         channelBindings: Array<{
                           projectFixturePublicId: string;
                           channelAssignmentPublicId: string;
@@ -2319,6 +2480,19 @@ export type GetProjectQuery = {
                           on: { behavior: number; color: number };
                           monitor: { behavior: number; color: number } | null;
                         } | null;
+                        audioBars: Array<{
+                          mode: VirtualConsoleAudioBarMode;
+                          minThreshold: number;
+                          maxThreshold: number;
+                          functionPublicId: string | null;
+                          functionName: string | null;
+                          channelBindings: Array<{
+                            projectFixturePublicId: string;
+                            channelAssignmentPublicId: string;
+                            channelNumber: number | null;
+                            channelDefinitionPublicId: string | null;
+                          }> | null;
+                        }> | null;
                       }> | null;
                       channelBindings: Array<{
                         projectFixturePublicId: string;
@@ -2331,6 +2505,19 @@ export type GetProjectQuery = {
                         on: { behavior: number; color: number };
                         monitor: { behavior: number; color: number } | null;
                       } | null;
+                      audioBars: Array<{
+                        mode: VirtualConsoleAudioBarMode;
+                        minThreshold: number;
+                        maxThreshold: number;
+                        functionPublicId: string | null;
+                        functionName: string | null;
+                        channelBindings: Array<{
+                          projectFixturePublicId: string;
+                          channelAssignmentPublicId: string;
+                          channelNumber: number | null;
+                          channelDefinitionPublicId: string | null;
+                        }> | null;
+                      }> | null;
                     }> | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
@@ -2343,6 +2530,19 @@ export type GetProjectQuery = {
                       on: { behavior: number; color: number };
                       monitor: { behavior: number; color: number } | null;
                     } | null;
+                    audioBars: Array<{
+                      mode: VirtualConsoleAudioBarMode;
+                      minThreshold: number;
+                      maxThreshold: number;
+                      functionPublicId: string | null;
+                      functionName: string | null;
+                      channelBindings: Array<{
+                        projectFixturePublicId: string;
+                        channelAssignmentPublicId: string;
+                        channelNumber: number | null;
+                        channelDefinitionPublicId: string | null;
+                      }> | null;
+                    }> | null;
                   }> | null;
                   channelBindings: Array<{
                     projectFixturePublicId: string;
@@ -2355,6 +2555,19 @@ export type GetProjectQuery = {
                     on: { behavior: number; color: number };
                     monitor: { behavior: number; color: number } | null;
                   } | null;
+                  audioBars: Array<{
+                    mode: VirtualConsoleAudioBarMode;
+                    minThreshold: number;
+                    maxThreshold: number;
+                    functionPublicId: string | null;
+                    functionName: string | null;
+                    channelBindings: Array<{
+                      projectFixturePublicId: string;
+                      channelAssignmentPublicId: string;
+                      channelNumber: number | null;
+                      channelDefinitionPublicId: string | null;
+                    }> | null;
+                  }> | null;
                 }> | null;
                 channelBindings: Array<{
                   projectFixturePublicId: string;
@@ -2367,6 +2580,19 @@ export type GetProjectQuery = {
                   on: { behavior: number; color: number };
                   monitor: { behavior: number; color: number } | null;
                 } | null;
+                audioBars: Array<{
+                  mode: VirtualConsoleAudioBarMode;
+                  minThreshold: number;
+                  maxThreshold: number;
+                  functionPublicId: string | null;
+                  functionName: string | null;
+                  channelBindings: Array<{
+                    projectFixturePublicId: string;
+                    channelAssignmentPublicId: string;
+                    channelNumber: number | null;
+                    channelDefinitionPublicId: string | null;
+                  }> | null;
+                }> | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -2379,6 +2605,19 @@ export type GetProjectQuery = {
                 on: { behavior: number; color: number };
                 monitor: { behavior: number; color: number } | null;
               } | null;
+              audioBars: Array<{
+                mode: VirtualConsoleAudioBarMode;
+                minThreshold: number;
+                maxThreshold: number;
+                functionPublicId: string | null;
+                functionName: string | null;
+                channelBindings: Array<{
+                  projectFixturePublicId: string;
+                  channelAssignmentPublicId: string;
+                  channelNumber: number | null;
+                  channelDefinitionPublicId: string | null;
+                }> | null;
+              }> | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -2391,6 +2630,19 @@ export type GetProjectQuery = {
               on: { behavior: number; color: number };
               monitor: { behavior: number; color: number } | null;
             } | null;
+            audioBars: Array<{
+              mode: VirtualConsoleAudioBarMode;
+              minThreshold: number;
+              maxThreshold: number;
+              functionPublicId: string | null;
+              functionName: string | null;
+              channelBindings: Array<{
+                projectFixturePublicId: string;
+                channelAssignmentPublicId: string;
+                channelNumber: number | null;
+                channelDefinitionPublicId: string | null;
+              }> | null;
+            }> | null;
           }> | null;
           channelBindings: Array<{
             projectFixturePublicId: string;
@@ -2403,6 +2655,19 @@ export type GetProjectQuery = {
             on: { behavior: number; color: number };
             monitor: { behavior: number; color: number } | null;
           } | null;
+          audioBars: Array<{
+            mode: VirtualConsoleAudioBarMode;
+            minThreshold: number;
+            maxThreshold: number;
+            functionPublicId: string | null;
+            functionName: string | null;
+            channelBindings: Array<{
+              projectFixturePublicId: string;
+              channelAssignmentPublicId: string;
+              channelNumber: number | null;
+              channelDefinitionPublicId: string | null;
+            }> | null;
+          }> | null;
         }>;
       }>;
     };
@@ -2775,6 +3040,7 @@ export type ExportProjectsQuery = {
             functionPublicId: string | null;
             functionName: string | null;
             midiEntryPublicId: string | null;
+            bandCount: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -2798,6 +3064,7 @@ export type ExportProjectsQuery = {
               functionPublicId: string | null;
               functionName: string | null;
               midiEntryPublicId: string | null;
+              bandCount: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -2821,6 +3088,7 @@ export type ExportProjectsQuery = {
                 functionPublicId: string | null;
                 functionName: string | null;
                 midiEntryPublicId: string | null;
+                bandCount: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -2844,6 +3112,7 @@ export type ExportProjectsQuery = {
                   functionPublicId: string | null;
                   functionName: string | null;
                   midiEntryPublicId: string | null;
+                  bandCount: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -2867,6 +3136,7 @@ export type ExportProjectsQuery = {
                     functionPublicId: string | null;
                     functionName: string | null;
                     midiEntryPublicId: string | null;
+                    bandCount: number | null;
                     children: Array<{
                       id: string;
                       type: VirtualConsoleControlType;
@@ -2890,6 +3160,7 @@ export type ExportProjectsQuery = {
                       functionPublicId: string | null;
                       functionName: string | null;
                       midiEntryPublicId: string | null;
+                      bandCount: number | null;
                       children: Array<{
                         id: string;
                         type: VirtualConsoleControlType;
@@ -2913,6 +3184,7 @@ export type ExportProjectsQuery = {
                         functionPublicId: string | null;
                         functionName: string | null;
                         midiEntryPublicId: string | null;
+                        bandCount: number | null;
                         children: Array<{
                           id: string;
                           type: VirtualConsoleControlType;
@@ -2936,6 +3208,7 @@ export type ExportProjectsQuery = {
                           functionPublicId: string | null;
                           functionName: string | null;
                           midiEntryPublicId: string | null;
+                          bandCount: number | null;
                           channelBindings: Array<{
                             projectFixturePublicId: string;
                             channelAssignmentPublicId: string;
@@ -2947,6 +3220,19 @@ export type ExportProjectsQuery = {
                             on: { behavior: number; color: number };
                             monitor: { behavior: number; color: number } | null;
                           } | null;
+                          audioBars: Array<{
+                            mode: VirtualConsoleAudioBarMode;
+                            minThreshold: number;
+                            maxThreshold: number;
+                            functionPublicId: string | null;
+                            functionName: string | null;
+                            channelBindings: Array<{
+                              projectFixturePublicId: string;
+                              channelAssignmentPublicId: string;
+                              channelNumber: number | null;
+                              channelDefinitionPublicId: string | null;
+                            }> | null;
+                          }> | null;
                         }> | null;
                         channelBindings: Array<{
                           projectFixturePublicId: string;
@@ -2959,6 +3245,19 @@ export type ExportProjectsQuery = {
                           on: { behavior: number; color: number };
                           monitor: { behavior: number; color: number } | null;
                         } | null;
+                        audioBars: Array<{
+                          mode: VirtualConsoleAudioBarMode;
+                          minThreshold: number;
+                          maxThreshold: number;
+                          functionPublicId: string | null;
+                          functionName: string | null;
+                          channelBindings: Array<{
+                            projectFixturePublicId: string;
+                            channelAssignmentPublicId: string;
+                            channelNumber: number | null;
+                            channelDefinitionPublicId: string | null;
+                          }> | null;
+                        }> | null;
                       }> | null;
                       channelBindings: Array<{
                         projectFixturePublicId: string;
@@ -2971,6 +3270,19 @@ export type ExportProjectsQuery = {
                         on: { behavior: number; color: number };
                         monitor: { behavior: number; color: number } | null;
                       } | null;
+                      audioBars: Array<{
+                        mode: VirtualConsoleAudioBarMode;
+                        minThreshold: number;
+                        maxThreshold: number;
+                        functionPublicId: string | null;
+                        functionName: string | null;
+                        channelBindings: Array<{
+                          projectFixturePublicId: string;
+                          channelAssignmentPublicId: string;
+                          channelNumber: number | null;
+                          channelDefinitionPublicId: string | null;
+                        }> | null;
+                      }> | null;
                     }> | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
@@ -2983,6 +3295,19 @@ export type ExportProjectsQuery = {
                       on: { behavior: number; color: number };
                       monitor: { behavior: number; color: number } | null;
                     } | null;
+                    audioBars: Array<{
+                      mode: VirtualConsoleAudioBarMode;
+                      minThreshold: number;
+                      maxThreshold: number;
+                      functionPublicId: string | null;
+                      functionName: string | null;
+                      channelBindings: Array<{
+                        projectFixturePublicId: string;
+                        channelAssignmentPublicId: string;
+                        channelNumber: number | null;
+                        channelDefinitionPublicId: string | null;
+                      }> | null;
+                    }> | null;
                   }> | null;
                   channelBindings: Array<{
                     projectFixturePublicId: string;
@@ -2995,6 +3320,19 @@ export type ExportProjectsQuery = {
                     on: { behavior: number; color: number };
                     monitor: { behavior: number; color: number } | null;
                   } | null;
+                  audioBars: Array<{
+                    mode: VirtualConsoleAudioBarMode;
+                    minThreshold: number;
+                    maxThreshold: number;
+                    functionPublicId: string | null;
+                    functionName: string | null;
+                    channelBindings: Array<{
+                      projectFixturePublicId: string;
+                      channelAssignmentPublicId: string;
+                      channelNumber: number | null;
+                      channelDefinitionPublicId: string | null;
+                    }> | null;
+                  }> | null;
                 }> | null;
                 channelBindings: Array<{
                   projectFixturePublicId: string;
@@ -3007,6 +3345,19 @@ export type ExportProjectsQuery = {
                   on: { behavior: number; color: number };
                   monitor: { behavior: number; color: number } | null;
                 } | null;
+                audioBars: Array<{
+                  mode: VirtualConsoleAudioBarMode;
+                  minThreshold: number;
+                  maxThreshold: number;
+                  functionPublicId: string | null;
+                  functionName: string | null;
+                  channelBindings: Array<{
+                    projectFixturePublicId: string;
+                    channelAssignmentPublicId: string;
+                    channelNumber: number | null;
+                    channelDefinitionPublicId: string | null;
+                  }> | null;
+                }> | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -3019,6 +3370,19 @@ export type ExportProjectsQuery = {
                 on: { behavior: number; color: number };
                 monitor: { behavior: number; color: number } | null;
               } | null;
+              audioBars: Array<{
+                mode: VirtualConsoleAudioBarMode;
+                minThreshold: number;
+                maxThreshold: number;
+                functionPublicId: string | null;
+                functionName: string | null;
+                channelBindings: Array<{
+                  projectFixturePublicId: string;
+                  channelAssignmentPublicId: string;
+                  channelNumber: number | null;
+                  channelDefinitionPublicId: string | null;
+                }> | null;
+              }> | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -3031,6 +3395,19 @@ export type ExportProjectsQuery = {
               on: { behavior: number; color: number };
               monitor: { behavior: number; color: number } | null;
             } | null;
+            audioBars: Array<{
+              mode: VirtualConsoleAudioBarMode;
+              minThreshold: number;
+              maxThreshold: number;
+              functionPublicId: string | null;
+              functionName: string | null;
+              channelBindings: Array<{
+                projectFixturePublicId: string;
+                channelAssignmentPublicId: string;
+                channelNumber: number | null;
+                channelDefinitionPublicId: string | null;
+              }> | null;
+            }> | null;
           }>;
         }>;
       } | null;
@@ -3998,6 +4375,34 @@ export const VirtualConsoleControlFieldsFragmentDoc = {
               ],
             },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'bandCount' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'audioBars' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'mode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'maxThreshold' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'channelBindings' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelDefinitionPublicId' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -4216,6 +4621,34 @@ export const VirtualConsoleFieldsFragmentDoc = {
                     ],
                   },
                 },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'bandCount' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'audioBars' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'mode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'maxThreshold' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'channelBindings' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelDefinitionPublicId' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
               ],
             },
           },
@@ -7344,6 +7777,34 @@ export const GetProjectDocument = {
               ],
             },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'bandCount' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'audioBars' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'mode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'maxThreshold' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'channelBindings' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelDefinitionPublicId' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -8602,6 +9063,34 @@ export const ExportProjectsDocument = {
                     ],
                   },
                 },
+              ],
+            },
+          },
+          { kind: 'Field', name: { kind: 'Name', value: 'bandCount' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'audioBars' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'mode' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'maxThreshold' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'channelBindings' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'projectFixturePublicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelAssignmentPublicId' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelNumber' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'channelDefinitionPublicId' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
               ],
             },
           },

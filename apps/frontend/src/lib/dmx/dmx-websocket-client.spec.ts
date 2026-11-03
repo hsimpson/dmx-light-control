@@ -61,6 +61,8 @@ describe('DmxWebsocketClient', () => {
     expect(store.getState().controlValues).toEqual({ slider: 40 });
     socket?.receive({ type: 'soundLevel', levels: [0.5, 1.4, 'x', -0.1] });
     expect(store.getState().soundLevels).toEqual([0.5, 1, 0]);
+    socket?.receive({ type: 'audioLevels', levels: { audio: [0.5, 2, 'x'], broken: 'x' } });
+    expect(store.getState().audioLevels).toEqual({ audio: [0.5, 1] });
     client.sendControlValue('slider', 41);
     expect(socket?.sent).toEqual([JSON.stringify({ type: 'controlValue', controlId: 'slider', value: 41 })]);
   });
