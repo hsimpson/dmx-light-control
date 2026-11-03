@@ -12,10 +12,11 @@ import {
   UpdateProjectIoDevicesDocument,
 } from '@/shared/types/graphql/graphql';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Badge, Checkbox, Select, Stack, Title } from '@mantine/core';
+import { Badge, Checkbox, SegmentedControl, Select, Stack, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { DataTable } from 'mantine-datatable';
 import { buildIoDeviceRows, toIoDeviceInput, type IoDeviceRow } from './project-io-devices';
+import SoundLevelMeter from './sound-level-meter';
 
 // Matches the backend hotplug poll, so plugging a device in shows up within one cycle.
 const IO_DEVICE_POLL_INTERVAL_MS = 2000;
@@ -81,8 +82,17 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
     }
   };
 
+  const add = (device: IoDeviceRow['device']) =>
+    device.kind === IoDeviceKind.SoundInput
+      ? // A project has one sound input: picking another replaces it.
+        [...configured.filter(entry => entry.kind !== IoDeviceKind.SoundInput), { ...device, audioChannels: 1 }]
+      : [...configured, device];
+
   const toggle = async (row: IoDeviceRow) =>
-    save(row.configured ? configured.filter(device => device !== row.device) : [...configured, row.device]);
+    save(row.configured ? configured.filter(device => device !== row.device) : add(row.device));
+
+  const setChannels = async (row: IoDeviceRow, audioChannels: number) =>
+    save(configured.map(device => (device === row.device ? { ...device, audioChannels } : device)));
 
   const assignMapping = async (row: IoDeviceRow, midiMappingPublicId: string | null) =>
     save(configured.map(device => (device === row.device ? { ...device, midiMappingPublicId } : device)));
@@ -108,6 +118,43 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
       />
     ),
   };
+
+  const soundColumns = [
+    {
+      accessor: 'audioChannels',
+      title: t({ id: 'ProjectDetail.io.channels', defaultMessage: 'Channels' }),
+      render: (row: IoDeviceRow) => (
+        <SegmentedControl
+          size="xs"
+          disabled={saving || !row.configured}
+          value={String(row.device.audioChannels ?? 1)}
+          aria-label={t(
+            { id: 'ProjectDetail.io.channelsFor', defaultMessage: 'Channels of {name}' },
+            { name: row.device.name },
+          )}
+          data={[
+            { value: '1', label: t({ id: 'ProjectDetail.io.mono', defaultMessage: 'Mono' }) },
+            {
+              value: '2',
+              label: t({ id: 'ProjectDetail.io.stereo', defaultMessage: 'Stereo' }),
+              disabled: (row.maxInputChannels ?? 2) < 2,
+            },
+          ]}
+          onChange={value => {
+            void setChannels(row, Number(value));
+          }}
+        />
+      ),
+    },
+    {
+      accessor: 'level',
+      title: t({ id: 'ProjectDetail.io.level', defaultMessage: 'Level' }),
+      render: (row: IoDeviceRow) =>
+        row.configured && row.status === IoDeviceStatus.Connected ? (
+          <SoundLevelMeter deviceName={row.device.name} channels={row.device.audioChannels ?? 1} />
+        ) : null,
+    },
+  ];
 
   const renderTable = (kind: IoDeviceKind) => (
     <DataTable
@@ -170,6 +217,7 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
             ) : null,
         },
         ...(kind === IoDeviceKind.Midi ? [mappingColumn] : []),
+        ...(kind === IoDeviceKind.SoundInput ? soundColumns : []),
       ]}
     />
   );
@@ -180,6 +228,8 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
       {renderTable(IoDeviceKind.DmxSerial)}
       <Title order={3}>{t({ id: 'ProjectDetail.io.midiDevices', defaultMessage: 'MIDI controllers' })}</Title>
       {renderTable(IoDeviceKind.Midi)}
+      <Title order={3}>{t({ id: 'ProjectDetail.io.soundInputs', defaultMessage: 'Sound input' })}</Title>
+      {renderTable(IoDeviceKind.SoundInput)}
     </Stack>
   );
 };

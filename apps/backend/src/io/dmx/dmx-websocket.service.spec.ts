@@ -129,6 +129,26 @@ describe('DmxWebsocketService', () => {
     service.onModuleDestroy();
   });
 
+  it('GIVEN a connected client WHEN a sound level arrives THEN broadcasts it for the meter', () => {
+    const listeners = new Map<string, (payload: unknown) => void>();
+    const eventEmitter = {
+      on: (event: string, listener: (payload: unknown) => void) => {
+        listeners.set(event, listener);
+      },
+      emit: () => true,
+    };
+    const service = new DmxWebsocketService(new DmxUniverseService(), eventEmitter as unknown as AppEventEmitter);
+    service.onModuleInit();
+    const client = new FakeSocket();
+    handleDmxWebsocketConnection(client);
+    client.sent.length = 0;
+
+    listeners.get('soundInput.level')?.({ levels: [0.5, 0.25] });
+
+    expect(client.sent).toEqual([JSON.stringify({ type: 'soundLevel', levels: [0.5, 0.25] })]);
+    service.onModuleDestroy();
+  });
+
   it('GIVEN clients WHEN control input and state flow THEN input is forwarded, state broadcast and held buttons released on close', () => {
     const listeners = new Map<string, (payload: unknown) => void>();
     const emitted: [string, unknown][] = [];

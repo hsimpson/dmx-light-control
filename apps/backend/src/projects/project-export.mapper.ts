@@ -5,7 +5,7 @@ import { ProjectFunctionType, SequenceProperties } from '@/projects/project-func
 import { VirtualConsoleDocument } from '@/projects/virtual-console';
 import { enrichVirtualConsoleForExport } from '@/projects/virtual-console.validation';
 
-export const PROJECT_EXPORT_SCHEMA_VERSION = 12;
+export const PROJECT_EXPORT_SCHEMA_VERSION = 13;
 
 export type ProjectExportFixtureChannelAssignment = {
   publicId: string;

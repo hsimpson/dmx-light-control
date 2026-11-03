@@ -15,8 +15,10 @@ graphql:
             createdAt
             environmentType
             ioDevices {
+              audioChannels
               kind
               manufacturer
+              maxInputChannels
               midiMappingPublicId
               name
               productId

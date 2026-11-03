@@ -7,10 +7,11 @@ import {
   IoDeviceStatus,
   UpdateProjectIoDevicesDocument,
 } from '@/shared/types/graphql/graphql';
+import { dmxStore, resetDmxStore } from '@/lib/dmx/dmx-store';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import ProjectIoDevicesPanel from './project-io-devices-panel';
 
 vi.mock('mantine-datatable', () => ({
@@ -47,8 +48,9 @@ const ftdi = {
   serial: 'A50285BI',
   vendorId: '0403',
   productId: '6001',
-  usbLocation: '3-10',
+  usbLocation: '3-10' as string | null,
   midiMappingPublicId: null as string | null,
+  audioChannels: null as number | null,
 };
 
 const apc = {
@@ -60,9 +62,26 @@ const apc = {
   productId: '004f',
   usbLocation: '3-9',
   midiMappingPublicId: null as string | null,
+  audioChannels: null as number | null,
 };
 
-const asDto = (device: typeof ftdi) => ({ __typename: 'IoDeviceDto' as const, ...device });
+const mic = {
+  kind: IoDeviceKind.SoundInput,
+  name: 'StreamCam',
+  manufacturer: null as string | null,
+  serial: null as string | null,
+  vendorId: null as string | null,
+  productId: null as string | null,
+  usbLocation: null as string | null,
+  midiMappingPublicId: null as string | null,
+  audioChannels: null as number | null,
+};
+
+const asDto = (device: typeof ftdi) => ({
+  __typename: 'IoDeviceDto' as const,
+  ...device,
+  maxInputChannels: device.kind === IoDeviceKind.SoundInput ? 2 : null,
+});
 
 const projectIoDevices = (devices: (typeof ftdi)[]) => ({
   request: { query: GetProjectIoDevicesDocument, variables: { publicId: 'proj-1' } },
@@ -80,7 +99,7 @@ const activeStates = (states: (typeof ftdi & { status: IoDeviceStatus })[]) => (
   request: { query: ActiveIoDeviceStatesDocument },
   result: {
     data: {
-      ioDevices: states.map(({ midiMappingPublicId: _mapping, ...state }) => ({
+      ioDevices: states.map(({ midiMappingPublicId: _mapping, audioChannels: _channels, ...state }) => ({
         __typename: 'IoDeviceStateDto' as const,
         ...state,
       })),
@@ -106,7 +125,92 @@ const midiMappings = {
   },
 };
 
+const saveMock = (devices: (typeof ftdi)[]) => {
+  const result = vi.fn(() => ({
+    data: {
+      updateProjectIoDevices: { __typename: 'ProjectDto' as const, publicId: 'proj-1', ioDevices: devices.map(asDto) },
+    },
+  }));
+  return {
+    result,
+    mock: {
+      request: {
+        query: UpdateProjectIoDevicesDocument,
+        variables: { input: { publicId: 'proj-1', ioDevices: devices } },
+      },
+      result,
+    },
+  };
+};
+
 describe('ProjectIoDevicesPanel', () => {
+  afterEach(() => {
+    resetDmxStore();
+  });
+
+  it('GIVEN a configured sound input WHEN another one is picked THEN it replaces the first in mono', async () => {
+    const lineIn = { ...mic, name: 'Line In' };
+    const save = saveMock([ftdi, { ...lineIn, audioChannels: 1 }]);
+    const { user } = renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {
+      apolloMocks: [
+        projectIoDevices([ftdi, { ...mic, audioChannels: 2 }]),
+        availableIoDevices([mic, lineIn]),
+        activeStates([]),
+        save.mock,
+        projectIoDevices([ftdi, { ...lineIn, audioChannels: 1 }]),
+        activeStates([]),
+      ],
+    });
+
+    await user.click(await screen.findByRole('checkbox', { name: 'Use Line In in this project' }));
+
+    await waitFor(() => {
+      expect(save.result).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('GIVEN a configured mono sound input WHEN Stereo is picked THEN it is saved with 2 channels', async () => {
+    const save = saveMock([{ ...mic, audioChannels: 2 }]);
+    const { user } = renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {
+      apolloMocks: [
+        projectIoDevices([{ ...mic, audioChannels: 1 }]),
+        availableIoDevices([mic]),
+        activeStates([]),
+        save.mock,
+        projectIoDevices([{ ...mic, audioChannels: 2 }]),
+        activeStates([]),
+      ],
+    });
+
+    await user.click(await screen.findByText('Stereo'));
+
+    await waitFor(() => {
+      expect(save.result).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('GIVEN a connected stereo sound input WHEN levels arrive THEN a meter per channel shows them', async () => {
+    const stereo = { ...mic, audioChannels: 2 };
+    renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {
+      apolloMocks: [
+        projectIoDevices([stereo]),
+        availableIoDevices([]),
+        activeStates([{ ...stereo, status: IoDeviceStatus.Connected }]),
+      ],
+    });
+
+    const left = await screen.findByRole('progressbar', { name: 'Left input level of StreamCam' });
+    act(() => {
+      dmxStore.getState().setSoundLevels([1, 0]);
+    });
+
+    expect(left).toHaveAttribute('aria-valuenow', '100');
+    expect(screen.getByRole('progressbar', { name: 'Right input level of StreamCam' })).toHaveAttribute(
+      'aria-valuenow',
+      '0',
+    );
+  });
+
   it('GIVEN a configured output and a plugged-in controller WHEN rendered THEN both sections list them with status', async () => {
     renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {
       apolloMocks: [
@@ -188,7 +292,7 @@ describe('ProjectIoDevicesPanel', () => {
     await user.click(screen.getByRole('checkbox', { name: 'Use APC mini mk2 in this project' }));
 
     await waitFor(() => {
-      expect(screen.getAllByText('No devices connected or configured')).toHaveLength(2);
+      expect(screen.getAllByText('No devices connected or configured')).toHaveLength(3);
     });
     expect(save).toHaveBeenCalledTimes(1);
   });

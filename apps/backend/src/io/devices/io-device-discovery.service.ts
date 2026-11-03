@@ -1,4 +1,5 @@
 import { MidiService } from '@/io/midi/midi.service';
+import { SoundInputService } from '@/io/sound-input/sound-input.service';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SerialPort } from 'serialport';
 import { readMidiPortUsbIdentity, readTtyUsbIdentity } from './linux-usb-sysfs';
@@ -33,12 +34,20 @@ export class IoDeviceDiscoveryService {
 
   public constructor(
     private readonly midiService: MidiService,
+    private readonly soundInput: SoundInputService,
     @Inject(IO_DEVICES_SYS_ROOT) private readonly sysRoot: string,
   ) {}
 
   public async listAvailable(): Promise<AvailableIoDevice[]> {
     const [serial, midi] = await Promise.all([this.listSerialDevices(), this.listMidiDevices()]);
-    return [...serial, ...midi];
+    return [...serial, ...midi, ...this.listSoundInputs()];
+  }
+
+  // shortcut: sound inputs match by name only (no USB ids); identical interfaces show as Ambiguous.
+  private listSoundInputs(): AvailableIoDevice[] {
+    return this.soundInput
+      .listInputs()
+      .map(({ name, maxInputChannels }) => ({ ...nameOnlyDevice(IoDeviceKind.SoundInput, name), maxInputChannels }));
   }
 
   private async listSerialDevices(): Promise<AvailableIoDevice[]> {
@@ -105,8 +114,12 @@ function serialPortIdentity(port: ListedSerialPort): UsbIdentity {
 }
 
 function nameOnlyMidiDevices(portNames: readonly string[]): AvailableIoDevice[] {
-  return portNames.map(name => ({
-    kind: IoDeviceKind.Midi,
+  return portNames.map(name => nameOnlyDevice(IoDeviceKind.Midi, name));
+}
+
+function nameOnlyDevice(kind: IoDeviceKind, name: string): AvailableIoDevice {
+  return {
+    kind,
     handle: name,
     vendorId: null,
     productId: null,
@@ -114,7 +127,7 @@ function nameOnlyMidiDevices(portNames: readonly string[]): AvailableIoDevice[] 
     manufacturer: null,
     serial: null,
     usbLocation: null,
-  }));
+  };
 }
 
 function darwinCalloutPath(path: string): string {

@@ -24,12 +24,15 @@ export type DmxStoreState = {
   /** Virtual console button/slider values, owned by the backend. */
   controlValues: Record<string, number>;
   lastMidiInput: MidiInput | null;
+  /** Per-channel peak (0..1) of the project's sound input, null until the backend sends one. */
+  soundLevels: number[] | null;
   applySnapshot: (values: ArrayLike<number>) => void;
   applyDelta: (updates: DmxChannelUpdate[]) => void;
   setStatus: (status: DmxConnectionStatus) => void;
   setRunningFunctionIds: (ids: string[]) => void;
   setControlValues: (values: Record<string, number>) => void;
   setLastMidiInput: (input: MidiInput) => void;
+  setSoundLevels: (levels: number[]) => void;
 };
 
 function createZeroChannels(): number[] {
@@ -47,6 +50,7 @@ export function createDmxStore() {
     runningFunctionIds: [],
     controlValues: {},
     lastMidiInput: null,
+    soundLevels: null,
     applySnapshot: values => {
       const next = createZeroChannels();
       const length = Math.min(DMX_CHANNEL_COUNT, values.length);
@@ -90,6 +94,9 @@ export function createDmxStore() {
     setLastMidiInput: lastMidiInput => {
       set({ lastMidiInput });
     },
+    setSoundLevels: soundLevels => {
+      set({ soundLevels });
+    },
   }));
 }
 
@@ -105,6 +112,7 @@ export function resetDmxStore(): void {
     runningFunctionIds: [],
     controlValues: {},
     lastMidiInput: null,
+    soundLevels: null,
     status: 'idle',
   });
 }

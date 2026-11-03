@@ -2,7 +2,7 @@ import { ImportTimestampsInput } from '@/db/import-timestamps.input';
 import { SequencePropertiesInput } from '@/projects/dto/project-function.dto';
 import { ProjectDto } from '@/projects/dto/project.dto';
 import { VirtualConsoleInput } from '@/projects/dto/virtual-console.dto';
-import { IoDeviceInput } from '@/io/devices/dto/io-device.dto';
+import { AtMostOneSoundInput, IoDeviceInput } from '@/io/devices/dto/io-device.dto';
 import { PROJECT_IO_DEVICES_MAX } from '@/projects/dto/update-project-io-devices.dto';
 import { ProjectEnvironmentType } from '@/projects/project-environment';
 import { ProjectFunctionType } from '@/projects/project-function';
@@ -201,6 +201,7 @@ export class ImportProjectInput extends ImportTimestampsInput {
   })
   @IsOptional()
   @ArrayMaxSize(PROJECT_IO_DEVICES_MAX)
+  @AtMostOneSoundInput()
   @ValidateNested({ each: true })
   @Type(() => IoDeviceInput)
   public ioDevices?: IoDeviceInput[] | null;

@@ -16,6 +16,7 @@ const ftdi = {
   productId: '6001',
   usbLocation: '3-10',
   midiMappingPublicId: null,
+  audioChannels: null,
 };
 
 const apc = {
@@ -27,11 +28,28 @@ const apc = {
   productId: '004f',
   usbLocation: '7&2A3B4C5D&0&0000',
   midiMappingPublicId: null,
+  audioChannels: null,
 };
 
-type IoDevice = Omit<typeof ftdi, 'midiMappingPublicId'> & { midiMappingPublicId: string | null };
+const mic = {
+  kind: 'SoundInput',
+  name: 'StreamCam',
+  manufacturer: null,
+  serial: null,
+  vendorId: null,
+  productId: null,
+  usbLocation: null,
+  midiMappingPublicId: null,
+  audioChannels: 2,
+};
 
-const IO_DEVICE_FIELDS = 'kind name manufacturer serial vendorId productId usbLocation midiMappingPublicId';
+type IoDevice = Omit<typeof ftdi, 'midiMappingPublicId' | 'audioChannels'> & {
+  midiMappingPublicId: string | null;
+  audioChannels: number | null;
+};
+
+const IO_DEVICE_FIELDS =
+  'kind name manufacturer serial vendorId productId usbLocation midiMappingPublicId audioChannels';
 
 const CREATE_PROJECT = gql`
   mutation ($input: CreateProjectInput!) {
@@ -187,6 +205,7 @@ describe('Project input/output devices', () => {
         productId: null,
         usbLocation: null,
         midiMappingPublicId: null,
+        audioChannels: null,
       },
     ]);
   });
@@ -215,6 +234,29 @@ describe('Project input/output devices', () => {
     ]);
     expect(imported.errors).toBeUndefined();
     await expect(storedIoDevices(publicId)).resolves.toEqual([apc]);
+  });
+
+  it('GIVEN a sound input WHEN saved, exported and re-imported as v13 THEN its channel count round-trips', async () => {
+    const publicId = await createProject('IO Sound Project');
+    await updateIoDevices(publicId, [mic]);
+
+    const exported = await graphqlQuery<{
+      exportProjects: { projects: { publicId: string; ioDevices: IoDevice[] }[] };
+    }>(server, EXPORT_PROJECTS);
+    const imported = await graphqlQuery<{ importProjects: { importedCount: number } }>(server, IMPORT_PROJECTS, {
+      variables: {
+        document: {
+          schemaVersion: 13,
+          projects: [{ publicId, name: 'IO Sound Project', ioDevices: [{ ...mic, audioChannels: 1 }] }],
+        },
+      },
+    });
+
+    expect(exported.data?.exportProjects.projects.find(project => project.publicId === publicId)?.ioDevices).toEqual([
+      mic,
+    ]);
+    expect(imported.errors).toBeUndefined();
+    await expect(storedIoDevices(publicId)).resolves.toEqual([{ ...mic, audioChannels: 1 }]);
   });
 
   it('GIVEN a v10 import without devices WHEN imported over a project THEN its devices are kept', async () => {

@@ -59,6 +59,8 @@ describe('DmxWebsocketClient', () => {
     expect(store.getState().lastMidiInput).toEqual({ portName: 'APC', message: [0x90, 0x64, 0x7f] });
     socket?.receive({ type: 'controlState', values: { slider: 40, broken: 'x' } });
     expect(store.getState().controlValues).toEqual({ slider: 40 });
+    socket?.receive({ type: 'soundLevel', levels: [0.5, 1.4, 'x', -0.1] });
+    expect(store.getState().soundLevels).toEqual([0.5, 1, 0]);
     client.sendControlValue('slider', 41);
     expect(socket?.sent).toEqual([JSON.stringify({ type: 'controlValue', controlId: 'slider', value: 41 })]);
   });

@@ -110,6 +110,7 @@ export class DmxWebsocketClient {
       running?: unknown;
       portName?: unknown;
       message?: unknown;
+      levels?: unknown;
     };
     if (message.type === 'snapshot' && Array.isArray(message.channels)) {
       this.store.getState().applySnapshot(message.channels as number[]);
@@ -126,6 +127,14 @@ export class DmxWebsocketClient {
         portName: message.portName,
         message: message.message.filter((byte): byte is number => typeof byte === 'number'),
       });
+      return;
+    }
+    if (message.type === 'soundLevel' && Array.isArray(message.levels)) {
+      this.store
+        .getState()
+        .setSoundLevels(
+          message.levels.flatMap(level => (typeof level === 'number' ? [Math.min(1, Math.max(0, level))] : [])),
+        );
       return;
     }
     if (message.type === 'functionState' && Array.isArray(message.running)) {

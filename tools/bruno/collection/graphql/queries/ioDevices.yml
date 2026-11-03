@@ -11,8 +11,10 @@ graphql:
     query: |
       query {
         ioDevices {
+          audioChannels
           kind
           manufacturer
+          maxInputChannels
           midiMappingPublicId
           name
           productId

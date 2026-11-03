@@ -27,8 +27,8 @@ describe('buildIoDeviceRows', () => {
     const rows = buildIoDeviceRows([ftdi], [ftdi, apc], [{ ...ftdi, status: IoDeviceStatus.Connected }]);
 
     expect(rows).toEqual([
-      { key: 'configured-0', device: ftdi, configured: true, status: IoDeviceStatus.Connected },
-      { key: 'available-0', device: apc, configured: false, status: null },
+      { key: 'configured-0', device: ftdi, configured: true, status: IoDeviceStatus.Connected, maxInputChannels: null },
+      { key: 'available-0', device: apc, configured: false, status: null, maxInputChannels: null },
     ]);
   });
 
@@ -48,6 +48,23 @@ describe('buildIoDeviceRows', () => {
       [true, '3-2'],
       [false, '3-1'],
     ]);
+  });
+
+  it('GIVEN a configured sound input WHEN plugged in THEN its row carries the device channel count', () => {
+    const mic: IoDeviceFieldsFragment = {
+      kind: IoDeviceKind.SoundInput,
+      name: 'StreamCam',
+      manufacturer: null,
+      serial: null,
+      vendorId: null,
+      productId: null,
+      usbLocation: null,
+      audioChannels: 1,
+    };
+
+    const rows = buildIoDeviceRows([mic], [{ ...mic, audioChannels: null, maxInputChannels: 1 }], []);
+
+    expect(rows).toEqual([{ key: 'configured-0', device: mic, configured: true, status: null, maxInputChannels: 1 }]);
   });
 
   it('GIVEN a configured device without status yet WHEN built THEN status is null', () => {

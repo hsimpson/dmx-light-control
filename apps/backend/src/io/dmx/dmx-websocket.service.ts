@@ -8,6 +8,7 @@ import {
   dmxWsFunctionStateMessage,
   dmxWsMidiInputMessage,
   dmxWsSnapshotMessage,
+  dmxWsSoundLevelMessage,
   parseDmxWsClientMessage,
 } from './dmx-ws.protocol';
 
@@ -40,6 +41,9 @@ export class DmxWebsocketService implements OnModuleInit, OnModuleDestroy {
     // Raw MIDI input lets the mapping editor learn a control's address.
     this.eventEmitter.on('midi.inputMessage', ({ portName, message }) => {
       this.broadcast(JSON.stringify(dmxWsMidiInputMessage(portName, message)));
+    });
+    this.eventEmitter.on('soundInput.level', ({ levels }) => {
+      this.broadcast(JSON.stringify(dmxWsSoundLevelMessage(levels)));
     });
   }
 

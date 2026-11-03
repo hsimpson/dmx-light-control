@@ -375,6 +375,8 @@ fragment IoDeviceFields on IoDeviceDto {
   productId
   usbLocation
   midiMappingPublicId
+  audioChannels
+  maxInputChannels
 }
 
 query GetProjectIoDevices($publicId: UUID!) {
