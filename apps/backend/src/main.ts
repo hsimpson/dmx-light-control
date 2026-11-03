@@ -1,35 +1,11 @@
-import {
-  ClassSerializerInterceptor,
-  ConsoleLogger,
-  INestApplication,
-  INestApplicationContext,
-  Logger,
-  LogLevel,
-  ValidationPipe,
-} from '@nestjs/common';
+import { ConsoleLogger, INestApplicationContext, Logger, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { CommandFactory } from 'nest-commander';
+import { registerGlobals } from './app-globals';
 import { AppModule } from './app.module';
 import { registerHttpPlugins } from './http-plugins';
-
-function registerGlobals(app: INestApplication) {
-  app.useGlobalPipes(
-    new ValidationPipe({
-      // REVIEW: disable error messages in production
-      disableErrorMessages: false,
-      whitelist: true,
-      transform: true,
-    }),
-  );
-
-  app.useGlobalInterceptors(
-    new ClassSerializerInterceptor(app.get(Reflector), {
-      strategy: 'exposeAll',
-    }),
-  );
-}
 
 function useConfiguredLogLevels(app: INestApplicationContext) {
   app.useLogger(app.get(ConfigService).getOrThrow<LogLevel[]>('logLevels'));

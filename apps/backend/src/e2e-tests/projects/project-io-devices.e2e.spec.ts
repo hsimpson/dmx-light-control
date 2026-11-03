@@ -259,6 +259,15 @@ describe('Project input/output devices', () => {
     await expect(storedIoDevices(publicId)).resolves.toEqual([{ ...mic, audioChannels: 1 }]);
   });
 
+  it('GIVEN two sound inputs WHEN saved THEN the input is rejected and nothing is stored', async () => {
+    const publicId = await createProject('IO Two Sound Project');
+
+    const body = await updateIoDevices(publicId, [mic, { ...mic, name: 'Line In' }]);
+
+    expect(body.errors?.[0]?.extensions?.code).toBe('BAD_USER_INPUT');
+    await expect(storedIoDevices(publicId)).resolves.toEqual([]);
+  });
+
   it('GIVEN a v10 import without devices WHEN imported over a project THEN its devices are kept', async () => {
     const publicId = await createProject('IO Legacy Import Project');
     await updateIoDevices(publicId, [ftdi]);
