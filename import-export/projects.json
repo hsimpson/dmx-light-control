@@ -5,8 +5,10 @@
       "environmentType": "Room",
       "ioDevices": [
         {
+          "audioChannels": null,
           "kind": "DmxSerial",
           "manufacturer": "FTDI",
+          "maxInputChannels": null,
           "midiMappingPublicId": null,
           "name": "FT232R USB UART",
           "productId": "6001",
@@ -15,14 +17,28 @@
           "vendorId": "0403"
         },
         {
+          "audioChannels": null,
           "kind": "Midi",
           "manufacturer": "AKAI professional",
+          "maxInputChannels": null,
           "midiMappingPublicId": "53e6118d-be14-4c2b-8fc0-5898253ef422",
           "name": "APC mini mk2",
           "productId": "004f",
           "serial": "Ver00.10",
           "usbLocation": "3-10",
           "vendorId": "09e8"
+        },
+        {
+          "audioChannels": 1,
+          "kind": "SoundInput",
+          "manufacturer": null,
+          "maxInputChannels": null,
+          "midiMappingPublicId": null,
+          "name": "800 Series Chipset Family Audio Context Engine (ACE)",
+          "productId": null,
+          "serial": null,
+          "usbLocation": null,
+          "vendorId": null
         }
       ],
       "name": "Test-001",
@@ -21370,6 +21386,1697 @@
           "updatedAt": "2026-11-01T07:34:20.528Z"
         },
         {
+          "createdAt": "2026-11-06T15:54:22.842Z",
+          "name": "Sound2Light (T-Bars)",
+          "publicId": "fb31fb1c-dcf8-40a7-8ef0-b48aff7f2385",
+          "sequence": {
+            "direction": "Forward",
+            "fixturePublicIds": [
+              "0c8f305c-fe11-4823-9902-36265f01106f",
+              "ce93e7f4-ce01-45ab-b992-f2e7dceed284",
+              "a21b1a73-94fa-43ff-b4fc-025b76c28689",
+              "a095dba7-8a57-4f17-8623-1b79f059248a",
+              "cb3d2d77-1ab4-44db-a7e9-bca658315cd1",
+              "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399",
+              "3b8d5507-8dd7-4a34-a00c-91e7ede710dc",
+              "2464da63-909a-43ba-a93a-c8a33d4f25de",
+              "a0e2ab07-3d39-4971-a247-8b062b819780",
+              "f9decd3b-7c97-4513-9f63-f811a507c754",
+              "381028c7-bb4c-4052-9135-f80467697064",
+              "a1188aa5-77f1-4b5f-9370-a92a1432442a"
+            ],
+            "runOrder": "Loop",
+            "steps": [
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 75,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 157,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 84,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 166,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 91,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 145,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 101,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 137,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 109,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 129,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 117,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 123,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 75,
+                    "value": 255
+                  },
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 84,
+                    "value": 255
+                  },
+                  {
+                    "channel": 91,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 101,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 109,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 117,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 123,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  },
+                  {
+                    "channel": 129,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  },
+                  {
+                    "channel": 137,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  },
+                  {
+                    "channel": 145,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 157,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 166,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 75,
+                    "value": 255
+                  },
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 84,
+                    "value": 255
+                  },
+                  {
+                    "channel": 91,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 101,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 109,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 117,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 123,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  },
+                  {
+                    "channel": 129,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  },
+                  {
+                    "channel": 137,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  },
+                  {
+                    "channel": 145,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 157,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 166,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 75,
+                    "value": 255
+                  },
+                  {
+                    "channel": 77,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 157,
+                    "value": 255
+                  },
+                  {
+                    "channel": 159,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 84,
+                    "value": 255
+                  },
+                  {
+                    "channel": 86,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 166,
+                    "value": 255
+                  },
+                  {
+                    "channel": 168,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 91,
+                    "value": 255
+                  },
+                  {
+                    "channel": 93,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 145,
+                    "value": 255
+                  },
+                  {
+                    "channel": 147,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 101,
+                    "value": 255
+                  },
+                  {
+                    "channel": 103,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 137,
+                    "value": 255
+                  },
+                  {
+                    "channel": 139,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 109,
+                    "value": 255
+                  },
+                  {
+                    "channel": 111,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 129,
+                    "value": 255
+                  },
+                  {
+                    "channel": 131,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 117,
+                    "value": 255
+                  },
+                  {
+                    "channel": 119,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 123,
+                    "value": 255
+                  },
+                  {
+                    "channel": 125,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 75,
+                    "value": 255
+                  },
+                  {
+                    "channel": 77,
+                    "value": 255
+                  },
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 84,
+                    "value": 255
+                  },
+                  {
+                    "channel": 86,
+                    "value": 255
+                  },
+                  {
+                    "channel": 91,
+                    "value": 255
+                  },
+                  {
+                    "channel": 93,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 101,
+                    "value": 255
+                  },
+                  {
+                    "channel": 103,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 109,
+                    "value": 255
+                  },
+                  {
+                    "channel": 111,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 117,
+                    "value": 255
+                  },
+                  {
+                    "channel": 119,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 123,
+                    "value": 255
+                  },
+                  {
+                    "channel": 125,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  },
+                  {
+                    "channel": 129,
+                    "value": 255
+                  },
+                  {
+                    "channel": 131,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  },
+                  {
+                    "channel": 137,
+                    "value": 255
+                  },
+                  {
+                    "channel": 139,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  },
+                  {
+                    "channel": 145,
+                    "value": 255
+                  },
+                  {
+                    "channel": 147,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 157,
+                    "value": 255
+                  },
+                  {
+                    "channel": 159,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 166,
+                    "value": 255
+                  },
+                  {
+                    "channel": 168,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 75,
+                    "value": 255
+                  },
+                  {
+                    "channel": 77,
+                    "value": 255
+                  },
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 84,
+                    "value": 255
+                  },
+                  {
+                    "channel": 86,
+                    "value": 255
+                  },
+                  {
+                    "channel": 91,
+                    "value": 255
+                  },
+                  {
+                    "channel": 93,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 101,
+                    "value": 255
+                  },
+                  {
+                    "channel": 103,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 109,
+                    "value": 255
+                  },
+                  {
+                    "channel": 111,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 117,
+                    "value": 255
+                  },
+                  {
+                    "channel": 119,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 123,
+                    "value": 255
+                  },
+                  {
+                    "channel": 125,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  },
+                  {
+                    "channel": 129,
+                    "value": 255
+                  },
+                  {
+                    "channel": 131,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  },
+                  {
+                    "channel": 137,
+                    "value": 255
+                  },
+                  {
+                    "channel": 139,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  },
+                  {
+                    "channel": 145,
+                    "value": 255
+                  },
+                  {
+                    "channel": 147,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 157,
+                    "value": 255
+                  },
+                  {
+                    "channel": 159,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 166,
+                    "value": 255
+                  },
+                  {
+                    "channel": 168,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 77,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 159,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 86,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 168,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 93,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 147,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 103,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 139,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 111,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 131,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 119,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 125,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 77,
+                    "value": 255
+                  },
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 86,
+                    "value": 255
+                  },
+                  {
+                    "channel": 93,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 103,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 111,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 119,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 125,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  },
+                  {
+                    "channel": 131,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  },
+                  {
+                    "channel": 139,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  },
+                  {
+                    "channel": 147,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 159,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 168,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 77,
+                    "value": 255
+                  },
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 86,
+                    "value": 255
+                  },
+                  {
+                    "channel": 93,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 103,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 111,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 119,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 125,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  },
+                  {
+                    "channel": 131,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  },
+                  {
+                    "channel": 139,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  },
+                  {
+                    "channel": 147,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 159,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 168,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 76,
+                    "value": 255
+                  },
+                  {
+                    "channel": 77,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 158,
+                    "value": 255
+                  },
+                  {
+                    "channel": 159,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 85,
+                    "value": 255
+                  },
+                  {
+                    "channel": 86,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 167,
+                    "value": 255
+                  },
+                  {
+                    "channel": 168,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 92,
+                    "value": 255
+                  },
+                  {
+                    "channel": 93,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 146,
+                    "value": 255
+                  },
+                  {
+                    "channel": 147,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 102,
+                    "value": 255
+                  },
+                  {
+                    "channel": 103,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 138,
+                    "value": 255
+                  },
+                  {
+                    "channel": 139,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 110,
+                    "value": 255
+                  },
+                  {
+                    "channel": 111,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 130,
+                    "value": 255
+                  },
+                  {
+                    "channel": 131,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 118,
+                    "value": 255
+                  },
+                  {
+                    "channel": 119,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 124,
+                    "value": 255
+                  },
+                  {
+                    "channel": 125,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 76,
+                    "value": 255
+                  },
+                  {
+                    "channel": 77,
+                    "value": 255
+                  },
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 85,
+                    "value": 255
+                  },
+                  {
+                    "channel": 86,
+                    "value": 255
+                  },
+                  {
+                    "channel": 92,
+                    "value": 255
+                  },
+                  {
+                    "channel": 93,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 102,
+                    "value": 255
+                  },
+                  {
+                    "channel": 103,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 110,
+                    "value": 255
+                  },
+                  {
+                    "channel": 111,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 118,
+                    "value": 255
+                  },
+                  {
+                    "channel": 119,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 124,
+                    "value": 255
+                  },
+                  {
+                    "channel": 125,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  },
+                  {
+                    "channel": 130,
+                    "value": 255
+                  },
+                  {
+                    "channel": 131,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  },
+                  {
+                    "channel": 138,
+                    "value": 255
+                  },
+                  {
+                    "channel": 139,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  },
+                  {
+                    "channel": 146,
+                    "value": 255
+                  },
+                  {
+                    "channel": 147,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 158,
+                    "value": 255
+                  },
+                  {
+                    "channel": 159,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 167,
+                    "value": 255
+                  },
+                  {
+                    "channel": 168,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              },
+              {
+                "dmxValues": [
+                  {
+                    "channel": 73,
+                    "value": 255
+                  },
+                  {
+                    "channel": 76,
+                    "value": 255
+                  },
+                  {
+                    "channel": 77,
+                    "value": 255
+                  },
+                  {
+                    "channel": 82,
+                    "value": 255
+                  },
+                  {
+                    "channel": 85,
+                    "value": 255
+                  },
+                  {
+                    "channel": 86,
+                    "value": 255
+                  },
+                  {
+                    "channel": 92,
+                    "value": 255
+                  },
+                  {
+                    "channel": 93,
+                    "value": 255
+                  },
+                  {
+                    "channel": 100,
+                    "value": 255
+                  },
+                  {
+                    "channel": 102,
+                    "value": 255
+                  },
+                  {
+                    "channel": 103,
+                    "value": 255
+                  },
+                  {
+                    "channel": 107,
+                    "value": 255
+                  },
+                  {
+                    "channel": 110,
+                    "value": 255
+                  },
+                  {
+                    "channel": 111,
+                    "value": 255
+                  },
+                  {
+                    "channel": 115,
+                    "value": 255
+                  },
+                  {
+                    "channel": 118,
+                    "value": 255
+                  },
+                  {
+                    "channel": 119,
+                    "value": 255
+                  },
+                  {
+                    "channel": 121,
+                    "value": 255
+                  },
+                  {
+                    "channel": 124,
+                    "value": 255
+                  },
+                  {
+                    "channel": 125,
+                    "value": 255
+                  },
+                  {
+                    "channel": 127,
+                    "value": 255
+                  },
+                  {
+                    "channel": 130,
+                    "value": 255
+                  },
+                  {
+                    "channel": 131,
+                    "value": 255
+                  },
+                  {
+                    "channel": 135,
+                    "value": 255
+                  },
+                  {
+                    "channel": 138,
+                    "value": 255
+                  },
+                  {
+                    "channel": 139,
+                    "value": 255
+                  },
+                  {
+                    "channel": 143,
+                    "value": 255
+                  },
+                  {
+                    "channel": 146,
+                    "value": 255
+                  },
+                  {
+                    "channel": 147,
+                    "value": 255
+                  },
+                  {
+                    "channel": 154,
+                    "value": 255
+                  },
+                  {
+                    "channel": 155,
+                    "value": 255
+                  },
+                  {
+                    "channel": 158,
+                    "value": 255
+                  },
+                  {
+                    "channel": 159,
+                    "value": 255
+                  },
+                  {
+                    "channel": 164,
+                    "value": 255
+                  },
+                  {
+                    "channel": 167,
+                    "value": 255
+                  },
+                  {
+                    "channel": 168,
+                    "value": 255
+                  }
+                ],
+                "fadeIn": 0,
+                "fadeOut": 150,
+                "hold": 100
+              }
+            ]
+          },
+          "type": "Sequence",
+          "updatedAt": "2026-11-06T15:54:22.842Z"
+        },
+        {
           "createdAt": "2026-11-01T07:41:34.086Z",
           "name": "Symmetrie (Up Lights)",
           "publicId": "1fafd06b-a2fd-4a20-8dfc-989f6cbaef71",
@@ -22141,21 +23848,25 @@
       "roomHeight": 6.58,
       "roomLength": 14.6,
       "roomWidth": 12.2,
-      "updatedAt": "2026-11-01T08:31:33.882Z",
+      "updatedAt": "2026-11-06T16:54:27.310Z",
       "virtualConsole": {
         "height": 1080,
         "pages": [
           {
             "controls": [
               {
+                "audioBars": null,
                 "backgroundColor": "#1a1b1e",
+                "bandCount": null,
                 "borderColor": "#51ff00",
                 "borderWidth": 2,
                 "buttonMode": null,
                 "channelBindings": null,
                 "children": [
                   {
+                    "audioBars": null,
                     "backgroundColor": "#ff0000",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -22244,7 +23955,9 @@
                     "y": 305
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#ff0000",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -22320,7 +24033,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#00ff00",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -22396,7 +24111,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#0000ff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -22472,7 +24189,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#7f00ff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -22548,7 +24267,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#878787",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -22624,7 +24345,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#616161",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -22700,7 +24423,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#00ff00",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -22789,7 +24514,9 @@
                     "y": 305
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#0000ff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -22878,7 +24605,9 @@
                     "y": 405
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#7f00ff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -22967,7 +24696,9 @@
                     "y": 405
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#878787",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -23063,7 +24794,7 @@
                 "foregroundColor": null,
                 "functionName": null,
                 "functionPublicId": null,
-                "height": 645,
+                "height": 540,
                 "id": "fb4f4504-9187-450d-94ab-5c0a8c9a2c1d",
                 "label": "Uplights",
                 "lowerLimit": null,
@@ -23073,18 +24804,22 @@
                 "upperLimit": null,
                 "valueType": null,
                 "width": 485,
-                "x": 10,
-                "y": 10
+                "x": 5,
+                "y": 5
               },
               {
+                "audioBars": null,
                 "backgroundColor": "#1a1b1e",
+                "bandCount": null,
                 "borderColor": "#ff0000",
                 "borderWidth": 2,
                 "buttonMode": null,
                 "channelBindings": null,
                 "children": [
                   {
+                    "audioBars": null,
                     "backgroundColor": "#ff0000",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -23184,7 +24919,9 @@
                     "y": 305
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#ff0000",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -23284,7 +25021,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#00ff00",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -23384,7 +25123,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#0000ff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -23484,7 +25225,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#7f00ff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -23572,7 +25315,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#878787",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -23672,7 +25417,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#616161",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -23772,7 +25519,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#00ff00",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -23872,7 +25621,9 @@
                     "y": 305
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#0000ff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -23972,7 +25723,9 @@
                     "y": 405
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#7f00ff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -24060,7 +25813,9 @@
                     "y": 405
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#878787",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -24160,7 +25915,9 @@
                     "y": 355
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#ffbf00",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -24248,7 +26005,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#ffffff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -24348,7 +26107,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#ffbf00",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -24436,7 +26197,9 @@
                     "y": 305
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#ffffff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": null,
@@ -24534,6 +26297,35 @@
                     "width": 100,
                     "x": 200,
                     "y": 405
+                  },
+                  {
+                    "audioBars": null,
+                    "backgroundColor": "#228be6",
+                    "bandCount": null,
+                    "borderColor": null,
+                    "borderWidth": null,
+                    "buttonMode": "toggle",
+                    "channelBindings": null,
+                    "children": null,
+                    "feedback": null,
+                    "fontFamily": "system-ui, sans-serif",
+                    "fontSize": 16,
+                    "fontWeight": 600,
+                    "foregroundColor": "#ffffff",
+                    "functionName": "Sound2Light (T-Bars)",
+                    "functionPublicId": "fb31fb1c-dcf8-40a7-8ef0-b48aff7f2385",
+                    "height": 40,
+                    "id": "e636db15-9f37-406e-a86c-335c3aa0bceb",
+                    "label": "Button",
+                    "lowerLimit": null,
+                    "midiEntryPublicId": null,
+                    "orientation": null,
+                    "type": "button",
+                    "upperLimit": 255,
+                    "valueType": null,
+                    "width": 88,
+                    "x": 475,
+                    "y": 365
                   }
                 ],
                 "feedback": null,
@@ -24543,7 +26335,7 @@
                 "foregroundColor": null,
                 "functionName": null,
                 "functionPublicId": null,
-                "height": 645,
+                "height": 540,
                 "id": "9218d00b-8d74-4b8e-aa15-3906c642fe6e",
                 "label": "Light Bars",
                 "lowerLimit": null,
@@ -24553,18 +26345,22 @@
                 "upperLimit": null,
                 "valueType": null,
                 "width": 730,
-                "x": 10,
-                "y": 660
+                "x": 5,
+                "y": 555
               },
               {
+                "audioBars": null,
                 "backgroundColor": "#1a1b1e",
+                "bandCount": null,
                 "borderColor": "#51ff00",
                 "borderWidth": 2,
                 "buttonMode": null,
                 "channelBindings": null,
                 "children": [
                   {
+                    "audioBars": null,
                     "backgroundColor": "#2030c0",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -24604,7 +26400,9 @@
                     "y": 85
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#30a050",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -24644,7 +26442,9 @@
                     "y": 170
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#c02020",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -24684,7 +26484,9 @@
                     "y": 85
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#228be6",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -24724,7 +26526,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#1ebdbd",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -24764,7 +26568,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#1e95bd",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -24804,7 +26610,9 @@
                     "y": 0
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#ffbf00",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -24844,7 +26652,9 @@
                     "y": 85
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#ff00ff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -24884,7 +26694,9 @@
                     "y": 85
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#7f00ff",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -24924,7 +26736,9 @@
                     "y": 170
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#bfab49",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -24964,7 +26778,9 @@
                     "y": 170
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#999999",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -25004,7 +26820,9 @@
                     "y": 170
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#bf9249",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -25044,7 +26862,9 @@
                     "y": 255
                   },
                   {
+                    "audioBars": null,
                     "backgroundColor": "#cf6921",
+                    "bandCount": null,
                     "borderColor": null,
                     "borderWidth": null,
                     "buttonMode": "toggle",
@@ -25091,7 +26911,7 @@
                 "foregroundColor": null,
                 "functionName": null,
                 "functionPublicId": null,
-                "height": 645,
+                "height": 540,
                 "id": "6be65722-ba28-401c-b08b-20cad58d46a6",
                 "label": "Uplights Sequenzen",
                 "lowerLimit": null,
@@ -25102,7 +26922,109 @@
                 "valueType": null,
                 "width": 850,
                 "x": 500,
-                "y": 10
+                "y": 5
+              },
+              {
+                "audioBars": [
+                  {
+                    "channelBindings": null,
+                    "functionName": "Sound2Light (T-Bars)",
+                    "functionPublicId": "fb31fb1c-dcf8-40a7-8ef0-b48aff7f2385",
+                    "maxThreshold": 80,
+                    "minThreshold": 20,
+                    "mode": "function"
+                  },
+                  {
+                    "channelBindings": null,
+                    "functionName": null,
+                    "functionPublicId": null,
+                    "maxThreshold": 80,
+                    "minThreshold": 20,
+                    "mode": "none"
+                  },
+                  {
+                    "channelBindings": null,
+                    "functionName": null,
+                    "functionPublicId": null,
+                    "maxThreshold": 80,
+                    "minThreshold": 20,
+                    "mode": "none"
+                  },
+                  {
+                    "channelBindings": null,
+                    "functionName": null,
+                    "functionPublicId": null,
+                    "maxThreshold": 80,
+                    "minThreshold": 20,
+                    "mode": "none"
+                  },
+                  {
+                    "channelBindings": null,
+                    "functionName": null,
+                    "functionPublicId": null,
+                    "maxThreshold": 80,
+                    "minThreshold": 20,
+                    "mode": "none"
+                  },
+                  {
+                    "channelBindings": null,
+                    "functionName": null,
+                    "functionPublicId": null,
+                    "maxThreshold": 80,
+                    "minThreshold": 20,
+                    "mode": "none"
+                  },
+                  {
+                    "channelBindings": null,
+                    "functionName": null,
+                    "functionPublicId": null,
+                    "maxThreshold": 80,
+                    "minThreshold": 20,
+                    "mode": "none"
+                  },
+                  {
+                    "channelBindings": null,
+                    "functionName": null,
+                    "functionPublicId": null,
+                    "maxThreshold": 80,
+                    "minThreshold": 20,
+                    "mode": "none"
+                  },
+                  {
+                    "channelBindings": null,
+                    "functionName": null,
+                    "functionPublicId": null,
+                    "maxThreshold": 80,
+                    "minThreshold": 20,
+                    "mode": "none"
+                  }
+                ],
+                "backgroundColor": "#1a1b1e",
+                "bandCount": 8,
+                "borderColor": null,
+                "borderWidth": null,
+                "buttonMode": null,
+                "channelBindings": null,
+                "children": null,
+                "feedback": null,
+                "fontFamily": "system-ui, sans-serif",
+                "fontSize": 16,
+                "fontWeight": 600,
+                "foregroundColor": "#40c057",
+                "functionName": null,
+                "functionPublicId": null,
+                "height": 480,
+                "id": "094a4e73-5899-4f24-9081-3bce2e5a11ef",
+                "label": "Sound to light",
+                "lowerLimit": null,
+                "midiEntryPublicId": null,
+                "orientation": null,
+                "type": "audioTriggers",
+                "upperLimit": null,
+                "valueType": null,
+                "width": 530,
+                "x": 755,
+                "y": 550
               }
             ],
             "id": "1b4e1ba9-ae65-4975-9100-45a89d34f008",
@@ -25111,7 +27033,9 @@
           {
             "controls": [
               {
+                "audioBars": null,
                 "backgroundColor": "#228be6",
+                "bandCount": null,
                 "borderColor": null,
                 "borderWidth": null,
                 "buttonMode": null,
@@ -25148,5 +27072,5 @@
       }
     }
   ],
-  "schemaVersion": 12
+  "schemaVersion": 13
 }

@@ -2,7 +2,7 @@
 
 NestJS backend + Next.js frontend in Nx monorepo.
 
-**Last harness review:** 2026-10-23
+**Last harness review:** 2026-11-06
 
 ## Agent behavior
 
@@ -56,8 +56,9 @@ NestJS backend + Next.js frontend in Nx monorepo.
 4. When changing GraphQL resolvers or DTOs, run `nx test backend` (includes `graphql-schema.spec.ts`) and rebuild Bruno requests `nx run bruno:build`.
 5. When database schema has changed (entities, relations) regenerate ER diagram `nx run backend:erd`.
 6. **Harness health-check** (required when change set matches the triggers below — report `Harness: up to date` or `Harness: updated`).
-7. Conventional commit message ready when asked to commit.
-8. Servers you started are stopped (see Agent behavior).
+7. **Manual check** (every change set): decide whether it affects `docs/manual/` (see User manual) and report `Manual: up to date`, `Manual: updated` (what changed) or `Manual: not covered` (user-visible feature with no page yet).
+8. Conventional commit message ready when asked to commit.
+9. Servers you started are stopped (see Agent behavior).
 
 ## Conventions
 
@@ -151,6 +152,13 @@ Rules live in `tsconfig.base.json`, `eslint.config.ts`, `prettier.config.ts`. Tr
 - **When you change, add, or remove any i18n string, you MUST keep all language files in sync** — add/update/remove the key in every locale file (`en.json`, `de.json`, …). Use the `defaultMessage` as the English (`en.json`) value.
 - Keep keys sorted alphabetically within each language file.
 - After editing translations, run `nx run frontend:i18n-extract` (writes `en.json` only), sync the same keys in `de.json`, then `nx run frontend:i18n-verify` to confirm no missing or extra keys remain.
+
+## User manual
+
+- End-user docs live in `docs/manual/{en,de}/`, one page per feature at the same relative path in each language (e.g. `virtual-console/audio-trigger.md`).
+- **Update the affected pages in the same change set** when behavior, defaults, limits or UI labels described there change. Pages repeat values from code (e.g. the audio frequency range and band table), so search them for the old value or label. Purely internal changes need no edit.
+- **Keep `en` and `de` in sync:** same headings, tables and table of contents; change both or neither. UI labels must match `apps/frontend/src/lang/{en,de}.json` exactly.
+- Document only what exists in code. Do not write pages for undocumented features unasked; report `Manual: not covered` instead.
 
 ## Lessons
 

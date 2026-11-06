@@ -231,6 +231,7 @@
   "ProjectDetail.virtualConsole.addPage": "Seite hinzufügen",
   "ProjectDetail.virtualConsole.audio.band": "Band {number}",
   "ProjectDetail.virtualConsole.audio.bandCount": "Bänder",
+  "ProjectDetail.virtualConsole.audio.bandRange": "Band {number} ({low} – {high})",
   "ProjectDetail.virtualConsole.audio.bar": "Balken",
   "ProjectDetail.virtualConsole.audio.levelOf": "Pegel {bar}",
   "ProjectDetail.virtualConsole.audio.maxThreshold": "Max. Schwelle (%)",

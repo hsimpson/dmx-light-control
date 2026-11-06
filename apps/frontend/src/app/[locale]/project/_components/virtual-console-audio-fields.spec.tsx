@@ -78,8 +78,29 @@ describe('VirtualConsoleAudioFields', () => {
     );
 
     await user.click(screen.getByRole('combobox', { name: 'Bar' }));
-    await user.click(await screen.findByRole('option', { name: 'Band 3', hidden: true }));
+    await user.click(await screen.findByRole('option', { name: 'Band 3 (179 Hz – 378 Hz)', hidden: true }));
 
     expect(onBarIndexChange).toHaveBeenCalledWith(3);
+  });
+
+  it('GIVEN 8 bands WHEN the bar list opens THEN each band names the frequency range the analyser uses', async () => {
+    const { user } = renderWithProviders(
+      <VirtualConsoleAudioFields control={audioControl()} barIndex={0} onBarIndexChange={vi.fn()} onPatch={vi.fn()} />,
+    );
+
+    await user.click(screen.getByRole('combobox', { name: 'Bar' }));
+
+    const options = await screen.findAllByRole('option', { hidden: true });
+    const labels = options.map(option => option.textContent).filter(label => label.startsWith('Band'));
+    expect(labels).toEqual([
+      'Band 1 (40 Hz – 85 Hz)',
+      'Band 2 (85 Hz – 179 Hz)',
+      'Band 3 (179 Hz – 378 Hz)',
+      'Band 4 (378 Hz – 800 Hz)',
+      'Band 5 (800 Hz – 1.7 kHz)',
+      'Band 6 (1.7 kHz – 3.6 kHz)',
+      'Band 7 (3.6 kHz – 7.6 kHz)',
+      'Band 8 (7.6 kHz – 16 kHz)',
+    ]);
   });
 });

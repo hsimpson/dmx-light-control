@@ -2,7 +2,9 @@
 
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { NumberInput, Select } from '@mantine/core';
+import { useIntl } from 'react-intl';
 import {
+  audioBandRangeHz,
   patchAudioBar,
   resizeAudioBars,
   VIRTUAL_CONSOLE_AUDIO_BANDS_MAX,
@@ -62,7 +64,17 @@ const VirtualConsoleAudioFields = ({
   onPatch,
 }: VirtualConsoleAudioFieldsProperties) => {
   const { t } = useTranslation();
+  const { formatNumber } = useIntl();
+  const formatHz = (hz: number) =>
+    hz < 1000 ? `${formatNumber(Math.round(hz))} Hz` : `${formatNumber(hz / 1000, { maximumFractionDigits: 1 })} kHz`;
   const bars = control.audioBars ?? [];
+  const bandLabel = (band: number) => {
+    const { low, high } = audioBandRangeHz(band, bars.length - 1);
+    return t(
+      { id: 'ProjectDetail.virtualConsole.audio.bandRange', defaultMessage: 'Band {number} ({low} – {high})' },
+      { number: band, low: formatHz(low), high: formatHz(high) },
+    );
+  };
   const bar = bars[barIndex];
   const patchBar = (patch: Parameters<typeof patchAudioBar>[2]) => {
     onPatch({ audioBars: patchAudioBar(bars, barIndex, patch) });
@@ -93,10 +105,7 @@ const VirtualConsoleAudioFields = ({
           label:
             index === 0
               ? t({ id: 'ProjectDetail.virtualConsole.audio.volume', defaultMessage: 'Volume' })
-              : t(
-                  { id: 'ProjectDetail.virtualConsole.audio.band', defaultMessage: 'Band {number}' },
-                  { number: index },
-                ),
+              : bandLabel(index),
         }))}
         value={String(barIndex)}
         onChange={value => {

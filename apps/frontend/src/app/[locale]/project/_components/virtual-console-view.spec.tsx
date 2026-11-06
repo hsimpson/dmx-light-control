@@ -352,7 +352,7 @@ describe('VirtualConsoleView', () => {
     await user.click(await screen.findByTestId(`virtual-console-control-${audioId}`));
     const volumeShowsPanel = screen.queryByTestId('virtual-console-channel-sidebar') !== null;
     await user.click(screen.getByRole('combobox', { name: 'Bar' }));
-    await user.click(await screen.findByRole('option', { name: 'Band 1', hidden: true }));
+    await user.click(await screen.findByRole('option', { name: 'Band 1 (40 Hz – 16 kHz)', hidden: true }));
     const panel = screen.getByTestId('virtual-console-channel-sidebar');
     const showsFunction = screen.queryByRole('combobox', { name: 'Function' }) !== null;
 

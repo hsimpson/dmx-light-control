@@ -188,6 +188,18 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
   }
 };
 
+const AUDIO_SPECTRUM_MIN_HZ = 40;
+const AUDIO_SPECTRUM_MAX_HZ = 16000;
+
+/** Edges of a 1-based band; log-spaced like `spectrumBands` in the backend's `io/sound-input/spectrum.ts`. */
+export const audioBandRangeHz = (band: number, bandCount: number): { low: number; high: number } => {
+  const ratio = AUDIO_SPECTRUM_MAX_HZ / AUDIO_SPECTRUM_MIN_HZ;
+  return {
+    low: AUDIO_SPECTRUM_MIN_HZ * ratio ** ((band - 1) / bandCount),
+    high: AUDIO_SPECTRUM_MIN_HZ * ratio ** (band / bandCount),
+  };
+};
+
 /** Volume bar plus one idle bar per band. */
 export const createAudioBars = (bandCount: number): VirtualConsoleAudioBar[] =>
   Array.from({ length: bandCount + 1 }, () => ({ mode: 'none', minThreshold: 20, maxThreshold: 80 }));
