@@ -144,7 +144,7 @@ Rules live in `tsconfig.base.json`, `eslint.config.ts`, `prettier.config.ts`. Tr
 - Frontend unit tests get an inert `WebSocket` from `apps/frontend/vitest.setup.ts`, so they never reach a running backend.
 - Backend global pipes belong in `registerGlobals` (`app-globals.ts`), shared by `main.ts` and the e2e app (`testhelpers/e2e-app.ts`), so e2e tests see the same validation as production.
 - `REVIEW` comments mark incomplete implementations (ValidationPipe `disableErrorMessages` in `app-globals.ts`)
-- `dmx-sniffer` is Linux-only (`/dev/usbmon`). Serial, MIDI and sound input also have macOS/Windows code paths; sound input has not been hardware-tested there yet.
+- `dmx-sniffer` is Linux-only (`/dev/usbmon`). Serial, MIDI and sound input also have macOS/Windows code paths; sound input has been hardware-tested on macOS, not yet on Windows.
 - Production hides stack traces from GraphQL errors
 - `BaseDomainError` → `GlobalGqlExceptionFilter` maps to GraphQL errors with `code` + `http.status` extension
 
