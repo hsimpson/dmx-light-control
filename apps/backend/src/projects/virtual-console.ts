@@ -103,12 +103,17 @@ export type VirtualConsoleAudioBar = {
   functionName?: string;
 };
 
+/** Fade in, hold and fade out of a stepped step, each in percent of the measured time between beats. */
+export type VirtualConsoleBeatTiming = { fadeIn: number; hold: number; fadeOut: number };
+
 /** Steps a function on each bass onset of an audio triggers control; quieter onsets (percent) do not count. */
 export type VirtualConsoleBeatBar = {
   minThreshold: number;
   functionPublicId?: string;
   /** Present in export documents to remap a function binding after re-import. */
   functionName?: string;
+  /** Absent: each step keeps the sequence's own timing. */
+  timing?: VirtualConsoleBeatTiming;
 };
 
 export type VirtualConsoleControl = {

@@ -147,6 +147,39 @@ export class VirtualConsoleAudioBarInput {
 }
 
 @ObjectType()
+export class VirtualConsoleBeatTimingDto {
+  @Field(() => Int, { description: 'Fade in of each step in percent of the time between beats' })
+  public fadeIn: number;
+
+  @Field(() => Int, { description: 'Hold of each step in percent of the time between beats' })
+  public hold: number;
+
+  @Field(() => Int, { description: 'Fade out of each step in percent of the time between beats' })
+  public fadeOut: number;
+}
+
+@InputType()
+export class VirtualConsoleBeatTimingInput {
+  @Field(() => Int, { description: 'Fade in of each step in percent of the time between beats' })
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  public fadeIn: number;
+
+  @Field(() => Int, { description: 'Hold of each step in percent of the time between beats' })
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  public hold: number;
+
+  @Field(() => Int, { description: 'Fade out of each step in percent of the time between beats' })
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  public fadeOut: number;
+}
+
+@ObjectType()
 export class VirtualConsoleBeatBarDto {
   @Field(() => Int, { description: 'Bass level in percent below which an onset does not count as a beat' })
   public minThreshold: number;
@@ -156,6 +189,13 @@ export class VirtualConsoleBeatBarDto {
 
   @Field({ nullable: true, description: 'Function name used to remap the binding on import' })
   public functionName?: string;
+
+  @Field(() => VirtualConsoleBeatTimingDto, {
+    nullable: true,
+    description: 'Step timing that follows the beat. Null: each step keeps the sequence timing.',
+  })
+  @Type(() => VirtualConsoleBeatTimingDto)
+  public timing?: VirtualConsoleBeatTimingDto;
 }
 
 @InputType()
@@ -176,6 +216,15 @@ export class VirtualConsoleBeatBarInput {
   @IsString()
   @Length(1, 255)
   public functionName?: string;
+
+  @Field(() => VirtualConsoleBeatTimingInput, {
+    nullable: true,
+    description: 'Step timing that follows the beat. Null: each step keeps the sequence timing.',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => VirtualConsoleBeatTimingInput)
+  public timing?: VirtualConsoleBeatTimingInput;
 }
 
 @ObjectType()

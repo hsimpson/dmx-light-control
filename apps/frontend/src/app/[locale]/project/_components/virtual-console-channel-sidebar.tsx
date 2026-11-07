@@ -52,7 +52,7 @@ const VirtualConsoleChannelSidebar = ({
   onPatch,
 }: VirtualConsoleChannelSidebarProperties) => {
   const { t } = useTranslation();
-  const functionSelect = useRef<HTMLInputElement>(null);
+  const functionSelectRef = useRef<HTMLInputElement>(null);
   const choosesKind = fixedKind === undefined && control.type === 'button';
   const bindsFunction = fixedKind === 'function' || (choosesKind && Boolean(control.functionPublicId));
   const bindings = control.channelBindings ?? [];
@@ -122,10 +122,10 @@ const VirtualConsoleChannelSidebar = ({
                 event.stopPropagation();
               },
             }}
-            ref={functionSelect}
+            ref={functionSelectRef}
             onClear={() => {
               // The clear button unmounts; without focus, the next Delete would remove the control.
-              functionSelect.current?.focus();
+              functionSelectRef.current?.focus();
             }}
             data={functions.map(fn => ({ value: fn.publicId, label: fn.name }))}
             value={control.functionPublicId ?? null}

@@ -379,7 +379,11 @@ describe('Project import/export', () => {
                           backgroundColor: '#000000',
                           bandCount: 1,
                           audioBars: [idleBar, idleBar],
-                          beatBar: { minThreshold: 35, functionName: 'Chase' },
+                          beatBar: {
+                            minThreshold: 35,
+                            functionName: 'Chase',
+                            timing: { fadeIn: 0, hold: 40, fadeOut: 60 },
+                          },
                         },
                       ],
                     },
@@ -407,6 +411,11 @@ describe('Project import/export', () => {
                     minThreshold
                     functionPublicId
                     functionName
+                    timing {
+                      fadeIn
+                      hold
+                      fadeOut
+                    }
                   }
                 }
               }
@@ -420,6 +429,7 @@ describe('Project import/export', () => {
       minThreshold: 35,
       functionPublicId,
       functionName: null,
+      timing: { fadeIn: 0, hold: 40, fadeOut: 60 },
     });
   });
 });

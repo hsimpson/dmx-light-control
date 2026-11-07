@@ -575,6 +575,100 @@ describe('VirtualConsolePlaybackService audio triggers', () => {
       expect(steps).toEqual([OTHER_FUNCTION_ID]);
     });
 
+    it('GIVEN two controls with different timing on one function WHEN beats arrive THEN the first enabled one decides', async () => {
+      const timed = (id: string, hold: number) =>
+        control(id, 'audioTriggers', {
+          bandCount: 1,
+          audioBars: [...idleBars],
+          beatBar: { minThreshold: 20, functionPublicId: OTHER_FUNCTION_ID, timing: { fadeIn: 0, hold, fadeOut: 0 } },
+        });
+      const { eventEmitter, beat, input } = await buildBeat([timed('a', 40), timed('b', 80)]);
+      const timings: unknown[] = [];
+      eventEmitter.on('function.step', ({ timing }) => {
+        timings.push(timing);
+      });
+      input('b', 1);
+      input('a', 1);
+
+      beat();
+      vi.advanceTimersByTime(500);
+      beat();
+
+      expect(timings).toEqual([undefined, { fadeIn: 0, hold: 400, fadeOut: 0 }]);
+    });
+
+    describe('tempo', () => {
+      async function buildTempo() {
+        const built = await buildBeat([beatControl()]);
+        const bpm: Record<string, number>[] = [];
+        built.eventEmitter.on('virtualConsole.audioLevels', payload => {
+          bpm.push(payload.bpm);
+        });
+        built.input('beat', 1);
+        return { ...built, bpm };
+      }
+
+      it('GIVEN beats every 500 ms WHEN levels are published THEN the control reports 120 BPM', async () => {
+        const { eventEmitter, beat, bpm } = await buildTempo();
+
+        beat();
+        play(eventEmitter, 0.5, 10);
+        beat();
+        play(eventEmitter, 0.5, 1);
+
+        expect(bpm.at(-1)).toEqual({ beat: 120 });
+      });
+
+      it('GIVEN only a first beat WHEN levels are published THEN no tempo is reported', async () => {
+        const { eventEmitter, beat, bpm } = await buildTempo();
+
+        beat();
+        play(eventEmitter, 0.5, 2);
+
+        expect(bpm.at(-1)).toEqual({});
+      });
+
+      it('GIVEN a known tempo WHEN no beat comes for more than 2 s THEN the tempo is no longer reported', async () => {
+        const { eventEmitter, beat, bpm } = await buildTempo();
+        beat();
+        play(eventEmitter, 0.5, 10);
+        beat();
+
+        play(eventEmitter, 0.5, 41);
+
+        expect(bpm.at(-1)).toEqual({});
+      });
+
+      it('GIVEN a known tempo WHEN the next beat comes after a break THEN the tempo is dropped at once', async () => {
+        const { eventEmitter, beat, bpm } = await buildTempo();
+        beat();
+        play(eventEmitter, 0.5, 10);
+        beat();
+        vi.setSystemTime(Date.now() + 2500);
+
+        beat();
+        play(eventEmitter, 0.5, 1);
+
+        expect(bpm.at(-1)).toEqual({});
+      });
+
+      it('GIVEN a known tempo WHEN the control is turned off and on THEN the tempo is measured again', async () => {
+        const { eventEmitter, beat, bpm, input } = await buildTempo();
+        beat();
+        play(eventEmitter, 0.5, 10);
+        beat();
+        input('beat', 0);
+        input('beat', 1);
+        input('beat', 0);
+        input('beat', 1);
+
+        beat();
+        play(eventEmitter, 0.5, 1);
+
+        expect(bpm.at(-1)).toEqual({});
+      });
+    });
+
     it('GIVEN two controls on one function WHEN only one is turned off THEN the function keeps running', async () => {
       const { functions, input } = await buildBeat([beatControl('a'), beatControl('b')]);
       input('a', 1);

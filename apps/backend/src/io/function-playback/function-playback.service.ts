@@ -1,6 +1,11 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { DmxUniverseService } from '@/io/dmx/dmx-universe.service';
-import { type SequenceChannelValue, sequenceFrame, steppedFrame } from '@/io/function-playback/sequence-runner';
+import {
+  type SequenceChannelValue,
+  sequenceFrame,
+  type StepTiming,
+  steppedFrame,
+} from '@/io/function-playback/sequence-runner';
 import { SequenceProperties, SequenceRunOrder } from '@/projects/project-function';
 import { ProjectFunctionRepository } from '@/projects/repositories/project-function.repository';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
@@ -11,7 +16,7 @@ type Runner = {
   sequence: SequenceProperties;
   startedAt: number;
   /** Set when beats drive the steps instead of their timing. */
-  stepped?: { beats: number; beatAt: number; from: SequenceChannelValue[] };
+  stepped?: { beats: number; beatAt: number; from: SequenceChannelValue[]; timing?: StepTiming };
   lastValues: SequenceChannelValue[];
 };
 
@@ -33,7 +38,7 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
       void this.start(payload.functionPublicId, payload.stepped);
     });
     this.eventEmitter.on('function.step', payload => {
-      this.step(payload.functionPublicId);
+      this.step(payload.functionPublicId, payload.timing);
     });
     this.eventEmitter.on('function.stop', payload => {
       this.stop(payload.functionPublicId);
@@ -79,8 +84,8 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     this.emitState();
   }
 
-  /** Plays the next step of a beat-driven function at once; a free-running function keeps its own timing. */
-  public step(functionPublicId: string): void {
+  /** Plays the next step of a beat-driven function at once, with `timing` instead of the step's own when given. */
+  public step(functionPublicId: string, timing?: StepTiming): void {
     const runner = this.runners.get(functionPublicId);
     if (!runner?.stepped) {
       return;
@@ -90,7 +95,7 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     if (runOrder === SequenceRunOrder.SingleShot && runner.stepped.beats >= steps.length) {
       return;
     }
-    runner.stepped = { beats: runner.stepped.beats + 1, beatAt: Date.now(), from: runner.lastValues };
+    runner.stepped = { beats: runner.stepped.beats + 1, beatAt: Date.now(), from: runner.lastValues, timing };
     this.tick();
   }
 
@@ -114,7 +119,13 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     let stateChanged = false;
     for (const [functionPublicId, runner] of this.runners) {
       const frame = runner.stepped
-        ? steppedFrame(runner.sequence, runner.stepped.beats, now - runner.stepped.beatAt, runner.stepped.from)
+        ? steppedFrame(
+            runner.sequence,
+            runner.stepped.beats,
+            now - runner.stepped.beatAt,
+            runner.stepped.from,
+            runner.stepped.timing,
+          )
         : sequenceFrame(runner.sequence, now - runner.startedAt);
       runner.lastValues = frame.values;
       if (frame.finished) {

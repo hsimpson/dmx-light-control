@@ -39,6 +39,13 @@
         "cwd": "apps/frontend"
       }
     },
+    "manual-screenshots": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test -c playwright.manual.config.ts",
+        "cwd": "apps/frontend"
+      }
+    },
     "graphql-codegen": {
       "executor": "nx:run-commands",
       "options": {

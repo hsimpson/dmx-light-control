@@ -102,6 +102,21 @@ describe('FunctionPlaybackService', () => {
     expect(universe.getFrame()[4]).toBe(200);
   });
 
+  it('GIVEN a step event with timing WHEN it plays THEN that beat uses the timing and the next beat its own again', async () => {
+    const { service, functions, universe, listeners } = build();
+    functions.findOneByPublicId.mockResolvedValue(steppedRow());
+    await service.start(FUNCTION_ID, true);
+    const step = listeners.get('function.step') as (payload: unknown) => void;
+
+    step({ functionPublicId: FUNCTION_ID, timing: { fadeIn: 0, hold: 1000, fadeOut: 0 } });
+    vi.advanceTimersByTime(500);
+    expect(universe.getFrame()[4]).toBe(80);
+
+    step({ functionPublicId: FUNCTION_ID });
+    vi.advanceTimersByTime(50);
+    expect(universe.getFrame()[4]).toBe(140);
+  });
+
   it('GIVEN a beat during a step WHEN the next step fades in THEN it starts from the current output', async () => {
     const { service, functions, universe } = build();
     functions.findOneByPublicId.mockResolvedValue(steppedRow());

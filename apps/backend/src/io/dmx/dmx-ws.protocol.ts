@@ -52,6 +52,8 @@ export type DmxWsSoundLevelMessage = {
 export type DmxWsAudioLevelsMessage = {
   type: 'audioLevels';
   levels: Record<string, number[]>;
+  /** Beats per minute per control; a control without a known tempo is left out. */
+  bpm: Record<string, number>;
 };
 
 export type DmxWsClientMessage = DmxWsSetMessage | DmxWsFunctionMessage | DmxWsControlValueMessage;
@@ -80,8 +82,11 @@ export function dmxWsSoundLevelMessage(levels: number[]): DmxWsSoundLevelMessage
   return { type: 'soundLevel', levels };
 }
 
-export function dmxWsAudioLevelsMessage(levels: Record<string, number[]>): DmxWsAudioLevelsMessage {
-  return { type: 'audioLevels', levels };
+export function dmxWsAudioLevelsMessage(
+  levels: Record<string, number[]>,
+  bpm: Record<string, number>,
+): DmxWsAudioLevelsMessage {
+  return { type: 'audioLevels', levels, bpm };
 }
 
 export function parseDmxWsClientMessage(raw: string): DmxWsClientMessage | undefined {

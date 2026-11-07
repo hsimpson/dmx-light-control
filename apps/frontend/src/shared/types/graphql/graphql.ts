@@ -711,6 +711,17 @@ export type VirtualConsoleBeatBarInput = {
   functionPublicId?: string | null | undefined;
   /** Bass level in percent below which an onset does not count as a beat */
   minThreshold: number;
+  /** Step timing that follows the beat. Null: each step keeps the sequence timing. */
+  timing?: VirtualConsoleBeatTimingInput | null | undefined;
+};
+
+export type VirtualConsoleBeatTimingInput = {
+  /** Fade in of each step in percent of the time between beats */
+  fadeIn: number;
+  /** Fade out of each step in percent of the time between beats */
+  fadeOut: number;
+  /** Hold of each step in percent of the time between beats */
+  hold: number;
 };
 
 /** Whether a virtual console button latches or runs only while held */
@@ -1778,7 +1789,12 @@ export type VirtualConsoleControlFieldsFragment = {
       channelDefinitionPublicId: string | null;
     }> | null;
   }> | null;
-  beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+  beatBar: {
+    minThreshold: number;
+    functionPublicId: string | null;
+    functionName: string | null;
+    timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+  } | null;
 };
 
 export type VirtualConsoleFieldsFragment = {
@@ -2009,6 +2025,7 @@ export type VirtualConsoleFieldsFragment = {
                       minThreshold: number;
                       functionPublicId: string | null;
                       functionName: string | null;
+                      timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                     } | null;
                   }> | null;
                   channelBindings: Array<{
@@ -2039,6 +2056,7 @@ export type VirtualConsoleFieldsFragment = {
                     minThreshold: number;
                     functionPublicId: string | null;
                     functionName: string | null;
+                    timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                   } | null;
                 }> | null;
                 channelBindings: Array<{
@@ -2065,7 +2083,12 @@ export type VirtualConsoleFieldsFragment = {
                     channelDefinitionPublicId: string | null;
                   }> | null;
                 }> | null;
-                beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+                beatBar: {
+                  minThreshold: number;
+                  functionPublicId: string | null;
+                  functionName: string | null;
+                  timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+                } | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -2091,7 +2114,12 @@ export type VirtualConsoleFieldsFragment = {
                   channelDefinitionPublicId: string | null;
                 }> | null;
               }> | null;
-              beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+              beatBar: {
+                minThreshold: number;
+                functionPublicId: string | null;
+                functionName: string | null;
+                timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+              } | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -2117,7 +2145,12 @@ export type VirtualConsoleFieldsFragment = {
                 channelDefinitionPublicId: string | null;
               }> | null;
             }> | null;
-            beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+            beatBar: {
+              minThreshold: number;
+              functionPublicId: string | null;
+              functionName: string | null;
+              timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+            } | null;
           }> | null;
           channelBindings: Array<{
             projectFixturePublicId: string;
@@ -2143,7 +2176,12 @@ export type VirtualConsoleFieldsFragment = {
               channelDefinitionPublicId: string | null;
             }> | null;
           }> | null;
-          beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+          beatBar: {
+            minThreshold: number;
+            functionPublicId: string | null;
+            functionName: string | null;
+            timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+          } | null;
         }> | null;
         channelBindings: Array<{
           projectFixturePublicId: string;
@@ -2169,7 +2207,12 @@ export type VirtualConsoleFieldsFragment = {
             channelDefinitionPublicId: string | null;
           }> | null;
         }> | null;
-        beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+        beatBar: {
+          minThreshold: number;
+          functionPublicId: string | null;
+          functionName: string | null;
+          timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+        } | null;
       }> | null;
       channelBindings: Array<{
         projectFixturePublicId: string;
@@ -2195,7 +2238,12 @@ export type VirtualConsoleFieldsFragment = {
           channelDefinitionPublicId: string | null;
         }> | null;
       }> | null;
-      beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+      beatBar: {
+        minThreshold: number;
+        functionPublicId: string | null;
+        functionName: string | null;
+        timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+      } | null;
     }>;
   }>;
 };
@@ -2525,6 +2573,7 @@ export type GetProjectQuery = {
                           minThreshold: number;
                           functionPublicId: string | null;
                           functionName: string | null;
+                          timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                         } | null;
                       }> | null;
                       channelBindings: Array<{
@@ -2555,6 +2604,7 @@ export type GetProjectQuery = {
                         minThreshold: number;
                         functionPublicId: string | null;
                         functionName: string | null;
+                        timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                       } | null;
                     }> | null;
                     channelBindings: Array<{
@@ -2585,6 +2635,7 @@ export type GetProjectQuery = {
                       minThreshold: number;
                       functionPublicId: string | null;
                       functionName: string | null;
+                      timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                     } | null;
                   }> | null;
                   channelBindings: Array<{
@@ -2615,6 +2666,7 @@ export type GetProjectQuery = {
                     minThreshold: number;
                     functionPublicId: string | null;
                     functionName: string | null;
+                    timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                   } | null;
                 }> | null;
                 channelBindings: Array<{
@@ -2641,7 +2693,12 @@ export type GetProjectQuery = {
                     channelDefinitionPublicId: string | null;
                   }> | null;
                 }> | null;
-                beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+                beatBar: {
+                  minThreshold: number;
+                  functionPublicId: string | null;
+                  functionName: string | null;
+                  timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+                } | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -2667,7 +2724,12 @@ export type GetProjectQuery = {
                   channelDefinitionPublicId: string | null;
                 }> | null;
               }> | null;
-              beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+              beatBar: {
+                minThreshold: number;
+                functionPublicId: string | null;
+                functionName: string | null;
+                timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+              } | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -2693,7 +2755,12 @@ export type GetProjectQuery = {
                 channelDefinitionPublicId: string | null;
               }> | null;
             }> | null;
-            beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+            beatBar: {
+              minThreshold: number;
+              functionPublicId: string | null;
+              functionName: string | null;
+              timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+            } | null;
           }> | null;
           channelBindings: Array<{
             projectFixturePublicId: string;
@@ -2719,7 +2786,12 @@ export type GetProjectQuery = {
               channelDefinitionPublicId: string | null;
             }> | null;
           }> | null;
-          beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+          beatBar: {
+            minThreshold: number;
+            functionPublicId: string | null;
+            functionName: string | null;
+            timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+          } | null;
         }>;
       }>;
     };
@@ -3289,6 +3361,7 @@ export type ExportProjectsQuery = {
                             minThreshold: number;
                             functionPublicId: string | null;
                             functionName: string | null;
+                            timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                           } | null;
                         }> | null;
                         channelBindings: Array<{
@@ -3319,6 +3392,7 @@ export type ExportProjectsQuery = {
                           minThreshold: number;
                           functionPublicId: string | null;
                           functionName: string | null;
+                          timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                         } | null;
                       }> | null;
                       channelBindings: Array<{
@@ -3349,6 +3423,7 @@ export type ExportProjectsQuery = {
                         minThreshold: number;
                         functionPublicId: string | null;
                         functionName: string | null;
+                        timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                       } | null;
                     }> | null;
                     channelBindings: Array<{
@@ -3379,6 +3454,7 @@ export type ExportProjectsQuery = {
                       minThreshold: number;
                       functionPublicId: string | null;
                       functionName: string | null;
+                      timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                     } | null;
                   }> | null;
                   channelBindings: Array<{
@@ -3409,6 +3485,7 @@ export type ExportProjectsQuery = {
                     minThreshold: number;
                     functionPublicId: string | null;
                     functionName: string | null;
+                    timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                   } | null;
                 }> | null;
                 channelBindings: Array<{
@@ -3435,7 +3512,12 @@ export type ExportProjectsQuery = {
                     channelDefinitionPublicId: string | null;
                   }> | null;
                 }> | null;
-                beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+                beatBar: {
+                  minThreshold: number;
+                  functionPublicId: string | null;
+                  functionName: string | null;
+                  timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+                } | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -3461,7 +3543,12 @@ export type ExportProjectsQuery = {
                   channelDefinitionPublicId: string | null;
                 }> | null;
               }> | null;
-              beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+              beatBar: {
+                minThreshold: number;
+                functionPublicId: string | null;
+                functionName: string | null;
+                timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+              } | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -3487,7 +3574,12 @@ export type ExportProjectsQuery = {
                 channelDefinitionPublicId: string | null;
               }> | null;
             }> | null;
-            beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
+            beatBar: {
+              minThreshold: number;
+              functionPublicId: string | null;
+              functionName: string | null;
+              timing: { fadeIn: number; hold: number; fadeOut: number } | null;
+            } | null;
           }>;
         }>;
       } | null;
@@ -4492,6 +4584,18 @@ export const VirtualConsoleControlFieldsFragmentDoc = {
                 { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'timing' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -4753,6 +4857,18 @@ export const VirtualConsoleFieldsFragmentDoc = {
                 { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'timing' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -7918,6 +8034,18 @@ export const GetProjectDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'timing' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -9219,6 +9347,18 @@ export const ExportProjectsDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'timing' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
+                    ],
+                  },
+                },
               ],
             },
           },

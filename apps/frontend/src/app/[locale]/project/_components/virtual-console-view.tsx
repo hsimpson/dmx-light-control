@@ -734,7 +734,8 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       patchSelectedControl(patch);
     } else if (selectedBeatBar) {
       patchSelectedControl({
-        beatBar: { minThreshold: selectedBeatBar.minThreshold, functionPublicId: patch.functionPublicId },
+        // Keeps threshold and timing; the export name belongs to the previous function.
+        beatBar: { ...selectedBeatBar, functionName: undefined, functionPublicId: patch.functionPublicId },
       });
     } else {
       patchSelectedControl({ audioBars: patchAudioBar(audioBars, selectedBarIndex, patch) });

@@ -458,8 +458,25 @@ describe('virtual-console-document', () => {
     expect(pasted.beatBar).toEqual(beatBar);
   });
 
-  it('GIVEN a new audio control WHEN created THEN its beat bar has the default threshold and no function', () => {
-    expect(createControl('audioTriggers', 0, 0).beatBar).toEqual({ minThreshold: 20 });
+  it('GIVEN a new audio control WHEN created THEN its beat bar has the default threshold, follows the beat, no function', () => {
+    expect(createControl('audioTriggers', 0, 0).beatBar).toEqual({
+      minThreshold: 20,
+      timing: { fadeIn: 0, hold: 40, fadeOut: 60 },
+    });
+  });
+
+  it('GIVEN a beat bar with timing WHEN converted to input THEN the timing is sent', () => {
+    const timing = { fadeIn: 10, hold: 40, fadeOut: 50 };
+    const document = createDefaultVirtualConsoleDocument();
+    document.pages[0]?.controls.push({
+      ...createControl('audioTriggers', 0, 0),
+      beatBar: { minThreshold: 20, timing },
+    });
+
+    expect(virtualConsoleDocumentToInput(document).pages[0]?.controls[0]?.beatBar).toEqual({
+      minThreshold: 20,
+      timing,
+    });
   });
 
   it('GIVEN a beat bar with an export name WHEN converted to input THEN only threshold and function are sent', () => {

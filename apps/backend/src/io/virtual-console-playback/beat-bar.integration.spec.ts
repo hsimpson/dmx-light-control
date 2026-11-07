@@ -136,6 +136,96 @@ describe('Beat bar with real function playback', () => {
     expect(output()).toBe(SECOND_STEP);
   });
 
+  describe('beat timing', () => {
+    const followBeat = (): VirtualConsoleControl => ({
+      ...beatControl('beat'),
+      beatBar: { minThreshold: 20, functionPublicId: FUNCTION_ID, timing: { fadeIn: 0, hold: 40, fadeOut: 60 } },
+    });
+
+    it('GIVEN beat timing WHEN the first beat comes THEN its step uses the sequence timing', async () => {
+      const { click, beat, output } = await rig([followBeat()]);
+      await click('beat');
+
+      beat();
+      await vi.advanceTimersByTimeAsync(600);
+
+      expect(output()).toBe(FIRST_STEP);
+    });
+
+    it('GIVEN beat timing WHEN beats come every 500 ms THEN a step fades out within the gap', async () => {
+      const { click, beat, output } = await rig([followBeat()]);
+      await click('beat');
+      beat();
+      await vi.advanceTimersByTimeAsync(500);
+
+      beat();
+      await vi.advanceTimersByTimeAsync(100);
+      const held = output();
+      await vi.advanceTimersByTimeAsync(400);
+
+      expect([held, output()]).toEqual([SECOND_STEP, 0]);
+    });
+
+    it('GIVEN no beat timing WHEN beats come every 500 ms THEN a step keeps the sequence timing', async () => {
+      const { click, beat, output } = await rig([beatControl('beat')]);
+      await click('beat');
+      beat();
+      await vi.advanceTimersByTimeAsync(500);
+
+      beat();
+      await vi.advanceTimersByTimeAsync(500);
+
+      expect(output()).toBe(SECOND_STEP);
+    });
+
+    it('GIVEN a stepping sequence WHEN only the timing changes on save THEN it carries on with the new timing', async () => {
+      const { click, beat, save, output } = await rig([followBeat()]);
+      await click('beat');
+      beat();
+      await vi.advanceTimersByTimeAsync(500);
+      beat();
+      const changed = followBeat();
+      if (changed.beatBar) changed.beatBar.timing = { fadeIn: 0, hold: 100, fadeOut: 0 };
+
+      await save([changed]);
+      const kept = output();
+      await vi.advanceTimersByTimeAsync(500);
+      beat();
+      await vi.advanceTimersByTimeAsync(400);
+
+      expect([kept, output()]).toEqual([SECOND_STEP, FIRST_STEP]);
+    });
+
+    it('GIVEN a console saved before beat timing WHEN saved again with timing null THEN the sequence carries on', async () => {
+      const { click, beat, save, output } = await rig([beatControl('beat')]);
+      await click('beat');
+      beat();
+      const resaved = beatControl('beat');
+      Object.assign(resaved.beatBar ?? {}, { timing: null });
+
+      await save([resaved]);
+      beat();
+
+      expect(output()).toBe(SECOND_STEP);
+    });
+
+    it('GIVEN a measured tempo WHEN the control is turned off and on THEN the next beat measures from scratch', async () => {
+      const { click, beat, output } = await rig([followBeat()]);
+      await click('beat');
+      beat();
+      await vi.advanceTimersByTimeAsync(500);
+      beat();
+      await click('beat');
+      await click('beat');
+      await vi.advanceTimersByTimeAsync(500);
+
+      beat();
+      await vi.advanceTimersByTimeAsync(600);
+
+      expect(output()).toBe(FIRST_STEP);
+    });
+  });
+
   it('GIVEN an enabled beat bar WHEN its threshold changes on save THEN it re-arms dark and still follows beats', async () => {
     const { click, beat, save, output } = await rig([beatControl('beat')]);
     await click('beat');

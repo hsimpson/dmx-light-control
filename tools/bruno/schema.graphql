@@ -2109,6 +2109,11 @@ type VirtualConsoleBeatBarDto {
 
   """Bass level in percent below which an onset does not count as a beat"""
   minThreshold: Int!
+
+  """
+  Step timing that follows the beat. Null: each step keeps the sequence timing.
+  """
+  timing: VirtualConsoleBeatTimingDto
 }
 
 input VirtualConsoleBeatBarInput {
@@ -2120,6 +2125,33 @@ input VirtualConsoleBeatBarInput {
 
   """Bass level in percent below which an onset does not count as a beat"""
   minThreshold: Int!
+
+  """
+  Step timing that follows the beat. Null: each step keeps the sequence timing.
+  """
+  timing: VirtualConsoleBeatTimingInput
+}
+
+type VirtualConsoleBeatTimingDto {
+  """Fade in of each step in percent of the time between beats"""
+  fadeIn: Int!
+
+  """Fade out of each step in percent of the time between beats"""
+  fadeOut: Int!
+
+  """Hold of each step in percent of the time between beats"""
+  hold: Int!
+}
+
+input VirtualConsoleBeatTimingInput {
+  """Fade in of each step in percent of the time between beats"""
+  fadeIn: Int!
+
+  """Fade out of each step in percent of the time between beats"""
+  fadeOut: Int!
+
+  """Hold of each step in percent of the time between beats"""
+  hold: Int!
 }
 
 """Whether a virtual console button latches or runs only while held"""

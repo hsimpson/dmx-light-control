@@ -478,7 +478,12 @@ describe('VirtualConsoleView', () => {
                             children: [],
                             bandCount: 8,
                             audioBars: Array.from({ length: 9 }, () => bar),
-                            beatBar: { minThreshold: 35, functionPublicId: functionId, functionName: null },
+                            beatBar: {
+                              minThreshold: 35,
+                              functionPublicId: functionId,
+                              functionName: null,
+                              timing: { fadeIn: 10, hold: 30, fadeOut: 40 },
+                            },
                           },
                         ],
                       },
@@ -536,6 +541,19 @@ describe('VirtualConsoleView', () => {
 
       expect(screen.getByRole('combobox', { name: 'Function' })).toHaveValue('');
       expect(screen.getByRole('textbox', { name: 'Min threshold (%)' })).toHaveValue('35');
+    });
+
+    it('GIVEN beat timing WHEN the function is cleared and picked again THEN the timing is kept', async () => {
+      const user = await renderAudioControl();
+
+      await pickBar(user, 'Beat');
+      await user.click(screen.getByRole('button', { name: 'Clear function' }));
+      await user.click(screen.getByRole('combobox', { name: 'Function' }));
+      await user.click(await screen.findByRole('option', { name: 'Chase', hidden: true }));
+
+      expect(screen.getByRole('combobox', { name: 'Timing' })).toHaveValue('Follow beat');
+      expect(screen.getByRole('textbox', { name: 'Hold (%)' })).toHaveValue('30');
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
     });
 
     it('GIVEN focus on the clear button WHEN Delete is pressed THEN the control is kept', async () => {

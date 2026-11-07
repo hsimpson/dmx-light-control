@@ -43,8 +43,8 @@ export class DmxWebsocketService implements OnModuleInit, OnModuleDestroy {
     this.eventEmitter.on('midi.inputMessage', ({ portName, message }) => {
       this.broadcast(JSON.stringify(dmxWsMidiInputMessage(portName, message)));
     });
-    this.eventEmitter.on('virtualConsole.audioLevels', ({ levels }) => {
-      this.broadcast(JSON.stringify(dmxWsAudioLevelsMessage(levels)));
+    this.eventEmitter.on('virtualConsole.audioLevels', ({ levels, bpm }) => {
+      this.broadcast(JSON.stringify(dmxWsAudioLevelsMessage(levels, bpm)));
     });
     this.eventEmitter.on('soundInput.level', ({ levels }) => {
       this.broadcast(JSON.stringify(dmxWsSoundLevelMessage(levels)));

@@ -831,6 +831,10 @@ describe('audio triggers', () => {
       ['a function', withFunction],
       ['the lowest threshold', { minThreshold: 0 }],
       ['the highest threshold', { minThreshold: 100 }],
+      ['beat timing', { minThreshold: 20, timing: { fadeIn: 0, hold: 40, fadeOut: 60 } }],
+      ['beat timing filling the whole gap', { minThreshold: 20, timing: { fadeIn: 10, hold: 40, fadeOut: 50 } }],
+      ['all beat timing on one part', { minThreshold: 20, timing: { fadeIn: 100, hold: 0, fadeOut: 0 } }],
+      ['no beat timing from GraphQL', { minThreshold: 20, timing: null as unknown as undefined }],
     ])('GIVEN a beat bar with %s WHEN validated THEN it is accepted', (_case, beatBar) => {
       expect(() => {
         assertValidVirtualConsole(documentWith(audioControl({ beatBar })));
@@ -848,6 +852,10 @@ describe('audio triggers', () => {
       ['a negative threshold', { minThreshold: -1 }, 'Beat bar minThreshold'],
       ['a fractional threshold', { minThreshold: 20.5 }, 'Beat bar minThreshold'],
       ['a function that is no UUID', { minThreshold: 20, functionPublicId: 'chase' }, 'Beat bar functionPublicId'],
+      ['a timing above 100', { minThreshold: 20, timing: { fadeIn: 0, hold: 101, fadeOut: 0 } }, 'Beat bar timing'],
+      ['a negative timing', { minThreshold: 20, timing: { fadeIn: -1, hold: 40, fadeOut: 60 } }, 'Beat bar timing'],
+      ['a fractional timing', { minThreshold: 20, timing: { fadeIn: 0, hold: 40.5, fadeOut: 0 } }, 'Beat bar timing'],
+      ['a timing over the gap', { minThreshold: 20, timing: { fadeIn: 1, hold: 40, fadeOut: 60 } }, 'Beat bar timing'],
     ])('GIVEN a beat bar with %s WHEN validated THEN it is rejected', (_case, beatBar, message) => {
       expect(() => {
         assertValidVirtualConsole(documentWith(audioControl({ beatBar })));

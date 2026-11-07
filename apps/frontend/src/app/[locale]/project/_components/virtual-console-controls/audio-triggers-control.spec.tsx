@@ -70,6 +70,32 @@ describe('AudioTriggersControl', () => {
     expect(screen.getByRole('meter', { name: 'Beat level' })).toHaveAttribute('aria-valuenow', '0');
   });
 
+  it.each([
+    ['a known tempo', { audio: 120 }, '120 BPM'],
+    ['no tempo yet', {}, '– BPM'],
+  ])('GIVEN an enabled control and %s WHEN rendered THEN the tempo is shown', (_, bpm, text) => {
+    const control = { ...audioControl(), id: 'audio' };
+    renderWithProviders(<AudioTriggersControl control={control} mode="play" />);
+
+    act(() => {
+      dmxStore.getState().setControlValues({ audio: 255 });
+      dmxStore.getState().setAudioBpm(bpm);
+    });
+
+    expect(screen.getByTestId('virtual-console-audio-bpm')).toHaveTextContent(`Tempo ${text}`);
+  });
+
+  it('GIVEN a disabled control WHEN a tempo is stored THEN no tempo is shown', () => {
+    const control = { ...audioControl(), id: 'audio' };
+    renderWithProviders(<AudioTriggersControl control={control} mode="play" />);
+
+    act(() => {
+      dmxStore.getState().setAudioBpm({ audio: 120 });
+    });
+
+    expect(screen.queryByTestId('virtual-console-audio-bpm')).not.toBeInTheDocument();
+  });
+
   it('GIVEN a control saved before beat bars existed WHEN rendered THEN it still shows a beat meter', () => {
     const { beatBar: _beatBar, ...legacy } = audioControl();
 

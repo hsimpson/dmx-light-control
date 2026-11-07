@@ -22,6 +22,7 @@ The sound analysis runs on the server, so the lights keep reacting when you clos
 - [Beat](#beat)
   - [What counts as a beat](#what-counts-as-a-beat)
   - [How the sequence plays](#how-the-sequence-plays)
+  - [Timing](#timing)
 - [Example: bass on a dimmer, sequence on loud passages](#example-bass-on-a-dimmer-sequence-on-loud-passages)
 - [Example: a chase on every kick](#example-a-chase-on-every-kick)
 - [Frequency range](#frequency-range)
@@ -53,6 +54,8 @@ The control needs a sound input in the project:
 6. Set **Min threshold (%)** and **Max threshold (%)** for that bar (default 20 and 80).
 7. Repeat steps 4 to 6 for each bar you want to use, then click **Save**.
 
+![The Bar list with the last bands and Beat](images/audio-trigger-band-list.png)
+
 The lights only use saved settings. **Bands** and the thresholds apply when you press Enter or leave the field.
 
 > **Changing the band count:** bars keep their settings by number, but the frequency ranges are recalculated, so Band 3 may now cover different frequencies. Reducing the count also deletes the settings of the bands that are removed.
@@ -70,7 +73,11 @@ Each press switches between on and off. Turning it off stops everything the cont
 
 ### Reading the display
 
+![The control switched on: Volume, 8 bands, the beat bar B and the tempo](images/audio-trigger-playing.png)
+
 Each bar is labelled **V** for Volume or with its band number. The two lines on a bar mark its min and max thresholds. The last bar, **B**, jumps to full on each beat and then falls back. The bars only move while the control is on.
+
+While the control is on, the tempo is shown next to the toggle, for example **120 BPM**. It shows **– BPM** until two beats have come, after a break, and when no beat has come for 2 seconds. See [Timing](#timing) for how it is measured.
 
 Levels are smoothed: they rise within about 40 ms and fall over about 200 ms, so lights follow hits without flickering.
 
@@ -79,6 +86,8 @@ Levels are smoothed: they rise within about 40 ms and fall over about 200 ms, so
 The thresholds mean different things depending on what the bar drives.
 
 ### Channels
+
+![Band 1 driving the dimmer channel of a fixture, with its thresholds](images/audio-trigger-level-settings.png)
 
 | Bar level           | DMX value                  |
 | ------------------- | -------------------------- |
@@ -108,7 +117,9 @@ A single band holds only part of the signal, so it often reads lower than **Volu
 
 ## Beat
 
-The **Beat** bar steps a sequence by one step on each beat. Select **Beat** under **Bar**, then select the sequence in the panel next to the console. It has no **Drives** or **Max threshold (%)**, only **Min threshold (%)** (default 20). To unbind the sequence, click **Clear function**.
+The **Beat** bar steps a sequence by one step on each beat. Select **Beat** under **Bar**, then select the sequence in the panel next to the console. It has no **Drives** or **Max threshold (%)**, only **Min threshold (%)** (default 20) and **Timing**. To unbind the sequence, click **Clear function**.
+
+![The Beat bar with its sequence, threshold and timing](images/audio-trigger-beat-settings.png)
 
 When you turn the control on, the sequence is armed and stays dark until the first beat.
 
@@ -121,7 +132,7 @@ When you turn the control on, the sequence is armed and stays dark until the fir
 
 ### How the sequence plays
 
-- Each beat plays the next step once, with that step's own fade in, hold and fade out.
+- Each beat plays the next step once. How long it lasts depends on [Timing](#timing).
 - If the next beat comes before the step has finished, the next step starts at once and fades from the current look.
 - If beats come slower than the step, a step with a fade out goes dark until the next beat. A step with a fade out of 0 holds its look.
 - The sequence's **Direction** and **Run order** apply. With **Single shot**, it stops after its last step.
@@ -131,6 +142,21 @@ When you turn the control on, the sequence is armed and stays dark until the fir
 If the sequence was already running when you turned the control on, for example from a button, it keeps its own speed and ignores the beats.
 
 > **Use a separate sequence for Beat.** If a level bar and the Beat bar use the same sequence, whichever starts it first decides how it plays: a level bar starts it at its own speed, so beats are ignored.
+
+### Timing
+
+**Timing** decides how long each step lasts:
+
+- **Follow beat** (the default for new controls): the control measures the time between beats and sets each step's **Fade in (%)**, **Hold (%)** and **Fade out (%)** as a share of it (default 0, 40 and 60). Together they can be at most 100 %, so a step ends before the next beat. At 120 BPM, 500 ms between beats, the defaults give a hold of 200 ms and a fade out of 300 ms. At 60 BPM they give 400 ms and 600 ms.
+- **From sequence**: each step keeps the fade in, hold and fade out set in the sequence. Controls saved before this option existed use it.
+
+How the time between beats is measured:
+
+- It is the middle value of the last 4 gaps between beats, so one missed kick does not change it. The tempo shown on the control is the same value as BPM.
+- Only beats above **Min threshold (%)** count.
+- Until two beats have come, and after a break of more than 2 seconds, the steps use the sequence's own timing.
+- A changed timing applies from the next beat after you save. The sequence does not start over.
+- If two controls step the same sequence, the one turned on first decides the timing.
 
 ## Example: bass on a dimmer, sequence on loud passages
 
@@ -142,12 +168,12 @@ If the sequence was already running when you turned the control on, for example 
 
 ## Example: a chase on every kick
 
-1. Create a sequence whose steps are short, for example a fade in of 0 ms, a hold of 100 ms and a fade out of 150 ms, with a different fixture or colour in each step.
-2. Select the control, set **Bar** to **Beat** and select the sequence.
+1. Create a sequence with a different fixture or colour in each step. With **Follow beat**, the step times in the sequence do not matter.
+2. Select the control, set **Bar** to **Beat** and select the sequence. Leave **Timing** on **Follow beat**.
 3. Click **Save**, open the pop-out window and turn the control on.
 4. Play music with a clear kick drum. Each kick flashes the next step. If quiet sounds also step it, raise **Min threshold (%)**.
 
-Steps with long fades look sluggish when beats are fast, so keep them shorter than the time between two beats (500 ms at 120 BPM).
+For shorter flashes, lower **Hold (%)** and **Fade out (%)**: 0, 20 and 30 leave the lights dark for the second half of each beat. With **From sequence**, keep the steps shorter than the time between two beats (500 ms at 120 BPM), or they look sluggish when beats are fast.
 
 ## Frequency range
 
@@ -195,11 +221,14 @@ The bands do not follow musical categories, and a low band count blurs them furt
 | A function switches on and off rapidly       | Widen the gap between the min and max thresholds.                                                                                                                                                         |
 | A function does not stop                     | The bar has not fallen below its min threshold, another bar still holds the function, or it was already running when the bar reached its max.                                                             |
 | Beats do not step the sequence               | Is a sequence selected for **Beat**? Does the **B** bar move? If it moves only a little, lower **Min threshold (%)**. If the sequence was already running, stop it and turn the control off and on again. |
+| The BPM is too low or jumps                  | Some kicks fall below **Min threshold (%)**, so lower it a little. A half-time song shows half its tempo.                                                                                                 |
 | A low band stays dark                        | Check the input first. A line-in or a microphone can lose low frequencies: a small microphone may pick up little below 80 – 100 Hz.                                                                       |
 
 ## Limitations
 
-- **Beat** reacts to each kick and does not track the tempo: there is no BPM display, and no beats come through breaks without a kick.
+- **Beat** reacts to each kick and does not predict the tempo, so no beats come through breaks without a kick.
+- The BPM shown is the rate of kicks above **Min threshold (%)**: a half-time song shows half its tempo, and kicks that are missed regularly make it lower.
+- On test signals, beats were detected reliably up to about 250 BPM. Above that, some kicks are missed.
 - Bass notes can also count as beats, and the first kick after a break or a sudden drop in level can be missed.
 - A sequence that a level bar starts runs at its own speed, so it can drift against the music.
 - The frequency range and smoothing are fixed.

@@ -5,10 +5,12 @@ import { LoadedProject, ProjectRepository } from '@/projects/repositories/projec
 import {
   VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD,
   type VirtualConsoleAudioBar,
+  type VirtualConsoleBeatBar,
   type VirtualConsoleControl,
 } from '@/projects/virtual-console';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { barLevels, nextFunctionState, thresholdDmx } from './audio-triggers';
+import { BeatTempo } from './beat-tempo';
 import type { VirtualConsoleFeedback, VirtualConsoleLedState } from './virtual-console-events';
 import { controlToDmxValue, VirtualConsoleOutput, type VirtualConsoleBoundFixture } from './virtual-console-output';
 
@@ -19,8 +21,22 @@ const MAX_SPECTRUM_GAP_MS = 200;
 
 const PERCENT = 100;
 
+/** In silence the last tempo is stale: show none once no beat came for this long. */
+const BPM_TIMEOUT_MS = 2000;
+const MS_PER_MINUTE = 60_000;
+
 /** Live state of an enabled audio triggers control, per bar; `beat` is the pulse shown after the band bars. */
-type AudioState = { levels: number[]; dmx: number[]; active: boolean[]; beat: number };
+type AudioState = {
+  levels: number[];
+  dmx: number[];
+  active: boolean[];
+  beat: number;
+  tempo: BeatTempo;
+  gapMs?: number;
+  lastBeatAt: number;
+};
+
+type StepTiming = { fadeIn: number; hold: number; fadeOut: number };
 
 /** Plays the active project's saved virtual console: control values, DMX output and function start/stop. */
 @Injectable()
@@ -209,16 +225,21 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
   }
 
   private applyBeat(level: number): void {
-    const stepped = new Set<string>();
+    // One step per beat, however many controls share the function; the first control's timing wins.
+    const stepped = new Map<string, StepTiming | undefined>();
     for (const [controlId, state] of this.audio) {
       const beatBar = this.controls.get(controlId)?.beatBar;
       if (level * PERCENT < (beatBar?.minThreshold ?? VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD)) continue;
       state.beat = 1;
-      if (beatBar?.functionPublicId) stepped.add(beatBar.functionPublicId);
+      state.lastBeatAt = Date.now();
+      state.gapMs = state.tempo.push(state.lastBeatAt);
+      const timing = beatStepTiming(beatBar, state.gapMs);
+      if (beatBar?.functionPublicId && !stepped.has(beatBar.functionPublicId)) {
+        stepped.set(beatBar.functionPublicId, timing);
+      }
     }
-    // One step per beat, however many controls share the function.
-    for (const functionPublicId of stepped) {
-      this.eventEmitter.emit('function.step', { functionPublicId });
+    for (const [functionPublicId, timing] of stepped) {
+      this.eventEmitter.emit('function.step', { functionPublicId, ...(timing ? { timing } : {}) });
     }
   }
 
@@ -230,6 +251,7 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
 
     const updates: DmxValue[] = [];
     const levels: Record<string, number[]> = {};
+    const bpm: Record<string, number> = {};
     for (const [controlId, state] of this.audio) {
       const control = this.controls.get(controlId);
       if (!control) continue;
@@ -239,17 +261,19 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
       });
       state.beat = smoothLevel(state.beat, 0, elapsed);
       levels[controlId] = [...state.levels, state.beat].map(roundLevel);
+      const known = knownBpm(state, now);
+      if (known !== undefined) bpm[controlId] = known;
     }
     this.emitDmx(updates);
-    this.emitAudioLevels(levels);
+    this.emitAudioLevels(levels, bpm);
   }
 
   // Rounded and deduplicated: during silence nothing changes, so nothing is broadcast.
-  private emitAudioLevels(levels: Record<string, number[]>): void {
-    const serialized = JSON.stringify(levels);
+  private emitAudioLevels(levels: Record<string, number[]>, bpm: Record<string, number>): void {
+    const serialized = JSON.stringify([levels, bpm]);
     if (serialized === this.lastLevels || Object.keys(levels).length === 0) return;
     this.lastLevels = serialized;
-    this.eventEmitter.emit('virtualConsole.audioLevels', { levels });
+    this.eventEmitter.emit('virtualConsole.audioLevels', { levels, bpm });
   }
 
   private applyBar(control: VirtualConsoleControl, bar: VirtualConsoleAudioBar, index: number, state: AudioState) {
@@ -382,14 +406,34 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
   }
 }
 
-const emptyAudioState = (): AudioState => ({ levels: [], dmx: [], active: [], beat: 0 });
+const emptyAudioState = (): AudioState => ({
+  levels: [],
+  dmx: [],
+  active: [],
+  beat: 0,
+  tempo: new BeatTempo(),
+  lastBeatAt: 0,
+});
+
+function knownBpm({ gapMs, lastBeatAt }: AudioState, now: number): number | undefined {
+  return gapMs !== undefined && now - lastBeatAt <= BPM_TIMEOUT_MS ? Math.round(MS_PER_MINUTE / gapMs) : undefined;
+}
+
+/** Step timing in ms from the beat bar's percentages; none until a beat gap is known, so the sequence's own applies. */
+function beatStepTiming(beatBar: VirtualConsoleBeatBar | undefined, gapMs: number | undefined): StepTiming | undefined {
+  const timing = beatBar?.timing;
+  if (!timing || gapMs === undefined) return undefined;
+  const part = (percent: number) => Math.round((gapMs * percent) / PERCENT);
+  return { fadeIn: part(timing.fadeIn), hold: part(timing.hold), fadeOut: part(timing.fadeOut) };
+}
 const BEAT_KEY_SUFFIX = ':beat';
 const beatKey = (control: VirtualConsoleControl) => `${control.id}${BEAT_KEY_SUFFIX}`;
 const roundLevel = (level: number) => Math.round(level * 1000) / 1000;
 
 function sameAudioBars(previous: VirtualConsoleControl, next: VirtualConsoleControl): boolean {
+  // Beat timing is read on every beat, so changing it must not re-arm the function or drop the measured tempo.
   const bars = ({ bandCount, audioBars, beatBar }: VirtualConsoleControl) =>
-    JSON.stringify([bandCount, audioBars, beatBar]);
+    JSON.stringify([bandCount, audioBars, beatBar && { ...beatBar, timing: undefined }]);
   return bars(previous) === bars(next);
 }
 

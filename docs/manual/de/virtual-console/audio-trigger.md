@@ -22,6 +22,7 @@ Die Klanganalyse läuft auf dem Server. Das Licht reagiert also weiter, wenn Sie
 - [Beat](#beat)
   - [Was als Beat zählt](#was-als-beat-zählt)
   - [So läuft die Sequenz ab](#so-läuft-die-sequenz-ab)
+  - [Timing](#timing)
 - [Beispiel: Bass auf den Dimmer, Sequenz bei lauten Passagen](#beispiel-bass-auf-den-dimmer-sequenz-bei-lauten-passagen)
 - [Beispiel: ein Lauflicht auf jede Bassdrum](#beispiel-ein-lauflicht-auf-jede-bassdrum)
 - [Frequenzbereich](#frequenzbereich)
@@ -53,6 +54,8 @@ Das Steuerelement braucht einen Audioeingang im Projekt:
 6. Stellen Sie für diesen Balken **Min. Schwelle (%)** und **Max. Schwelle (%)** ein (Standard 20 und 80).
 7. Wiederholen Sie die Schritte 4 bis 6 für jeden Balken, den Sie verwenden möchten, und klicken Sie dann auf **Speichern**.
 
+![Die Balkenliste mit den letzten Bändern und Beat](images/audio-trigger-band-list.png)
+
 Das Licht verwendet nur gespeicherte Einstellungen. **Bänder** und die Schwellen werden übernommen, wenn Sie die Eingabetaste drücken oder das Feld verlassen.
 
 > **Anzahl der Bänder ändern:** Die Balken behalten ihre Einstellungen anhand ihrer Nummer, aber die Frequenzbereiche werden neu berechnet. Band 3 kann danach also andere Frequenzen abdecken. Wenn Sie die Anzahl verringern, werden außerdem die Einstellungen der entfernten Bänder gelöscht.
@@ -70,7 +73,11 @@ Jeder Druck schaltet zwischen ein und aus um. Beim Ausschalten stoppt alles, was
 
 ### Die Anzeige lesen
 
+![Das eingeschaltete Steuerelement: Lautstärke, 8 Bänder, der Beat-Balken B und das Tempo](images/audio-trigger-playing.png)
+
 Jeder Balken ist mit **V** für die Lautstärke (Volume) oder mit seiner Bandnummer beschriftet. Die beiden Linien auf einem Balken markieren seine Min- und Max-Schwelle. Der letzte Balken, **B**, springt bei jedem Beat auf voll und fällt dann wieder ab. Die Balken bewegen sich nur, solange das Steuerelement eingeschaltet ist.
+
+Solange das Steuerelement eingeschaltet ist, steht neben dem Schalter das Tempo, zum Beispiel **120 BPM**. Es zeigt **– BPM**, bis zwei Beats gekommen sind, nach einem Break und wenn 2 Sekunden lang kein Beat kam. Wie es gemessen wird, steht unter [Timing](#timing).
 
 Die Pegel werden geglättet: Sie steigen innerhalb von etwa 40 ms an und fallen über etwa 200 ms ab. So folgt das Licht den Schlägen, ohne zu flackern.
 
@@ -79,6 +86,8 @@ Die Pegel werden geglättet: Sie steigen innerhalb von etwa 40 ms an und fallen 
 Die Schwellen wirken unterschiedlich, je nachdem, was der Balken steuert.
 
 ### Kanäle
+
+![Band 1 steuert den Dimmer-Kanal eines Fixtures, mit seinen Schwellen](images/audio-trigger-level-settings.png)
 
 | Balkenpegel          | DMX-Wert                         |
 | -------------------- | -------------------------------- |
@@ -108,7 +117,9 @@ Ein einzelnes Band enthält nur einen Teil des Signals und zeigt deshalb oft wen
 
 ## Beat
 
-Der Balken **Beat** schaltet eine Sequenz bei jedem Beat um einen Schritt weiter. Wählen Sie unter **Balken** den Eintrag **Beat** und dann die Sequenz im Panel neben der Konsole. Er hat weder **Steuert** noch **Max. Schwelle (%)**, nur **Min. Schwelle (%)** (Standard 20). Um die Sequenz zu lösen, klicken Sie auf **Funktion entfernen**.
+Der Balken **Beat** schaltet eine Sequenz bei jedem Beat um einen Schritt weiter. Wählen Sie unter **Balken** den Eintrag **Beat** und dann die Sequenz im Panel neben der Konsole. Er hat weder **Steuert** noch **Max. Schwelle (%)**, nur **Min. Schwelle (%)** (Standard 20) und **Timing**. Um die Sequenz zu lösen, klicken Sie auf **Funktion entfernen**.
+
+![Der Balken Beat mit Sequenz, Schwelle und Timing](images/audio-trigger-beat-settings.png)
 
 Wenn Sie das Steuerelement einschalten, ist die Sequenz scharfgeschaltet und bleibt bis zum ersten Beat dunkel.
 
@@ -121,7 +132,7 @@ Wenn Sie das Steuerelement einschalten, ist die Sequenz scharfgeschaltet und ble
 
 ### So läuft die Sequenz ab
 
-- Jeder Beat spielt den nächsten Schritt einmal ab, mit dessen eigenem Einblenden, Halten und Ausblenden.
+- Jeder Beat spielt den nächsten Schritt einmal ab. Wie lange er dauert, hängt von [Timing](#timing) ab.
 - Kommt der nächste Beat, bevor der Schritt fertig ist, startet der nächste Schritt sofort und blendet vom aktuellen Zustand aus über.
 - Kommen die Beats langsamer als der Schritt, wird ein Schritt mit Ausblenden bis zum nächsten Beat dunkel. Ein Schritt mit Ausblenden 0 hält seinen Zustand.
 - **Richtung** und **Ablauf** der Sequenz gelten. Mit **Einmal** stoppt sie nach dem letzten Schritt.
@@ -131,6 +142,21 @@ Wenn Sie das Steuerelement einschalten, ist die Sequenz scharfgeschaltet und ble
 Lief die Sequenz beim Einschalten bereits, zum Beispiel über einen Button, behält sie ihr eigenes Tempo und ignoriert die Beats.
 
 > **Verwenden Sie für Beat eine eigene Sequenz.** Nutzen ein Pegelbalken und der Balken Beat dieselbe Sequenz, entscheidet der, der sie zuerst startet, wie sie läuft: Ein Pegelbalken startet sie in ihrem eigenen Tempo, und die Beats werden ignoriert.
+
+### Timing
+
+**Timing** legt fest, wie lange jeder Schritt dauert:
+
+- **Dem Beat folgen** (Standard für neue Steuerelemente): Das Steuerelement misst die Zeit zwischen den Beats und setzt **Einblenden (%)**, **Halten (%)** und **Ausblenden (%)** jedes Schritts als Anteil davon (Standard 0, 40 und 60). Zusammen sind höchstens 100 % möglich, sodass ein Schritt vor dem nächsten Beat endet. Bei 120 BPM, also 500 ms zwischen den Beats, ergeben die Standardwerte 200 ms Halten und 300 ms Ausblenden. Bei 60 BPM sind es 400 ms und 600 ms.
+- **Aus der Sequenz**: Jeder Schritt behält das Einblenden, Halten und Ausblenden aus der Sequenz. Steuerelemente, die vor dieser Option gespeichert wurden, verwenden diese Einstellung.
+
+So wird die Zeit zwischen den Beats gemessen:
+
+- Sie ist der mittlere Wert der letzten 4 Abstände zwischen Beats. Eine verpasste Bassdrum ändert sie also nicht. Das Tempo auf dem Steuerelement ist derselbe Wert in BPM.
+- Es zählen nur Beats über **Min. Schwelle (%)**.
+- Bis zwei Beats gekommen sind und nach einem Break von mehr als 2 Sekunden verwenden die Schritte das Timing der Sequenz.
+- Ein geändertes Timing gilt nach dem Speichern ab dem nächsten Beat. Die Sequenz beginnt dabei nicht von vorn.
+- Schalten zwei Steuerelemente dieselbe Sequenz weiter, bestimmt das zuerst eingeschaltete das Timing.
 
 ## Beispiel: Bass auf den Dimmer, Sequenz bei lauten Passagen
 
@@ -142,12 +168,12 @@ Lief die Sequenz beim Einschalten bereits, zum Beispiel über einen Button, beh�
 
 ## Beispiel: ein Lauflicht auf jede Bassdrum
 
-1. Erstellen Sie eine Sequenz mit kurzen Schritten, zum Beispiel 0 ms Einblenden, 100 ms Halten und 150 ms Ausblenden, mit einem anderen Fixture oder einer anderen Farbe in jedem Schritt.
-2. Wählen Sie das Steuerelement aus, stellen Sie **Balken** auf **Beat** und wählen Sie die Sequenz aus.
+1. Erstellen Sie eine Sequenz mit einem anderen Fixture oder einer anderen Farbe in jedem Schritt. Mit **Dem Beat folgen** spielen die Schrittzeiten der Sequenz keine Rolle.
+2. Wählen Sie das Steuerelement aus, stellen Sie **Balken** auf **Beat** und wählen Sie die Sequenz aus. Lassen Sie **Timing** auf **Dem Beat folgen**.
 3. Klicken Sie auf **Speichern**, öffnen Sie das ausgekoppelte Fenster und schalten Sie das Steuerelement ein.
 4. Spielen Sie Musik mit einer deutlichen Bassdrum ab. Jede Bassdrum lässt den nächsten Schritt aufblitzen. Schalten auch leise Klänge weiter, erhöhen Sie **Min. Schwelle (%)**.
 
-Schritte mit langen Überblendungen wirken bei schnellen Beats träge. Halten Sie sie daher kürzer als die Zeit zwischen zwei Beats (500 ms bei 120 BPM).
+Für kürzere Blitze senken Sie **Halten (%)** und **Ausblenden (%)**: Mit 0, 20 und 30 bleibt das Licht in der zweiten Hälfte jedes Beats dunkel. Mit **Aus der Sequenz** halten Sie die Schritte kürzer als die Zeit zwischen zwei Beats (500 ms bei 120 BPM), sonst wirken sie bei schnellen Beats träge.
 
 ## Frequenzbereich
 
@@ -195,11 +221,14 @@ Die Bänder folgen keinen musikalischen Kategorien, und wenige Bänder verwische
 | Eine Funktion schaltet schnell ein und aus        | Vergrößern Sie den Abstand zwischen Min- und Max-Schwelle.                                                                                                                                                                           |
 | Eine Funktion stoppt nicht                        | Der Balken ist nicht unter seine Min-Schwelle gefallen, ein anderer Balken hält die Funktion noch, oder sie lief bereits, als der Balken seine Max-Schwelle erreichte.                                                               |
 | Beats schalten die Sequenz nicht weiter           | Ist für **Beat** eine Sequenz ausgewählt? Bewegt sich der Balken **B**? Bewegt er sich nur wenig, senken Sie **Min. Schwelle (%)**. Lief die Sequenz bereits, stoppen Sie sie und schalten Sie das Steuerelement aus und wieder ein. |
+| Die BPM sind zu niedrig oder springen             | Einige Bassdrums liegen unter **Min. Schwelle (%)**. Senken Sie sie etwas. Ein Song im Half-Time zeigt das halbe Tempo.                                                                                                              |
 | Ein tiefes Band bleibt dunkel                     | Prüfen Sie zuerst den Eingang. Ein Line-In oder ein Mikrofon kann tiefe Frequenzen verlieren: Ein kleines Mikrofon nimmt unter 80 – 100 Hz möglicherweise kaum etwas auf.                                                            |
 
 ## Einschränkungen
 
-- **Beat** reagiert auf jede Bassdrum und verfolgt nicht das Tempo: Es gibt keine BPM-Anzeige, und in Breaks ohne Bassdrum kommen keine Beats.
+- **Beat** reagiert auf jede Bassdrum und sagt das Tempo nicht voraus. In Breaks ohne Bassdrum kommen also keine Beats.
+- Die angezeigten BPM sind die Rate der Bassdrums über **Min. Schwelle (%)**: Ein Song im Half-Time zeigt das halbe Tempo, und regelmäßig verpasste Bassdrums senken den Wert.
+- Mit Testsignalen wurden Beats bis etwa 250 BPM zuverlässig erkannt. Darüber gehen einige Bassdrums verloren.
 - Auch Bassnoten können als Beat zählen, und die erste Bassdrum nach einem Break oder einem plötzlichen Pegelabfall kann verloren gehen.
 - Eine Sequenz, die ein Pegelbalken startet, läuft in ihrem eigenen Tempo und kann daher gegenüber der Musik auseinanderlaufen.
 - Frequenzbereich und Glättung sind fest eingestellt.

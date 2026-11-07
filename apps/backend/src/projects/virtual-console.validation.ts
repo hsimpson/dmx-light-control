@@ -22,6 +22,7 @@ import {
   VirtualConsoleAudioBar,
   VirtualConsoleAudioBarMode,
   VirtualConsoleBeatBar,
+  VirtualConsoleBeatTiming,
   VirtualConsoleChannelBinding,
   VirtualConsoleControl,
   VirtualConsoleControlType,
@@ -339,12 +340,22 @@ function assertAudioTriggers(control: VirtualConsoleControl): void {
   if (control.beatBar) assertBeatBar(control.beatBar);
 }
 
-function assertBeatBar({ minThreshold, functionPublicId }: VirtualConsoleBeatBar): void {
+function assertBeatBar({ minThreshold, functionPublicId, timing }: VirtualConsoleBeatBar): void {
   if (!isIntegerBetween(minThreshold, 0, 100)) {
     throw new InvalidVirtualConsoleException('Beat bar minThreshold must be an integer between 0 and 100.');
   }
   if ((functionPublicId ?? undefined) !== undefined && !UUID_PATTERN.test(functionPublicId ?? '')) {
     throw new InvalidVirtualConsoleException('Beat bar functionPublicId must be a UUID.');
+  }
+  if (timing) assertBeatTiming(timing);
+}
+
+function assertBeatTiming({ fadeIn, hold, fadeOut }: VirtualConsoleBeatTiming): void {
+  const parts = [fadeIn, hold, fadeOut];
+  if (!parts.every(part => isIntegerBetween(part, 0, 100)) || fadeIn + hold + fadeOut > 100) {
+    throw new InvalidVirtualConsoleException(
+      'Beat bar timing must be whole percentages of the beat gap that add up to at most 100.',
+    );
   }
 }
 

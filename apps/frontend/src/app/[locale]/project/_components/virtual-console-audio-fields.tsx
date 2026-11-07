@@ -10,7 +10,9 @@ import {
   resizeAudioBars,
   VIRTUAL_CONSOLE_AUDIO_BANDS_MAX,
   VIRTUAL_CONSOLE_AUDIO_BANDS_MIN,
+  VIRTUAL_CONSOLE_BEAT_DEFAULT_TIMING,
   type VirtualConsoleAudioBarMode,
+  type VirtualConsoleBeatBar,
   type VirtualConsoleControl,
 } from './virtual-console-document';
 
@@ -53,6 +55,62 @@ const CommitNumberInput = ({ label, value, min, max, onCommit }: CommitNumberInp
     }}
   />
 );
+
+type BeatTimingFieldsProperties = {
+  beatBar: VirtualConsoleBeatBar;
+  onChange: (beatBar: VirtualConsoleBeatBar) => void;
+};
+
+const TIMING_PARTS = ['fadeIn', 'hold', 'fadeOut'] as const;
+
+/** Follow beat: each part is a percent of the time between beats, together at most 100. */
+const BeatTimingFields = ({ beatBar, onChange }: BeatTimingFieldsProperties) => {
+  const { t } = useTranslation();
+  const { timing, ...withoutTiming } = beatBar;
+  const partLabels: Record<(typeof TIMING_PARTS)[number], string> = {
+    fadeIn: t({ id: 'ProjectDetail.virtualConsole.audio.timingFadeIn', defaultMessage: 'Fade in (%)' }),
+    hold: t({ id: 'ProjectDetail.virtualConsole.audio.timingHold', defaultMessage: 'Hold (%)' }),
+    fadeOut: t({ id: 'ProjectDetail.virtualConsole.audio.timingFadeOut', defaultMessage: 'Fade out (%)' }),
+  };
+
+  return (
+    <>
+      <Select
+        allowDeselect={false}
+        label={t({ id: 'ProjectDetail.virtualConsole.audio.timing', defaultMessage: 'Timing' })}
+        data={[
+          {
+            value: 'beat',
+            label: t({ id: 'ProjectDetail.virtualConsole.audio.timingBeat', defaultMessage: 'Follow beat' }),
+          },
+          {
+            value: 'sequence',
+            label: t({ id: 'ProjectDetail.virtualConsole.audio.timingSequence', defaultMessage: 'From sequence' }),
+          },
+        ]}
+        value={timing ? 'beat' : 'sequence'}
+        onChange={value => {
+          if (value === 'sequence') onChange(withoutTiming);
+          if (value === 'beat' && !timing) onChange({ ...beatBar, timing: { ...VIRTUAL_CONSOLE_BEAT_DEFAULT_TIMING } });
+        }}
+      />
+      {timing
+        ? TIMING_PARTS.map(part => (
+            <CommitNumberInput
+              key={part}
+              label={partLabels[part]}
+              min={0}
+              max={100 - TIMING_PARTS.reduce((sum, other) => (other === part ? sum : sum + timing[other]), 0)}
+              value={timing[part]}
+              onCommit={value => {
+                onChange({ ...beatBar, timing: { ...timing, [part]: value } });
+              }}
+            />
+          ))
+        : null}
+    </>
+  );
+};
 
 const BAR_MODES: readonly VirtualConsoleAudioBarMode[] = ['none', 'channels', 'function'];
 const isBarMode = (value: string | null): value is VirtualConsoleAudioBarMode => BAR_MODES.some(mode => mode === value);
@@ -124,15 +182,23 @@ const VirtualConsoleAudioFields = ({
         }}
       />
       {beatSelected ? (
-        <CommitNumberInput
-          label={t({ id: 'ProjectDetail.virtualConsole.audio.minThreshold', defaultMessage: 'Min threshold (%)' })}
-          min={0}
-          max={100}
-          value={beatBar.minThreshold}
-          onCommit={minThreshold => {
-            onPatch({ beatBar: { ...beatBar, minThreshold } });
-          }}
-        />
+        <>
+          <CommitNumberInput
+            label={t({ id: 'ProjectDetail.virtualConsole.audio.minThreshold', defaultMessage: 'Min threshold (%)' })}
+            min={0}
+            max={100}
+            value={beatBar.minThreshold}
+            onCommit={minThreshold => {
+              onPatch({ beatBar: { ...beatBar, minThreshold } });
+            }}
+          />
+          <BeatTimingFields
+            beatBar={beatBar}
+            onChange={next => {
+              onPatch({ beatBar: next });
+            }}
+          />
+        </>
       ) : null}
       {bar ? (
         <>

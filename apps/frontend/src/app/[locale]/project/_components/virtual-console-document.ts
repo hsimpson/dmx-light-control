@@ -31,6 +31,7 @@ export const VIRTUAL_CONSOLE_AUDIO_BANDS_MIN = 1;
 export const VIRTUAL_CONSOLE_AUDIO_BANDS_MAX = 16;
 export const VIRTUAL_CONSOLE_AUDIO_DEFAULT_BANDS = 8;
 const VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD = 20;
+export const VIRTUAL_CONSOLE_BEAT_DEFAULT_TIMING: VirtualConsoleBeatTiming = { fadeIn: 0, hold: 40, fadeOut: 60 };
 
 export const VIRTUAL_CONSOLE_RESIZE_HANDLES = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as const;
 
@@ -57,11 +58,16 @@ export type VirtualConsoleAudioBar = {
   functionName?: string;
 };
 
+/** Fade in, hold and fade out of each step in percent of the time between beats. */
+export type VirtualConsoleBeatTiming = { fadeIn: number; hold: number; fadeOut: number };
+
 /** Steps a function on each bass onset; quieter onsets (percent) do not count. */
 export type VirtualConsoleBeatBar = {
   minThreshold: number;
   functionPublicId?: string;
   functionName?: string;
+  /** Absent: each step keeps the sequence's own timing. */
+  timing?: VirtualConsoleBeatTiming;
 };
 
 export type VirtualConsoleControl = {
@@ -193,7 +199,10 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         foregroundColor: '#40c057',
         bandCount: VIRTUAL_CONSOLE_AUDIO_DEFAULT_BANDS,
         audioBars: createAudioBars(VIRTUAL_CONSOLE_AUDIO_DEFAULT_BANDS),
-        beatBar: { minThreshold: VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD },
+        beatBar: {
+          minThreshold: VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD,
+          timing: { ...VIRTUAL_CONSOLE_BEAT_DEFAULT_TIMING },
+        },
         ...font,
       };
   }

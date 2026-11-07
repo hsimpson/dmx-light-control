@@ -2,6 +2,7 @@
 
 import { useDmxStore } from '@/lib/dmx/dmx-store';
 import { useTranslation } from '@/lib/i18n/use-translation';
+import { VisuallyHidden } from '@mantine/core';
 import { controlFontStyle } from '../virtual-console-fonts';
 import classes from './audio-triggers-control.module.css';
 import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
@@ -13,6 +14,7 @@ const AudioTriggersControl = ({ control, mode, selected = false, onPlayValue }: 
   const { t } = useTranslation();
   const on = useDmxStore(state => (state.controlValues[control.id] ?? 0) > 0);
   const levels = useDmxStore(state => state.audioLevels[control.id] ?? NO_LEVELS);
+  const bpm = useDmxStore(state => state.audioBpm[control.id]);
   const play = mode === 'play';
   // The backend sends the saved bars, then the beat pulse; read it from the end, as a draft's band count can differ.
   const barLevels = levels.slice(0, -1);
@@ -27,29 +29,40 @@ const AudioTriggersControl = ({ control, mode, selected = false, onPlayValue }: 
       data-testid="virtual-console-audio-triggers"
       style={{ backgroundColor: control.backgroundColor, color: control.foregroundColor, ...controlFontStyle(control) }}
     >
-      <button
-        className={classes.toggle}
-        data-on={on ? 'true' : undefined}
-        data-play={play ? 'true' : undefined}
-        aria-pressed={on}
-        disabled={!play}
-        type="button"
-        onPointerDown={event => {
-          // Capture, so a release outside the toggle still sends 0 and the next press is a rising edge again.
-          if (play && typeof event.currentTarget.setPointerCapture === 'function') {
-            event.currentTarget.setPointerCapture(event.pointerId);
-          }
-          send(1);
-        }}
-        onPointerUp={() => {
-          send(0);
-        }}
-        onPointerCancel={() => {
-          send(0);
-        }}
-      >
-        <span>{control.label}</span>
-      </button>
+      <div className={classes.header}>
+        <button
+          className={classes.toggle}
+          data-on={on ? 'true' : undefined}
+          data-play={play ? 'true' : undefined}
+          aria-pressed={on}
+          disabled={!play}
+          type="button"
+          onPointerDown={event => {
+            // Capture, so a release outside the toggle still sends 0 and the next press is a rising edge again.
+            if (play && typeof event.currentTarget.setPointerCapture === 'function') {
+              event.currentTarget.setPointerCapture(event.pointerId);
+            }
+            send(1);
+          }}
+          onPointerUp={() => {
+            send(0);
+          }}
+          onPointerCancel={() => {
+            send(0);
+          }}
+        >
+          <span>{control.label}</span>
+        </button>
+        {on ? (
+          <span className={classes.bpm} data-testid="virtual-console-audio-bpm">
+            {/* A plain span cannot carry a label, so screen readers get it as text. */}
+            <VisuallyHidden>{`${t({ id: 'ProjectDetail.virtualConsole.audio.tempo', defaultMessage: 'Tempo' })} `}</VisuallyHidden>
+            {bpm === undefined
+              ? t({ id: 'ProjectDetail.virtualConsole.audio.bpmUnknown', defaultMessage: '– BPM' })
+              : t({ id: 'ProjectDetail.virtualConsole.audio.bpm', defaultMessage: '{bpm} BPM' }, { bpm })}
+          </span>
+        ) : null}
+      </div>
       <div className={classes.bars}>
         {(control.audioBars ?? []).map((bar, index) => {
           const name =

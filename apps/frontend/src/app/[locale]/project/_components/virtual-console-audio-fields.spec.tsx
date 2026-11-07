@@ -103,7 +103,80 @@ describe('VirtualConsoleAudioFields', () => {
       expect(onBarIndexChange).toHaveBeenCalledWith(9);
     });
 
-    it('GIVEN Beat selected WHEN rendered THEN only its threshold is offered, with the default', () => {
+    const renderBeat = (control: VirtualConsoleControl, onPatch = patchMock()) =>
+      renderWithProviders(
+        <VirtualConsoleAudioFields
+          control={control}
+          barIndex={beatIndex(control)}
+          onBarIndexChange={vi.fn()}
+          onPatch={onPatch}
+        />,
+      );
+
+    it('GIVEN a new Beat bar WHEN rendered THEN it follows the beat with the default timing', () => {
+      renderBeat(audioControl());
+
+      expect(screen.getByRole('combobox', { name: 'Timing' })).toHaveValue('Follow beat');
+      expect(screen.getByRole('textbox', { name: 'Fade in (%)' })).toHaveValue('0');
+      expect(screen.getByRole('textbox', { name: 'Hold (%)' })).toHaveValue('40');
+      expect(screen.getByRole('textbox', { name: 'Fade out (%)' })).toHaveValue('60');
+    });
+
+    it('GIVEN a Beat bar saved without timing WHEN rendered THEN it uses the sequence timing and hides the fields', () => {
+      renderBeat({ ...audioControl(), beatBar: { minThreshold: 20 } });
+
+      expect(screen.getByRole('combobox', { name: 'Timing' })).toHaveValue('From sequence');
+      expect(screen.queryByRole('textbox', { name: 'Hold (%)' })).not.toBeInTheDocument();
+    });
+
+    it('GIVEN Follow beat WHEN From sequence and then Follow beat are picked THEN the timing is dropped, then defaulted', async () => {
+      const onPatch = patchMock();
+      const control = {
+        ...audioControl(),
+        beatBar: { minThreshold: 35, functionPublicId: 'fn-1', timing: { fadeIn: 10, hold: 20, fadeOut: 30 } },
+      };
+      const { user, rerender } = renderBeat(control, onPatch);
+
+      await user.click(screen.getByRole('combobox', { name: 'Timing' }));
+      await user.click(await screen.findByRole('option', { name: 'From sequence', hidden: true }));
+      const fromSequence = onPatch.mock.lastCall?.[0]?.beatBar;
+      rerender(
+        <VirtualConsoleAudioFields
+          control={{ ...control, beatBar: fromSequence }}
+          barIndex={beatIndex(control)}
+          onBarIndexChange={vi.fn()}
+          onPatch={onPatch}
+        />,
+      );
+      await user.click(screen.getByRole('combobox', { name: 'Timing' }));
+      await user.click(await screen.findByRole('option', { name: 'Follow beat', hidden: true }));
+
+      expect(fromSequence).toEqual({ minThreshold: 35, functionPublicId: 'fn-1' });
+      expect(onPatch.mock.lastCall?.[0]?.beatBar).toEqual({
+        minThreshold: 35,
+        functionPublicId: 'fn-1',
+        timing: { fadeIn: 0, hold: 40, fadeOut: 60 },
+      });
+    });
+
+    it('GIVEN beat timing WHEN a part is typed above what the others leave THEN it is clamped to a 100 % total', async () => {
+      const onPatch = patchMock();
+      const control = {
+        ...audioControl(),
+        beatBar: { minThreshold: 20, timing: { fadeIn: 0, hold: 40, fadeOut: 30 } },
+      };
+      const { user } = renderBeat(control, onPatch);
+
+      const hold = screen.getByRole('textbox', { name: 'Hold (%)' });
+      await user.clear(hold);
+      await user.type(hold, '90{Enter}');
+
+      expect(onPatch).toHaveBeenCalledWith({
+        beatBar: { minThreshold: 20, timing: { fadeIn: 0, hold: 70, fadeOut: 30 } },
+      });
+    });
+
+    it('GIVEN Beat selected WHEN rendered THEN only its threshold and timing are offered, with the defaults', () => {
       const control = audioControl();
       renderWithProviders(
         <VirtualConsoleAudioFields
@@ -122,7 +195,10 @@ describe('VirtualConsoleAudioFields', () => {
 
     it('GIVEN Beat selected WHEN a threshold is typed THEN it is clamped and keeps the function', async () => {
       const onPatch = patchMock();
-      const control = { ...audioControl(), beatBar: { minThreshold: 20, functionPublicId: 'fn-1' } };
+      const control = {
+        ...audioControl(),
+        beatBar: { minThreshold: 20, functionPublicId: 'fn-1', timing: { fadeIn: 0, hold: 40, fadeOut: 60 } },
+      };
       const { user } = renderWithProviders(
         <VirtualConsoleAudioFields
           control={control}
@@ -136,7 +212,9 @@ describe('VirtualConsoleAudioFields', () => {
       await user.clear(threshold);
       await user.type(threshold, '150{Enter}');
 
-      expect(onPatch).toHaveBeenCalledWith({ beatBar: { minThreshold: 100, functionPublicId: 'fn-1' } });
+      expect(onPatch).toHaveBeenCalledWith({
+        beatBar: { minThreshold: 100, functionPublicId: 'fn-1', timing: { fadeIn: 0, hold: 40, fadeOut: 60 } },
+      });
     });
 
     it('GIVEN a control saved before beat bars existed WHEN Beat is edited THEN it gets a beat bar', async () => {

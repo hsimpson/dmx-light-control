@@ -28,6 +28,8 @@ export type DmxStoreState = {
   soundLevels: number[] | null;
   /** Smoothed bar levels (0..1, volume first) per enabled audio triggers control. */
   audioLevels: Record<string, number[]>;
+  /** Beats per minute per enabled audio triggers control while the backend knows one. */
+  audioBpm: Record<string, number>;
   applySnapshot: (values: ArrayLike<number>) => void;
   applyDelta: (updates: DmxChannelUpdate[]) => void;
   setStatus: (status: DmxConnectionStatus) => void;
@@ -36,6 +38,7 @@ export type DmxStoreState = {
   setLastMidiInput: (input: MidiInput) => void;
   setSoundLevels: (levels: number[]) => void;
   setAudioLevels: (levels: Record<string, number[]>) => void;
+  setAudioBpm: (bpm: Record<string, number>) => void;
 };
 
 function createZeroChannels(): number[] {
@@ -55,6 +58,7 @@ export function createDmxStore() {
     lastMidiInput: null,
     soundLevels: null,
     audioLevels: {},
+    audioBpm: {},
     applySnapshot: values => {
       const next = createZeroChannels();
       const length = Math.min(DMX_CHANNEL_COUNT, values.length);
@@ -104,6 +108,9 @@ export function createDmxStore() {
     setAudioLevels: audioLevels => {
       set({ audioLevels });
     },
+    setAudioBpm: audioBpm => {
+      set({ audioBpm });
+    },
   }));
 }
 
@@ -121,6 +128,7 @@ export function resetDmxStore(): void {
     lastMidiInput: null,
     soundLevels: null,
     audioLevels: {},
+    audioBpm: {},
     status: 'idle',
   });
 }

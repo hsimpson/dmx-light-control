@@ -13,8 +13,23 @@
   outline-offset: 1px;
 }
 
+.header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.bpm {
+  flex: none;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .toggle {
   background: transparent;
+  flex: 1;
+  min-width: 0;
   border: 1px solid currentcolor;
   border-radius: 4px;
   color: inherit;

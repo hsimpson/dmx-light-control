@@ -67,6 +67,54 @@ describe('DmxWebsocketClient', () => {
     expect(socket?.sent).toEqual([JSON.stringify({ type: 'controlValue', controlId: 'slider', value: 41 })]);
   });
 
+  it('GIVEN audio levels with a tempo WHEN received THEN valid BPM values are stored', () => {
+    const store = createDmxStore();
+    const client = new DmxWebsocketClient(store, 'ws://localhost/dmx', FakeWebSocket);
+    client.connect();
+    const socket = FakeWebSocket.instances[0];
+    socket?.open();
+
+    socket?.receive({ type: 'audioLevels', levels: {}, bpm: { a: 120, b: 'x', c: -5, d: 0, e: null } });
+
+    expect(store.getState().audioBpm).toEqual({ a: 120 });
+    client.disconnect();
+  });
+
+  it('GIVEN a stored tempo WHEN no audio levels come for 2.5 s THEN it is cleared, as the input may have stopped', () => {
+    vi.useFakeTimers();
+    const store = createDmxStore();
+    const client = new DmxWebsocketClient(store, 'ws://localhost/dmx', FakeWebSocket);
+    client.connect();
+    const socket = FakeWebSocket.instances[0];
+    socket?.open();
+    socket?.receive({ type: 'audioLevels', levels: {}, bpm: { a: 120 } });
+
+    vi.advanceTimersByTime(2400);
+    socket?.receive({ type: 'audioLevels', levels: {}, bpm: { a: 121 } });
+    vi.advanceTimersByTime(2400);
+    const kept = store.getState().audioBpm;
+    vi.advanceTimersByTime(200);
+
+    expect([kept, store.getState().audioBpm]).toEqual([{ a: 121 }, {}]);
+    client.disconnect();
+    vi.useRealTimers();
+  });
+
+  it('GIVEN a stored tempo WHEN the client disconnects THEN the stale timer no longer touches the store', () => {
+    vi.useFakeTimers();
+    const store = createDmxStore();
+    const client = new DmxWebsocketClient(store, 'ws://localhost/dmx', FakeWebSocket);
+    client.connect();
+    FakeWebSocket.instances[0]?.open();
+    FakeWebSocket.instances[0]?.receive({ type: 'audioLevels', levels: {}, bpm: { a: 120 } });
+
+    client.disconnect();
+    vi.advanceTimersByTime(3000);
+
+    expect(store.getState().audioBpm).toEqual({ a: 120 });
+    vi.useRealTimers();
+  });
+
   it('queues set until a snapshot arrives, then flushes automatically', () => {
     const store = createDmxStore();
     const client = new DmxWebsocketClient(store, 'ws://localhost/dmx', FakeWebSocket);

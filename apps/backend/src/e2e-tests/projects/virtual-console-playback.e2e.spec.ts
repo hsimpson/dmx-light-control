@@ -177,7 +177,7 @@ describe('Virtual console playback of the active project', () => {
         server,
         `mutation ($input: UpdateProjectVirtualConsoleInput!) {
           updateProjectVirtualConsole(input: $input) {
-            virtualConsole { pages { controls { beatBar { minThreshold functionPublicId } } } }
+            virtualConsole { pages { controls { beatBar { minThreshold functionPublicId timing { fadeIn hold fadeOut } } } } }
           }
         }`,
         {
@@ -207,8 +207,28 @@ describe('Virtual console playback of the active project', () => {
 
       expect(body.errors).toBeUndefined();
       expect(body.data?.updateProjectVirtualConsole.virtualConsole.pages[0]?.controls).toEqual([
-        { beatBar: { minThreshold: 35, functionPublicId: null } },
+        { beatBar: { minThreshold: 35, functionPublicId: null, timing: null } },
       ]);
+    });
+
+    it('GIVEN a beat bar with beat timing WHEN saved THEN it is returned', async () => {
+      const timing = { fadeIn: 0, hold: 40, fadeOut: 60 };
+
+      const body = await saveBeatBar({ minThreshold: 35, timing });
+
+      expect(body.errors).toBeUndefined();
+      expect(body.data?.updateProjectVirtualConsole.virtualConsole.pages[0]?.controls).toEqual([
+        { beatBar: { minThreshold: 35, functionPublicId: null, timing } },
+      ]);
+    });
+
+    it.each([
+      ['a field above 100', { fadeIn: 0, hold: 101, fadeOut: 0 }, 'BAD_USER_INPUT'],
+      ['a total above 100', { fadeIn: 1, hold: 40, fadeOut: 60 }, 'INVALID_VIRTUAL_CONSOLE'],
+    ])('GIVEN beat timing with %s WHEN saved THEN it is rejected', async (_case, timing, code) => {
+      const body = await saveBeatBar({ minThreshold: 35, timing });
+
+      expect(body.errors?.[0]?.extensions?.code).toBe(code);
     });
 
     it('GIVEN a beat bar threshold above 100 WHEN saved THEN it is rejected as bad input', async () => {

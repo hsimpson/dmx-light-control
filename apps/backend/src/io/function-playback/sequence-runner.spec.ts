@@ -108,6 +108,38 @@ describe('steppedFrame', () => {
   it('GIVEN a sequence without steps WHEN sampled THEN it is finished', () => {
     expect(steppedFrame(sequence([]), 1, 0, [])).toEqual({ values: [], finished: true });
   });
+
+  it('GIVEN a timing override WHEN sampled THEN the step uses it instead of its own timing', () => {
+    const steps = [step(100), step(200)];
+    const timing = { fadeIn: 0, hold: 100, fadeOut: 100 };
+
+    expect(steppedFrame(sequence(steps), 1, 50, [], timing).values).toEqual(level(100));
+    expect(steppedFrame(sequence(steps), 1, 150, [], timing).values).toEqual(level(50));
+    expect(steppedFrame(sequence(steps), 2, 5000, [], timing).values).toEqual([]);
+  });
+
+  it('GIVEN a timing override WHEN its fade in runs THEN it fades from the given output', () => {
+    expect(steppedFrame(sequence([step(200)]), 1, 50, level(100), { fadeIn: 100, hold: 0, fadeOut: 0 }).values).toEqual(
+      level(150),
+    );
+  });
+
+  it('GIVEN a single shot with a timing override WHEN the override has played out THEN it is finished', () => {
+    const shot = sequence([step(10), step(20)], { runOrder: SequenceRunOrder.SingleShot });
+    const timing = { fadeIn: 0, hold: 200, fadeOut: 0 };
+
+    expect(steppedFrame(shot, 2, 199, [], timing).finished).toBe(false);
+    expect(steppedFrame(shot, 2, 200, [], timing).finished).toBe(true);
+  });
+
+  it('GIVEN a timing override with fade out WHEN the step has played out THEN it ends dark, not on the step look', () => {
+    const shot = sequence([step(10)], { runOrder: SequenceRunOrder.SingleShot });
+
+    expect(steppedFrame(shot, 1, 300, [], { fadeIn: 0, hold: 100, fadeOut: 100 })).toEqual({
+      values: [],
+      finished: true,
+    });
+  });
 });
 
 describe('sequenceFrame', () => {

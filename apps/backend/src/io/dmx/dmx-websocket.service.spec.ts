@@ -163,9 +163,11 @@ describe('DmxWebsocketService', () => {
     handleDmxWebsocketConnection(client);
     client.sent.length = 0;
 
-    listeners.get('virtualConsole.audioLevels')?.({ levels: { audio: [0.5, 1] } });
+    listeners.get('virtualConsole.audioLevels')?.({ levels: { audio: [0.5, 1] }, bpm: { audio: 120 } });
 
-    expect(client.sent).toEqual([JSON.stringify({ type: 'audioLevels', levels: { audio: [0.5, 1] } })]);
+    expect(client.sent).toEqual([
+      JSON.stringify({ type: 'audioLevels', levels: { audio: [0.5, 1] }, bpm: { audio: 120 } }),
+    ]);
     service.onModuleDestroy();
   });
 
