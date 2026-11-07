@@ -5,6 +5,8 @@ The **Audio triggers** control makes your lights react to sound. It measures the
 - set the level of DMX channels, for example a dimmer that follows the bass
 - start and stop a function, for example a sequence that runs during loud passages
 
+A separate **Beat** bar detects the kick drum and steps a sequence forward on each beat, so the lights stay in time with the music.
+
 The sound analysis runs on the server, so the lights keep reacting when you close the browser window.
 
 ## Contents
@@ -17,7 +19,11 @@ The sound analysis runs on the server, so the lights keep reacting when you clos
   - [Channels](#channels)
   - [Function](#function)
   - [What the percentages mean](#what-the-percentages-mean)
+- [Beat](#beat)
+  - [What counts as a beat](#what-counts-as-a-beat)
+  - [How the sequence plays](#how-the-sequence-plays)
 - [Example: bass on a dimmer, sequence on loud passages](#example-bass-on-a-dimmer-sequence-on-loud-passages)
+- [Example: a chase on every kick](#example-a-chase-on-every-kick)
 - [Frequency range](#frequency-range)
   - [What the limits leave out](#what-the-limits-leave-out)
   - [How the bands are divided](#how-the-bands-are-divided)
@@ -39,7 +45,7 @@ The control needs a sound input in the project:
 1. Open the **Virtual Console** tab.
 2. Drag **Audio triggers** from **Add control** onto the canvas, then click it to select it.
 3. Set **Bands** to the number of frequency bands you want (1 to 16, default 8).
-4. Pick a bar under **Bar**. The list shows **Volume** and each band with its frequency range.
+4. Pick a bar under **Bar**. The list shows **Volume**, each band with its frequency range, and **Beat** at the end. **Beat** works differently, see [Beat](#beat).
 5. Choose what the bar controls under **Drives**:
    - **Nothing:** the bar only displays its level.
    - **Channels:** select the fixture channels in the panel that opens next to the console.
@@ -64,7 +70,7 @@ Each press switches between on and off. Turning it off stops everything the cont
 
 ### Reading the display
 
-Each bar is labelled **V** for Volume or with its band number. The two lines on a bar mark its min and max thresholds. The bars only move while the control is on.
+Each bar is labelled **V** for Volume or with its band number. The two lines on a bar mark its min and max thresholds. The last bar, **B**, jumps to full on each beat and then falls back. The bars only move while the control is on.
 
 Levels are smoothed: they rise within about 40 ms and fall over about 200 ms, so lights follow hits without flickering.
 
@@ -100,6 +106,32 @@ The scale is in decibels, not linear: 0 % is −60 dB and 100 % is 0 dB, which i
 
 A single band holds only part of the signal, so it often reads lower than **Volume**. Band thresholds may need to be lower than Volume thresholds.
 
+## Beat
+
+The **Beat** bar steps a sequence by one step on each beat. Select **Beat** under **Bar**, then select the sequence in the panel next to the console. It has no **Drives** or **Max threshold (%)**, only **Min threshold (%)** (default 20). To unbind the sequence, click **Clear function**.
+
+When you turn the control on, the sequence is armed and stays dark until the first beat.
+
+### What counts as a beat
+
+- The control listens to the bass range from 40 to 150 Hz, where the kick drum sits. Hi-hats, snares and vocals do not count.
+- A beat is a sudden rise in that range compared with the last 1.5 seconds. A sustained bass note does not repeat beats, and the detection adapts to loud and quiet songs.
+- Beats are at least 180 ms apart (about 333 BPM), so one kick never counts twice.
+- **Min threshold (%)** ignores beats whose bass level is below it, on the same scale as the other bars. Raise it if quiet sounds step the sequence.
+
+### How the sequence plays
+
+- Each beat plays the next step once, with that step's own fade in, hold and fade out.
+- If the next beat comes before the step has finished, the next step starts at once and fades from the current look.
+- If beats come slower than the step, a step with a fade out goes dark until the next beat. A step with a fade out of 0 holds its look.
+- The sequence's **Direction** and **Run order** apply. With **Single shot**, it stops after its last step.
+- In silence there are no beats, so the lights go dark or hold their last look, as above.
+- Turning the control off stops the sequence.
+
+If the sequence was already running when you turned the control on, for example from a button, it keeps its own speed and ignores the beats.
+
+> **Use a separate sequence for Beat.** If a level bar and the Beat bar use the same sequence, whichever starts it first decides how it plays: a level bar starts it at its own speed, so beats are ignored.
+
 ## Example: bass on a dimmer, sequence on loud passages
 
 1. Select the control and set **Bar** to the lowest band, then **Drives** to **Channels**. Select the dimmer channels of your fixtures.
@@ -107,6 +139,15 @@ A single band holds only part of the signal, so it often reads lower than **Volu
 3. Set **Bar** to **Volume**, then **Drives** to **Function**, and select a sequence.
 4. Click **Save**, open the pop-out window and turn the control on.
 5. Play music and watch the bars. Adjust the thresholds so the bass bar crosses them on each hit, and Volume passes its max only on the loud passages.
+
+## Example: a chase on every kick
+
+1. Create a sequence whose steps are short, for example a fade in of 0 ms, a hold of 100 ms and a fade out of 150 ms, with a different fixture or colour in each step.
+2. Select the control, set **Bar** to **Beat** and select the sequence.
+3. Click **Save**, open the pop-out window and turn the control on.
+4. Play music with a clear kick drum. Each kick flashes the next step. If quiet sounds also step it, raise **Min threshold (%)**.
+
+Steps with long fades look sluggish when beats are fast, so keep them shorter than the time between two beats (500 ms at 120 BPM).
 
 ## Frequency range
 
@@ -144,19 +185,22 @@ The bands do not follow musical categories, and a low band count blurs them furt
 
 ## Troubleshooting
 
-| Problem                                      | What to check                                                                                                                                 |
-| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| The bars do not move                         | Is the control on? Does the level meter on the **Input/Output** tab move?                                                                     |
-| The bars move but the lights do not react    | Did you click **Save**? Is **Drives** set and a channel or function selected? Does the level reach the min threshold?                         |
-| The channel moves but the fixture stays dark | The fixture may also need a colour or its master dimmer set.                                                                                  |
-| The lights are always at full                | The max threshold is too low, or the input is too loud. There is no gain setting in the control, so lower the level at the source.            |
-| The lights barely react                      | Lower the thresholds, or raise the level at the source.                                                                                       |
-| A function switches on and off rapidly       | Widen the gap between the min and max thresholds.                                                                                             |
-| A function does not stop                     | The bar has not fallen below its min threshold, another bar still holds the function, or it was already running when the bar reached its max. |
-| A low band stays dark                        | Check the input first. A line-in or a microphone can lose low frequencies: a small microphone may pick up little below 80 – 100 Hz.           |
+| Problem                                      | What to check                                                                                                                                                                                             |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The bars do not move                         | Is the control on? Does the level meter on the **Input/Output** tab move?                                                                                                                                 |
+| The bars move but the lights do not react    | Did you click **Save**? Is **Drives** set and a channel or function selected? Does the level reach the min threshold?                                                                                     |
+| The channel moves but the fixture stays dark | The fixture may also need a colour or its master dimmer set.                                                                                                                                              |
+| The lights are always at full                | The max threshold is too low, or the input is too loud. There is no gain setting in the control, so lower the level at the source.                                                                        |
+| The lights barely react                      | Lower the thresholds, or raise the level at the source.                                                                                                                                                   |
+| A function switches on and off rapidly       | Widen the gap between the min and max thresholds.                                                                                                                                                         |
+| A function does not stop                     | The bar has not fallen below its min threshold, another bar still holds the function, or it was already running when the bar reached its max.                                                             |
+| Beats do not step the sequence               | Is a sequence selected for **Beat**? Does the **B** bar move? If it moves only a little, lower **Min threshold (%)**. If the sequence was already running, stop it and turn the control off and on again. |
+| A low band stays dark                        | Check the input first. A line-in or a microphone can lose low frequencies: a small microphone may pick up little below 80 – 100 Hz.                                                                       |
 
 ## Limitations
 
-- The control follows levels and does not detect the beat or tempo. A sequence it starts runs at its own speed, so it can drift against the music.
+- **Beat** reacts to each kick and does not track the tempo: there is no BPM display, and no beats come through breaks without a kick.
+- Bass notes can also count as beats, and the first kick after a break or a sudden drop in level can be missed.
+- A sequence that a level bar starts runs at its own speed, so it can drift against the music.
 - The frequency range and smoothing are fixed.
 - The toggle works with a mouse, touch or MIDI, but not with the keyboard.
