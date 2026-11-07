@@ -3593,7 +3593,6 @@ export type ExportProjectsQuery = {
         usbLocation: string | null;
         midiMappingPublicId: string | null;
         audioChannels: number | null;
-        maxInputChannels: number | null;
       }>;
     }>;
   };
@@ -9214,7 +9213,17 @@ export const ExportProjectsDocument = {
                         name: { kind: 'Name', value: 'ioDevices' },
                         selectionSet: {
                           kind: 'SelectionSet',
-                          selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'IoDeviceFields' } }],
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'kind' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'manufacturer' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'serial' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'vendorId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'usbLocation' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'midiMappingPublicId' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'audioChannels' } },
+                          ],
                         },
                       },
                     ],
@@ -9491,26 +9500,6 @@ export const ExportProjectsDocument = {
               ],
             },
           },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'IoDeviceFields' },
-      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'IoDeviceDto' } },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'kind' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'manufacturer' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'serial' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'vendorId' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'usbLocation' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'midiMappingPublicId' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'audioChannels' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'maxInputChannels' } },
         ],
       },
     },

@@ -356,7 +356,15 @@ query ExportProjects {
         ...VirtualConsoleFields
       }
       ioDevices {
-        ...IoDeviceFields
+        kind
+        name
+        manufacturer
+        serial
+        vendorId
+        productId
+        usbLocation
+        midiMappingPublicId
+        audioChannels
       }
     }
   }
