@@ -74,6 +74,32 @@ function toList(levels: LevelMap): SequenceChannelValue[] {
     .map(([channel, value]) => ({ channel, value }));
 }
 
+/**
+ * Output of a beat-driven sequence: `beats` is how many beats arrived so far, each one plays the next step once
+ * with its own timing. `from` is the output at the last beat, which that step fades in from.
+ */
+export function steppedFrame(
+  sequence: SequenceProperties,
+  beats: number,
+  elapsedMs: number,
+  from: readonly SequenceChannelValue[],
+): SequenceFrame {
+  const steps = orderedSteps(sequence);
+  const singleShot = sequence.runOrder === SequenceRunOrder.SingleShot;
+  if (steps.length === 0) {
+    return { values: [], finished: true };
+  }
+  const step = beats > 0 ? steps[playIndex(beats - 1, steps.length, sequence.runOrder)] : undefined;
+  if (step === undefined) {
+    return { values: [], finished: false };
+  }
+  const playedOut = elapsedMs >= stepDuration(step);
+  const levels = playedOut
+    ? endState(step)
+    : sample(step, new Map(from.map(({ channel, value }) => [channel, value])), elapsedMs);
+  return { values: toList(levels), finished: singleShot && playedOut && beats === steps.length };
+}
+
 export function sequenceFrame(sequence: SequenceProperties, elapsedMs: number): SequenceFrame {
   const steps = orderedSteps(sequence);
   if (steps.length === 0) {

@@ -2,7 +2,11 @@ import { AppEventEmitter } from '@/events/app-event-emitter';
 import type { DmxValue } from '@/io/dmx/types/dmx.types';
 import { smoothLevel, type SpectrumFrame } from '@/io/sound-input/spectrum';
 import { LoadedProject, ProjectRepository } from '@/projects/repositories/project.repository';
-import type { VirtualConsoleAudioBar, VirtualConsoleControl } from '@/projects/virtual-console';
+import {
+  VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD,
+  type VirtualConsoleAudioBar,
+  type VirtualConsoleControl,
+} from '@/projects/virtual-console';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { barLevels, nextFunctionState, thresholdDmx } from './audio-triggers';
 import type { VirtualConsoleFeedback, VirtualConsoleLedState } from './virtual-console-events';
@@ -13,8 +17,10 @@ const MIDI_MAX = 127;
 // Smoothing step when frames pause (input reopened): longer gaps would jump straight to the new level.
 const MAX_SPECTRUM_GAP_MS = 200;
 
-/** Live state of an enabled audio triggers control, per bar. */
-type AudioState = { levels: number[]; dmx: number[]; active: boolean[] };
+const PERCENT = 100;
+
+/** Live state of an enabled audio triggers control, per bar; `beat` is the pulse shown after the band bars. */
+type AudioState = { levels: number[]; dmx: number[]; active: boolean[]; beat: number };
 
 /** Plays the active project's saved virtual console: control values, DMX output and function start/stop. */
 @Injectable()
@@ -59,6 +65,9 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     this.eventEmitter.on('soundInput.spectrum', frame => {
       this.applySpectrum(frame);
     });
+    this.eventEmitter.on('soundInput.beat', ({ level }) => {
+      this.applyBeat(level);
+    });
     this.eventEmitter.on('virtualConsole.state.request', () => {
       this.emitState();
     });
@@ -82,12 +91,14 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     );
     const sameProject = project?.publicId === this.projectPublicId;
     for (const [controlId, previous] of this.controls) {
-      if (!sameProject || !controls.has(controlId)) {
+      const next = sameProject ? controls.get(controlId) : undefined;
+      if (!next) {
         this.release(previous);
-      } else if (this.audio.has(controlId) && !sameAudioBars(previous, controls.get(controlId))) {
+      } else if (this.audio.has(controlId) && !sameAudioBars(previous, next)) {
         // Changed bars: stop what the old ones drive, keep the control enabled.
         this.releaseAudio(previous);
         this.audio.set(controlId, emptyAudioState());
+        this.armBeat(next);
       }
     }
     this.projectPublicId = project?.publicId ?? null;
@@ -168,6 +179,8 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     const start = toggle ? !this.running.has(functionPublicId) : pressed;
     if (start) {
       this.startedBy.set(functionPublicId, control.id);
+      // The button replaces any audio-started runner: releasing the audio hold must not stop the button's run.
+      this.audioStarted.delete(functionPublicId);
     }
     this.eventEmitter.emit(start ? 'function.start' : 'function.stop', { functionPublicId });
   }
@@ -184,8 +197,29 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
       this.releaseAudio(control);
     } else {
       this.audio.set(control.id, emptyAudioState());
+      this.armBeat(control);
     }
     this.setValue(control, enabled ? 0 : DMX_MAX);
+  }
+
+  /** A function already running is left alone: the hold starts only an idle one, and free runners ignore steps. */
+  private armBeat(control: VirtualConsoleControl): void {
+    const functionPublicId = control.beatBar?.functionPublicId;
+    if (functionPublicId) this.holdBarFunction(beatKey(control), functionPublicId, true);
+  }
+
+  private applyBeat(level: number): void {
+    const stepped = new Set<string>();
+    for (const [controlId, state] of this.audio) {
+      const beatBar = this.controls.get(controlId)?.beatBar;
+      if (level * PERCENT < (beatBar?.minThreshold ?? VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD)) continue;
+      state.beat = 1;
+      if (beatBar?.functionPublicId) stepped.add(beatBar.functionPublicId);
+    }
+    // One step per beat, however many controls share the function.
+    for (const functionPublicId of stepped) {
+      this.eventEmitter.emit('function.step', { functionPublicId });
+    }
   }
 
   private applySpectrum(frame: SpectrumFrame): void {
@@ -203,7 +237,8 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
       (control.audioBars ?? []).forEach((bar, index) => {
         updates.push(...this.applyBar(control, bar, index, state));
       });
-      levels[controlId] = state.levels.map(roundLevel);
+      state.beat = smoothLevel(state.beat, 0, elapsed);
+      levels[controlId] = [...state.levels, state.beat].map(roundLevel);
     }
     this.emitDmx(updates);
     this.emitAudioLevels(levels);
@@ -251,15 +286,19 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     this.holdBarFunction(key, functionPublicId, active);
   }
 
-  /** The first bar above max starts the function (unless it already runs), the last one below min stops it. */
+  /**
+   * A new holder starts the function unless it already runs (stepped while a beat bar holds it), the last one to let
+   * go stops it. Holders may outlive a function stopped elsewhere, so their count says nothing about whether it runs.
+   */
   private holdBarFunction(key: string, functionPublicId: string, held: boolean): void {
     const holders = this.audioHolders.get(functionPublicId) ?? new Set<string>();
     if (held) holders.add(key);
     else holders.delete(key);
     this.audioHolders.set(functionPublicId, holders);
-    if (held && holders.size === 1 && !this.running.has(functionPublicId) && !this.audioStarted.has(functionPublicId)) {
+    if (held && !this.running.has(functionPublicId) && !this.audioStarted.has(functionPublicId)) {
       this.audioStarted.add(functionPublicId);
-      this.eventEmitter.emit('function.start', { functionPublicId });
+      const stepped = [...holders].some(holder => holder.endsWith(BEAT_KEY_SUFFIX));
+      this.eventEmitter.emit('function.start', { functionPublicId, ...(stepped ? { stepped } : {}) });
     } else if (holders.size === 0 && this.audioStarted.delete(functionPublicId)) {
       this.eventEmitter.emit('function.stop', { functionPublicId });
     }
@@ -269,6 +308,8 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     const state = this.audio.get(control.id);
     if (!state) return;
     this.audio.delete(control.id);
+    const beatFunction = control.beatBar?.functionPublicId;
+    if (beatFunction) this.holdBarFunction(beatKey(control), beatFunction, false);
     const updates = (control.audioBars ?? []).flatMap((bar, index) => {
       if (bar.functionPublicId && state.active[index]) {
         this.holdBarFunction(`${control.id}:${index}`, bar.functionPublicId, false);
@@ -341,13 +382,15 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
   }
 }
 
-const emptyAudioState = (): AudioState => ({ levels: [], dmx: [], active: [] });
+const emptyAudioState = (): AudioState => ({ levels: [], dmx: [], active: [], beat: 0 });
+const BEAT_KEY_SUFFIX = ':beat';
+const beatKey = (control: VirtualConsoleControl) => `${control.id}${BEAT_KEY_SUFFIX}`;
 const roundLevel = (level: number) => Math.round(level * 1000) / 1000;
 
-function sameAudioBars(previous: VirtualConsoleControl, next: VirtualConsoleControl | undefined): boolean {
-  return (
-    JSON.stringify([previous.bandCount, previous.audioBars]) === JSON.stringify([next?.bandCount, next?.audioBars])
-  );
+function sameAudioBars(previous: VirtualConsoleControl, next: VirtualConsoleControl): boolean {
+  const bars = ({ bandCount, audioBars, beatBar }: VirtualConsoleControl) =>
+    JSON.stringify([bandCount, audioBars, beatBar]);
+  return bars(previous) === bars(next);
 }
 
 function flattenPlayable(controls: readonly VirtualConsoleControl[]): VirtualConsoleControl[] {

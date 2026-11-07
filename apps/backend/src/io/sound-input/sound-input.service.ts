@@ -111,7 +111,9 @@ export class SoundInputService implements OnModuleDestroy {
   private onInput(pcm: Buffer, channels: number): void {
     const levels = peakLevels(pcm, channels);
     this.peaks = levels.map((level, channel) => Math.max(level, this.peaks[channel] ?? 0));
-    this.analyser.push(monoSamples(pcm, channels));
+    for (const level of this.analyser.push(monoSamples(pcm, channels))) {
+      this.eventEmitter.emit('soundInput.beat', { level });
+    }
     const now = Date.now();
     if (now - this.lastEmit < LEVEL_INTERVAL_MS) return;
     this.lastEmit = now;

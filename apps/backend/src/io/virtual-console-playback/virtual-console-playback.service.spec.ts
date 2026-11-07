@@ -500,6 +500,262 @@ describe('VirtualConsolePlaybackService audio triggers', () => {
     expect(dmx.at(-1)).toEqual([{ channel: 10, value: 0 }]);
   });
 
+  describe('beat bar', () => {
+    const idleBars = [
+      { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+      { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+    ] as const;
+    const beatControl = (id = 'beat', minThreshold = 20) =>
+      control(id, 'audioTriggers', {
+        bandCount: 1,
+        audioBars: [...idleBars],
+        beatBar: { minThreshold, functionPublicId: OTHER_FUNCTION_ID },
+      });
+
+    async function buildBeat(controls: VirtualConsoleControl[]) {
+      const built = await buildAudio(controls);
+      const starts: { functionPublicId: string; stepped?: boolean }[] = [];
+      const steps: string[] = [];
+      built.eventEmitter.on('function.start', payload => {
+        starts.push(payload);
+      });
+      built.eventEmitter.on('function.step', ({ functionPublicId }) => {
+        steps.push(functionPublicId);
+      });
+      const beat = (level = 0.8) => {
+        built.eventEmitter.emit('soundInput.beat', { level });
+      };
+      return { ...built, starts, steps, beat };
+    }
+
+    it('GIVEN a disabled control WHEN a beat arrives THEN nothing starts or steps', async () => {
+      const { starts, steps, beat } = await buildBeat([beatControl()]);
+
+      beat();
+
+      expect(starts).toEqual([]);
+      expect(steps).toEqual([]);
+    });
+
+    it('GIVEN an enabled control WHEN beats arrive THEN the function is armed stepped and steps once per beat', async () => {
+      const { starts, steps, beat, input } = await buildBeat([beatControl()]);
+
+      input('beat', 1);
+      expect(starts).toEqual([{ functionPublicId: OTHER_FUNCTION_ID, stepped: true }]);
+      expect(steps).toEqual([]);
+
+      beat();
+      beat();
+
+      expect(steps).toEqual([OTHER_FUNCTION_ID, OTHER_FUNCTION_ID]);
+      expect(starts).toHaveLength(1);
+    });
+
+    it.each([
+      ['below', 0.39, 0],
+      ['exactly at', 0.4, 1],
+      ['above', 0.41, 1],
+    ])('GIVEN a 40 %% threshold WHEN a beat is %s it THEN it counts accordingly', async (_case, level, count) => {
+      const { steps, beat, input } = await buildBeat([beatControl('beat', 40)]);
+      input('beat', 1);
+
+      beat(level);
+
+      expect(steps).toHaveLength(count);
+    });
+
+    it('GIVEN two controls on one function WHEN a beat arrives THEN it starts once and steps once', async () => {
+      const { starts, steps, beat, input } = await buildBeat([beatControl('a'), beatControl('b')]);
+      input('a', 1);
+      input('b', 1);
+
+      beat();
+
+      expect(starts).toHaveLength(1);
+      expect(steps).toEqual([OTHER_FUNCTION_ID]);
+    });
+
+    it('GIVEN two controls on one function WHEN only one is turned off THEN the function keeps running', async () => {
+      const { functions, input } = await buildBeat([beatControl('a'), beatControl('b')]);
+      input('a', 1);
+      input('b', 1);
+
+      input('a', 0);
+      input('a', 1);
+      expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`]);
+
+      input('b', 0);
+      input('b', 1);
+      expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`, `stop ${OTHER_FUNCTION_ID}`]);
+    });
+
+    it('GIVEN a function already running elsewhere WHEN the control is toggled on and off THEN it is left alone', async () => {
+      const { eventEmitter, functions, input } = await buildBeat([beatControl()]);
+      eventEmitter.emit('function.state', { running: [OTHER_FUNCTION_ID] });
+
+      input('beat', 1);
+      input('beat', 0);
+      input('beat', 1);
+
+      expect(functions).toEqual([]);
+    });
+
+    it('GIVEN an armed function WHEN the control is turned off THEN it stops and beats stop stepping', async () => {
+      const { functions, steps, beat, input } = await buildBeat([beatControl()]);
+      input('beat', 1);
+
+      input('beat', 0);
+      input('beat', 1);
+      beat();
+
+      expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`, `stop ${OTHER_FUNCTION_ID}`]);
+      expect(steps).toEqual([]);
+    });
+
+    it('GIVEN a function the control started WHEN it is turned on again THEN it is armed again', async () => {
+      const { functions, input } = await buildBeat([beatControl()]);
+      input('beat', 1);
+      input('beat', 0);
+      input('beat', 1);
+      input('beat', 0);
+
+      input('beat', 1);
+
+      expect(functions.filter(entry => entry.startsWith('start'))).toHaveLength(2);
+    });
+
+    it('GIVEN an armed function WHEN the control is removed from the console THEN the function stops', async () => {
+      const { functions, input, projects, service } = await buildBeat([beatControl()]);
+      input('beat', 1);
+
+      projects.findOneByPublicIdWithFixtures.mockResolvedValue(loadedProject([]));
+      await service.reload(PROJECT_ID);
+
+      expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`, `stop ${OTHER_FUNCTION_ID}`]);
+    });
+
+    it('GIVEN an armed function WHEN the project changes THEN the function stops', async () => {
+      const { functions, input, projects, service } = await buildBeat([beatControl()]);
+      input('beat', 1);
+
+      projects.findOneByPublicIdWithFixtures.mockResolvedValue(undefined);
+      await service.reload(OTHER_PROJECT_ID);
+
+      expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`, `stop ${OTHER_FUNCTION_ID}`]);
+    });
+
+    it('GIVEN an enabled control WHEN saved unchanged THEN the function is not restarted', async () => {
+      const { functions, input, service } = await buildBeat([beatControl()]);
+      input('beat', 1);
+
+      await service.reload(PROJECT_ID);
+
+      expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`]);
+    });
+
+    it('GIVEN an enabled control WHEN its beat function changes THEN the old stops and the new is armed', async () => {
+      const { functions, starts, states, input, projects, service } = await buildBeat([beatControl()]);
+      input('beat', 1);
+      const changed = {
+        ...beatControl(),
+        beatBar: { minThreshold: 20, functionPublicId: FUNCTION_ID },
+      };
+
+      projects.findOneByPublicIdWithFixtures.mockResolvedValue(loadedProject([changed]));
+      await service.reload(PROJECT_ID);
+
+      expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`, `stop ${OTHER_FUNCTION_ID}`, `start ${FUNCTION_ID}`]);
+      expect(starts.at(-1)).toEqual({ functionPublicId: FUNCTION_ID, stepped: true });
+      expect(states.at(-1)).toEqual({ beat: 255 });
+    });
+
+    it('GIVEN an enabled control WHEN its beat function is removed THEN it stops and nothing else is armed', async () => {
+      const { functions, steps, beat, input, projects, service } = await buildBeat([beatControl()]);
+      input('beat', 1);
+      const changed = { ...beatControl(), beatBar: { minThreshold: 20 } };
+
+      projects.findOneByPublicIdWithFixtures.mockResolvedValue(loadedProject([changed]));
+      await service.reload(PROJECT_ID);
+      beat();
+
+      expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`, `stop ${OTHER_FUNCTION_ID}`]);
+      expect(steps).toEqual([]);
+    });
+
+    it('GIVEN a level bar on the same function WHEN it falls silent THEN the beat bar keeps it armed', async () => {
+      const shared = control('shared', 'audioTriggers', {
+        bandCount: 1,
+        audioBars: [
+          { mode: 'function', minThreshold: 20, maxThreshold: 80, functionPublicId: OTHER_FUNCTION_ID },
+          { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+        ],
+        beatBar: { minThreshold: 20, functionPublicId: OTHER_FUNCTION_ID },
+      });
+      const { eventEmitter, functions, input } = await buildBeat([shared]);
+      input('shared', 1);
+
+      play(eventEmitter, 1);
+      play(eventEmitter, 0, 40);
+      expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`]);
+
+      input('shared', 0);
+      input('shared', 1);
+      expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`, `stop ${OTHER_FUNCTION_ID}`]);
+    });
+
+    it('GIVEN an armed function stopped elsewhere WHEN the control turns off THEN it is not stopped twice', async () => {
+      const { eventEmitter, functions, input } = await buildBeat([beatControl()]);
+      input('beat', 1);
+      eventEmitter.emit('function.state', { running: [OTHER_FUNCTION_ID] });
+      eventEmitter.emit('function.state', { running: [] });
+
+      input('beat', 0);
+      input('beat', 1);
+
+      expect(functions).toEqual([`start ${OTHER_FUNCTION_ID}`]);
+    });
+
+    it('GIVEN an enabled control WHEN a beat arrives THEN a pulse follows the bars and decays', async () => {
+      const { eventEmitter, levels, beat, input } = await buildBeat([beatControl()]);
+      input('beat', 1);
+      play(eventEmitter, 0.5, 1);
+      expect(levels.at(-1)?.beat).toHaveLength(3);
+      expect(levels.at(-1)?.beat?.[2]).toBe(0);
+
+      beat();
+      play(eventEmitter, 0.5, 1);
+      const pulse = levels.at(-1)?.beat?.[2] ?? 0;
+      expect(pulse).toBeGreaterThan(0.7);
+      expect(pulse).toBeLessThanOrEqual(1);
+
+      play(eventEmitter, 0.5, 40);
+      expect(levels.at(-1)?.beat?.[2]).toBe(0);
+    });
+
+    it('GIVEN a beat below the threshold WHEN it arrives THEN there is no pulse', async () => {
+      const { eventEmitter, levels, beat, input } = await buildBeat([beatControl('beat', 50)]);
+      input('beat', 1);
+
+      beat(0.2);
+      play(eventEmitter, 0.5, 1);
+
+      expect(levels.at(-1)?.beat?.[2]).toBe(0);
+    });
+
+    it('GIVEN a control saved before beat bars existed WHEN a beat arrives THEN it pulses but steps nothing', async () => {
+      const { eventEmitter, starts, steps, levels, beat, input } = await buildBeat([audio]);
+      input('audio', 1);
+      play(eventEmitter, 0.5, 1);
+
+      beat();
+      play(eventEmitter, 0.5, 1);
+
+      expect(starts).toEqual([]);
+      expect(steps).toEqual([]);
+      expect(levels.at(-1)?.audio?.[2]).toBeGreaterThan(0.7);
+    });
+  });
+
   it('GIVEN an audio control on a MIDI knob WHEN the knob turns THEN it toggles once, on the rising edge', async () => {
     const { states, midiInput } = await buildAudio([{ ...audio, midiEntryPublicId: 'entry' }]);
 

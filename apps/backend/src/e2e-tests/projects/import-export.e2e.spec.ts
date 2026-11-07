@@ -335,4 +335,91 @@ describe('Project import/export', () => {
       pages: [{ name: 'Page 1' }],
     });
   });
+
+  it('GIVEN a beat bar bound by function name WHEN imported THEN it rebinds to the imported function', async () => {
+    const publicId = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+    const functionPublicId = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+    const idleBar = { mode: 'none', minThreshold: 20, maxThreshold: 80 };
+    const imported = await graphqlQuery<ImportProjectsMutation>(
+      app.getHttpAdapter().getInstance().server,
+      IMPORT_PROJECTS,
+      {
+        variables: {
+          document: {
+            schemaVersion: 13,
+            projects: [
+              {
+                publicId,
+                name: 'Imported Beat Show',
+                projectFunctions: [
+                  {
+                    publicId: functionPublicId,
+                    name: 'Chase',
+                    type: 'Sequence',
+                    sequence: { direction: 'Forward', runOrder: 'Loop', steps: [] },
+                  },
+                ],
+                virtualConsole: {
+                  schemaVersion: 1,
+                  width: 800,
+                  height: 600,
+                  pages: [
+                    {
+                      id: '22222222-2222-4222-8222-222222222222',
+                      name: 'Page 1',
+                      controls: [
+                        {
+                          id: '33333333-3333-4333-8333-333333333333',
+                          type: 'audioTriggers',
+                          x: 0,
+                          y: 0,
+                          width: 320,
+                          height: 180,
+                          label: 'Sound',
+                          backgroundColor: '#000000',
+                          bandCount: 1,
+                          audioBars: [idleBar, idleBar],
+                          beatBar: { minThreshold: 35, functionName: 'Chase' },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      },
+    );
+
+    expect(imported.errors).toBeUndefined();
+    const body = await graphqlQuery<{
+      project: { virtualConsole: { pages: { controls: { beatBar: unknown }[] }[] } } | null;
+    }>(
+      app.getHttpAdapter().getInstance().server,
+      gql`
+        query ($publicId: UUID!) {
+          project(publicId: $publicId) {
+            virtualConsole {
+              pages {
+                controls {
+                  beatBar {
+                    minThreshold
+                    functionPublicId
+                    functionName
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      { variables: { publicId } },
+    );
+    expect(body.data?.project?.virtualConsole.pages[0]?.controls[0]?.beatBar).toEqual({
+      minThreshold: 35,
+      functionPublicId,
+      functionName: null,
+    });
+  });
 });

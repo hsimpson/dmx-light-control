@@ -704,6 +704,15 @@ export const enum VirtualConsoleAudioBarMode {
   None = 'none',
 }
 
+export type VirtualConsoleBeatBarInput = {
+  /** Function name used to remap the binding on import */
+  functionName?: string | null | undefined;
+  /** Project function stepped once per beat */
+  functionPublicId?: string | null | undefined;
+  /** Bass level in percent below which an onset does not count as a beat */
+  minThreshold: number;
+};
+
 /** Whether a virtual console button latches or runs only while held */
 export const enum VirtualConsoleButtonMode {
   Flash = 'flash',
@@ -728,6 +737,8 @@ export type VirtualConsoleControlInput = {
   backgroundColor: string;
   /** Number of spectrum bands of an audio triggers control */
   bandCount?: number | null | undefined;
+  /** Beat bar of an audio triggers control */
+  beatBar?: VirtualConsoleBeatBarInput | null | undefined;
   /** Frame border color as hex */
   borderColor?: string | null | undefined;
   /** Frame border width in pixels */
@@ -1767,6 +1778,7 @@ export type VirtualConsoleControlFieldsFragment = {
       channelDefinitionPublicId: string | null;
     }> | null;
   }> | null;
+  beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
 };
 
 export type VirtualConsoleFieldsFragment = {
@@ -1993,6 +2005,11 @@ export type VirtualConsoleFieldsFragment = {
                         channelDefinitionPublicId: string | null;
                       }> | null;
                     }> | null;
+                    beatBar: {
+                      minThreshold: number;
+                      functionPublicId: string | null;
+                      functionName: string | null;
+                    } | null;
                   }> | null;
                   channelBindings: Array<{
                     projectFixturePublicId: string;
@@ -2018,6 +2035,11 @@ export type VirtualConsoleFieldsFragment = {
                       channelDefinitionPublicId: string | null;
                     }> | null;
                   }> | null;
+                  beatBar: {
+                    minThreshold: number;
+                    functionPublicId: string | null;
+                    functionName: string | null;
+                  } | null;
                 }> | null;
                 channelBindings: Array<{
                   projectFixturePublicId: string;
@@ -2043,6 +2065,7 @@ export type VirtualConsoleFieldsFragment = {
                     channelDefinitionPublicId: string | null;
                   }> | null;
                 }> | null;
+                beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -2068,6 +2091,7 @@ export type VirtualConsoleFieldsFragment = {
                   channelDefinitionPublicId: string | null;
                 }> | null;
               }> | null;
+              beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -2093,6 +2117,7 @@ export type VirtualConsoleFieldsFragment = {
                 channelDefinitionPublicId: string | null;
               }> | null;
             }> | null;
+            beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
           }> | null;
           channelBindings: Array<{
             projectFixturePublicId: string;
@@ -2118,6 +2143,7 @@ export type VirtualConsoleFieldsFragment = {
               channelDefinitionPublicId: string | null;
             }> | null;
           }> | null;
+          beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
         }> | null;
         channelBindings: Array<{
           projectFixturePublicId: string;
@@ -2143,6 +2169,7 @@ export type VirtualConsoleFieldsFragment = {
             channelDefinitionPublicId: string | null;
           }> | null;
         }> | null;
+        beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
       }> | null;
       channelBindings: Array<{
         projectFixturePublicId: string;
@@ -2168,6 +2195,7 @@ export type VirtualConsoleFieldsFragment = {
           channelDefinitionPublicId: string | null;
         }> | null;
       }> | null;
+      beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
     }>;
   }>;
 };
@@ -2493,6 +2521,11 @@ export type GetProjectQuery = {
                             channelDefinitionPublicId: string | null;
                           }> | null;
                         }> | null;
+                        beatBar: {
+                          minThreshold: number;
+                          functionPublicId: string | null;
+                          functionName: string | null;
+                        } | null;
                       }> | null;
                       channelBindings: Array<{
                         projectFixturePublicId: string;
@@ -2518,6 +2551,11 @@ export type GetProjectQuery = {
                           channelDefinitionPublicId: string | null;
                         }> | null;
                       }> | null;
+                      beatBar: {
+                        minThreshold: number;
+                        functionPublicId: string | null;
+                        functionName: string | null;
+                      } | null;
                     }> | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
@@ -2543,6 +2581,11 @@ export type GetProjectQuery = {
                         channelDefinitionPublicId: string | null;
                       }> | null;
                     }> | null;
+                    beatBar: {
+                      minThreshold: number;
+                      functionPublicId: string | null;
+                      functionName: string | null;
+                    } | null;
                   }> | null;
                   channelBindings: Array<{
                     projectFixturePublicId: string;
@@ -2568,6 +2611,11 @@ export type GetProjectQuery = {
                       channelDefinitionPublicId: string | null;
                     }> | null;
                   }> | null;
+                  beatBar: {
+                    minThreshold: number;
+                    functionPublicId: string | null;
+                    functionName: string | null;
+                  } | null;
                 }> | null;
                 channelBindings: Array<{
                   projectFixturePublicId: string;
@@ -2593,6 +2641,7 @@ export type GetProjectQuery = {
                     channelDefinitionPublicId: string | null;
                   }> | null;
                 }> | null;
+                beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -2618,6 +2667,7 @@ export type GetProjectQuery = {
                   channelDefinitionPublicId: string | null;
                 }> | null;
               }> | null;
+              beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -2643,6 +2693,7 @@ export type GetProjectQuery = {
                 channelDefinitionPublicId: string | null;
               }> | null;
             }> | null;
+            beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
           }> | null;
           channelBindings: Array<{
             projectFixturePublicId: string;
@@ -2668,6 +2719,7 @@ export type GetProjectQuery = {
               channelDefinitionPublicId: string | null;
             }> | null;
           }> | null;
+          beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
         }>;
       }>;
     };
@@ -3233,6 +3285,11 @@ export type ExportProjectsQuery = {
                               channelDefinitionPublicId: string | null;
                             }> | null;
                           }> | null;
+                          beatBar: {
+                            minThreshold: number;
+                            functionPublicId: string | null;
+                            functionName: string | null;
+                          } | null;
                         }> | null;
                         channelBindings: Array<{
                           projectFixturePublicId: string;
@@ -3258,6 +3315,11 @@ export type ExportProjectsQuery = {
                             channelDefinitionPublicId: string | null;
                           }> | null;
                         }> | null;
+                        beatBar: {
+                          minThreshold: number;
+                          functionPublicId: string | null;
+                          functionName: string | null;
+                        } | null;
                       }> | null;
                       channelBindings: Array<{
                         projectFixturePublicId: string;
@@ -3283,6 +3345,11 @@ export type ExportProjectsQuery = {
                           channelDefinitionPublicId: string | null;
                         }> | null;
                       }> | null;
+                      beatBar: {
+                        minThreshold: number;
+                        functionPublicId: string | null;
+                        functionName: string | null;
+                      } | null;
                     }> | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
@@ -3308,6 +3375,11 @@ export type ExportProjectsQuery = {
                         channelDefinitionPublicId: string | null;
                       }> | null;
                     }> | null;
+                    beatBar: {
+                      minThreshold: number;
+                      functionPublicId: string | null;
+                      functionName: string | null;
+                    } | null;
                   }> | null;
                   channelBindings: Array<{
                     projectFixturePublicId: string;
@@ -3333,6 +3405,11 @@ export type ExportProjectsQuery = {
                       channelDefinitionPublicId: string | null;
                     }> | null;
                   }> | null;
+                  beatBar: {
+                    minThreshold: number;
+                    functionPublicId: string | null;
+                    functionName: string | null;
+                  } | null;
                 }> | null;
                 channelBindings: Array<{
                   projectFixturePublicId: string;
@@ -3358,6 +3435,7 @@ export type ExportProjectsQuery = {
                     channelDefinitionPublicId: string | null;
                   }> | null;
                 }> | null;
+                beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -3383,6 +3461,7 @@ export type ExportProjectsQuery = {
                   channelDefinitionPublicId: string | null;
                 }> | null;
               }> | null;
+              beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -3408,6 +3487,7 @@ export type ExportProjectsQuery = {
                 channelDefinitionPublicId: string | null;
               }> | null;
             }> | null;
+            beatBar: { minThreshold: number; functionPublicId: string | null; functionName: string | null } | null;
           }>;
         }>;
       } | null;
@@ -4403,6 +4483,18 @@ export const VirtualConsoleControlFieldsFragmentDoc = {
               ],
             },
           },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'beatBar' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -4647,6 +4739,18 @@ export const VirtualConsoleFieldsFragmentDoc = {
                     ],
                   },
                 },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'beatBar' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
               ],
@@ -7805,6 +7909,18 @@ export const GetProjectDocument = {
               ],
             },
           },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'beatBar' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -9089,6 +9205,18 @@ export const ExportProjectsDocument = {
                     ],
                   },
                 },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'beatBar' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'minThreshold' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
               ],

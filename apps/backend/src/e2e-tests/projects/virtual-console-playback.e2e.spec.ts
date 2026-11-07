@@ -171,5 +171,56 @@ describe('Virtual console playback of the active project', () => {
 
       expect(body.errors?.[0]?.message).toContain('minThreshold must be less than maxThreshold');
     });
+
+    const saveBeatBar = async (beatBar: unknown) =>
+      graphqlQuery<{ updateProjectVirtualConsole: { virtualConsole: { pages: { controls: unknown[] }[] } } }>(
+        server,
+        `mutation ($input: UpdateProjectVirtualConsoleInput!) {
+          updateProjectVirtualConsole(input: $input) {
+            virtualConsole { pages { controls { beatBar { minThreshold functionPublicId } } } }
+          }
+        }`,
+        {
+          variables: {
+            input: {
+              publicId: await createProject(`VC Beat ${JSON.stringify(beatBar)}`),
+              virtualConsole: consoleWith([
+                {
+                  ...button,
+                  buttonMode: undefined,
+                  type: 'audioTriggers',
+                  bandCount: 1,
+                  audioBars: [
+                    { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+                    { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+                  ],
+                  beatBar,
+                },
+              ]),
+            },
+          },
+        },
+      );
+
+    it('GIVEN a beat bar WHEN saved THEN it is returned', async () => {
+      const body = await saveBeatBar({ minThreshold: 35 });
+
+      expect(body.errors).toBeUndefined();
+      expect(body.data?.updateProjectVirtualConsole.virtualConsole.pages[0]?.controls).toEqual([
+        { beatBar: { minThreshold: 35, functionPublicId: null } },
+      ]);
+    });
+
+    it('GIVEN a beat bar threshold above 100 WHEN saved THEN it is rejected as bad input', async () => {
+      const body = await saveBeatBar({ minThreshold: 101 });
+
+      expect(body.errors?.[0]?.extensions?.code).toBe('BAD_USER_INPUT');
+    });
+
+    it('GIVEN a beat bar function from outside the project WHEN saved THEN it is rejected', async () => {
+      const body = await saveBeatBar({ minThreshold: 20, functionPublicId: '44444444-4444-4444-8444-444444444444' });
+
+      expect(body.errors?.[0]?.message).toContain('does not belong to this project');
+    });
   });
 });

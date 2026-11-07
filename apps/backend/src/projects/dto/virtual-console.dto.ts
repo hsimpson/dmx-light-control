@@ -147,6 +147,38 @@ export class VirtualConsoleAudioBarInput {
 }
 
 @ObjectType()
+export class VirtualConsoleBeatBarDto {
+  @Field(() => Int, { description: 'Bass level in percent below which an onset does not count as a beat' })
+  public minThreshold: number;
+
+  @Field(() => GraphQLUUID, { nullable: true, description: 'Project function stepped once per beat' })
+  public functionPublicId?: string;
+
+  @Field({ nullable: true, description: 'Function name used to remap the binding on import' })
+  public functionName?: string;
+}
+
+@InputType()
+export class VirtualConsoleBeatBarInput {
+  @Field(() => Int, { description: 'Bass level in percent below which an onset does not count as a beat' })
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  public minThreshold: number;
+
+  @Field(() => GraphQLUUID, { nullable: true, description: 'Project function stepped once per beat' })
+  @IsOptional()
+  @Matches(UUID_PATTERN, { message: 'functionPublicId must be a UUID' })
+  public functionPublicId?: string;
+
+  @Field({ nullable: true, description: 'Function name used to remap the binding on import' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  public functionName?: string;
+}
+
+@ObjectType()
 export class VirtualConsoleControlDto {
   @Field(() => GraphQLUUID, { description: 'Stable id of this control' })
   public id: string;
@@ -244,6 +276,13 @@ export class VirtualConsoleControlDto {
   })
   @Type(() => VirtualConsoleAudioBarDto)
   public audioBars?: VirtualConsoleAudioBarDto[];
+
+  @Field(() => VirtualConsoleBeatBarDto, {
+    nullable: true,
+    description: 'Beat bar of an audio triggers control. Null on controls saved before beat bars existed.',
+  })
+  @Type(() => VirtualConsoleBeatBarDto)
+  public beatBar?: VirtualConsoleBeatBarDto;
 }
 
 @ObjectType()
@@ -445,6 +484,15 @@ export class VirtualConsoleControlInput {
   @ValidateNested({ each: true })
   @Type(() => VirtualConsoleAudioBarInput)
   public audioBars?: VirtualConsoleAudioBarInput[];
+
+  @Field(() => VirtualConsoleBeatBarInput, {
+    nullable: true,
+    description: 'Beat bar of an audio triggers control',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => VirtualConsoleBeatBarInput)
+  public beatBar?: VirtualConsoleBeatBarInput;
 }
 
 @InputType()

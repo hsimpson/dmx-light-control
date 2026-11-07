@@ -83,6 +83,101 @@ describe('VirtualConsoleAudioFields', () => {
     expect(onBarIndexChange).toHaveBeenCalledWith(3);
   });
 
+  describe('beat bar', () => {
+    const beatIndex = (control: VirtualConsoleControl) => control.audioBars?.length ?? 0;
+
+    it('GIVEN the bar list WHEN it opens THEN Beat comes after the bands and picks its own index', async () => {
+      const onBarIndexChange = vi.fn<(index: number) => void>();
+      const { user } = renderWithProviders(
+        <VirtualConsoleAudioFields
+          control={audioControl()}
+          barIndex={0}
+          onBarIndexChange={onBarIndexChange}
+          onPatch={vi.fn()}
+        />,
+      );
+
+      await user.click(screen.getByRole('combobox', { name: 'Bar' }));
+      await user.click(await screen.findByRole('option', { name: 'Beat', hidden: true }));
+
+      expect(onBarIndexChange).toHaveBeenCalledWith(9);
+    });
+
+    it('GIVEN Beat selected WHEN rendered THEN only its threshold is offered, with the default', () => {
+      const control = audioControl();
+      renderWithProviders(
+        <VirtualConsoleAudioFields
+          control={control}
+          barIndex={beatIndex(control)}
+          onBarIndexChange={vi.fn()}
+          onPatch={vi.fn()}
+        />,
+      );
+
+      expect(screen.getByRole('combobox', { name: 'Bar' })).toHaveValue('Beat');
+      expect(screen.getByRole('textbox', { name: 'Min threshold (%)' })).toHaveValue('20');
+      expect(screen.queryByRole('combobox', { name: 'Drives' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('textbox', { name: 'Max threshold (%)' })).not.toBeInTheDocument();
+    });
+
+    it('GIVEN Beat selected WHEN a threshold is typed THEN it is clamped and keeps the function', async () => {
+      const onPatch = patchMock();
+      const control = { ...audioControl(), beatBar: { minThreshold: 20, functionPublicId: 'fn-1' } };
+      const { user } = renderWithProviders(
+        <VirtualConsoleAudioFields
+          control={control}
+          barIndex={beatIndex(control)}
+          onBarIndexChange={vi.fn()}
+          onPatch={onPatch}
+        />,
+      );
+
+      const threshold = screen.getByRole('textbox', { name: 'Min threshold (%)' });
+      await user.clear(threshold);
+      await user.type(threshold, '150{Enter}');
+
+      expect(onPatch).toHaveBeenCalledWith({ beatBar: { minThreshold: 100, functionPublicId: 'fn-1' } });
+    });
+
+    it('GIVEN a control saved before beat bars existed WHEN Beat is edited THEN it gets a beat bar', async () => {
+      const onPatch = patchMock();
+      const { beatBar: _beatBar, ...legacy } = audioControl();
+      const { user } = renderWithProviders(
+        <VirtualConsoleAudioFields
+          control={legacy}
+          barIndex={beatIndex(legacy)}
+          onBarIndexChange={vi.fn()}
+          onPatch={onPatch}
+        />,
+      );
+
+      const threshold = screen.getByRole('textbox', { name: 'Min threshold (%)' });
+      await user.clear(threshold);
+      await user.type(threshold, '35{Enter}');
+
+      expect(onPatch).toHaveBeenCalledWith({ beatBar: { minThreshold: 35 } });
+    });
+
+    it('GIVEN Beat selected WHEN the band count changes THEN Beat stays selected', async () => {
+      const onBarIndexChange = vi.fn<(index: number) => void>();
+      const control = audioControl();
+      const { user } = renderWithProviders(
+        <VirtualConsoleAudioFields
+          control={control}
+          barIndex={beatIndex(control)}
+          onBarIndexChange={onBarIndexChange}
+          onPatch={vi.fn()}
+        />,
+      );
+
+      const bands = screen.getByRole('textbox', { name: 'Bands' });
+      await user.clear(bands);
+      await user.type(bands, '4{Enter}');
+
+      expect(onBarIndexChange).toHaveBeenCalledWith(5);
+    });
+  });
+
   it('GIVEN 8 bands WHEN the bar list opens THEN each band names the frequency range the analyser uses', async () => {
     const { user } = renderWithProviders(
       <VirtualConsoleAudioFields control={audioControl()} barIndex={0} onBarIndexChange={vi.fn()} onPatch={vi.fn()} />,

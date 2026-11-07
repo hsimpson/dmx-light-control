@@ -114,6 +114,36 @@ describe('virtual console channel sidebar', () => {
     expect(onPatch).toHaveBeenCalledWith({ functionPublicId: 'fn-1', channelBindings: undefined });
   });
 
+  it('GIVEN an audio bar with a function WHEN the function is cleared THEN the binding is removed', async () => {
+    const onPatch = vi.fn();
+    const { user } = renderWithProviders(
+      <VirtualConsoleChannelSidebar
+        control={{ functionPublicId: 'fn-1' }}
+        fixedKind="function"
+        fixtures={[]}
+        functions={[{ publicId: 'fn-1', name: 'Chase' }]}
+        onPatch={onPatch}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Clear function' }));
+
+    expect(onPatch).toHaveBeenCalledWith({ functionPublicId: undefined });
+  });
+
+  it('GIVEN a button bound to a function WHEN rendered THEN it can only switch kind, not clear', () => {
+    renderWithProviders(
+      <VirtualConsoleChannelSidebar
+        control={{ type: 'button', functionPublicId: 'fn-1' }}
+        fixtures={[]}
+        functions={[{ publicId: 'fn-1', name: 'Chase' }]}
+        onPatch={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('button', { name: 'Clear function' })).not.toBeInTheDocument();
+  });
+
   it('GIVEN an audio bar in channels mode WHEN rendered THEN it lists channels without a binding kind', () => {
     renderWithProviders(
       <VirtualConsoleChannelSidebar control={{}} fixedKind="channels" fixtures={[]} onPatch={vi.fn()} />,

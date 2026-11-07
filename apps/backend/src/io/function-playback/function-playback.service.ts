@@ -1,7 +1,7 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { DmxUniverseService } from '@/io/dmx/dmx-universe.service';
-import { sequenceFrame } from '@/io/function-playback/sequence-runner';
-import { SequenceProperties } from '@/projects/project-function';
+import { type SequenceChannelValue, sequenceFrame, steppedFrame } from '@/io/function-playback/sequence-runner';
+import { SequenceProperties, SequenceRunOrder } from '@/projects/project-function';
 import { ProjectFunctionRepository } from '@/projects/repositories/project-function.repository';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
@@ -10,6 +10,9 @@ const TICK_MS = 25;
 type Runner = {
   sequence: SequenceProperties;
   startedAt: number;
+  /** Set when beats drive the steps instead of their timing. */
+  stepped?: { beats: number; beatAt: number; from: SequenceChannelValue[] };
+  lastValues: SequenceChannelValue[];
 };
 
 @Injectable()
@@ -27,7 +30,10 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
 
   public onModuleInit(): void {
     this.eventEmitter.on('function.start', payload => {
-      void this.start(payload.functionPublicId);
+      void this.start(payload.functionPublicId, payload.stepped);
+    });
+    this.eventEmitter.on('function.step', payload => {
+      this.step(payload.functionPublicId);
     });
     this.eventEmitter.on('function.stop', payload => {
       this.stop(payload.functionPublicId);
@@ -51,7 +57,7 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     return [...this.runners.keys()].sort();
   }
 
-  public async start(functionPublicId: string): Promise<void> {
+  public async start(functionPublicId: string, stepped = false): Promise<void> {
     const startToken = Symbol(functionPublicId);
     this.pendingStarts.set(functionPublicId, startToken);
     const row = await this.functions.findOneByPublicId(functionPublicId);
@@ -65,10 +71,27 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     this.runners.set(functionPublicId, {
       sequence: row.properties.sequence,
       startedAt: Date.now(),
+      ...(stepped ? { stepped: { beats: 0, beatAt: Date.now(), from: [] } } : {}),
+      lastValues: [],
     });
     this.ensureTicker();
     this.tick();
     this.emitState();
+  }
+
+  /** Plays the next step of a beat-driven function at once; a free-running function keeps its own timing. */
+  public step(functionPublicId: string): void {
+    const runner = this.runners.get(functionPublicId);
+    if (!runner?.stepped) {
+      return;
+    }
+    const { runOrder, steps } = runner.sequence;
+    // Its last step plays out in full: a further beat must not cut it short.
+    if (runOrder === SequenceRunOrder.SingleShot && runner.stepped.beats >= steps.length) {
+      return;
+    }
+    runner.stepped = { beats: runner.stepped.beats + 1, beatAt: Date.now(), from: runner.lastValues };
+    this.tick();
   }
 
   public stop(functionPublicId: string): void {
@@ -90,7 +113,10 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     const now = Date.now();
     let stateChanged = false;
     for (const [functionPublicId, runner] of this.runners) {
-      const frame = sequenceFrame(runner.sequence, now - runner.startedAt);
+      const frame = runner.stepped
+        ? steppedFrame(runner.sequence, runner.stepped.beats, now - runner.stepped.beatAt, runner.stepped.from)
+        : sequenceFrame(runner.sequence, now - runner.startedAt);
+      runner.lastValues = frame.values;
       if (frame.finished) {
         this.runners.delete(functionPublicId);
         const deltas = this.universe.clearLayer(functionPublicId);

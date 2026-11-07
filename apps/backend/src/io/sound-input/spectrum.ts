@@ -1,3 +1,5 @@
+import { BeatDetector } from './beat-detector';
+
 /** Analysis window; at 48 kHz bins are ~23 Hz wide, enough to separate bass bands. */
 export const FFT_SIZE = 2048;
 /** 50 % overlap: a new frame every 1024 samples (~21 ms at 48 kHz), whatever buffer size the driver grants. */
@@ -5,6 +7,9 @@ export const FFT_HOP = FFT_SIZE / 2;
 export const SPECTRUM_MIN_HZ = 40;
 export const SPECTRUM_MAX_HZ = 16000;
 
+// Kick and bass fundamentals; hi-hats and vocals must not trigger beats.
+const BEAT_MIN_HZ = 40;
+const BEAT_MAX_HZ = 150;
 const FLOOR_DB = -60;
 const INT16_FULL_SCALE = 32768;
 const BYTES_PER_SAMPLE = 2;
@@ -42,18 +47,32 @@ export class SpectrumAnalyser {
   private powerSum: number[] = [];
   private squareSum = 0;
   private frames = 0;
+  private readonly beatDetector: BeatDetector;
+  private readonly beatBins: [number, number];
 
-  public constructor(private readonly sampleRate: number) {}
+  public constructor(private readonly sampleRate: number) {
+    this.beatDetector = new BeatDetector((FFT_HOP / sampleRate) * 1000);
+    this.beatBins = bandBins(BEAT_MIN_HZ, BEAT_MAX_HZ, sampleRate / FFT_SIZE);
+  }
 
-  public push(samples: Float64Array): void {
+  /** Analyses every full window and returns the bass level (0..1) of each beat found in them. */
+  public push(samples: Float64Array): number[] {
     const joined = new Float64Array(this.buffered.length + samples.length);
     joined.set(this.buffered);
     joined.set(samples, this.buffered.length);
+    const beats: number[] = [];
     let start = 0;
     for (; start + FFT_SIZE <= joined.length; start += FFT_HOP) {
-      this.add(analyseWindow(joined.subarray(start, start + FFT_SIZE)));
+      const analysed = analyseWindow(joined.subarray(start, start + FFT_SIZE));
+      this.add(analysed);
+      // Per window, not per emitted frame: the emit rate would average a kick away.
+      const [first, last] = this.beatBins;
+      if (this.beatDetector.push(analysed.power.slice(first, last + 1))) {
+        beats.push(decibelsToLevel(10 * Math.log10(binEnergy(analysed.power, this.beatBins))));
+      }
     }
     this.buffered = joined.slice(start);
+    return beats;
   }
 
   /** Mean frame since the previous take, or null when no full window was analysed yet. */
@@ -110,15 +129,19 @@ export function spectrumBands({ power, sampleRate }: SpectrumFrame, count: numbe
   const binHz = sampleRate / (2 * (power.length - 1));
   const ratio = SPECTRUM_MAX_HZ / SPECTRUM_MIN_HZ;
   return Array.from({ length: count }, (_, band) => {
-    const [first, last] = bandBins(
+    const bins = bandBins(
       SPECTRUM_MIN_HZ * ratio ** (band / count),
       SPECTRUM_MIN_HZ * ratio ** ((band + 1) / count),
       binHz,
     );
-    let sum = 0;
-    for (let bin = first; bin <= last; bin++) sum += power[bin] ?? 0;
-    return decibelsToLevel(10 * Math.log10(sum));
+    return decibelsToLevel(10 * Math.log10(binEnergy(power, bins)));
   });
+}
+
+function binEnergy(power: readonly number[], [first, last]: [number, number]): number {
+  let sum = 0;
+  for (let bin = first; bin <= last; bin++) sum += power[bin] ?? 0;
+  return sum;
 }
 
 /** One-pole smoothing: rises fast, falls slowly, so lights follow hits without flicker. */

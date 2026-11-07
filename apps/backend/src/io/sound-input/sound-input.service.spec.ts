@@ -80,6 +80,7 @@ describe('peakLevels', () => {
 describe('SoundInputService', () => {
   let levels: number[][];
   let spectra: SpectrumFrame[];
+  let beats: number[];
   let service: SoundInputService;
 
   beforeEach(() => {
@@ -100,12 +101,33 @@ describe('SoundInputService', () => {
     eventEmitter.on('soundInput.spectrum', payload => {
       spectra.push(payload);
     });
+    beats = [];
+    eventEmitter.on('soundInput.beat', payload => {
+      beats.push(payload.level);
+    });
     service = new SoundInputService(eventEmitter);
   });
 
   afterEach(() => {
     service.onModuleDestroy();
     vi.useRealTimers();
+  });
+
+  it('GIVEN a kick right after a level emit WHEN captured THEN the beat is not held back by the meter throttle', () => {
+    service.sync({ handle: 'StreamCam', channels: 1 });
+    const silence = Buffer.alloc(22050 * 2);
+    const kick = Buffer.alloc(8192 * 2);
+    for (let index = 0; index < 8192; index++) {
+      kick.writeInt16LE(Math.round(26000 * Math.sin((2 * Math.PI * 60 * index) / 44100)), index * 2);
+    }
+
+    audio.state.stream?.onInput(silence);
+    const levelsBeforeKick = levels.length;
+    audio.state.stream?.onInput(kick);
+
+    expect(levels).toHaveLength(levelsBeforeKick);
+    expect(beats).toHaveLength(1);
+    expect(beats[0]).toBeGreaterThan(0.5);
   });
 
   it('GIVEN an available device WHEN synced THEN opens it by name with the requested channels', () => {

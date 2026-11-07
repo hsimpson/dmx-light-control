@@ -412,6 +412,78 @@ describe('virtual-console-document', () => {
     expect(findFunctionBindings(document, 'fn-1')).toEqual([{ pageName: 'Page 1', label: 'Sound' }]);
   });
 
+  it('GIVEN a beat bar bound to a function WHEN searched THEN the audio control is reported', () => {
+    const document: VirtualConsoleDocument = {
+      ...createDefaultVirtualConsoleDocument(),
+      pages: [
+        {
+          id: 'page-1',
+          name: 'Page 1',
+          controls: [
+            {
+              ...createControl('audioTriggers', 0, 0),
+              label: 'Sound',
+              beatBar: { minThreshold: 20, functionPublicId: 'fn-1' },
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(findFunctionBindings(document, 'fn-1')).toEqual([{ pageName: 'Page 1', label: 'Sound' }]);
+    expect(findFunctionBindings(document, 'fn-2')).toEqual([]);
+  });
+
+  it('GIVEN a beat bar on a control inside a frame WHEN searched and saved THEN it is found and sent', () => {
+    const audio = {
+      ...createControl('audioTriggers', 0, 0),
+      label: 'Sound',
+      beatBar: { minThreshold: 35, functionPublicId: 'fn-1', functionName: 'Chase' },
+    };
+    const document = createDefaultVirtualConsoleDocument();
+    document.pages[0]?.controls.push({ ...createControl('frame', 0, 0), children: [audio] });
+
+    const pageName = document.pages[0]?.name;
+    const input = virtualConsoleDocumentToInput(document).pages[0]?.controls[0]?.children?.[0];
+
+    expect(findFunctionBindings(document, 'fn-1')).toEqual([{ pageName, label: 'Sound' }]);
+    expect(input?.beatBar).toEqual({ minThreshold: 35, functionPublicId: 'fn-1' });
+  });
+
+  it('GIVEN an audio control with a beat bar WHEN pasted THEN the copy keeps it', () => {
+    const beatBar = { minThreshold: 35, functionPublicId: 'fn-1' };
+
+    const pasted = cloneControlForPaste({ ...createControl('audioTriggers', 0, 0), beatBar });
+
+    expect(pasted.beatBar).toEqual(beatBar);
+  });
+
+  it('GIVEN a new audio control WHEN created THEN its beat bar has the default threshold and no function', () => {
+    expect(createControl('audioTriggers', 0, 0).beatBar).toEqual({ minThreshold: 20 });
+  });
+
+  it('GIVEN a beat bar with an export name WHEN converted to input THEN only threshold and function are sent', () => {
+    const document = createDefaultVirtualConsoleDocument();
+    document.pages[0]?.controls.push({
+      ...createControl('audioTriggers', 0, 0),
+      beatBar: { minThreshold: 35, functionPublicId: 'fn-1', functionName: 'Chase' },
+    });
+
+    const input = virtualConsoleDocumentToInput(document).pages[0]?.controls[0];
+
+    expect(input?.beatBar).toEqual({ minThreshold: 35, functionPublicId: 'fn-1' });
+  });
+
+  it('GIVEN a control saved before beat bars existed WHEN converted to input THEN none is invented', () => {
+    const { beatBar: _beatBar, ...legacy } = createControl('audioTriggers', 0, 0);
+    const document = createDefaultVirtualConsoleDocument();
+    document.pages[0]?.controls.push(legacy);
+
+    const input = virtualConsoleDocumentToInput(document).pages[0]?.controls[0];
+
+    expect(input).not.toHaveProperty('beatBar');
+  });
+
   it('GIVEN configured bars WHEN the band count changes THEN existing bars are kept and new ones are idle', () => {
     const bars = patchAudioBar(createAudioBarsFor(2), 1, { mode: 'function', functionPublicId: 'fn-1' });
 

@@ -66,6 +66,11 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
     functionPublicId
     functionName
   }
+  beatBar {
+    minThreshold
+    functionPublicId
+    functionName
+  }
 }
 
 fragment VirtualConsoleFields on VirtualConsoleDto {

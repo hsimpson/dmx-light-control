@@ -21,6 +21,7 @@ import {
   VIRTUAL_CONSOLE_SNAP_MIN,
   VirtualConsoleAudioBar,
   VirtualConsoleAudioBarMode,
+  VirtualConsoleBeatBar,
   VirtualConsoleChannelBinding,
   VirtualConsoleControl,
   VirtualConsoleControlType,
@@ -79,16 +80,24 @@ function sanitizeControlForImport(control: ImportVirtualConsoleControl): Virtual
 
 type BindingHolder = Pick<VirtualConsoleControl, 'channelBindings' | 'functionPublicId' | 'functionName'>;
 
-/** Applies a binding patch to the control and to each of its audio bars, which bind like small controls. */
+/** Applies a binding patch to the control and to each of its audio and beat bars, which bind like small controls. */
 function mapBindingHolders(
   control: VirtualConsoleControl,
   patch: (holder: BindingHolder) => BindingHolder,
 ): VirtualConsoleControl {
-  const next = { ...control, ...patch(control) };
-  return control.audioBars ? { ...next, audioBars: control.audioBars.map(bar => ({ ...bar, ...patch(bar) })) } : next;
+  return {
+    ...control,
+    ...patch(control),
+    ...(control.audioBars ? { audioBars: control.audioBars.map(bar => ({ ...bar, ...patch(bar) })) } : {}),
+    ...(control.beatBar ? { beatBar: { ...control.beatBar, ...patch(control.beatBar) } } : {}),
+  };
 }
 
-const bindingHolders = (control: VirtualConsoleControl): BindingHolder[] => [control, ...(control.audioBars ?? [])];
+const bindingHolders = (control: VirtualConsoleControl): BindingHolder[] => [
+  control,
+  ...(control.audioBars ?? []),
+  ...(control.beatBar ? [control.beatBar] : []),
+];
 
 export function sanitizeVirtualConsoleForImport(document: VirtualConsoleDocument): VirtualConsoleDocument {
   return {
@@ -304,7 +313,9 @@ function assertButton(control: VirtualConsoleControl): void {
 
 function assertAudioFieldsAllowed(control: VirtualConsoleControl): void {
   const hasAudioFields =
-    (control.bandCount ?? undefined) !== undefined || (control.audioBars ?? undefined) !== undefined;
+    (control.bandCount ?? undefined) !== undefined ||
+    (control.audioBars ?? undefined) !== undefined ||
+    (control.beatBar ?? undefined) !== undefined;
   if (hasAudioFields && control.type !== VIRTUAL_CONSOLE_CONTROL_TYPE.AudioTriggers) {
     throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have audio bars.`);
   }
@@ -325,6 +336,16 @@ function assertAudioTriggers(control: VirtualConsoleControl): void {
     throw new InvalidVirtualConsoleException('Audio triggers need one volume bar plus one bar per band.');
   }
   control.audioBars.forEach(assertAudioBar);
+  if (control.beatBar) assertBeatBar(control.beatBar);
+}
+
+function assertBeatBar({ minThreshold, functionPublicId }: VirtualConsoleBeatBar): void {
+  if (!isIntegerBetween(minThreshold, 0, 100)) {
+    throw new InvalidVirtualConsoleException('Beat bar minThreshold must be an integer between 0 and 100.');
+  }
+  if ((functionPublicId ?? undefined) !== undefined && !UUID_PATTERN.test(functionPublicId ?? '')) {
+    throw new InvalidVirtualConsoleException('Beat bar functionPublicId must be a UUID.');
+  }
 }
 
 const AUDIO_BAR_MODES: readonly string[] = Object.values(VirtualConsoleAudioBarMode);
@@ -565,9 +586,11 @@ export function removeFunctionBindings(
   document: VirtualConsoleDocument,
   functionPublicId: string,
 ): VirtualConsoleDocument {
-  const stripHolder = ({ functionPublicId: boundId }: BindingHolder): BindingHolder => ({
-    functionPublicId: boundId && boundId !== functionPublicId ? boundId : undefined,
-  });
+  // The name goes too: on a later import it would rebind a new function that merely has the same name.
+  const stripHolder = ({ functionPublicId: boundId, functionName }: BindingHolder): BindingHolder =>
+    boundId === functionPublicId
+      ? { functionPublicId: undefined, functionName: undefined }
+      : { functionPublicId: boundId ?? undefined, functionName };
 
   const stripControl = (control: VirtualConsoleControl): VirtualConsoleControl => {
     const next = mapBindingHolders(control, stripHolder);

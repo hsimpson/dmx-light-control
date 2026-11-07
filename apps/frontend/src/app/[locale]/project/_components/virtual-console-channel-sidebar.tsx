@@ -4,6 +4,7 @@ import { FixturePresetIcon } from '@/lib/fixtures/fixture-preset-icon';
 import { useTranslation } from '@/lib/i18n/use-translation';
 import { FixtureChannelPreset } from '@/shared/types/graphql/graphql';
 import { Accordion, Badge, Button, Checkbox, Group, Paper, Select, Stack, Text } from '@mantine/core';
+import { useRef } from 'react';
 import type { VirtualConsoleChannelBinding, VirtualConsoleControl } from './virtual-console-document';
 import classes from './virtual-console-view.module.css';
 
@@ -51,6 +52,7 @@ const VirtualConsoleChannelSidebar = ({
   onPatch,
 }: VirtualConsoleChannelSidebarProperties) => {
   const { t } = useTranslation();
+  const functionSelect = useRef<HTMLInputElement>(null);
   const choosesKind = fixedKind === undefined && control.type === 'button';
   const bindsFunction = fixedKind === 'function' || (choosesKind && Boolean(control.functionPublicId));
   const bindings = control.channelBindings ?? [];
@@ -109,11 +111,29 @@ const VirtualConsoleChannelSidebar = ({
           <Select
             allowDeselect={false}
             label={t({ id: 'ProjectDetail.virtualConsole.function', defaultMessage: 'Function' })}
+            clearable={fixedKind === 'function'}
+            clearButtonProps={{
+              // Mantine hides it from assistive tech, but here it is the only way to unbind the function.
+              'aria-hidden': false,
+              'aria-label': t({ id: 'ProjectDetail.virtualConsole.clearFunction', defaultMessage: 'Clear function' }),
+              tabIndex: 0,
+              // Delete here must not reach the editor's window shortcut, which removes the whole control.
+              onKeyDown: event => {
+                event.stopPropagation();
+              },
+            }}
+            ref={functionSelect}
+            onClear={() => {
+              // The clear button unmounts; without focus, the next Delete would remove the control.
+              functionSelect.current?.focus();
+            }}
             data={functions.map(fn => ({ value: fn.publicId, label: fn.name }))}
             value={control.functionPublicId ?? null}
             onChange={value => {
               if (value) {
                 onPatch({ functionPublicId: value, channelBindings: undefined });
+              } else {
+                onPatch({ functionPublicId: undefined });
               }
             }}
           />

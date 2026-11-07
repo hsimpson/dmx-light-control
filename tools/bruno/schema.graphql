@@ -2100,6 +2100,28 @@ enum VirtualConsoleAudioBarMode {
   none
 }
 
+type VirtualConsoleBeatBarDto {
+  """Function name used to remap the binding on import"""
+  functionName: String
+
+  """Project function stepped once per beat"""
+  functionPublicId: UUID
+
+  """Bass level in percent below which an onset does not count as a beat"""
+  minThreshold: Int!
+}
+
+input VirtualConsoleBeatBarInput {
+  """Function name used to remap the binding on import"""
+  functionName: String
+
+  """Project function stepped once per beat"""
+  functionPublicId: UUID
+
+  """Bass level in percent below which an onset does not count as a beat"""
+  minThreshold: Int!
+}
+
 """Whether a virtual console button latches or runs only while held"""
 enum VirtualConsoleButtonMode {
   flash
@@ -2147,6 +2169,11 @@ type VirtualConsoleControlDto {
 
   """Number of spectrum bands of an audio triggers control"""
   bandCount: Int
+
+  """
+  Beat bar of an audio triggers control. Null on controls saved before beat bars existed.
+  """
+  beatBar: VirtualConsoleBeatBarDto
 
   """Frame border color as hex"""
   borderColor: String
@@ -2230,6 +2257,9 @@ input VirtualConsoleControlInput {
 
   """Number of spectrum bands of an audio triggers control"""
   bandCount: Int
+
+  """Beat bar of an audio triggers control"""
+  beatBar: VirtualConsoleBeatBarInput
 
   """Frame border color as hex"""
   borderColor: String

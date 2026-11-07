@@ -18,6 +18,7 @@ export const VIRTUAL_CONSOLE_SNAP_MIN = 1;
 export const VIRTUAL_CONSOLE_SNAP_MAX = 128;
 export const VIRTUAL_CONSOLE_AUDIO_BANDS_MIN = 1;
 export const VIRTUAL_CONSOLE_AUDIO_BANDS_MAX = 16;
+export const VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD = 20;
 
 export const VIRTUAL_CONSOLE_CONTROL_TYPE = {
   Frame: 'frame',
@@ -102,6 +103,14 @@ export type VirtualConsoleAudioBar = {
   functionName?: string;
 };
 
+/** Steps a function on each bass onset of an audio triggers control; quieter onsets (percent) do not count. */
+export type VirtualConsoleBeatBar = {
+  minThreshold: number;
+  functionPublicId?: string;
+  /** Present in export documents to remap a function binding after re-import. */
+  functionName?: string;
+};
+
 export type VirtualConsoleControl = {
   id: string;
   type: VirtualConsoleControlType;
@@ -135,6 +144,8 @@ export type VirtualConsoleControl = {
   bandCount?: number;
   /** Volume bar followed by one bar per band (`bandCount + 1` entries). */
   audioBars?: VirtualConsoleAudioBar[];
+  /** Absent on audio triggers controls saved before beat bars existed. */
+  beatBar?: VirtualConsoleBeatBar;
 };
 
 export type VirtualConsolePage = {

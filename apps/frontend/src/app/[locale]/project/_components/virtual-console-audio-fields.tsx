@@ -5,6 +5,7 @@ import { NumberInput, Select } from '@mantine/core';
 import { useIntl } from 'react-intl';
 import {
   audioBandRangeHz,
+  beatBarOf,
   patchAudioBar,
   resizeAudioBars,
   VIRTUAL_CONSOLE_AUDIO_BANDS_MAX,
@@ -76,6 +77,9 @@ const VirtualConsoleAudioFields = ({
     );
   };
   const bar = bars[barIndex];
+  // The beat bar is selected by the index right after the band bars.
+  const beatSelected = barIndex === bars.length;
+  const beatBar = beatBarOf(control);
   const patchBar = (patch: Parameters<typeof patchAudioBar>[2]) => {
     onPatch({ audioBars: patchAudioBar(bars, barIndex, patch) });
   };
@@ -94,24 +98,42 @@ const VirtualConsoleAudioFields = ({
         value={control.bandCount ?? VIRTUAL_CONSOLE_AUDIO_BANDS_MIN}
         onCommit={bandCount => {
           onPatch({ bandCount, audioBars: resizeAudioBars(bars, bandCount) });
-          if (barIndex > bandCount) onBarIndexChange(bandCount);
+          if (beatSelected) onBarIndexChange(bandCount + 1);
+          else if (barIndex > bandCount) onBarIndexChange(bandCount);
         }}
       />
       <Select
         allowDeselect={false}
         label={t({ id: 'ProjectDetail.virtualConsole.audio.bar', defaultMessage: 'Bar' })}
-        data={bars.map((_, index) => ({
-          value: String(index),
-          label:
-            index === 0
-              ? t({ id: 'ProjectDetail.virtualConsole.audio.volume', defaultMessage: 'Volume' })
-              : bandLabel(index),
-        }))}
+        data={[
+          ...bars.map((_, index) => ({
+            value: String(index),
+            label:
+              index === 0
+                ? t({ id: 'ProjectDetail.virtualConsole.audio.volume', defaultMessage: 'Volume' })
+                : bandLabel(index),
+          })),
+          {
+            value: String(bars.length),
+            label: t({ id: 'ProjectDetail.virtualConsole.audio.beat', defaultMessage: 'Beat' }),
+          },
+        ]}
         value={String(barIndex)}
         onChange={value => {
           if (value !== null) onBarIndexChange(Number(value));
         }}
       />
+      {beatSelected ? (
+        <CommitNumberInput
+          label={t({ id: 'ProjectDetail.virtualConsole.audio.minThreshold', defaultMessage: 'Min threshold (%)' })}
+          min={0}
+          max={100}
+          value={beatBar.minThreshold}
+          onCommit={minThreshold => {
+            onPatch({ beatBar: { ...beatBar, minThreshold } });
+          }}
+        />
+      ) : null}
       {bar ? (
         <>
           <Select

@@ -31,6 +31,7 @@ import {
   findDropTarget,
   findFrameOrigin,
   insertControlInTree,
+  beatBarOf,
   patchAudioBar,
   reparentControl,
   resizedControlBounds,
@@ -510,12 +511,17 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
 
   const audioBars = selectedControl?.type === 'audioTriggers' ? (selectedControl.audioBars ?? []) : [];
   const audioBarIndex = audioBarSelection.controlId === selectedControl?.id ? audioBarSelection.index : 0;
-  const selectedBarIndex = Math.min(audioBarIndex, Math.max(0, audioBars.length - 1));
+  // The index right after the band bars selects the beat bar.
+  const selectedBarIndex = Math.min(audioBarIndex, audioBars.length);
   const selectedBar = audioBars[selectedBarIndex];
+  const selectedBeatBar =
+    selectedControl?.type === 'audioTriggers' && selectedBarIndex === audioBars.length
+      ? beatBarOf(selectedControl)
+      : undefined;
   const barKind = selectedBar?.mode === 'none' ? undefined : selectedBar?.mode;
   const channelControl =
     selectedControl?.type === 'button' || selectedControl?.type === 'slider' ? selectedControl : undefined;
-  const channelTarget = channelControl ?? (barKind ? selectedBar : undefined);
+  const channelTarget = channelControl ?? selectedBeatBar ?? (barKind ? selectedBar : undefined);
   const showChannelSidebar = channelTarget !== undefined;
 
   const applyPaneWidth = (pane: VirtualConsoleSplitPane, clientX: number) => {
@@ -724,7 +730,15 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     patchActivePageControls(updateControlInTree(activePage.controls, selection.controlId, patch));
   };
   const patchChannelTarget = (patch: Partial<Pick<VirtualConsoleControl, 'channelBindings' | 'functionPublicId'>>) => {
-    patchSelectedControl(channelControl ? patch : { audioBars: patchAudioBar(audioBars, selectedBarIndex, patch) });
+    if (channelControl) {
+      patchSelectedControl(patch);
+    } else if (selectedBeatBar) {
+      patchSelectedControl({
+        beatBar: { minThreshold: selectedBeatBar.minThreshold, functionPublicId: patch.functionPublicId },
+      });
+    } else {
+      patchSelectedControl({ audioBars: patchAudioBar(audioBars, selectedBarIndex, patch) });
+    }
   };
 
   return (
@@ -773,7 +787,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
           {channelTarget ? (
             <VirtualConsoleChannelSidebar
               control={channelTarget}
-              fixedKind={channelControl ? undefined : barKind}
+              fixedKind={channelControl ? undefined : selectedBeatBar ? 'function' : barKind}
               fixtures={data?.project?.projectFixtures ?? []}
               functions={(data?.project?.projectFunctions ?? []).map(fn => ({
                 publicId: fn.publicId,

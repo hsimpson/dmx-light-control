@@ -110,6 +110,7 @@ graphql:
                 audioBars
                 backgroundColor
                 bandCount
+                beatBar
                 borderColor
                 borderWidth
                 buttonMode

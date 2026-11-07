@@ -1,6 +1,7 @@
 import type { MidiFeedbackValues } from '@/app/[locale]/midiMapping/_components/midi-mapping-entry-values';
 import type {
   VirtualConsoleAudioBarInput,
+  VirtualConsoleBeatBarInput,
   VirtualConsoleControlInput,
   VirtualConsoleInput,
 } from '@/shared/types/graphql/graphql';
@@ -29,6 +30,7 @@ export const VIRTUAL_CONSOLE_FRAME_HEADER_PADDING_Y = 4;
 export const VIRTUAL_CONSOLE_AUDIO_BANDS_MIN = 1;
 export const VIRTUAL_CONSOLE_AUDIO_BANDS_MAX = 16;
 export const VIRTUAL_CONSOLE_AUDIO_DEFAULT_BANDS = 8;
+const VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD = 20;
 
 export const VIRTUAL_CONSOLE_RESIZE_HANDLES = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as const;
 
@@ -51,6 +53,13 @@ export type VirtualConsoleAudioBar = {
   minThreshold: number;
   maxThreshold: number;
   channelBindings?: VirtualConsoleChannelBinding[];
+  functionPublicId?: string;
+  functionName?: string;
+};
+
+/** Steps a function on each bass onset; quieter onsets (percent) do not count. */
+export type VirtualConsoleBeatBar = {
+  minThreshold: number;
   functionPublicId?: string;
   functionName?: string;
 };
@@ -83,6 +92,7 @@ export type VirtualConsoleControl = {
   feedback?: MidiFeedbackValues;
   bandCount?: number;
   audioBars?: VirtualConsoleAudioBar[];
+  beatBar?: VirtualConsoleBeatBar;
 };
 
 export type VirtualConsolePage = {
@@ -183,6 +193,7 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         foregroundColor: '#40c057',
         bandCount: VIRTUAL_CONSOLE_AUDIO_DEFAULT_BANDS,
         audioBars: createAudioBars(VIRTUAL_CONSOLE_AUDIO_DEFAULT_BANDS),
+        beatBar: { minThreshold: VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD },
         ...font,
       };
   }
@@ -199,6 +210,10 @@ export const audioBandRangeHz = (band: number, bandCount: number): { low: number
     high: AUDIO_SPECTRUM_MIN_HZ * ratio ** (band / bandCount),
   };
 };
+
+/** A control's beat bar; controls saved before beat bars existed read as the default until edited. */
+export const beatBarOf = ({ beatBar }: Pick<VirtualConsoleControl, 'beatBar'>): VirtualConsoleBeatBar =>
+  beatBar ?? { minThreshold: VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD };
 
 /** Volume bar plus one idle bar per band. */
 export const createAudioBars = (bandCount: number): VirtualConsoleAudioBar[] =>
@@ -277,6 +292,9 @@ const audioBarToInput = ({
   ...(channelBindings !== undefined && channelBindings.length > 0 ? { channelBindings } : {}),
 });
 
+const beatBarToInput = ({ functionName: _functionName, ...rest }: VirtualConsoleBeatBar): VirtualConsoleBeatBarInput =>
+  rest;
+
 const sliderOrientationToInput = (orientation: VirtualConsoleSliderOrientation): GqlVirtualConsoleSliderOrientation => {
   switch (orientation) {
     case 'horizontal':
@@ -308,6 +326,7 @@ type FunctionBindingNode = {
   controls?: readonly FunctionBindingNode[] | null;
   children?: readonly FunctionBindingNode[] | null;
   audioBars?: readonly { functionPublicId?: string | null }[] | null;
+  beatBar?: { functionPublicId?: string | null } | null;
 };
 
 export const findFunctionBindings = (
@@ -323,6 +342,7 @@ export const findFunctionBindings = (
       const bars = control.audioBars ?? [];
       if (
         control.functionPublicId === functionPublicId ||
+        control.beatBar?.functionPublicId === functionPublicId ||
         bars.some(bar => bar.functionPublicId === functionPublicId)
       ) {
         found.push({ pageName, label: control.label ?? '' });
@@ -349,6 +369,7 @@ const controlToInput = (control: VirtualConsoleControl): VirtualConsoleControlIn
     buttonMode,
     functionName: _functionName,
     audioBars,
+    beatBar,
     ...rest
   } = control;
 
@@ -361,6 +382,7 @@ const controlToInput = (control: VirtualConsoleControl): VirtualConsoleControlIn
     ...(children !== undefined ? { children: children.map(controlToInput) } : {}),
     ...(channelBindings !== undefined && channelBindings.length > 0 ? { channelBindings } : {}),
     ...(audioBars !== undefined ? { audioBars: audioBars.map(audioBarToInput) } : {}),
+    ...(beatBar !== undefined ? { beatBar: beatBarToInput(beatBar) } : {}),
   };
 };
 
