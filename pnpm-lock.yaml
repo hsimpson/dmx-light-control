@@ -330,8 +330,8 @@ importers:
         specifier: ^7.4.6
         version: 7.4.6(@fastify/websocket@11.3.6)(@parcel/watcher@2.6.0)(@types/node@26.6.6)(graphql@17.0.2)(supports-color@7.2.0)(typescript@6.0.3)
       '@graphql-tools/load':
-        specifier: ^9.1.1
-        version: 9.1.1(graphql@17.0.2)
+        specifier: ^9.1.2
+        version: 9.1.2(graphql@17.0.2)
       '@graphql-tools/url-loader':
         specifier: ^10.0.8
         version: 10.0.8(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)
@@ -2375,8 +2375,8 @@ packages:
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
-  '@graphql-tools/load@9.1.1':
-    resolution: {integrity: sha512-Mx07NfJI/ZXu1kPR+0YnDTaBYaxZJzMD53czgAeHvzIAxbTLhNDI/9XmX7aj/Pnijl20tLaPuGJKeALw9W9ywg==}
+  '@graphql-tools/load@9.1.2':
+    resolution: {integrity: sha512-r0AEpbR6vxhLKwzqjzpwqxUI6u71ykfaGTJSCK5muLun/zNB/ihm1eTDaKIkIiadtlI3XciVxikr+RCLIW36oA==}
     engines: {node: '>=22.18.0'}
     peerDependencies:
       graphql: ^16.0.0 || ^17.0.0
@@ -13018,12 +13018,11 @@ snapshots:
       p-limit: 3.1.0
       tslib: 2.9.1
 
-  '@graphql-tools/load@9.1.1(graphql@17.0.2)':
+  '@graphql-tools/load@9.1.2(graphql@17.0.2)':
     dependencies:
       '@graphql-tools/schema': 11.0.8(graphql@17.0.2)
       '@graphql-tools/utils': 13.2.1(graphql@17.0.2)
       graphql: 17.0.2
-      p-limit: 3.1.0
       tslib: 2.9.1
 
   '@graphql-tools/merge@10.0.8(graphql@17.0.2)':
@@ -18354,7 +18353,7 @@ snapshots:
     dependencies:
       '@graphql-tools/graphql-file-loader': 9.1.1(graphql@17.0.2)
       '@graphql-tools/json-file-loader': 9.0.8(graphql@17.0.2)
-      '@graphql-tools/load': 9.1.1(graphql@17.0.2)
+      '@graphql-tools/load': 9.1.2(graphql@17.0.2)
       '@graphql-tools/merge': 10.0.8(graphql@17.0.2)
       '@graphql-tools/url-loader': 10.0.8(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)
       '@graphql-tools/utils': 13.2.1(graphql@17.0.2)
