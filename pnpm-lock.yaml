@@ -168,7 +168,7 @@ importers:
     dependencies:
       '@apollo/client':
         specifier: ^4.3.5
-        version: 4.3.5(graphql-ws@6.3.0(@fastify/websocket@11.3.6)(graphql@17.0.2)(ws@8.22.1))(graphql@17.0.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)
+        version: 4.3.5(graphql-ws@6.3.0(@fastify/websocket@11.3.7)(graphql@17.0.2)(ws@8.22.1))(graphql@17.0.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)
       '@apollo/server':
         specifier: ^5.5.1
         version: 5.5.1(graphql@17.0.2)(supports-color@7.2.0)
@@ -188,8 +188,8 @@ importers:
         specifier: ^10.1.8
         version: 10.1.8
       '@fastify/websocket':
-        specifier: ^11.3.6
-        version: 11.3.6
+        specifier: ^11.3.7
+        version: 11.3.7
       '@graphql-typed-document-node/core':
         specifier: ^3.2.0
         version: 3.2.0(graphql@17.0.2)
@@ -210,7 +210,7 @@ importers:
         version: 9.7.4(@mantine/core@9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.4(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@nestjs/apollo':
         specifier: ^14.1.1
-        version: 14.1.1(@apollo/server@5.5.1(graphql@17.0.2)(supports-color@7.2.0))(@as-integrations/fastify@3.1.0(@apollo/server@5.5.1(graphql@17.0.2)(supports-color@7.2.0))(fastify@5.12.7))(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(@nestjs/graphql@14.1.0(@fastify/websocket@11.3.6)(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@17.0.2)(reflect-metadata@0.2.2)(typescript@6.0.3))(graphql@17.0.2)
+        version: 14.1.1(@apollo/server@5.5.1(graphql@17.0.2)(supports-color@7.2.0))(@as-integrations/fastify@3.1.0(@apollo/server@5.5.1(graphql@17.0.2)(supports-color@7.2.0))(fastify@5.12.7))(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(@nestjs/graphql@14.1.0(@fastify/websocket@11.3.7)(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@17.0.2)(reflect-metadata@0.2.2)(typescript@6.0.3))(graphql@17.0.2)
       '@nestjs/common':
         specifier: ^12.3.2
         version: 12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0)
@@ -225,7 +225,7 @@ importers:
         version: 12.0.1(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)
       '@nestjs/graphql':
         specifier: ^14.1.0
-        version: 14.1.0(@fastify/websocket@11.3.6)(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@17.0.2)(reflect-metadata@0.2.2)(typescript@6.0.3)
+        version: 14.1.0(@fastify/websocket@11.3.7)(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@17.0.2)(reflect-metadata@0.2.2)(typescript@6.0.3)
       '@nestjs/platform-express':
         specifier: ^12.3.2
         version: 12.3.2(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(supports-color@7.2.0)
@@ -328,13 +328,13 @@ importers:
         version: 6.18.0
       '@graphql-codegen/cli':
         specifier: ^7.4.6
-        version: 7.4.6(@fastify/websocket@11.3.6)(@parcel/watcher@2.6.0)(@types/node@26.6.6)(graphql@17.0.2)(supports-color@7.2.0)(typescript@6.0.3)
+        version: 7.4.6(@fastify/websocket@11.3.7)(@parcel/watcher@2.6.0)(@types/node@26.6.6)(graphql@17.0.2)(supports-color@7.2.0)(typescript@6.0.3)
       '@graphql-tools/load':
         specifier: ^9.1.1
         version: 9.1.1(graphql@17.0.2)
       '@graphql-tools/url-loader':
         specifier: ^10.0.8
-        version: 10.0.8(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)
+        version: 10.0.8(@fastify/websocket@11.3.7)(@types/node@26.6.6)(graphql@17.0.2)
       '@nestjs/schematics':
         specifier: ^12.0.12
         version: 12.0.12(prettier@3.9.10)(typescript@6.0.3)
@@ -487,7 +487,7 @@ importers:
         version: 7.1.1(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)
       graphql-config:
         specifier: ^6.0.0
-        version: 6.0.0(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)(typescript@6.0.3)
+        version: 6.0.0(@fastify/websocket@11.3.7)(@types/node@26.6.6)(graphql@17.0.2)(typescript@6.0.3)
       graphql-tag:
         specifier: ^2.12.7
         version: 2.12.7(graphql@17.0.2)
@@ -2026,8 +2026,8 @@ packages:
   '@fastify/static@10.1.8':
     resolution: {integrity: sha512-3CbgWOXJX8f46xxsuOgQl9h0lyQQiABMG40kxRF5PWJk4LyBW5m3mLZoW5glnm2TUTC1gVFCBnqOt5S6zIIIrg==}
 
-  '@fastify/websocket@11.3.6':
-    resolution: {integrity: sha512-5Hg0mokH6vcDc7s0CHtlhuHdcbknFDUE3bGY4IM4Pn+2YQbS5XGztMBxsgYvCODWz6P+fOYxcwxnUnBXjd0NbA==}
+  '@fastify/websocket@11.3.7':
+    resolution: {integrity: sha512-fkkS87CkAOY/MzvJrB94S729RxvIbLHXv2LNGkPifli4/q4IdeicpcFoxgJ3oVmIRVNSi4W6FZai5AmRhzhhTw==}
 
   '@fig/complete-commander@3.2.0':
     resolution: {integrity: sha512-1Holl3XtRiANVKURZwgpjCnPuV4RsHp+XC0MhgvyAX/avQwj7F2HUItYOvGi/bXjJCkEzgBZmVfCr0HBA+q+Bw==}
@@ -10933,7 +10933,7 @@ snapshots:
     dependencies:
       graphql: 17.0.2
 
-  '@apollo/client@4.3.5(graphql-ws@6.3.0(@fastify/websocket@11.3.6)(graphql@17.0.2)(ws@8.22.1))(graphql@17.0.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)':
+  '@apollo/client@4.3.5(graphql-ws@6.3.0(@fastify/websocket@11.3.7)(graphql@17.0.2)(ws@8.22.1))(graphql@17.0.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@17.0.2)
       '@wry/caches': 1.0.1
@@ -10945,7 +10945,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.9.1
     optionalDependencies:
-      graphql-ws: 6.3.0(@fastify/websocket@11.3.6)(graphql@17.0.2)(ws@8.22.1)
+      graphql-ws: 6.3.0(@fastify/websocket@11.3.7)(graphql@17.0.2)(ws@8.22.1)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
@@ -12533,7 +12533,7 @@ snapshots:
       fastq: 1.20.3
       glob: 13.0.6
 
-  '@fastify/websocket@11.3.6':
+  '@fastify/websocket@11.3.7':
     dependencies:
       duplexify: 4.1.3
       fastify-plugin: 6.0.1
@@ -12636,7 +12636,7 @@ snapshots:
       graphql: 17.0.2
       tslib: 2.9.1
 
-  '@graphql-codegen/cli@7.4.6(@fastify/websocket@11.3.6)(@parcel/watcher@2.6.0)(@types/node@26.6.6)(graphql@17.0.2)(supports-color@7.2.0)(typescript@6.0.3)':
+  '@graphql-codegen/cli@7.4.6(@fastify/websocket@11.3.7)(@parcel/watcher@2.6.0)(@types/node@26.6.6)(graphql@17.0.2)(supports-color@7.2.0)(typescript@6.0.3)':
     dependencies:
       '@babel/generator': 7.29.12
       '@babel/template': 7.29.7
@@ -12652,7 +12652,7 @@ snapshots:
       '@graphql-tools/json-file-loader': 8.0.38(graphql@17.0.2)
       '@graphql-tools/load': 8.1.21(graphql@17.0.2)
       '@graphql-tools/merge': 9.2.8(graphql@17.0.2)
-      '@graphql-tools/url-loader': 9.1.14(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)
+      '@graphql-tools/url-loader': 9.1.14(@fastify/websocket@11.3.7)(@types/node@26.6.6)(graphql@17.0.2)
       '@graphql-tools/utils': 12.1.0(graphql@17.0.2)
       '@inquirer/prompts': 8.6.0(@types/node@26.6.6)
       '@whatwg-node/fetch': 0.10.13
@@ -12661,7 +12661,7 @@ snapshots:
       debounce: 3.0.0
       detect-indent: 7.0.2
       graphql: 17.0.2
-      graphql-config: 5.1.8(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)(typescript@6.0.3)
+      graphql-config: 5.1.8(@fastify/websocket@11.3.7)(@types/node@26.6.6)(graphql@17.0.2)(typescript@6.0.3)
       is-glob: 4.0.3
       jiti: 2.7.0
       json-to-pretty-yaml: 1.2.2
@@ -12852,13 +12852,13 @@ snapshots:
       '@graphql-tools/utils': 12.1.0(graphql@17.0.2)
       graphql: 17.0.2
 
-  '@graphql-tools/executor-graphql-ws@3.2.0(@fastify/websocket@11.3.6)(graphql@17.0.2)':
+  '@graphql-tools/executor-graphql-ws@3.2.0(@fastify/websocket@11.3.7)(graphql@17.0.2)':
     dependencies:
       '@graphql-tools/executor-common': 1.1.0(graphql@17.0.2)
       '@graphql-tools/utils': 12.1.0(graphql@17.0.2)
       '@whatwg-node/disposablestack': 0.0.6
       graphql: 17.0.2
-      graphql-ws: 6.4.1(@fastify/websocket@11.3.6)(graphql@17.0.2)(ws@8.22.1)
+      graphql-ws: 6.4.1(@fastify/websocket@11.3.7)(graphql@17.0.2)(ws@8.22.1)
       isows: 1.0.7(ws@8.22.1)
       tslib: 2.9.1
       ws: 8.22.1
@@ -13064,9 +13064,9 @@ snapshots:
       graphql: 17.0.2
       tslib: 2.9.1
 
-  '@graphql-tools/url-loader@10.0.8(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)':
+  '@graphql-tools/url-loader@10.0.8(@fastify/websocket@11.3.7)(@types/node@26.6.6)(graphql@17.0.2)':
     dependencies:
-      '@graphql-tools/executor-graphql-ws': 3.2.0(@fastify/websocket@11.3.6)(graphql@17.0.2)
+      '@graphql-tools/executor-graphql-ws': 3.2.0(@fastify/websocket@11.3.7)(graphql@17.0.2)
       '@graphql-tools/executor-http': 3.5.0(@types/node@26.6.6)(graphql@17.0.2)
       '@graphql-tools/executor-legacy-ws': 2.0.8(graphql@17.0.2)
       '@graphql-tools/utils': 13.2.1(graphql@17.0.2)
@@ -13086,9 +13086,9 @@ snapshots:
       - crossws
       - utf-8-validate
 
-  '@graphql-tools/url-loader@9.1.14(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)':
+  '@graphql-tools/url-loader@9.1.14(@fastify/websocket@11.3.7)(@types/node@26.6.6)(graphql@17.0.2)':
     dependencies:
-      '@graphql-tools/executor-graphql-ws': 3.2.0(@fastify/websocket@11.3.6)(graphql@17.0.2)
+      '@graphql-tools/executor-graphql-ws': 3.2.0(@fastify/websocket@11.3.7)(graphql@17.0.2)
       '@graphql-tools/executor-http': 3.5.0(@types/node@26.6.6)(graphql@17.0.2)
       '@graphql-tools/executor-legacy-ws': 1.1.39(graphql@17.0.2)
       '@graphql-tools/utils': 12.1.0(graphql@17.0.2)
@@ -13933,12 +13933,12 @@ snapshots:
       '@tybys/wasm-util': 0.10.4
     optional: true
 
-  '@nestjs/apollo@14.1.1(@apollo/server@5.5.1(graphql@17.0.2)(supports-color@7.2.0))(@as-integrations/fastify@3.1.0(@apollo/server@5.5.1(graphql@17.0.2)(supports-color@7.2.0))(fastify@5.12.7))(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(@nestjs/graphql@14.1.0(@fastify/websocket@11.3.6)(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@17.0.2)(reflect-metadata@0.2.2)(typescript@6.0.3))(graphql@17.0.2)':
+  '@nestjs/apollo@14.1.1(@apollo/server@5.5.1(graphql@17.0.2)(supports-color@7.2.0))(@as-integrations/fastify@3.1.0(@apollo/server@5.5.1(graphql@17.0.2)(supports-color@7.2.0))(fastify@5.12.7))(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(@nestjs/graphql@14.1.0(@fastify/websocket@11.3.7)(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@17.0.2)(reflect-metadata@0.2.2)(typescript@6.0.3))(graphql@17.0.2)':
     dependencies:
       '@apollo/server': 5.5.1(graphql@17.0.2)(supports-color@7.2.0)
       '@nestjs/common': 12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0)
       '@nestjs/core': 12.3.2(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/platform-express@12.3.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/graphql': 14.1.0(@fastify/websocket@11.3.6)(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@17.0.2)(reflect-metadata@0.2.2)(typescript@6.0.3)
+      '@nestjs/graphql': 14.1.0(@fastify/websocket@11.3.7)(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@17.0.2)(reflect-metadata@0.2.2)(typescript@6.0.3)
       graphql: 17.0.2
       iterall: 1.3.0
       lodash.omit: 4.18.0
@@ -13990,7 +13990,7 @@ snapshots:
       '@nestjs/core': 12.3.2(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/platform-express@12.3.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       eventemitter2: 6.4.9
 
-  '@nestjs/graphql@14.1.0(@fastify/websocket@11.3.6)(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@17.0.2)(reflect-metadata@0.2.2)(typescript@6.0.3)':
+  '@nestjs/graphql@14.1.0(@fastify/websocket@11.3.7)(@nestjs/common@12.3.2(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.3.2)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@17.0.2)(reflect-metadata@0.2.2)(typescript@6.0.3)':
     dependencies:
       '@graphql-tools/merge': 9.2.8(graphql@17.0.2)
       '@graphql-tools/schema': 10.1.5(graphql@17.0.2)
@@ -14002,7 +14002,7 @@ snapshots:
       es-toolkit: 1.52.0
       graphql: 17.0.2
       graphql-tag: 2.12.7(graphql@17.0.2)
-      graphql-ws: 6.3.0(@fastify/websocket@11.3.6)(graphql@17.0.2)(ws@8.22.0)
+      graphql-ws: 6.3.0(@fastify/websocket@11.3.7)(graphql@17.0.2)(ws@8.22.0)
       normalize-path: 3.0.0
       reflect-metadata: 0.2.2
       tinyglobby: 0.2.17
@@ -18328,13 +18328,13 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  graphql-config@5.1.8(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)(typescript@6.0.3):
+  graphql-config@5.1.8(@fastify/websocket@11.3.7)(@types/node@26.6.6)(graphql@17.0.2)(typescript@6.0.3):
     dependencies:
       '@graphql-tools/graphql-file-loader': 8.1.24(graphql@17.0.2)
       '@graphql-tools/json-file-loader': 8.0.38(graphql@17.0.2)
       '@graphql-tools/load': 8.1.21(graphql@17.0.2)
       '@graphql-tools/merge': 9.2.8(graphql@17.0.2)
-      '@graphql-tools/url-loader': 9.1.14(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)
+      '@graphql-tools/url-loader': 9.1.14(@fastify/websocket@11.3.7)(@types/node@26.6.6)(graphql@17.0.2)
       '@graphql-tools/utils': 12.1.0(graphql@17.0.2)
       cosmiconfig: 8.3.6(typescript@6.0.3)
       graphql: 17.0.2
@@ -18350,13 +18350,13 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  graphql-config@6.0.0(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)(typescript@6.0.3):
+  graphql-config@6.0.0(@fastify/websocket@11.3.7)(@types/node@26.6.6)(graphql@17.0.2)(typescript@6.0.3):
     dependencies:
       '@graphql-tools/graphql-file-loader': 9.1.1(graphql@17.0.2)
       '@graphql-tools/json-file-loader': 9.0.8(graphql@17.0.2)
       '@graphql-tools/load': 9.1.1(graphql@17.0.2)
       '@graphql-tools/merge': 10.0.8(graphql@17.0.2)
-      '@graphql-tools/url-loader': 10.0.8(@fastify/websocket@11.3.6)(@types/node@26.6.6)(graphql@17.0.2)
+      '@graphql-tools/url-loader': 10.0.8(@fastify/websocket@11.3.7)(@types/node@26.6.6)(graphql@17.0.2)
       '@graphql-tools/utils': 13.2.1(graphql@17.0.2)
       cosmiconfig: 8.3.6(typescript@6.0.3)
       graphql: 17.0.2
@@ -18382,26 +18382,26 @@ snapshots:
       graphql: 17.0.2
       tslib: 2.9.1
 
-  graphql-ws@6.3.0(@fastify/websocket@11.3.6)(graphql@17.0.2)(ws@8.22.0):
+  graphql-ws@6.3.0(@fastify/websocket@11.3.7)(graphql@17.0.2)(ws@8.22.0):
     dependencies:
       graphql: 17.0.2
     optionalDependencies:
-      '@fastify/websocket': 11.3.6
+      '@fastify/websocket': 11.3.7
       ws: 8.22.0
 
-  graphql-ws@6.3.0(@fastify/websocket@11.3.6)(graphql@17.0.2)(ws@8.22.1):
+  graphql-ws@6.3.0(@fastify/websocket@11.3.7)(graphql@17.0.2)(ws@8.22.1):
     dependencies:
       graphql: 17.0.2
     optionalDependencies:
-      '@fastify/websocket': 11.3.6
+      '@fastify/websocket': 11.3.7
       ws: 8.22.1
     optional: true
 
-  graphql-ws@6.4.1(@fastify/websocket@11.3.6)(graphql@17.0.2)(ws@8.22.1):
+  graphql-ws@6.4.1(@fastify/websocket@11.3.7)(graphql@17.0.2)(ws@8.22.1):
     dependencies:
       graphql: 17.0.2
     optionalDependencies:
-      '@fastify/websocket': 11.3.6
+      '@fastify/websocket': 11.3.7
       ws: 8.22.1
 
   graphql@17.0.2: {}
