@@ -59,7 +59,7 @@
     "@types/three": "^0.187.0",
     "@types/w3c-web-usb": "^1.0.14",
     "@types/wait-on": "^5.3.4",
-    "@vitejs/plugin-react": "^6.1.2",
+    "@vitejs/plugin-react": "^6.2.1",
     "@vitest/coverage-istanbul": "^5.0.5",
     "@vitest/coverage-v8": "^5.0.5",
     "@vitest/ui": "~5.0.5",
