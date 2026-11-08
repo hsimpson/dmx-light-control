@@ -370,7 +370,7 @@ importers:
         version: 24.0.3(86e5f706c4b2c316dc97e9b52dbf5256)
       '@nx/rspack':
         specifier: 24.0.3
-        version: 24.0.3(1988e8bb18fbfb59a11457b07f6a72d6)
+        version: 24.0.3(8ec23c32ede4dd86343998991bd03d30)
       '@nx/vite':
         specifier: 24.0.3
         version: 24.0.3(@babel/traverse@7.29.12(supports-color@7.2.0))(@nx/eslint@24.0.3(e2a45c034e29669093eeb8d5cdfb54ca))(@swc-node/register@1.12.1(@swc/core@1.16.21(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@7.2.0)(typescript@6.0.3))(@swc/cli@0.8.2(@swc/core@1.16.21(@swc/helpers@0.5.23))(supports-color@7.2.0))(@swc/core@1.16.21(@swc/helpers@0.5.23))(nx@24.0.3(@swc-node/register@1.12.1(@swc/core@1.16.21(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@7.2.0)(typescript@6.0.3))(@swc/core@1.16.21(@swc/helpers@0.5.23)))(supports-color@7.2.0)(typescript@6.0.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(less@4.8.1(supports-color@7.2.0))(sass-embedded@1.107.1)(sass@1.107.1)(sugarss@5.0.1(postcss@8.5.32))(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.0))(vitest@5.0.5)
@@ -384,8 +384,8 @@ importers:
         specifier: ^1.64.1
         version: 1.64.1
       '@rspack/cli':
-        specifier: ^2.3.0
-        version: 2.3.0(@rspack/core@2.3.0(@module-federation/runtime-tools@2.5.1(node-fetch@3.3.2))(@swc/helpers@0.5.23))
+        specifier: ^2.3.1
+        version: 2.3.1(@rspack/core@2.3.0(@module-federation/runtime-tools@2.5.1(node-fetch@3.3.2))(@swc/helpers@0.5.23))
       '@rspack/core':
         specifier: ^2.3.0
         version: 2.3.0(@module-federation/runtime-tools@2.5.1(node-fetch@3.3.2))(@swc/helpers@0.5.23)
@@ -4278,8 +4278,8 @@ packages:
   '@rspack/binding@2.3.0':
     resolution: {integrity: sha512-rh9S5xvGVs73gdqMDMYXi3SHUfCWIChlL7a8zaYF8+1HLtIgdMyxa100f1ifAKlr8VoyFUv3xrfGLBaoxwjU5g==}
 
-  '@rspack/cli@2.3.0':
-    resolution: {integrity: sha512-DZ9iF3BeMwb/PqUlY3sX3rZgxS7LnuGhmiyhb6zLsBMjGyTCyXZPfCB6OIf/gZyIAMdNzc3j6GLXX6hD8ysENQ==}
+  '@rspack/cli@2.3.1':
+    resolution: {integrity: sha512-zK+Uj1XyX7a+a+SdlM5/kHEcUIWNwTXRM/4FQXEkH3FlC/c8r6dPI07kPCAa9yogF3xbfMrmXBO/4/4ip1K9VA==}
     hasBin: true
     peerDependencies:
       '@rspack/core': ^2.3.0-0
@@ -14497,7 +14497,7 @@ snapshots:
       - vite
       - vitest
 
-  '@nx/rspack@24.0.3(1988e8bb18fbfb59a11457b07f6a72d6)':
+  '@nx/rspack@24.0.3(8ec23c32ede4dd86343998991bd03d30)':
     dependencies:
       '@nx/devkit': 24.0.3(nx@24.0.3(@swc-node/register@1.12.1(@swc/core@1.16.21(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@7.2.0)(typescript@6.0.3))(@swc/core@1.16.21(@swc/helpers@0.5.23)))
       '@nx/js': 24.0.3(@babel/traverse@7.29.12(supports-color@7.2.0))(@swc-node/register@1.12.1(@swc/core@1.16.21(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@7.2.0)(typescript@6.0.3))(@swc/cli@0.8.2(@swc/core@1.16.21(@swc/helpers@0.5.23))(supports-color@7.2.0))(@swc/core@1.16.21(@swc/helpers@0.5.23))(nx@24.0.3(@swc-node/register@1.12.1(@swc/core@1.16.21(@swc/helpers@0.5.23))(@swc/types@0.1.28)(supports-color@7.2.0)(typescript@6.0.3))(@swc/core@1.16.21(@swc/helpers@0.5.23)))(supports-color@7.2.0)
@@ -14525,7 +14525,7 @@ snapshots:
       webpack: 5.111.0(@swc/core@1.16.21(@swc/helpers@0.5.23))(cssnano@7.1.9(postcss@8.5.32))(csso@5.0.5)(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.32)(sharp@0.35.5(@types/node@26.6.6))(svgo@4.1.0)(webpack-cli@7.2.3)
       webpack-node-externals: 3.0.0
     optionalDependencies:
-      '@rspack/cli': 2.3.0(@rspack/core@2.3.0(@module-federation/runtime-tools@2.5.1(node-fetch@3.3.2))(@swc/helpers@0.5.23))
+      '@rspack/cli': 2.3.1(@rspack/core@2.3.0(@module-federation/runtime-tools@2.5.1(node-fetch@3.3.2))(@swc/helpers@0.5.23))
       '@rspack/core': 2.3.0(@module-federation/runtime-tools@2.5.1(node-fetch@3.3.2))(@swc/helpers@0.5.23)
     transitivePeerDependencies:
       - '@babel/traverse'
@@ -15034,7 +15034,7 @@ snapshots:
       '@rspack/binding-win32-ia32-msvc': 2.3.0
       '@rspack/binding-win32-x64-msvc': 2.3.0
 
-  '@rspack/cli@2.3.0(@rspack/core@2.3.0(@module-federation/runtime-tools@2.5.1(node-fetch@3.3.2))(@swc/helpers@0.5.23))':
+  '@rspack/cli@2.3.1(@rspack/core@2.3.0(@module-federation/runtime-tools@2.5.1(node-fetch@3.3.2))(@swc/helpers@0.5.23))':
     dependencies:
       '@rspack/core': 2.3.0(@module-federation/runtime-tools@2.5.1(node-fetch@3.3.2))(@swc/helpers@0.5.23)
 
