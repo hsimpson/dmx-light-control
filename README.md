@@ -5,6 +5,7 @@
 - Install Docker and Docker Compose for running the local database. It doesn't matter which docker engine you use, as long as it supports `docker` and `docker compose`.
 - Install Node.js **26.13.0** (see `package.json` `engines`).
 - Install pnpm **12.17.0** (pinned in `package.json` `packageManager` / `devEngines`; Corepack and Dependabot require an exact version).
+- On Linux (Debian/Ubuntu), install the system libraries with `sudo apt-get install libasound2-dev libpulse0`. The RtAudio build bundled with `audify` links against `libasound.so.2`, `libpulse.so.0` and `libpulse-simple.so.0` at load time, so the backend and its tests do not start without them.
 - Install project dependencies:
 
 ```bash
