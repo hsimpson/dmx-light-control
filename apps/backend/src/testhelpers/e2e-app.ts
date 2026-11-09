@@ -1,3 +1,4 @@
+import { registerGlobals } from '@/app-globals';
 import { AppModule } from '@/app.module';
 import { registerHttpPlugins } from '@/http-plugins';
 import { IoDeviceDiscoveryService } from '@/io/devices/io-device-discovery.service';
@@ -33,6 +34,7 @@ export async function createE2eApp(): Promise<NestFastifyApplication> {
     .compile();
 
   const app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+  registerGlobals(app);
   await registerHttpPlugins(app);
   await app.init();
   await app.getHttpAdapter().getInstance().ready();

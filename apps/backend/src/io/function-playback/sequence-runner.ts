@@ -10,6 +10,8 @@ export type SequenceFrame = {
   finished: boolean;
 };
 
+export type StepTiming = Pick<SequenceStep, 'fadeIn' | 'hold' | 'fadeOut'>;
+
 type LevelMap = Map<number, number>;
 
 function targetMap(step: SequenceStep): LevelMap {
@@ -72,6 +74,34 @@ function toList(levels: LevelMap): SequenceChannelValue[] {
   return [...levels.entries()]
     .sort((left, right) => left[0] - right[0])
     .map(([channel, value]) => ({ channel, value }));
+}
+
+/**
+ * Output of a beat-driven sequence: `beats` is how many beats arrived so far, each one plays the next step once
+ * with its own timing, or with `timing` when given. `from` is the output at the last beat, which that step fades in from.
+ */
+export function steppedFrame(
+  sequence: SequenceProperties,
+  beats: number,
+  elapsedMs: number,
+  from: readonly SequenceChannelValue[],
+  timing?: StepTiming,
+): SequenceFrame {
+  const steps = orderedSteps(sequence);
+  const singleShot = sequence.runOrder === SequenceRunOrder.SingleShot;
+  if (steps.length === 0) {
+    return { values: [], finished: true };
+  }
+  const played = beats > 0 ? steps[playIndex(beats - 1, steps.length, sequence.runOrder)] : undefined;
+  if (played === undefined) {
+    return { values: [], finished: false };
+  }
+  const step = timing ? { ...played, ...timing } : played;
+  const playedOut = elapsedMs >= stepDuration(step);
+  const levels = playedOut
+    ? endState(step)
+    : sample(step, new Map(from.map(({ channel, value }) => [channel, value])), elapsedMs);
+  return { values: toList(levels), finished: singleShot && playedOut && beats === steps.length };
 }
 
 export function sequenceFrame(sequence: SequenceProperties, elapsedMs: number): SequenceFrame {

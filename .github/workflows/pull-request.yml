@@ -27,7 +27,7 @@ jobs:
           filter: tree:0
 
       - name: install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y libasound2-dev
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev libpulse0
 
       - name: setup node
         uses: actions/setup-node@v7
@@ -56,7 +56,7 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           name: Vitest
-          path: '**/test.report.xml'
+          path: "**/test.report.xml"
           reporter: java-junit
 
       - name: merge coverage reports

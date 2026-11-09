@@ -899,11 +899,19 @@ type ImportProjectsPayload {
 }
 
 type IoDeviceDto {
-  """Device kind (DMX serial output or MIDI controller)"""
+  """Captured channels of a sound input: 1 (mono) or 2 (stereo)"""
+  audioChannels: Int
+
+  """Device kind (DMX serial output, MIDI controller or sound input)"""
   kind: IoDeviceKind!
 
   """USB manufacturer name"""
   manufacturer: String
+
+  """
+  Highest channel count a sound input can capture; only set on available devices
+  """
+  maxInputChannels: Int
 
   """
   Public ID of the MIDI mapping assigned to this MIDI device in the project
@@ -929,7 +937,10 @@ type IoDeviceDto {
 }
 
 input IoDeviceInput {
-  """Device kind (DMX serial output or MIDI controller)"""
+  """Captured channels of a sound input: 1 (mono) or 2 (stereo)"""
+  audioChannels: Int
+
+  """Device kind (DMX serial output, MIDI controller or sound input)"""
   kind: IoDeviceKind!
 
   """USB manufacturer name"""
@@ -962,14 +973,23 @@ input IoDeviceInput {
 enum IoDeviceKind {
   DmxSerial
   Midi
+  SoundInput
 }
 
 type IoDeviceStateDto {
-  """Device kind (DMX serial output or MIDI controller)"""
+  """Captured channels of a sound input: 1 (mono) or 2 (stereo)"""
+  audioChannels: Int
+
+  """Device kind (DMX serial output, MIDI controller or sound input)"""
   kind: IoDeviceKind!
 
   """USB manufacturer name"""
   manufacturer: String
+
+  """
+  Highest channel count a sound input can capture; only set on available devices
+  """
+  maxInputChannels: Int
 
   """
   Public ID of the MIDI mapping assigned to this MIDI device in the project
@@ -1637,7 +1657,7 @@ enum ProjectFunctionType {
 
 type Query {
   """
-  USB DMX outputs and MIDI controllers currently connected to the backend host
+  USB DMX outputs, MIDI controllers and sound inputs currently connected to the backend host
   """
   availableIoDevices: [IoDeviceDto!]!
 
@@ -2033,6 +2053,107 @@ input UpdateProjectVirtualConsoleInput {
   virtualConsole: VirtualConsoleInput!
 }
 
+type VirtualConsoleAudioBarDto {
+  """Fixture channels this bar drives"""
+  channelBindings: [VirtualConsoleChannelBindingDto!]
+
+  """Function name used to remap the binding on import"""
+  functionName: String
+
+  """Project function this bar starts and stops"""
+  functionPublicId: UUID
+
+  """Level in percent above which channels are full and a function starts"""
+  maxThreshold: Int!
+
+  """Level in percent below which channels are 0 and a function stops"""
+  minThreshold: Int!
+
+  """What this bar drives"""
+  mode: VirtualConsoleAudioBarMode!
+}
+
+input VirtualConsoleAudioBarInput {
+  """Fixture channels this bar drives"""
+  channelBindings: [VirtualConsoleChannelBindingInput!]
+
+  """Function name used to remap the binding on import"""
+  functionName: String
+
+  """Project function this bar starts and stops"""
+  functionPublicId: UUID
+
+  """Level in percent above which channels are full and a function starts"""
+  maxThreshold: Int!
+
+  """Level in percent below which channels are 0 and a function stops"""
+  minThreshold: Int!
+
+  """What this bar drives"""
+  mode: VirtualConsoleAudioBarMode!
+}
+
+"""What an audio triggers bar drives"""
+enum VirtualConsoleAudioBarMode {
+  channels
+  function
+  none
+}
+
+type VirtualConsoleBeatBarDto {
+  """Function name used to remap the binding on import"""
+  functionName: String
+
+  """Project function stepped once per beat"""
+  functionPublicId: UUID
+
+  """Bass level in percent below which an onset does not count as a beat"""
+  minThreshold: Int!
+
+  """
+  Step timing that follows the beat. Null: each step keeps the sequence timing.
+  """
+  timing: VirtualConsoleBeatTimingDto
+}
+
+input VirtualConsoleBeatBarInput {
+  """Function name used to remap the binding on import"""
+  functionName: String
+
+  """Project function stepped once per beat"""
+  functionPublicId: UUID
+
+  """Bass level in percent below which an onset does not count as a beat"""
+  minThreshold: Int!
+
+  """
+  Step timing that follows the beat. Null: each step keeps the sequence timing.
+  """
+  timing: VirtualConsoleBeatTimingInput
+}
+
+type VirtualConsoleBeatTimingDto {
+  """Fade in of each step in percent of the time between beats"""
+  fadeIn: Int!
+
+  """Fade out of each step in percent of the time between beats"""
+  fadeOut: Int!
+
+  """Hold of each step in percent of the time between beats"""
+  hold: Int!
+}
+
+input VirtualConsoleBeatTimingInput {
+  """Fade in of each step in percent of the time between beats"""
+  fadeIn: Int!
+
+  """Fade out of each step in percent of the time between beats"""
+  fadeOut: Int!
+
+  """Hold of each step in percent of the time between beats"""
+  hold: Int!
+}
+
 """Whether a virtual console button latches or runs only while held"""
 enum VirtualConsoleButtonMode {
   flash
@@ -2072,8 +2193,19 @@ input VirtualConsoleChannelBindingInput {
 }
 
 type VirtualConsoleControlDto {
+  """Volume bar followed by one bar per band of an audio triggers control"""
+  audioBars: [VirtualConsoleAudioBarDto!]
+
   """Background color as hex"""
   backgroundColor: String!
+
+  """Number of spectrum bands of an audio triggers control"""
+  bandCount: Int
+
+  """
+  Beat bar of an audio triggers control. Null on controls saved before beat bars existed.
+  """
+  beatBar: VirtualConsoleBeatBarDto
 
   """Frame border color as hex"""
   borderColor: String
@@ -2149,8 +2281,17 @@ type VirtualConsoleControlDto {
 }
 
 input VirtualConsoleControlInput {
+  """Volume bar followed by one bar per band of an audio triggers control"""
+  audioBars: [VirtualConsoleAudioBarInput!]
+
   """Background color as hex"""
   backgroundColor: String!
+
+  """Number of spectrum bands of an audio triggers control"""
+  bandCount: Int
+
+  """Beat bar of an audio triggers control"""
+  beatBar: VirtualConsoleBeatBarInput
 
   """Frame border color as hex"""
   borderColor: String
@@ -2227,6 +2368,7 @@ input VirtualConsoleControlInput {
 
 """Kind of virtual console control"""
 enum VirtualConsoleControlType {
+  audioTriggers
   button
   frame
   slider

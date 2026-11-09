@@ -5,9 +5,11 @@ export type IoDeviceRow = {
   device: IoDeviceFieldsFragment;
   configured: boolean;
   status: IoDeviceStatus | null;
+  /** From the plugged-in device the row stands for; null when it is not plugged in. */
+  maxInputChannels: number | null;
 };
 
-type DeviceIdentity = Omit<IoDeviceFieldsFragment, 'midiMappingPublicId'>;
+type DeviceIdentity = Omit<IoDeviceFieldsFragment, 'midiMappingPublicId' | 'audioChannels' | 'maxInputChannels'>;
 type DeviceState = DeviceIdentity & { status: IoDeviceStatus };
 
 const sameIdentity = (a: DeviceIdentity, b: DeviceIdentity) =>
@@ -29,11 +31,11 @@ export function buildIoDeviceRows(
   states: readonly DeviceState[],
 ): IoDeviceRow[] {
   const unclaimed = [...available];
-  for (const device of configured) {
+  const claimed = configured.map(device => {
     const exact = unclaimed.findIndex(candidate => sameDevice(candidate, device));
     const index = exact >= 0 ? exact : unclaimed.findIndex(candidate => sameIdentity(candidate, device));
-    if (index >= 0) unclaimed.splice(index, 1);
-  }
+    return index >= 0 ? unclaimed.splice(index, 1)[0] : undefined;
+  });
 
   return [
     ...configured.map((device, index) => ({
@@ -41,8 +43,15 @@ export function buildIoDeviceRows(
       device,
       configured: true,
       status: states.find(state => sameDevice(state, device))?.status ?? null,
+      maxInputChannels: claimed[index]?.maxInputChannels ?? null,
     })),
-    ...unclaimed.map((device, index) => ({ key: `available-${index}`, device, configured: false, status: null })),
+    ...unclaimed.map((device, index) => ({
+      key: `available-${index}`,
+      device,
+      configured: false,
+      status: null,
+      maxInputChannels: device.maxInputChannels ?? null,
+    })),
   ];
 }
 
@@ -55,6 +64,7 @@ export const toIoDeviceInput = ({
   productId,
   usbLocation,
   midiMappingPublicId,
+  audioChannels,
 }: IoDeviceFieldsFragment): IoDeviceInput => ({
   kind,
   name,
@@ -64,4 +74,5 @@ export const toIoDeviceInput = ({
   productId,
   usbLocation,
   midiMappingPublicId,
+  audioChannels,
 });

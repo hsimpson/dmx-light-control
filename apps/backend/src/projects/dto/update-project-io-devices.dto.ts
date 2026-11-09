@@ -1,4 +1,4 @@
-import { IoDeviceInput } from '@/io/devices/dto/io-device.dto';
+import { AtMostOneSoundInput, IoDeviceInput } from '@/io/devices/dto/io-device.dto';
 import { Field, InputType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { ArrayMaxSize, IsUUID, ValidateNested } from 'class-validator';
@@ -14,6 +14,7 @@ export class UpdateProjectIoDevicesInput {
 
   @Field(() => [IoDeviceInput], { description: 'The complete list of input/output devices used by the project' })
   @ArrayMaxSize(PROJECT_IO_DEVICES_MAX)
+  @AtMostOneSoundInput()
   @ValidateNested({ each: true })
   @Type(() => IoDeviceInput)
   public ioDevices: IoDeviceInput[];

@@ -1,6 +1,7 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { MidiService } from '@/io/midi/midi.service';
 import { SerialSendService } from '@/io/serial/serial-send.service';
+import { SoundInputService } from '@/io/sound-input/sound-input.service';
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { IoDeviceDiscoveryService } from './io-device-discovery.service';
 import {
@@ -28,6 +29,7 @@ export class IoDeviceManagerService implements OnModuleInit, OnModuleDestroy {
     private readonly discovery: IoDeviceDiscoveryService,
     private readonly serialSend: SerialSendService,
     private readonly midi: MidiService,
+    private readonly soundInput: SoundInputService,
     private readonly eventEmitter: AppEventEmitter,
   ) {}
 
@@ -49,7 +51,9 @@ export class IoDeviceManagerService implements OnModuleInit, OnModuleDestroy {
 
   /** Serialized so an event-triggered run never overlaps a poll. */
   public async reconcile(): Promise<void> {
-    this.reconciling = this.reconciling.then(async () => this.reconcileOnce());
+    const run = async () => this.reconcileOnce();
+    // A failed run must not stall the chain, or hotplug polling stops for good.
+    this.reconciling = this.reconciling.then(run, run);
     return this.reconciling;
   }
 
@@ -80,9 +84,20 @@ export class IoDeviceManagerService implements OnModuleInit, OnModuleDestroy {
       },
     });
 
-    const open = new Set([...this.serialSend.openPaths(), ...this.midi.openPortNames()]);
+    const sound = matches.find(match => match.device.kind === IoDeviceKind.SoundInput && match.handle);
+    this.soundInput.sync(sound?.handle ? { handle: sound.handle, channels: sound.device.audioChannels ?? 1 } : null);
+
+    const soundHandle = this.soundInput.openHandle();
+    // Per kind, because a MIDI port and a sound input can share a name.
+    const open: Record<IoDeviceKind, Set<string>> = {
+      [IoDeviceKind.DmxSerial]: new Set(this.serialSend.openPaths()),
+      [IoDeviceKind.Midi]: new Set(this.midi.openPortNames()),
+      [IoDeviceKind.SoundInput]: new Set(soundHandle ? [soundHandle] : []),
+    };
     this.matches = matches.map(match =>
-      match.handle && !open.has(match.handle) ? { ...match, status: IoDeviceStatus.Missing, handle: null } : match,
+      match.handle && !open[match.device.kind].has(match.handle)
+        ? { ...match, status: IoDeviceStatus.Missing, handle: null }
+        : match,
     );
     this.schedulePoll();
   }

@@ -77,6 +77,22 @@ export class VirtualConsoleOutput {
       : updates;
   }
 
+  /** Highest-takes-precedence level per bound channel after `key` contributes `value` (0 withdraws it). */
+  public applyLevel(
+    key: string,
+    bindings: readonly VirtualConsoleChannelBinding[],
+    value: number,
+    fixtures: readonly VirtualConsoleBoundFixture[],
+  ): DmxValue[] {
+    const channels = bindings.flatMap(binding => resolveBindingChannel(binding, fixtures) ?? []);
+    if (value > 0 && channels.length > 0) {
+      this.contributions.set(key, { channels: new Set(channels), value });
+    } else {
+      this.contributions.delete(key);
+    }
+    return channels.map(channel => ({ channel, value: this.heldLevel(channel) }));
+  }
+
   private heldLevel(channel: number): number {
     let level = 0;
     for (const contribution of this.contributions.values()) {

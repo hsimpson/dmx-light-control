@@ -5,6 +5,17 @@ import { UpdateProjectIoDevicesInput } from './update-project-io-devices.dto';
 
 const PROJECT_PUBLIC_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 
+const mic = {
+  kind: 'SoundInput',
+  name: 'StreamCam',
+  manufacturer: null,
+  serial: null,
+  vendorId: null,
+  productId: null,
+  usbLocation: null,
+  audioChannels: 2,
+};
+
 const ftdi = {
   kind: 'DmxSerial',
   name: 'FT232R USB UART',
@@ -26,6 +37,8 @@ describe('UpdateProjectIoDevicesInput', () => {
     ['a Windows instance location', { ...ftdi, usbLocation: '7&2A3B4C5D&0&0000' }],
     ['a macOS hex location', { ...ftdi, usbLocation: '14100000' }],
     ['null optional fields', { kind: 'Midi', name: 'Keys', manufacturer: null, serial: null, vendorId: null }],
+    ['a stereo sound input', mic],
+    ['a mono sound input', { ...mic, audioChannels: 1 }],
   ])('GIVEN %s WHEN validated THEN valid', async (_case, device) => {
     await expect(errorsFor([device])).resolves.toBe('[]');
   });
@@ -39,12 +52,18 @@ describe('UpdateProjectIoDevicesInput', () => {
     ['an empty name', { ...ftdi, name: '' }, 'name'],
     ['an overlong serial', { ...ftdi, serial: 'x'.repeat(256) }, 'serial'],
     ['a non-string manufacturer', { ...ftdi, manufacturer: 42 }, 'manufacturer'],
+    ['a sound input without channels', { ...mic, audioChannels: null }, 'audioChannels'],
+    ['a sound input with 3 channels', { ...mic, audioChannels: 3 }, 'audioChannels'],
   ])('GIVEN %s WHEN validated THEN rejects %s', async (_case, device, property) => {
     await expect(errorsFor([device])).resolves.toContain(`"property":"${property}"`);
   });
 
   it('GIVEN more than 32 devices WHEN validated THEN rejects the list', async () => {
     await expect(errorsFor(Array.from({ length: 33 }, () => ftdi))).resolves.toContain('arrayMaxSize');
+  });
+
+  it('GIVEN two sound inputs WHEN validated THEN rejects the list', async () => {
+    await expect(errorsFor([mic, { ...mic, name: 'Line In' }])).resolves.toContain('atMostOneSoundInput');
   });
 
   it('GIVEN a non-UUID project id WHEN validated THEN rejects publicId', async () => {

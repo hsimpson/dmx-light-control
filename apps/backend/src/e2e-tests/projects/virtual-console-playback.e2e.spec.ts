@@ -126,4 +126,121 @@ describe('Virtual console playback of the active project', () => {
       { midiEntryPublicId, feedback },
     ]);
   });
+
+  describe('audio triggers', () => {
+    const saveAudioTriggers = async (audioBars: unknown[]) =>
+      graphqlQuery<{ updateProjectVirtualConsole: { virtualConsole: { pages: { controls: unknown[] }[] } } }>(
+        server,
+        `mutation ($input: UpdateProjectVirtualConsoleInput!) {
+          updateProjectVirtualConsole(input: $input) {
+            virtualConsole { pages { controls { type bandCount audioBars { mode minThreshold maxThreshold functionPublicId } } } }
+          }
+        }`,
+        {
+          variables: {
+            input: {
+              publicId: await createProject(`VC Audio ${audioBars.length}`),
+              virtualConsole: consoleWith([
+                { ...button, buttonMode: undefined, type: 'audioTriggers', bandCount: audioBars.length - 1, audioBars },
+              ]),
+            },
+          },
+        },
+      );
+
+    it('GIVEN a volume bar and two bands WHEN saved THEN they are returned', async () => {
+      const audioBars = [
+        { mode: 'function', minThreshold: 20, maxThreshold: 80, functionPublicId: null },
+        { mode: 'none', minThreshold: 10, maxThreshold: 90, functionPublicId: null },
+        { mode: 'channels', minThreshold: 0, maxThreshold: 100, functionPublicId: null },
+      ];
+
+      const body = await saveAudioTriggers(audioBars);
+
+      expect(body.errors).toBeUndefined();
+      expect(body.data?.updateProjectVirtualConsole.virtualConsole.pages[0]?.controls).toEqual([
+        { type: 'audioTriggers', bandCount: 2, audioBars },
+      ]);
+    });
+
+    it('GIVEN a bar whose min threshold is not below its max WHEN saved THEN the console is rejected', async () => {
+      const body = await saveAudioTriggers([
+        { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+        { mode: 'none', minThreshold: 60, maxThreshold: 60 },
+      ]);
+
+      expect(body.errors?.[0]?.message).toContain('minThreshold must be less than maxThreshold');
+    });
+
+    const saveBeatBar = async (beatBar: unknown) =>
+      graphqlQuery<{ updateProjectVirtualConsole: { virtualConsole: { pages: { controls: unknown[] }[] } } }>(
+        server,
+        `mutation ($input: UpdateProjectVirtualConsoleInput!) {
+          updateProjectVirtualConsole(input: $input) {
+            virtualConsole { pages { controls { beatBar { minThreshold functionPublicId timing { fadeIn hold fadeOut } } } } }
+          }
+        }`,
+        {
+          variables: {
+            input: {
+              publicId: await createProject(`VC Beat ${JSON.stringify(beatBar)}`),
+              virtualConsole: consoleWith([
+                {
+                  ...button,
+                  buttonMode: undefined,
+                  type: 'audioTriggers',
+                  bandCount: 1,
+                  audioBars: [
+                    { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+                    { mode: 'none', minThreshold: 20, maxThreshold: 80 },
+                  ],
+                  beatBar,
+                },
+              ]),
+            },
+          },
+        },
+      );
+
+    it('GIVEN a beat bar WHEN saved THEN it is returned', async () => {
+      const body = await saveBeatBar({ minThreshold: 35 });
+
+      expect(body.errors).toBeUndefined();
+      expect(body.data?.updateProjectVirtualConsole.virtualConsole.pages[0]?.controls).toEqual([
+        { beatBar: { minThreshold: 35, functionPublicId: null, timing: null } },
+      ]);
+    });
+
+    it('GIVEN a beat bar with beat timing WHEN saved THEN it is returned', async () => {
+      const timing = { fadeIn: 0, hold: 40, fadeOut: 60 };
+
+      const body = await saveBeatBar({ minThreshold: 35, timing });
+
+      expect(body.errors).toBeUndefined();
+      expect(body.data?.updateProjectVirtualConsole.virtualConsole.pages[0]?.controls).toEqual([
+        { beatBar: { minThreshold: 35, functionPublicId: null, timing } },
+      ]);
+    });
+
+    it.each([
+      ['a field above 100', { fadeIn: 0, hold: 101, fadeOut: 0 }, 'BAD_USER_INPUT'],
+      ['a total above 100', { fadeIn: 1, hold: 40, fadeOut: 60 }, 'INVALID_VIRTUAL_CONSOLE'],
+    ])('GIVEN beat timing with %s WHEN saved THEN it is rejected', async (_case, timing, code) => {
+      const body = await saveBeatBar({ minThreshold: 35, timing });
+
+      expect(body.errors?.[0]?.extensions?.code).toBe(code);
+    });
+
+    it('GIVEN a beat bar threshold above 100 WHEN saved THEN it is rejected as bad input', async () => {
+      const body = await saveBeatBar({ minThreshold: 101 });
+
+      expect(body.errors?.[0]?.extensions?.code).toBe('BAD_USER_INPUT');
+    });
+
+    it('GIVEN a beat bar function from outside the project WHEN saved THEN it is rejected', async () => {
+      const body = await saveBeatBar({ minThreshold: 20, functionPublicId: '44444444-4444-4444-8444-444444444444' });
+
+      expect(body.errors?.[0]?.message).toContain('does not belong to this project');
+    });
+  });
 });

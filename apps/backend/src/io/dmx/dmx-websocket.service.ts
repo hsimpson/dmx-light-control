@@ -3,11 +3,13 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { DmxUniverseService } from './dmx-universe.service';
 import { type DmxWsSocket, setDmxWebsocketConnectionHandler } from './dmx-websocket.connection';
 import {
+  dmxWsAudioLevelsMessage,
   dmxWsControlStateMessage,
   dmxWsDeltaMessage,
   dmxWsFunctionStateMessage,
   dmxWsMidiInputMessage,
   dmxWsSnapshotMessage,
+  dmxWsSoundLevelMessage,
   parseDmxWsClientMessage,
 } from './dmx-ws.protocol';
 
@@ -40,6 +42,12 @@ export class DmxWebsocketService implements OnModuleInit, OnModuleDestroy {
     // Raw MIDI input lets the mapping editor learn a control's address.
     this.eventEmitter.on('midi.inputMessage', ({ portName, message }) => {
       this.broadcast(JSON.stringify(dmxWsMidiInputMessage(portName, message)));
+    });
+    this.eventEmitter.on('virtualConsole.audioLevels', ({ levels, bpm }) => {
+      this.broadcast(JSON.stringify(dmxWsAudioLevelsMessage(levels, bpm)));
+    });
+    this.eventEmitter.on('soundInput.level', ({ levels }) => {
+      this.broadcast(JSON.stringify(dmxWsSoundLevelMessage(levels)));
     });
   }
 

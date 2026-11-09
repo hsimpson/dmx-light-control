@@ -1,5 +1,7 @@
 import { MidiFeedbackDto, MidiFeedbackInput } from '@/midi-mappings/dto/midi-mapping.dto';
 import {
+  VIRTUAL_CONSOLE_AUDIO_BANDS_MAX,
+  VIRTUAL_CONSOLE_AUDIO_BANDS_MIN,
   VIRTUAL_CONSOLE_CONTROL_SIZE_MIN,
   VIRTUAL_CONSOLE_FONT_SIZE_MAX,
   VIRTUAL_CONSOLE_FONT_SIZE_MIN,
@@ -9,6 +11,7 @@ import {
   VIRTUAL_CONSOLE_SIZE_MIN,
   VIRTUAL_CONSOLE_SNAP_MAX,
   VIRTUAL_CONSOLE_SNAP_MIN,
+  VirtualConsoleAudioBarMode,
   VirtualConsoleButtonMode,
   VirtualConsoleControlTypeEnum,
   VirtualConsoleSliderOrientation,
@@ -17,6 +20,7 @@ import {
 import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   IsArray,
   IsEnum,
   IsInt,
@@ -81,6 +85,146 @@ export class VirtualConsoleChannelBindingInput {
   @IsOptional()
   @Matches(UUID_PATTERN, { message: 'channelDefinitionPublicId must be a UUID' })
   public channelDefinitionPublicId?: string;
+}
+
+@ObjectType()
+export class VirtualConsoleAudioBarDto {
+  @Field(() => VirtualConsoleAudioBarMode, { description: 'What this bar drives' })
+  public mode: VirtualConsoleAudioBarMode;
+
+  @Field(() => Int, { description: 'Level in percent below which channels are 0 and a function stops' })
+  public minThreshold: number;
+
+  @Field(() => Int, { description: 'Level in percent above which channels are full and a function starts' })
+  public maxThreshold: number;
+
+  @Field(() => [VirtualConsoleChannelBindingDto], { nullable: true, description: 'Fixture channels this bar drives' })
+  @Type(() => VirtualConsoleChannelBindingDto)
+  public channelBindings?: VirtualConsoleChannelBindingDto[];
+
+  @Field(() => GraphQLUUID, { nullable: true, description: 'Project function this bar starts and stops' })
+  public functionPublicId?: string;
+
+  @Field({ nullable: true, description: 'Function name used to remap the binding on import' })
+  public functionName?: string;
+}
+
+@InputType()
+export class VirtualConsoleAudioBarInput {
+  @Field(() => VirtualConsoleAudioBarMode, { description: 'What this bar drives' })
+  @IsEnum(VirtualConsoleAudioBarMode)
+  public mode: VirtualConsoleAudioBarMode;
+
+  @Field(() => Int, { description: 'Level in percent below which channels are 0 and a function stops' })
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  public minThreshold: number;
+
+  @Field(() => Int, { description: 'Level in percent above which channels are full and a function starts' })
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  public maxThreshold: number;
+
+  @Field(() => [VirtualConsoleChannelBindingInput], { nullable: true, description: 'Fixture channels this bar drives' })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => VirtualConsoleChannelBindingInput)
+  public channelBindings?: VirtualConsoleChannelBindingInput[];
+
+  @Field(() => GraphQLUUID, { nullable: true, description: 'Project function this bar starts and stops' })
+  @IsOptional()
+  @Matches(UUID_PATTERN, { message: 'functionPublicId must be a UUID' })
+  public functionPublicId?: string;
+
+  @Field({ nullable: true, description: 'Function name used to remap the binding on import' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  public functionName?: string;
+}
+
+@ObjectType()
+export class VirtualConsoleBeatTimingDto {
+  @Field(() => Int, { description: 'Fade in of each step in percent of the time between beats' })
+  public fadeIn: number;
+
+  @Field(() => Int, { description: 'Hold of each step in percent of the time between beats' })
+  public hold: number;
+
+  @Field(() => Int, { description: 'Fade out of each step in percent of the time between beats' })
+  public fadeOut: number;
+}
+
+@InputType()
+export class VirtualConsoleBeatTimingInput {
+  @Field(() => Int, { description: 'Fade in of each step in percent of the time between beats' })
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  public fadeIn: number;
+
+  @Field(() => Int, { description: 'Hold of each step in percent of the time between beats' })
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  public hold: number;
+
+  @Field(() => Int, { description: 'Fade out of each step in percent of the time between beats' })
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  public fadeOut: number;
+}
+
+@ObjectType()
+export class VirtualConsoleBeatBarDto {
+  @Field(() => Int, { description: 'Bass level in percent below which an onset does not count as a beat' })
+  public minThreshold: number;
+
+  @Field(() => GraphQLUUID, { nullable: true, description: 'Project function stepped once per beat' })
+  public functionPublicId?: string;
+
+  @Field({ nullable: true, description: 'Function name used to remap the binding on import' })
+  public functionName?: string;
+
+  @Field(() => VirtualConsoleBeatTimingDto, {
+    nullable: true,
+    description: 'Step timing that follows the beat. Null: each step keeps the sequence timing.',
+  })
+  @Type(() => VirtualConsoleBeatTimingDto)
+  public timing?: VirtualConsoleBeatTimingDto;
+}
+
+@InputType()
+export class VirtualConsoleBeatBarInput {
+  @Field(() => Int, { description: 'Bass level in percent below which an onset does not count as a beat' })
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  public minThreshold: number;
+
+  @Field(() => GraphQLUUID, { nullable: true, description: 'Project function stepped once per beat' })
+  @IsOptional()
+  @Matches(UUID_PATTERN, { message: 'functionPublicId must be a UUID' })
+  public functionPublicId?: string;
+
+  @Field({ nullable: true, description: 'Function name used to remap the binding on import' })
+  @IsOptional()
+  @IsString()
+  @Length(1, 255)
+  public functionName?: string;
+
+  @Field(() => VirtualConsoleBeatTimingInput, {
+    nullable: true,
+    description: 'Step timing that follows the beat. Null: each step keeps the sequence timing.',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => VirtualConsoleBeatTimingInput)
+  public timing?: VirtualConsoleBeatTimingInput;
 }
 
 @ObjectType()
@@ -171,6 +315,23 @@ export class VirtualConsoleControlDto {
   @Field(() => MidiFeedbackDto, { nullable: true, description: "Overrides the MIDI entry's default LED feedback" })
   @Type(() => MidiFeedbackDto)
   public feedback?: MidiFeedbackDto | null;
+
+  @Field(() => Int, { nullable: true, description: 'Number of spectrum bands of an audio triggers control' })
+  public bandCount?: number;
+
+  @Field(() => [VirtualConsoleAudioBarDto], {
+    nullable: true,
+    description: 'Volume bar followed by one bar per band of an audio triggers control',
+  })
+  @Type(() => VirtualConsoleAudioBarDto)
+  public audioBars?: VirtualConsoleAudioBarDto[];
+
+  @Field(() => VirtualConsoleBeatBarDto, {
+    nullable: true,
+    description: 'Beat bar of an audio triggers control. Null on controls saved before beat bars existed.',
+  })
+  @Type(() => VirtualConsoleBeatBarDto)
+  public beatBar?: VirtualConsoleBeatBarDto;
 }
 
 @ObjectType()
@@ -354,6 +515,33 @@ export class VirtualConsoleControlInput {
   @ValidateNested()
   @Type(() => MidiFeedbackInput)
   public feedback?: MidiFeedbackInput | null;
+
+  @Field(() => Int, { nullable: true, description: 'Number of spectrum bands of an audio triggers control' })
+  @IsOptional()
+  @IsInt()
+  @Min(VIRTUAL_CONSOLE_AUDIO_BANDS_MIN)
+  @Max(VIRTUAL_CONSOLE_AUDIO_BANDS_MAX)
+  public bandCount?: number;
+
+  @Field(() => [VirtualConsoleAudioBarInput], {
+    nullable: true,
+    description: 'Volume bar followed by one bar per band of an audio triggers control',
+  })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(VIRTUAL_CONSOLE_AUDIO_BANDS_MAX + 1)
+  @ValidateNested({ each: true })
+  @Type(() => VirtualConsoleAudioBarInput)
+  public audioBars?: VirtualConsoleAudioBarInput[];
+
+  @Field(() => VirtualConsoleBeatBarInput, {
+    nullable: true,
+    description: 'Beat bar of an audio triggers control',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => VirtualConsoleBeatBarInput)
+  public beatBar?: VirtualConsoleBeatBarInput;
 }
 
 @InputType()

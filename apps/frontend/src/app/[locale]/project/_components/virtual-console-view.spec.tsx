@@ -51,6 +51,7 @@ const project = {
 
 describe('VirtualConsoleView', () => {
   beforeEach(() => {
+    Element.prototype.scrollIntoView = vi.fn();
     vi.mocked(notifications.show).mockClear();
     sessionStorage.clear();
   });
@@ -304,6 +305,279 @@ describe('VirtualConsoleView', () => {
     await user.click(screen.getByTestId(`virtual-console-control-${sliderId}`));
     expect(screen.getByTestId('virtual-console-channel-sidebar')).toBeInTheDocument();
     expect(screen.getByText('No patched fixtures')).toBeInTheDocument();
+  });
+
+  it('GIVEN an audio triggers control WHEN a driving bar is selected THEN the channel panel edits that bar', async () => {
+    const audioId = '55555555-5555-4555-8555-555555555555';
+    const bar = { __typename: 'VirtualConsoleAudioBarDto' as const, minThreshold: 20, maxThreshold: 80 };
+    const projectWithAudio = {
+      ...project,
+      virtualConsole: {
+        ...virtualConsole,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto' as const,
+                id: audioId,
+                type: 'audioTriggers',
+                x: 40,
+                y: 50,
+                width: 320,
+                height: 180,
+                label: 'Sound',
+                backgroundColor: '#111111',
+                children: [],
+                bandCount: 1,
+                audioBars: [
+                  { ...bar, mode: 'none' },
+                  { ...bar, mode: 'function' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    };
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithAudio } },
+        },
+      ],
+    });
+
+    await user.click(await screen.findByTestId(`virtual-console-control-${audioId}`));
+    const volumeShowsPanel = screen.queryByTestId('virtual-console-channel-sidebar') !== null;
+    await user.click(screen.getByRole('combobox', { name: 'Bar' }));
+    await user.click(await screen.findByRole('option', { name: 'Band 1 (40 Hz – 16 kHz)', hidden: true }));
+    const panel = screen.getByTestId('virtual-console-channel-sidebar');
+    const showsFunction = screen.queryByRole('combobox', { name: 'Function' }) !== null;
+
+    await user.click(screen.getByRole('combobox', { name: 'Drives' }));
+    await user.click(await screen.findByRole('option', { name: 'Channels', hidden: true }));
+
+    expect(volumeShowsPanel).toBe(false);
+    expect(panel).toBeInTheDocument();
+    expect(showsFunction).toBe(true);
+    expect(screen.getByText('No patched fixtures')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+  });
+
+  it('GIVEN an audio control WHEN Beat is picked THEN its function panel opens and choosing one enables save', async () => {
+    const audioId = '33333333-3333-4333-8333-333333333333';
+    const bar = { minThreshold: 20, maxThreshold: 80, channelBindings: null, functionPublicId: null };
+    const projectWithAudio = {
+      ...project,
+      projectFunctions: [
+        {
+          publicId: '44444444-4444-4444-8444-444444444444',
+          name: 'Chase',
+          type: 'Sequence',
+          sequence: null,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-01T00:00:00.000Z',
+        },
+      ],
+      virtualConsole: {
+        ...virtualConsole,
+        pages: [
+          {
+            ...virtualConsole.pages[0],
+            controls: [
+              {
+                __typename: 'VirtualConsoleControlDto' as const,
+                id: audioId,
+                type: 'audioTriggers',
+                x: 40,
+                y: 50,
+                width: 320,
+                height: 180,
+                label: 'Sound',
+                backgroundColor: '#111111',
+                children: [],
+                bandCount: 1,
+                audioBars: [
+                  { ...bar, mode: 'none' },
+                  { ...bar, mode: 'none' },
+                ],
+                beatBar: null,
+              },
+            ],
+          },
+        ],
+      },
+    };
+    const { user } = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+      apolloMocks: [
+        {
+          request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+          result: { data: { project: projectWithAudio } },
+        },
+      ],
+    });
+
+    await user.click(await screen.findByTestId(`virtual-console-control-${audioId}`));
+    expect(screen.queryByTestId('virtual-console-channel-sidebar')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('combobox', { name: 'Bar' }));
+    await user.click(await screen.findByRole('option', { name: 'Beat', hidden: true }));
+    expect(screen.getByTestId('virtual-console-channel-sidebar')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+
+    await user.click(screen.getByRole('combobox', { name: 'Function' }));
+    await user.click(await screen.findByRole('option', { name: 'Chase', hidden: true }));
+
+    expect(screen.getByRole('combobox', { name: 'Function' })).toHaveValue('Chase');
+    expect(screen.getByRole('combobox', { name: 'Bar' })).toHaveValue('Beat');
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+  });
+
+  describe('beat bar editing', () => {
+    const audioId = '33333333-3333-4333-8333-333333333333';
+    const functionId = '44444444-4444-4444-8444-444444444444';
+    const bar = { mode: 'none', minThreshold: 20, maxThreshold: 80, channelBindings: null, functionPublicId: null };
+
+    const renderAudioControl = async () => {
+      const rendered = renderWithProviders(<VirtualConsoleView projectPublicId="proj-1" />, {
+        apolloMocks: [
+          {
+            request: { query: GetProjectDocument, variables: { publicId: 'proj-1' } },
+            result: {
+              data: {
+                project: {
+                  ...project,
+                  projectFunctions: [
+                    {
+                      publicId: functionId,
+                      name: 'Chase',
+                      type: 'Sequence',
+                      sequence: null,
+                      createdAt: '2026-01-01T00:00:00.000Z',
+                      updatedAt: '2026-01-01T00:00:00.000Z',
+                    },
+                  ],
+                  virtualConsole: {
+                    ...virtualConsole,
+                    pages: [
+                      {
+                        ...virtualConsole.pages[0],
+                        controls: [
+                          {
+                            __typename: 'VirtualConsoleControlDto' as const,
+                            id: audioId,
+                            type: 'audioTriggers',
+                            x: 40,
+                            y: 50,
+                            width: 320,
+                            height: 180,
+                            label: 'Sound',
+                            backgroundColor: '#111111',
+                            children: [],
+                            bandCount: 8,
+                            audioBars: Array.from({ length: 9 }, () => bar),
+                            beatBar: {
+                              minThreshold: 35,
+                              functionPublicId: functionId,
+                              functionName: null,
+                              timing: { fadeIn: 10, hold: 30, fadeOut: 40 },
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        ],
+      });
+      await rendered.user.click(await screen.findByTestId(`virtual-console-control-${audioId}`));
+      return rendered.user;
+    };
+
+    type User = Awaited<ReturnType<typeof renderAudioControl>>;
+
+    const pickBar = async (user: User, option: string | RegExp) => {
+      await user.click(screen.getByRole('combobox', { name: 'Bar' }));
+      await user.click(await screen.findByRole('option', { name: option, hidden: true }));
+    };
+
+    const setBandCount = async (user: User, count: number) => {
+      const bands = screen.getByRole('textbox', { name: 'Bands' });
+      await user.clear(bands);
+      await user.type(bands, `${count}{Enter}`);
+    };
+
+    it('GIVEN band 8 of 8 WHEN lowered to 7 bands THEN band 7 is selected, not Beat', async () => {
+      const user = await renderAudioControl();
+
+      await pickBar(user, /^Band 8/);
+      await setBandCount(user, 7);
+
+      expect(screen.getByRole('combobox', { name: 'Bar' })).toHaveDisplayValue(/^Band 7/);
+      expect(screen.queryByTestId('virtual-console-channel-sidebar')).not.toBeInTheDocument();
+    });
+
+    it('GIVEN Beat selected WHEN the band count changes THEN Beat stays selected with its threshold', async () => {
+      const user = await renderAudioControl();
+
+      await pickBar(user, 'Beat');
+      await setBandCount(user, 3);
+      await setBandCount(user, 16);
+
+      expect(screen.getByRole('combobox', { name: 'Bar' })).toHaveValue('Beat');
+      expect(screen.getByRole('textbox', { name: 'Min threshold (%)' })).toHaveValue('35');
+    });
+
+    it('GIVEN a beat threshold WHEN the function is cleared THEN the threshold is kept', async () => {
+      const user = await renderAudioControl();
+
+      await pickBar(user, 'Beat');
+      await user.click(screen.getByRole('button', { name: 'Clear function' }));
+
+      expect(screen.getByRole('combobox', { name: 'Function' })).toHaveValue('');
+      expect(screen.getByRole('textbox', { name: 'Min threshold (%)' })).toHaveValue('35');
+    });
+
+    it('GIVEN beat timing WHEN the function is cleared and picked again THEN the timing is kept', async () => {
+      const user = await renderAudioControl();
+
+      await pickBar(user, 'Beat');
+      await user.click(screen.getByRole('button', { name: 'Clear function' }));
+      await user.click(screen.getByRole('combobox', { name: 'Function' }));
+      await user.click(await screen.findByRole('option', { name: 'Chase', hidden: true }));
+
+      expect(screen.getByRole('combobox', { name: 'Timing' })).toHaveValue('Follow beat');
+      expect(screen.getByRole('textbox', { name: 'Hold (%)' })).toHaveValue('30');
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    });
+
+    it('GIVEN focus on the clear button WHEN Delete is pressed THEN the control is kept', async () => {
+      const user = await renderAudioControl();
+
+      await pickBar(user, 'Beat');
+      screen.getByRole('button', { name: 'Clear function' }).focus();
+      await user.keyboard('{Delete}');
+
+      expect(screen.getByTestId(`virtual-console-control-${audioId}`)).toBeInTheDocument();
+    });
+
+    it('GIVEN the keyboard WHEN Enter clears the function THEN focus moves to the picker and Delete keeps the control', async () => {
+      const user = await renderAudioControl();
+
+      await pickBar(user, 'Beat');
+      screen.getByRole('combobox', { name: 'Function' }).focus();
+      await user.tab();
+      await user.keyboard('{Enter}');
+
+      expect(screen.getByRole('combobox', { name: 'Function' })).toHaveFocus();
+      await user.keyboard('{Delete}');
+      expect(screen.getByTestId(`virtual-console-control-${audioId}`)).toBeInTheDocument();
+    });
   });
 
   it('resizes a selected control from every handle', async () => {

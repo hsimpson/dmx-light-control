@@ -1,18 +1,43 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { MidiService } from '@/io/midi/midi.service';
 import { SerialSendService } from '@/io/serial/serial-send.service';
+import { SoundInputService } from '@/io/sound-input/sound-input.service';
 import { EventEmitter2 } from 'eventemitter2';
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 import { IoDeviceDiscoveryService } from './io-device-discovery.service';
 import { IO_DEVICE_POLL_INTERVAL_MS, IoDeviceManagerService } from './io-device-manager.service';
-import { IoDeviceKind, IoDeviceStatus, type AvailableIoDevice, type IoDeviceIdentity } from './match-io-devices';
+import {
+  IoDeviceKind,
+  IoDeviceStatus,
+  type AvailableIoDevice,
+  type IoDeviceIdentity,
+  type ProjectIoDevice,
+} from './match-io-devices';
 
 const { hardware } = vi.hoisted(() => {
   const state = {
     midiPorts: [] as string[],
     serialOpenFailures: new Set<string>(),
     openSerialPaths: new Set<string>(),
+    audioDevices: [] as { id: number; name: string; inputChannels: number; preferredSampleRate: number }[],
+    audioStream: null as { deviceId: number; nChannels: number } | null,
   };
+
+  class FakeRtAudio {
+    public readonly start = vi.fn<() => void>();
+    public getDevices(): typeof state.audioDevices {
+      return state.audioDevices;
+    }
+    public openStream(_output: null, input: { deviceId: number; nChannels: number }): void {
+      state.audioStream = input;
+    }
+    public isStreamOpen(): boolean {
+      return state.audioStream !== null;
+    }
+    public closeStream(): void {
+      state.audioStream = null;
+    }
+  }
 
   class FakeSerialPort {
     public isOpen = false;
@@ -68,11 +93,18 @@ const { hardware } = vi.hoisted(() => {
     }
   }
 
-  return { hardware: { state, FakeSerialPort, FakeMidiPort } };
+  return { hardware: { state, FakeSerialPort, FakeMidiPort, FakeRtAudio } };
 });
 
 vi.mock('serialport', () => ({ SerialPort: hardware.FakeSerialPort }));
 vi.mock('midi', () => ({ default: { Input: hardware.FakeMidiPort, Output: hardware.FakeMidiPort } }));
+vi.mock('audify', () => ({
+  RtAudio: hardware.FakeRtAudio,
+  RtAudioApi: { LINUX_PULSE: 4 },
+  RtAudioFormat: { RTAUDIO_SINT16: 2 },
+  RtAudioStreamFlags: { RTAUDIO_MINIMIZE_LATENCY: 2 },
+  RtAudioErrorType: { WARNING: 0, DEBUG_WARNING: 1 },
+}));
 
 const ftdi: IoDeviceIdentity = {
   kind: IoDeviceKind.DmxSerial,
@@ -96,10 +128,22 @@ const apc: IoDeviceIdentity = {
 
 const APC_PORT = 'APC mini mk2:APC mini mk2 Control 28:0';
 
+const mic: ProjectIoDevice = {
+  kind: IoDeviceKind.SoundInput,
+  vendorId: null,
+  productId: null,
+  name: 'StreamCam',
+  manufacturer: null,
+  serial: null,
+  usbLocation: null,
+  audioChannels: 2,
+};
+
 describe('IoDeviceManagerService', () => {
   let eventEmitter: AppEventEmitter;
   let serialSend: SerialSendService;
   let midi: MidiService;
+  let soundInput: SoundInputService;
   let available: AvailableIoDevice[];
   let listAvailable: MockInstance<IoDeviceDiscoveryService['listAvailable']>;
   let manager: IoDeviceManagerService;
@@ -107,14 +151,18 @@ describe('IoDeviceManagerService', () => {
   function plug(device: IoDeviceIdentity, handle: string, usbLocation = device.usbLocation): void {
     available.push({ ...device, usbLocation, handle });
     if (device.kind === IoDeviceKind.Midi) hardware.state.midiPorts.push(handle);
+    if (device.kind === IoDeviceKind.SoundInput) {
+      hardware.state.audioDevices.push({ id: 129, name: handle, inputChannels: 2, preferredSampleRate: 48000 });
+    }
   }
 
   function unplug(handle: string): void {
     available = available.filter(device => device.handle !== handle);
     hardware.state.midiPorts = hardware.state.midiPorts.filter(name => name !== handle);
+    hardware.state.audioDevices = hardware.state.audioDevices.filter(device => device.name !== handle);
   }
 
-  async function activate(devices: IoDeviceIdentity[]): Promise<void> {
+  async function activate(devices: ProjectIoDevice[]): Promise<void> {
     eventEmitter.emit('project.ioDevicesActivated', { devices });
     await vi.advanceTimersByTimeAsync(0);
   }
@@ -126,14 +174,21 @@ describe('IoDeviceManagerService', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     available = [];
-    Object.assign(hardware.state, { midiPorts: [], serialOpenFailures: new Set(), openSerialPaths: new Set() });
+    Object.assign(hardware.state, {
+      midiPorts: [],
+      serialOpenFailures: new Set(),
+      openSerialPaths: new Set(),
+      audioDevices: [],
+      audioStream: null,
+    });
 
     eventEmitter = new AppEventEmitter(new EventEmitter2());
     serialSend = new SerialSendService(eventEmitter);
     midi = new MidiService(eventEmitter);
-    const discovery = new IoDeviceDiscoveryService(midi, '/nonexistent');
+    soundInput = new SoundInputService(eventEmitter);
+    const discovery = new IoDeviceDiscoveryService(midi, soundInput, '/nonexistent');
     listAvailable = vi.spyOn(discovery, 'listAvailable').mockImplementation(async () => Promise.resolve(available));
-    manager = new IoDeviceManagerService(discovery, serialSend, midi, eventEmitter);
+    manager = new IoDeviceManagerService(discovery, serialSend, midi, soundInput, eventEmitter);
     manager.onModuleInit();
   });
 
@@ -141,7 +196,49 @@ describe('IoDeviceManagerService', () => {
     manager.onModuleDestroy();
     serialSend.onModuleDestroy();
     midi.onModuleDestroy();
+    soundInput.onModuleDestroy();
     vi.useRealTimers();
+  });
+
+  it('GIVEN a configured sound input WHEN the project activates THEN it is captured with its channel count', async () => {
+    plug(mic, 'StreamCam');
+
+    await activate([mic]);
+
+    expect(hardware.state.audioStream).toEqual({ deviceId: 129, nChannels: 2 });
+    expect(statuses()).toEqual([['StreamCam', IoDeviceStatus.Connected]]);
+  });
+
+  it('GIVEN a captured sound input WHEN its channel count changes THEN the stream reopens in mono', async () => {
+    plug(mic, 'StreamCam');
+    await activate([mic]);
+
+    await activate([{ ...mic, audioChannels: 1 }]);
+
+    expect(hardware.state.audioStream).toEqual({ deviceId: 129, nChannels: 1 });
+  });
+
+  it('GIVEN a captured sound input WHEN unplugged THEN the stream closes and it is missing', async () => {
+    plug(mic, 'StreamCam');
+    await activate([mic]);
+
+    unplug('StreamCam');
+    await vi.advanceTimersByTimeAsync(IO_DEVICE_POLL_INTERVAL_MS);
+
+    expect(hardware.state.audioStream).toBeNull();
+    expect(statuses()).toEqual([['StreamCam', IoDeviceStatus.Missing]]);
+  });
+
+  it('GIVEN a MIDI port named like an open sound input WHEN the MIDI port fails to open THEN only MIDI is missing', async () => {
+    plug(mic, 'StreamCam');
+    available.push({ ...apc, name: 'StreamCam', handle: 'StreamCam' });
+
+    await activate([mic, { ...apc, name: 'StreamCam' }]);
+
+    expect(statuses()).toEqual([
+      ['StreamCam', IoDeviceStatus.Connected],
+      ['StreamCam', IoDeviceStatus.Missing],
+    ]);
   });
 
   it('GIVEN configured devices are plugged in WHEN the project activates THEN both are opened and connected', async () => {

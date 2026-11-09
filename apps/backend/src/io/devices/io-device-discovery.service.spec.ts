@@ -1,5 +1,6 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { MidiService } from '@/io/midi/midi.service';
+import { SoundInputService } from '@/io/sound-input/sound-input.service';
 import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -7,9 +8,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { IoDeviceDiscoveryService } from './io-device-discovery.service';
 import { IoDeviceKind } from './match-io-devices';
 
-const { listSerialPorts, midiPortNames, runCommandMock } = vi.hoisted(() => ({
+const { listSerialPorts, midiPortNames, audioDevices, runCommandMock } = vi.hoisted(() => ({
   listSerialPorts: vi.fn<() => Promise<Record<string, string | undefined>[]>>(),
   midiPortNames: { value: [] as string[] },
+  audioDevices: { value: [] as { id: number; name: string; inputChannels: number }[] },
   runCommandMock: vi.fn<(file: string, args: readonly string[]) => Promise<string>>(),
 }));
 
@@ -35,6 +37,15 @@ vi.mock('midi', () => {
   }
   return { default: { Input: Port, Output: Port } };
 });
+
+vi.mock('audify', () => ({
+  RtAudio: class {
+    public getDevices(): typeof audioDevices.value {
+      return audioDevices.value;
+    }
+  },
+  RtAudioApi: { LINUX_PULSE: 4 },
+}));
 
 const originalPlatform = process.platform;
 
@@ -87,7 +98,8 @@ describe('IoDeviceDiscoveryService', () => {
     ];
 
     const eventEmitter = { on: vi.fn<() => void>() } as unknown as AppEventEmitter;
-    service = new IoDeviceDiscoveryService(new MidiService(eventEmitter), sysRoot);
+    audioDevices.value = [];
+    service = new IoDeviceDiscoveryService(new MidiService(eventEmitter), new SoundInputService(eventEmitter), sysRoot);
   });
 
   afterEach(async () => {
@@ -209,6 +221,30 @@ describe('IoDeviceDiscoveryService', () => {
         manufacturer: null,
         serial: null,
         usbLocation: null,
+      },
+    ]);
+  });
+
+  it('GIVEN audio devices WHEN listing THEN capture-capable ones are name-only sound inputs with their channel count', async () => {
+    setPlatform('linux');
+    listSerialPorts.mockResolvedValue([]);
+    midiPortNames.value = [];
+    audioDevices.value = [
+      { id: 129, name: 'StreamCam', inputChannels: 2 },
+      { id: 130, name: 'HDMI Output', inputChannels: 0 },
+    ];
+
+    await expect(service.listAvailable()).resolves.toEqual([
+      {
+        kind: IoDeviceKind.SoundInput,
+        handle: 'StreamCam',
+        vendorId: null,
+        productId: null,
+        name: 'StreamCam',
+        manufacturer: null,
+        serial: null,
+        usbLocation: null,
+        maxInputChannels: 2,
       },
     ]);
   });

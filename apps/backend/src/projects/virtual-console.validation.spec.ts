@@ -5,7 +5,9 @@ import {
   VIRTUAL_CONSOLE_DEFAULT_HEIGHT,
   VIRTUAL_CONSOLE_DEFAULT_WIDTH,
   VIRTUAL_CONSOLE_SCHEMA_VERSION,
+  VirtualConsoleAudioBar,
   VirtualConsoleChannelBinding,
+  VirtualConsoleControl,
   VirtualConsoleDocument,
 } from './virtual-console';
 import {
@@ -15,6 +17,8 @@ import {
   defaultVirtualConsoleDocument,
   enrichVirtualConsoleForExport,
   remapVirtualConsoleBindingsForImport,
+  remapVirtualConsoleFunctionsForImport,
+  removeFunctionBindings,
   sanitizeVirtualConsoleForImport,
   stripVirtualConsoleBindingHints,
 } from './virtual-console.validation';
@@ -664,5 +668,299 @@ describe('assertValidVirtualConsole', () => {
         assertValidVirtualConsole(parts.document);
       }).toThrow(InvalidVirtualConsoleException);
     });
+  });
+});
+
+describe('audio triggers', () => {
+  const AUDIO_ID = '88888888-8888-4888-8888-888888888888';
+  const FUNCTION_ID = '99999999-9999-4999-8999-999999999999';
+  const binding = { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID };
+  const idle: VirtualConsoleAudioBar = { mode: 'none', minThreshold: 20, maxThreshold: 80 };
+
+  function audioControl(overrides: Partial<VirtualConsoleControl> = {}): VirtualConsoleControl {
+    return {
+      id: AUDIO_ID,
+      type: VIRTUAL_CONSOLE_CONTROL_TYPE.AudioTriggers,
+      x: 0,
+      y: 0,
+      width: 320,
+      height: 160,
+      label: 'Sound',
+      backgroundColor: '#000000',
+      bandCount: 2,
+      audioBars: [
+        { mode: 'function', minThreshold: 20, maxThreshold: 80, functionPublicId: FUNCTION_ID },
+        { mode: 'channels', minThreshold: 10, maxThreshold: 90, channelBindings: [binding] },
+        idle,
+      ],
+      ...overrides,
+    };
+  }
+
+  const documentWith = (control: VirtualConsoleControl): VirtualConsoleDocument =>
+    validDocument({ pages: [{ id: PAGE_ID, name: 'Page 1', controls: [control] }] });
+
+  it('GIVEN a volume bar and one bar per band WHEN validated THEN it is accepted', () => {
+    expect(() => {
+      assertValidVirtualConsole(documentWith(audioControl()));
+    }).not.toThrow();
+  });
+
+  it.each<[string, Partial<VirtualConsoleControl>]>([
+    ['zero bands', { bandCount: 0, audioBars: [idle] }],
+    ['17 bands', { bandCount: 17, audioBars: Array.from({ length: 18 }, () => idle) }],
+    ['a missing volume bar', { bandCount: 2, audioBars: [idle, idle] }],
+    ['min equal to max', { bandCount: 1, audioBars: [idle, { ...idle, minThreshold: 50, maxThreshold: 50 }] }],
+    ['a threshold above 100', { bandCount: 1, audioBars: [idle, { ...idle, maxThreshold: 101 }] }],
+    ['an unknown mode', { bandCount: 1, audioBars: [idle, { ...idle, mode: 'strobe' as 'none' }] }],
+    ['a function name on an idle bar', { bandCount: 1, audioBars: [idle, { ...idle, functionName: 'Strobe' }] }],
+    [
+      'channels on a function bar',
+      { bandCount: 1, audioBars: [idle, { ...idle, mode: 'function', channelBindings: [binding] }] },
+    ],
+    [
+      'a function on a channels bar',
+      { bandCount: 1, audioBars: [idle, { ...idle, mode: 'channels', functionPublicId: FUNCTION_ID }] },
+    ],
+    [
+      'a duplicate channel',
+      { bandCount: 1, audioBars: [idle, { ...idle, mode: 'channels', channelBindings: [binding, binding] }] },
+    ],
+  ])('GIVEN %s WHEN validated THEN it is rejected', (_case, overrides) => {
+    expect(() => {
+      assertValidVirtualConsole(documentWith(audioControl(overrides)));
+    }).toThrow(InvalidVirtualConsoleException);
+  });
+
+  it('GIVEN audio bars on a button WHEN validated THEN they are rejected', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (button) Object.assign(button, { bandCount: 1, audioBars: [idle, idle] });
+
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow('cannot have audio bars');
+  });
+
+  it('GIVEN bar bindings WHEN checked against the project THEN unknown functions and channels are rejected', () => {
+    const document = documentWith(audioControl());
+    const fixtures = [{ publicId: FIXTURE_ID, channelAssignmentPublicIds: new Set([OTHER_ASSIGNMENT_ID]) }];
+
+    expect(() => {
+      assertVirtualConsoleFunctionBindings(document, new Set());
+    }).toThrow(FUNCTION_ID);
+    expect(() => {
+      assertVirtualConsoleChannelBindings(document, fixtures);
+    }).toThrow(ASSIGNMENT_ID);
+  });
+
+  it('GIVEN bar bindings WHEN exported and stripped again THEN hints are added and removed per bar', () => {
+    const exported = enrichVirtualConsoleForExport(
+      documentWith(audioControl()),
+      [
+        {
+          publicId: FIXTURE_ID,
+          fixtureChannelMode: { fixtureChannelAssignments: [{ publicId: ASSIGNMENT_ID, channelNumber: 3 }] },
+        },
+      ],
+      [{ publicId: FUNCTION_ID, name: 'Chase' }],
+    );
+    const bars = exported?.pages[0]?.controls[0]?.audioBars;
+
+    expect(bars?.[0]).toMatchObject({ functionPublicId: FUNCTION_ID, functionName: 'Chase' });
+    expect(bars?.[1]?.channelBindings).toEqual([{ ...binding, channelNumber: 3 }]);
+    const stripped = exported && stripVirtualConsoleBindingHints(exported).pages[0]?.controls[0]?.audioBars;
+    expect(stripped?.[0]?.functionName).toBeUndefined();
+    expect(stripped?.[1]?.channelBindings).toEqual([binding]);
+  });
+
+  it('GIVEN an imported bar function by name WHEN remapped THEN it binds the new function id', () => {
+    const imported = documentWith(
+      audioControl({
+        bandCount: 1,
+        audioBars: [
+          {
+            mode: 'function',
+            minThreshold: 20,
+            maxThreshold: 80,
+            functionName: 'Chase',
+            functionPublicId: FUNCTION_ID,
+          },
+          idle,
+        ],
+      }),
+    );
+
+    const remapped = remapVirtualConsoleFunctionsForImport(imported, [{ publicId: SLIDER_ID, name: 'Chase' }]);
+
+    expect(remapped.pages[0]?.controls[0]?.audioBars?.[0]).toMatchObject({
+      functionPublicId: SLIDER_ID,
+      functionName: undefined,
+    });
+  });
+
+  it('GIVEN a deleted function WHEN bindings are removed THEN the bar loses it', () => {
+    const cleaned = removeFunctionBindings(documentWith(audioControl()), FUNCTION_ID);
+
+    expect(cleaned.pages[0]?.controls[0]?.audioBars?.[0]?.functionPublicId).toBeUndefined();
+  });
+
+  it('GIVEN a bar binding to a remapped assignment WHEN imported THEN it is resolved by channel number', async () => {
+    const fixtures = [
+      {
+        publicId: FIXTURE_ID,
+        channelAssignmentPublicIds: new Set([OTHER_ASSIGNMENT_ID]),
+        channelAssignmentPublicIdByChannelNumber: new Map([[3, OTHER_ASSIGNMENT_ID]]),
+      },
+    ];
+
+    const remapped = await remapVirtualConsoleBindingsForImport(documentWith(audioControl()), fixtures, async () =>
+      Promise.resolve(3),
+    );
+
+    expect(remapped.pages[0]?.controls[0]?.audioBars?.[1]?.channelBindings).toEqual([
+      { projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: OTHER_ASSIGNMENT_ID },
+    ]);
+  });
+
+  describe('beat bar', () => {
+    const withFunction = { minThreshold: 20, functionPublicId: FUNCTION_ID };
+
+    it.each([
+      ['no function', { minThreshold: 20 }],
+      ['a function', withFunction],
+      ['the lowest threshold', { minThreshold: 0 }],
+      ['the highest threshold', { minThreshold: 100 }],
+      ['beat timing', { minThreshold: 20, timing: { fadeIn: 0, hold: 40, fadeOut: 60 } }],
+      ['beat timing filling the whole gap', { minThreshold: 20, timing: { fadeIn: 10, hold: 40, fadeOut: 50 } }],
+      ['all beat timing on one part', { minThreshold: 20, timing: { fadeIn: 100, hold: 0, fadeOut: 0 } }],
+      ['no beat timing from GraphQL', { minThreshold: 20, timing: null as unknown as undefined }],
+    ])('GIVEN a beat bar with %s WHEN validated THEN it is accepted', (_case, beatBar) => {
+      expect(() => {
+        assertValidVirtualConsole(documentWith(audioControl({ beatBar })));
+      }).not.toThrow();
+    });
+
+    it('GIVEN no beat bar in a console saved earlier WHEN validated THEN it is accepted', () => {
+      expect(() => {
+        assertValidVirtualConsole(documentWith(audioControl({ beatBar: null as unknown as undefined })));
+      }).not.toThrow();
+    });
+
+    it.each([
+      ['a threshold above 100', { minThreshold: 101 }, 'Beat bar minThreshold'],
+      ['a negative threshold', { minThreshold: -1 }, 'Beat bar minThreshold'],
+      ['a fractional threshold', { minThreshold: 20.5 }, 'Beat bar minThreshold'],
+      ['a function that is no UUID', { minThreshold: 20, functionPublicId: 'chase' }, 'Beat bar functionPublicId'],
+      ['a timing above 100', { minThreshold: 20, timing: { fadeIn: 0, hold: 101, fadeOut: 0 } }, 'Beat bar timing'],
+      ['a negative timing', { minThreshold: 20, timing: { fadeIn: -1, hold: 40, fadeOut: 60 } }, 'Beat bar timing'],
+      ['a fractional timing', { minThreshold: 20, timing: { fadeIn: 0, hold: 40.5, fadeOut: 0 } }, 'Beat bar timing'],
+      ['a timing over the gap', { minThreshold: 20, timing: { fadeIn: 1, hold: 40, fadeOut: 60 } }, 'Beat bar timing'],
+    ])('GIVEN a beat bar with %s WHEN validated THEN it is rejected', (_case, beatBar, message) => {
+      expect(() => {
+        assertValidVirtualConsole(documentWith(audioControl({ beatBar })));
+      }).toThrow(message);
+    });
+
+    it('GIVEN a beat bar on a button WHEN validated THEN it is rejected', () => {
+      const document = validDocument();
+      const button = document.pages[0]?.controls[1];
+      if (button) Object.assign(button, { beatBar: { minThreshold: 20 } });
+
+      expect(() => {
+        assertValidVirtualConsole(document);
+      }).toThrow('cannot have audio bars');
+    });
+
+    it('GIVEN a beat bar function outside the project WHEN checked THEN it is rejected', () => {
+      expect(() => {
+        assertVirtualConsoleFunctionBindings(
+          documentWith(audioControl({ audioBars: [idle, idle, idle], beatBar: withFunction })),
+          new Set(),
+        );
+      }).toThrow(FUNCTION_ID);
+    });
+
+    it('GIVEN a beat bar function WHEN exported, stripped and remapped THEN it survives by name', () => {
+      const original = documentWith(audioControl({ beatBar: withFunction }));
+      const exported = enrichVirtualConsoleForExport(original, [], [{ publicId: FUNCTION_ID, name: 'Chase' }]);
+
+      expect(exported?.pages[0]?.controls[0]?.beatBar).toMatchObject({ functionName: 'Chase' });
+      const stripped = exported && stripVirtualConsoleBindingHints(exported);
+      expect(stripped?.pages[0]?.controls[0]?.beatBar?.functionName).toBeUndefined();
+      expect(stripped?.pages[0]?.controls[0]?.beatBar?.minThreshold).toBe(20);
+
+      const remapped =
+        exported && remapVirtualConsoleFunctionsForImport(exported, [{ publicId: SLIDER_ID, name: 'Chase' }]);
+      expect(remapped?.pages[0]?.controls[0]?.beatBar).toMatchObject({
+        minThreshold: 20,
+        functionPublicId: SLIDER_ID,
+        functionName: undefined,
+      });
+    });
+
+    it('GIVEN a deleted function WHEN bindings are removed THEN the beat bar keeps its threshold only', () => {
+      const cleaned = removeFunctionBindings(documentWith(audioControl({ beatBar: withFunction })), FUNCTION_ID);
+
+      expect(cleaned.pages[0]?.controls[0]?.beatBar).toMatchObject({ minThreshold: 20, functionPublicId: undefined });
+    });
+
+    it('GIVEN a deleted function with a stored name WHEN bindings are removed THEN a later import cannot rebind it', () => {
+      const named = documentWith(audioControl({ beatBar: { ...withFunction, functionName: 'Chase' } }));
+
+      const cleaned = removeFunctionBindings(named, FUNCTION_ID);
+      const remapped = remapVirtualConsoleFunctionsForImport(cleaned, [{ publicId: SLIDER_ID, name: 'Chase' }]);
+
+      expect(cleaned.pages[0]?.controls[0]?.beatBar?.functionName).toBeUndefined();
+      expect(remapped.pages[0]?.controls[0]?.beatBar?.functionPublicId).toBeUndefined();
+    });
+
+    it('GIVEN a kept function with a stored name WHEN another function is deleted THEN its binding stays', () => {
+      const named = documentWith(audioControl({ beatBar: { ...withFunction, functionName: 'Chase' } }));
+
+      const cleaned = removeFunctionBindings(named, SLIDER_ID);
+
+      expect(cleaned.pages[0]?.controls[0]?.beatBar).toMatchObject({
+        functionPublicId: FUNCTION_ID,
+        functionName: 'Chase',
+      });
+    });
+
+    it('GIVEN a beat bar in a frame WHEN sanitized and remapped for import THEN it survives', async () => {
+      const frame = {
+        ...audioControl(),
+        id: SLIDER_ID,
+        type: VIRTUAL_CONSOLE_CONTROL_TYPE.Frame,
+        bandCount: undefined,
+        audioBars: undefined,
+        borderWidth: 0,
+        borderColor: '#000000',
+        children: [audioControl({ beatBar: { minThreshold: 35, functionName: 'Chase' } })],
+      };
+      const sanitized = sanitizeVirtualConsoleForImport(documentWith(frame));
+      const functionsMapped = remapVirtualConsoleFunctionsForImport(sanitized, [
+        { publicId: FUNCTION_ID, name: 'Chase' },
+      ]);
+
+      const remapped = await remapVirtualConsoleBindingsForImport(functionsMapped, [], async () =>
+        Promise.resolve(undefined),
+      );
+
+      expect(remapped.pages[0]?.controls[0]?.children?.[0]?.beatBar).toMatchObject({
+        minThreshold: 35,
+        functionPublicId: FUNCTION_ID,
+      });
+    });
+  });
+
+  it('GIVEN null bar bindings from an import WHEN sanitized THEN they are dropped', () => {
+    const control = audioControl({
+      bandCount: 1,
+      audioBars: [idle, { ...idle, channelBindings: null as unknown as VirtualConsoleChannelBinding[] }],
+    });
+
+    const sanitized = sanitizeVirtualConsoleForImport(documentWith(control));
+
+    expect(sanitized.pages[0]?.controls[0]?.audioBars?.[1]).toEqual(idle);
   });
 });

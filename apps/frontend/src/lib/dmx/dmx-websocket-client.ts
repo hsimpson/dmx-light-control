@@ -12,10 +12,13 @@ type SocketLike = {
 type SocketCtor = new (url: string) => SocketLike;
 
 const OPEN = 1;
+/** A little longer than the backend's 2 s beat timeout, so it only catches a stopped stream. */
+const STALE_BPM_MS = 2500;
 
 export class DmxWebsocketClient {
   private socket: SocketLike | undefined;
   private reconnectTimer: ReturnType<typeof setTimeout> | undefined;
+  private staleBpmTimer: ReturnType<typeof setTimeout> | undefined;
   private reconnectAttempt = 0;
   private sawSnapshot = false;
   private stopped = true;
@@ -35,6 +38,7 @@ export class DmxWebsocketClient {
   public disconnect(): void {
     this.stopped = true;
     this.clearReconnect();
+    clearTimeout(this.staleBpmTimer);
     this.sawSnapshot = false;
     this.pendingByChannel.clear();
     if (this.socket?.readyState === OPEN) {
@@ -110,6 +114,7 @@ export class DmxWebsocketClient {
       running?: unknown;
       portName?: unknown;
       message?: unknown;
+      levels?: unknown;
     };
     if (message.type === 'snapshot' && Array.isArray(message.channels)) {
       this.store.getState().applySnapshot(message.channels as number[]);
@@ -126,6 +131,19 @@ export class DmxWebsocketClient {
         portName: message.portName,
         message: message.message.filter((byte): byte is number => typeof byte === 'number'),
       });
+      return;
+    }
+    if (message.type === 'audioLevels' && typeof message.levels === 'object' && message.levels !== null) {
+      this.store.getState().setAudioLevels(parseAudioLevels(message.levels));
+      this.setAudioBpm('bpm' in message ? message.bpm : undefined);
+      return;
+    }
+    if (message.type === 'soundLevel' && Array.isArray(message.levels)) {
+      this.store
+        .getState()
+        .setSoundLevels(
+          message.levels.flatMap(level => (typeof level === 'number' ? [Math.min(1, Math.max(0, level))] : [])),
+        );
       return;
     }
     if (message.type === 'functionState' && Array.isArray(message.running)) {
@@ -161,10 +179,38 @@ export class DmxWebsocketClient {
     }, delayMs);
   }
 
+  /** Levels stop arriving when the sound input stops; a tempo shown from then on would look live. */
+  private setAudioBpm(bpm: unknown): void {
+    this.store.getState().setAudioBpm(parseAudioBpm(bpm));
+    clearTimeout(this.staleBpmTimer);
+    this.staleBpmTimer = setTimeout(() => {
+      this.store.getState().setAudioBpm({});
+    }, STALE_BPM_MS);
+  }
+
   private clearReconnect(): void {
     if (this.reconnectTimer !== undefined) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = undefined;
     }
   }
+}
+
+function parseAudioBpm(bpm: unknown): Record<string, number> {
+  if (typeof bpm !== 'object' || bpm === null) return {};
+  return Object.fromEntries(
+    Object.entries(bpm).filter(
+      (entry): entry is [string, number] => typeof entry[1] === 'number' && Number.isFinite(entry[1]) && entry[1] > 0,
+    ),
+  );
+}
+
+function parseAudioLevels(levels: object): Record<string, number[]> {
+  return Object.fromEntries(
+    Object.entries(levels).flatMap(([controlId, bars]) =>
+      Array.isArray(bars)
+        ? [[controlId, bars.flatMap(level => (typeof level === 'number' ? [Math.min(1, Math.max(0, level))] : []))]]
+        : [],
+    ),
+  );
 }

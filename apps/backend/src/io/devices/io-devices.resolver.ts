@@ -13,7 +13,7 @@ export class IoDevicesResolver {
 
   @Query(() => [IoDeviceDto], {
     name: 'availableIoDevices',
-    description: 'USB DMX outputs and MIDI controllers currently connected to the backend host',
+    description: 'USB DMX outputs, MIDI controllers and sound inputs currently connected to the backend host',
   })
   public async availableIoDevices(): Promise<IoDeviceDto[]> {
     const devices = await this.discovery.listAvailable();

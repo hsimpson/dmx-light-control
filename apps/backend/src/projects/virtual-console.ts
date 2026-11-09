@@ -16,11 +16,15 @@ export const VIRTUAL_CONSOLE_DEFAULT_PAGE_NAME = 'Page 1';
 export const VIRTUAL_CONSOLE_DEFAULT_SNAP = 1;
 export const VIRTUAL_CONSOLE_SNAP_MIN = 1;
 export const VIRTUAL_CONSOLE_SNAP_MAX = 128;
+export const VIRTUAL_CONSOLE_AUDIO_BANDS_MIN = 1;
+export const VIRTUAL_CONSOLE_AUDIO_BANDS_MAX = 16;
+export const VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD = 20;
 
 export const VIRTUAL_CONSOLE_CONTROL_TYPE = {
   Frame: 'frame',
   Slider: 'slider',
   Button: 'button',
+  AudioTriggers: 'audioTriggers',
 } as const;
 
 export type VirtualConsoleControlType =
@@ -30,6 +34,7 @@ export enum VirtualConsoleControlTypeEnum {
   frame = 'frame',
   slider = 'slider',
   button = 'button',
+  audioTriggers = 'audioTriggers',
 }
 
 registerEnumType(VirtualConsoleControlTypeEnum, {
@@ -67,6 +72,17 @@ registerEnumType(VirtualConsoleSliderValueType, {
   description: 'How a slider value is interpreted',
 });
 
+export enum VirtualConsoleAudioBarMode {
+  none = 'none',
+  channels = 'channels',
+  function = 'function',
+}
+
+registerEnumType(VirtualConsoleAudioBarMode, {
+  name: 'VirtualConsoleAudioBarMode',
+  description: 'What an audio triggers bar drives',
+});
+
 export type VirtualConsoleChannelBinding = {
   projectFixturePublicId: string;
   channelAssignmentPublicId: string;
@@ -74,6 +90,30 @@ export type VirtualConsoleChannelBinding = {
   channelNumber?: number;
   /** Present in export documents to remap bindings when assignment publicIds change. */
   channelDefinitionPublicId?: string;
+};
+
+/** Volume (index 0) or one spectrum band of an audio triggers control; thresholds in percent. */
+export type VirtualConsoleAudioBar = {
+  mode: `${VirtualConsoleAudioBarMode}`;
+  minThreshold: number;
+  maxThreshold: number;
+  channelBindings?: VirtualConsoleChannelBinding[];
+  functionPublicId?: string;
+  /** Present in export documents to remap a function binding after re-import. */
+  functionName?: string;
+};
+
+/** Fade in, hold and fade out of a stepped step, each in percent of the measured time between beats. */
+export type VirtualConsoleBeatTiming = { fadeIn: number; hold: number; fadeOut: number };
+
+/** Steps a function on each bass onset of an audio triggers control; quieter onsets (percent) do not count. */
+export type VirtualConsoleBeatBar = {
+  minThreshold: number;
+  functionPublicId?: string;
+  /** Present in export documents to remap a function binding after re-import. */
+  functionName?: string;
+  /** Absent: each step keeps the sequence's own timing. */
+  timing?: VirtualConsoleBeatTiming;
 };
 
 export type VirtualConsoleControl = {
@@ -105,6 +145,12 @@ export type VirtualConsoleControl = {
   midiEntryPublicId?: string | null;
   /** Overrides the entry's default LED feedback. */
   feedback?: MidiFeedback | null;
+  /** Spectrum bands of an audio triggers control. */
+  bandCount?: number;
+  /** Volume bar followed by one bar per band (`bandCount + 1` entries). */
+  audioBars?: VirtualConsoleAudioBar[];
+  /** Absent on audio triggers controls saved before beat bars existed. */
+  beatBar?: VirtualConsoleBeatBar;
 };
 
 export type VirtualConsolePage = {

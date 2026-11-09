@@ -31,6 +31,8 @@ import {
   findDropTarget,
   findFrameOrigin,
   insertControlInTree,
+  beatBarOf,
+  patchAudioBar,
   reparentControl,
   resizedControlBounds,
   snapControlBounds,
@@ -96,6 +98,8 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
   const [edits, setEdits] = useState<VirtualConsoleDocument | null>(null);
   const draft = edits ?? saved;
   const [selection, setSelection] = useState<VirtualConsoleSelection>({ kind: 'canvas' });
+  // Keyed by control, so selecting another audio control starts at its volume bar.
+  const [audioBarSelection, setAudioBarSelection] = useState({ controlId: '', index: 0 });
   const [saving, setSaving] = useState(false);
   const [pageOverride, setPageOverride] = useState<string | null>(null);
   const activePageId = pageOverride ?? draft.pages[0]?.id ?? null;
@@ -181,7 +185,7 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       return;
     }
     const type = event.dataTransfer.getData(VIRTUAL_CONSOLE_PALETTE_MIME);
-    if (type !== 'frame' && type !== 'slider' && type !== 'button') {
+    if (type !== 'frame' && type !== 'slider' && type !== 'button' && type !== 'audioTriggers') {
       return;
     }
     const bounds = canvasRef.current.getBoundingClientRect();
@@ -505,7 +509,20 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     window.open(`/${locale}/project/${projectPublicId}/console/popout`, 'virtual-console', 'noopener,noreferrer');
   };
 
-  const showChannelSidebar = selectedControl?.type === 'button' || selectedControl?.type === 'slider';
+  const audioBars = selectedControl?.type === 'audioTriggers' ? (selectedControl.audioBars ?? []) : [];
+  const audioBarIndex = audioBarSelection.controlId === selectedControl?.id ? audioBarSelection.index : 0;
+  // The index right after the band bars selects the beat bar.
+  const selectedBarIndex = Math.min(audioBarIndex, audioBars.length);
+  const selectedBar = audioBars[selectedBarIndex];
+  const selectedBeatBar =
+    selectedControl?.type === 'audioTriggers' && selectedBarIndex === audioBars.length
+      ? beatBarOf(selectedControl)
+      : undefined;
+  const barKind = selectedBar?.mode === 'none' ? undefined : selectedBar?.mode;
+  const channelControl =
+    selectedControl?.type === 'button' || selectedControl?.type === 'slider' ? selectedControl : undefined;
+  const channelTarget = channelControl ?? selectedBeatBar ?? (barKind ? selectedBar : undefined);
+  const showChannelSidebar = channelTarget !== undefined;
 
   const applyPaneWidth = (pane: VirtualConsoleSplitPane, clientX: number) => {
     const split = splitRef.current;
@@ -706,13 +723,23 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
     </div>
   );
 
-  const channelControl =
-    selectedControl?.type === 'button' || selectedControl?.type === 'slider' ? selectedControl : undefined;
   const patchSelectedControl = (patch: Partial<VirtualConsoleControl>) => {
     if (!activePage || selection.kind !== 'control') {
       return;
     }
     patchActivePageControls(updateControlInTree(activePage.controls, selection.controlId, patch));
+  };
+  const patchChannelTarget = (patch: Partial<Pick<VirtualConsoleControl, 'channelBindings' | 'functionPublicId'>>) => {
+    if (channelControl) {
+      patchSelectedControl(patch);
+    } else if (selectedBeatBar) {
+      patchSelectedControl({
+        // Keeps threshold and timing; the export name belongs to the previous function.
+        beatBar: { ...selectedBeatBar, functionName: undefined, functionPublicId: patch.functionPublicId },
+      });
+    } else {
+      patchSelectedControl({ audioBars: patchAudioBar(audioBars, selectedBarIndex, patch) });
+    }
   };
 
   return (
@@ -732,13 +759,13 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
           className={classes.split}
           data-testid="virtual-console-split"
           style={{
-            gridTemplateColumns: channelControl
+            gridTemplateColumns: channelTarget
               ? `minmax(0, 1fr) ${SPLITTER_PX}px ${channelWidth}px ${SPLITTER_PX}px ${sidebarWidth}px`
               : `minmax(0, 1fr) ${SPLITTER_PX}px ${sidebarWidth}px`,
           }}
         >
           {pagesPane}
-          {channelControl ? (
+          {channelTarget ? (
             <div
               aria-label={t({
                 id: 'ProjectDetail.virtualConsole.resizeChannelSidebar',
@@ -758,15 +785,16 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
               onPointerUp={handleSplitterPointerUp}
             />
           ) : null}
-          {channelControl ? (
+          {channelTarget ? (
             <VirtualConsoleChannelSidebar
-              control={channelControl}
+              control={channelTarget}
+              fixedKind={channelControl ? undefined : selectedBeatBar ? 'function' : barKind}
               fixtures={data?.project?.projectFixtures ?? []}
               functions={(data?.project?.projectFunctions ?? []).map(fn => ({
                 publicId: fn.publicId,
                 name: fn.name,
               }))}
-              onPatch={patchSelectedControl}
+              onPatch={patchChannelTarget}
             />
           ) : null}
           <div
@@ -794,6 +822,10 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
             selection={selection}
             onCanvasSizeChange={(field, value) => {
               setDraft(current => ({ ...current, [field]: value }));
+            }}
+            audioBarIndex={selectedBarIndex}
+            onAudioBarIndexChange={index => {
+              setAudioBarSelection({ controlId: selectedControl?.id ?? '', index });
             }}
             onControlPatch={patchSelectedControl}
             onDeleteControl={handleDeleteControl}

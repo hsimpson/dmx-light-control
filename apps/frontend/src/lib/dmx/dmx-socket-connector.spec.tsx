@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { createServer, type Server } from 'node:http';
 import { StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DmxSocketConnector, getDmxWebsocketClient, resetDmxSocketConnector } from './dmx-socket-connector';
@@ -80,5 +81,41 @@ describe('DmxSocketConnector', () => {
     vi.advanceTimersByTime(100);
     expect(getDmxWebsocketClient()).toBeUndefined();
     vi.useRealTimers();
+  });
+});
+
+describe('DmxSocketConnector in the test environment', () => {
+  let server: Server;
+  let upgradeRequests: number;
+
+  beforeEach(async () => {
+    upgradeRequests = 0;
+    server = createServer();
+    server.on('upgrade', (_request, socket) => {
+      upgradeRequests += 1;
+      socket.destroy();
+    });
+    await new Promise<void>(resolve => {
+      server.listen(0, '127.0.0.1', resolve);
+    });
+  });
+
+  afterEach(async () => {
+    resetDmxSocketConnector();
+    vi.unstubAllEnvs();
+    await new Promise(resolve => {
+      server.close(resolve);
+    });
+  });
+
+  it('GIVEN a reachable backend WHEN a connector mounts without a stubbed socket THEN no real connection is made', async () => {
+    const address = server.address();
+    const port = typeof address === 'object' && address !== null ? address.port : 0;
+    vi.stubEnv('NEXT_PUBLIC_GRAPHQL_API_URL', `http://127.0.0.1:${port}/graphql`);
+
+    render(<DmxSocketConnector />);
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    expect(upgradeRequests).toBe(0);
   });
 });

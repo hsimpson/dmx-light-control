@@ -1,9 +1,11 @@
 import { registerEnumType } from '@nestjs/graphql';
+import type { SoundInputChannels } from '@/io/sound-input/sound-input.service';
 import type { UsbIdentity } from './usb-identity';
 
 export enum IoDeviceKind {
   DmxSerial = 'DmxSerial',
   Midi = 'Midi',
+  SoundInput = 'SoundInput',
 }
 
 registerEnumType(IoDeviceKind, {
@@ -24,15 +26,18 @@ registerEnumType(IoDeviceStatus, {
 
 export type IoDeviceIdentity = UsbIdentity & { kind: IoDeviceKind };
 
-/** A device as configured in a project; MIDI devices may name the mapping that interprets their input. */
-export type ProjectIoDevice = IoDeviceIdentity & { midiMappingPublicId?: string | null };
+/** A device as configured in a project; MIDI devices may name their mapping, sound inputs their channel count. */
+export type ProjectIoDevice = IoDeviceIdentity & {
+  midiMappingPublicId?: string | null;
+  audioChannels?: SoundInputChannels | null;
+};
 
 export function midiMappingPublicIds(devices: readonly ProjectIoDevice[]): string[] {
   return devices.flatMap(device => (device.midiMappingPublicId ? [device.midiMappingPublicId] : []));
 }
 
-/** `handle` is what the OS opens: the serial path or the full RtMidi port name. */
-export type AvailableIoDevice = IoDeviceIdentity & { handle: string };
+/** `handle` is what the OS opens: the serial path, the full RtMidi port name or the RtAudio device name. */
+export type AvailableIoDevice = IoDeviceIdentity & { handle: string; maxInputChannels?: number };
 
 export type IoDeviceMatch<T extends IoDeviceIdentity> = {
   device: T;

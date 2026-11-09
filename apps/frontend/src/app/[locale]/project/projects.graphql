@@ -52,6 +52,30 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
       color
     }
   }
+  bandCount
+  audioBars {
+    mode
+    minThreshold
+    maxThreshold
+    channelBindings {
+      projectFixturePublicId
+      channelAssignmentPublicId
+      channelNumber
+      channelDefinitionPublicId
+    }
+    functionPublicId
+    functionName
+  }
+  beatBar {
+    minThreshold
+    functionPublicId
+    functionName
+    timing {
+      fadeIn
+      hold
+      fadeOut
+    }
+  }
 }
 
 fragment VirtualConsoleFields on VirtualConsoleDto {
@@ -332,7 +356,15 @@ query ExportProjects {
         ...VirtualConsoleFields
       }
       ioDevices {
-        ...IoDeviceFields
+        kind
+        name
+        manufacturer
+        serial
+        vendorId
+        productId
+        usbLocation
+        midiMappingPublicId
+        audioChannels
       }
     }
   }
@@ -375,6 +407,8 @@ fragment IoDeviceFields on IoDeviceDto {
   productId
   usbLocation
   midiMappingPublicId
+  audioChannels
+  maxInputChannels
 }
 
 query GetProjectIoDevices($publicId: UUID!) {

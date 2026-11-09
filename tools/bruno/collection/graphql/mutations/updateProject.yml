@@ -14,8 +14,10 @@ graphql:
           createdAt
           environmentType
           ioDevices {
+            audioChannels
             kind
             manufacturer
+            maxInputChannels
             midiMappingPublicId
             name
             productId
@@ -105,7 +107,10 @@ graphql:
             height
             pages {
               controls {
+                audioBars
                 backgroundColor
+                bandCount
+                beatBar
                 borderColor
                 borderWidth
                 buttonMode
