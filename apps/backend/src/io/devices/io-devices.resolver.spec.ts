@@ -23,13 +23,16 @@ class FakeDiscovery {
 }
 
 class FakeManager {
-  public statuses = vi.fn().mockReturnValue([{ device: configuredFtdi, status: IoDeviceStatus.Missing, handle: null }]);
+  public statuses = vi.fn();
+  public constructor(status: IoDeviceStatus, handle: string | null) {
+    this.statuses.mockReturnValue([{ device: configuredFtdi, status, handle }]);
+  }
 }
 
-function buildResolver(): IoDevicesResolver {
+function buildResolver(status = IoDeviceStatus.Missing, handle: string | null = null): IoDevicesResolver {
   return new IoDevicesResolver(
     new FakeDiscovery() as unknown as IoDeviceDiscoveryService,
-    new FakeManager() as unknown as IoDeviceManagerService,
+    new FakeManager(status, handle) as unknown as IoDeviceManagerService,
   );
 }
 
@@ -48,6 +51,12 @@ describe('IoDevicesResolver', () => {
     const [device] = buildResolver().ioDevices();
 
     expect(device).toBeInstanceOf(IoDeviceStateDto);
-    expect(device).toMatchObject({ serial: 'A50285BI', status: IoDeviceStatus.Missing });
+    expect(device).toMatchObject({ serial: 'A50285BI', status: IoDeviceStatus.Missing, handle: null });
+  });
+
+  it('GIVEN a connected device WHEN ioDevices is queried THEN returns the port it is open on', () => {
+    const [device] = buildResolver(IoDeviceStatus.Connected, '/dev/ttyUSB0').ioDevices();
+
+    expect(device).toMatchObject({ status: IoDeviceStatus.Connected, handle: '/dev/ttyUSB0' });
   });
 });

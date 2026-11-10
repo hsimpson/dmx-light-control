@@ -39,6 +39,9 @@ describe('UpdateProjectIoDevicesInput', () => {
     ['null optional fields', { kind: 'Midi', name: 'Keys', manufacturer: null, serial: null, vendorId: null }],
     ['a stereo sound input', mic],
     ['a mono sound input', { ...mic, audioChannels: 1 }],
+    ['a custom name', { ...ftdi, customName: 'APC left' }],
+    ['no custom name', { ...ftdi, customName: null }],
+    ['a custom name at the limit', { ...ftdi, customName: 'x'.repeat(64) }],
   ])('GIVEN %s WHEN validated THEN valid', async (_case, device) => {
     await expect(errorsFor([device])).resolves.toBe('[]');
   });
@@ -54,6 +57,8 @@ describe('UpdateProjectIoDevicesInput', () => {
     ['a non-string manufacturer', { ...ftdi, manufacturer: 42 }, 'manufacturer'],
     ['a sound input without channels', { ...mic, audioChannels: null }, 'audioChannels'],
     ['a sound input with 3 channels', { ...mic, audioChannels: 3 }, 'audioChannels'],
+    ['an overlong custom name', { ...ftdi, customName: 'x'.repeat(65) }, 'customName'],
+    ['a non-string custom name', { ...ftdi, customName: 42 }, 'customName'],
   ])('GIVEN %s WHEN validated THEN rejects %s', async (_case, device, property) => {
     await expect(errorsFor([device])).resolves.toContain(`"property":"${property}"`);
   });

@@ -12,6 +12,7 @@ graphql:
       query {
         availableIoDevices {
           audioChannels
+          customName
           kind
           manufacturer
           maxInputChannels

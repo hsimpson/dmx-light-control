@@ -15,6 +15,7 @@ graphql:
           environmentType
           ioDevices {
             audioChannels
+            customName
             kind
             manufacturer
             maxInputChannels
@@ -127,6 +128,7 @@ graphql:
                 id
                 label
                 lowerLimit
+                midiDeviceSerials
                 midiEntryPublicId
                 orientation
                 type

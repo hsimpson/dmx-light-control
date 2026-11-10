@@ -27,6 +27,6 @@ export class IoDevicesResolver {
   public ioDevices(): IoDeviceStateDto[] {
     return this.manager
       .statuses()
-      .map(({ device, status }) => plainToInstance(IoDeviceStateDto, { ...device, status }));
+      .map(({ device, status, handle }) => plainToInstance(IoDeviceStateDto, { ...device, status, handle }));
   }
 }

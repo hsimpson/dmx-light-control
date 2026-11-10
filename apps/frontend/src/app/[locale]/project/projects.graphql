@@ -38,6 +38,7 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
   functionPublicId
   functionName
   midiEntryPublicId
+  midiDeviceSerials
   feedback {
     off {
       behavior
@@ -363,6 +364,7 @@ query ExportProjects {
         vendorId
         productId
         usbLocation
+        customName
         midiMappingPublicId
         audioChannels
       }
@@ -406,6 +408,7 @@ fragment IoDeviceFields on IoDeviceDto {
   vendorId
   productId
   usbLocation
+  customName
   midiMappingPublicId
   audioChannels
   maxInputChannels
@@ -435,7 +438,9 @@ query ActiveIoDeviceStates {
     vendorId
     productId
     usbLocation
+    midiMappingPublicId
     status
+    handle
   }
 }
 

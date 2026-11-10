@@ -143,6 +143,8 @@ export type VirtualConsoleControl = {
   functionName?: string;
   /** MIDI mapping entry that drives this button or slider; ignored when no project device uses its mapping. */
   midiEntryPublicId?: string | null;
+  /** Serials of the MIDI devices this control listens to and lights up on; empty means every device using the mapping. */
+  midiDeviceSerials?: string[] | null;
   /** Overrides the entry's default LED feedback. */
   feedback?: MidiFeedback | null;
   /** Spectrum bands of an audio triggers control. */

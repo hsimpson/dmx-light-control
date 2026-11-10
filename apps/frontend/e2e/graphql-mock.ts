@@ -186,7 +186,12 @@ export const mockedAvailableIoDevices: MockedIoDevice[] = [
   },
 ];
 
-const ioDeviceDto = (device: MockedIoDevice) => ({ __typename: 'IoDeviceDto', midiMappingPublicId: null, ...device });
+const ioDeviceDto = (device: MockedIoDevice) => ({
+  __typename: 'IoDeviceDto',
+  customName: null,
+  midiMappingPublicId: null,
+  ...device,
+});
 
 const isPluggedIn = (device: MockedIoDevice) =>
   mockedAvailableIoDevices.some(
@@ -354,6 +359,8 @@ export const mockGraphql = async (page: Page) => {
         data: {
           ioDevices: active.map(device => ({
             __typename: 'IoDeviceStateDto',
+            midiMappingPublicId: null,
+            handle: null,
             ...device,
             status: isPluggedIn(device) ? 'Connected' : 'Missing',
           })),

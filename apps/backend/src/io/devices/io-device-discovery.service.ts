@@ -4,6 +4,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SerialPort } from 'serialport';
 import { readMidiPortUsbIdentity, readTtyUsbIdentity } from './linux-usb-sysfs';
 import { IoDeviceKind, type AvailableIoDevice } from './match-io-devices';
+import { DEVICE_INQUIRY, isApcMiniMk2, parseApcMiniMk2Serial } from './midi-identity/apc-mini-mk2';
 import { IOREG_ARGS, parseIoregUsbDevices } from './midi-identity/macos-ioreg';
 import { pairMidiPortsWithUsbDevices } from './midi-identity/pair-midi-ports';
 import { runCommand } from './midi-identity/run-command';
@@ -27,10 +28,12 @@ const USB_LISTINGS: Partial<Record<NodeJS.Platform, UsbListing>> = {
 
 // ALSA port 0 of a client is the device's primary port (APC mini mk2: "Control").
 const ALSA_PRIMARY_PORT = /\s\d+:0$/;
+const UNIT_SERIAL_TIMEOUT_MS = 1000;
 
 @Injectable()
 export class IoDeviceDiscoveryService {
   private readonly logger = new Logger(IoDeviceDiscoveryService.name);
+  private readonly unitSerials = new Map<string, string>();
 
   public constructor(
     private readonly midiService: MidiService,
@@ -63,7 +66,29 @@ export class IoDeviceDiscoveryService {
   }
 
   private async listMidiDevices(): Promise<AvailableIoDevice[]> {
-    const portNames = this.midiService.listPortNames();
+    return this.withUnitSerials(await this.listUsbMidiDevices(this.midiService.listPortNames()));
+  }
+
+  // shortcut: a unit replaced on the same port and USB location within one poll keeps the old serial; only re-probing every poll would catch it.
+  private async withUnitSerials(devices: AvailableIoDevice[]): Promise<AvailableIoDevice[]> {
+    const listed = new Set(devices.map(unitKey));
+    for (const key of this.unitSerials.keys()) {
+      if (!listed.has(key)) this.unitSerials.delete(key);
+    }
+    return Promise.all(
+      devices.map(async device => {
+        if (!isApcMiniMk2(device)) return device;
+        const serial =
+          this.unitSerials.get(unitKey(device)) ??
+          (await this.midiService.probe(device.handle, DEVICE_INQUIRY, parseApcMiniMk2Serial, UNIT_SERIAL_TIMEOUT_MS));
+        if (!serial) return device;
+        this.unitSerials.set(unitKey(device), serial);
+        return { ...device, serial };
+      }),
+    );
+  }
+
+  private async listUsbMidiDevices(portNames: string[]): Promise<AvailableIoDevice[]> {
     if (process.platform === 'linux') {
       return this.listLinuxMidiDevices(portNames);
     }
@@ -100,6 +125,11 @@ export class IoDeviceDiscoveryService {
   private async readLinuxTtyIdentity(path: string): Promise<UsbIdentity | null> {
     return process.platform === 'linux' ? readTtyUsbIdentity(path, this.sysRoot) : null;
   }
+}
+
+// Windows port names carry an index that shifts on unplug, so the name alone can point at another unit.
+function unitKey({ handle, usbLocation }: AvailableIoDevice): string {
+  return `${handle}|${usbLocation}`;
 }
 
 function serialPortIdentity(port: ListedSerialPort): UsbIdentity {

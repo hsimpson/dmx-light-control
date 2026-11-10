@@ -127,6 +127,87 @@ describe('Virtual console playback of the active project', () => {
     ]);
   });
 
+  describe('MIDI device scope', () => {
+    const midiEntryPublicId = '44444444-4444-4444-8444-444444444444';
+    const SAVE_SCOPE = `mutation ($input: UpdateProjectVirtualConsoleInput!) {
+      updateProjectVirtualConsole(input: $input) {
+        virtualConsole { pages { controls { midiDeviceSerials } } }
+      }
+    }`;
+    const saveScope = async (publicId: string, midiDeviceSerials: unknown) =>
+      graphqlQuery<{
+        updateProjectVirtualConsole: { virtualConsole: { pages: { controls: unknown[] }[] } };
+      }>(server, SAVE_SCOPE, {
+        variables: {
+          input: { publicId, virtualConsole: consoleWith([{ ...button, midiEntryPublicId, midiDeviceSerials }]) },
+        },
+      });
+
+    it('GIVEN a scoped control WHEN saved, exported and re-imported THEN the scope round-trips', async () => {
+      const publicId = await createProject('VC MIDI Scope Project');
+      const saved = await saveScope(publicId, ['25082560709810']);
+
+      const exported = await graphqlQuery<{
+        exportProjects: {
+          projects: { publicId: string; virtualConsole: { pages: { controls: unknown[] }[] } }[];
+        };
+      }>(
+        server,
+        `query { exportProjects { projects { publicId virtualConsole { pages { controls { midiDeviceSerials } } } } } }`,
+      );
+      const imported = await graphqlQuery<{ importProjects: { importedCount: number } }>(
+        server,
+        `mutation ($document: ImportProjectsInput!) { importProjects(document: $document) { importedCount } }`,
+        {
+          variables: {
+            document: {
+              schemaVersion: 13,
+              projects: [
+                {
+                  publicId,
+                  name: 'VC MIDI Scope Project',
+                  virtualConsole: consoleWith([
+                    { ...button, midiEntryPublicId, midiDeviceSerials: ['26062560878750'] },
+                  ]),
+                },
+              ],
+            },
+          },
+        },
+      );
+      const reloaded = await graphqlQuery<{ project: { virtualConsole: { pages: { controls: unknown[] }[] } } }>(
+        server,
+        `query ($publicId: UUID!) { project(publicId: $publicId) { virtualConsole { pages { controls { midiDeviceSerials } } } } }`,
+        { variables: { publicId } },
+      );
+
+      expect(saved.errors).toBeUndefined();
+      expect(saved.data?.updateProjectVirtualConsole.virtualConsole.pages[0]?.controls).toEqual([
+        { midiDeviceSerials: ['25082560709810'] },
+      ]);
+      expect(
+        exported.data?.exportProjects.projects.find(project => project.publicId === publicId)?.virtualConsole.pages[0]
+          ?.controls,
+      ).toEqual([{ midiDeviceSerials: ['25082560709810'] }]);
+      expect(imported.errors).toBeUndefined();
+      expect(reloaded.data?.project.virtualConsole.pages[0]?.controls).toEqual([
+        { midiDeviceSerials: ['26062560878750'] },
+      ]);
+    });
+
+    it.each([
+      ['too many serials', Array.from({ length: 33 }, (_, index) => `serial-${index}`)],
+      ['an over-long serial', ['x'.repeat(256)]],
+      ['an empty serial', ['']],
+    ])('GIVEN %s WHEN saved THEN the input is rejected', async (_case, midiDeviceSerials) => {
+      const publicId = await createProject(`VC MIDI Scope Invalid ${_case}`);
+
+      const body = await saveScope(publicId, midiDeviceSerials);
+
+      expect(body.errors?.[0]?.extensions?.code).toBe('BAD_USER_INPUT');
+    });
+  });
+
   describe('audio triggers', () => {
     const saveAudioTriggers = async (audioBars: unknown[]) =>
       graphqlQuery<{ updateProjectVirtualConsole: { virtualConsole: { pages: { controls: unknown[] }[] } } }>(

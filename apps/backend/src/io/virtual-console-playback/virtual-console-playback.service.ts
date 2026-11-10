@@ -11,7 +11,7 @@ import {
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { barLevels, nextFunctionState, thresholdDmx } from './audio-triggers';
 import { BeatTempo } from './beat-tempo';
-import type { VirtualConsoleFeedback, VirtualConsoleLedState } from './virtual-console-events';
+import { listensToDevice, type VirtualConsoleFeedback, type VirtualConsoleLedState } from './virtual-console-events';
 import { controlToDmxValue, VirtualConsoleOutput, type VirtualConsoleBoundFixture } from './virtual-console-output';
 
 const DMX_MAX = 255;
@@ -72,8 +72,8 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     this.eventEmitter.on('virtualConsole.input', ({ controlId, value }) => {
       this.applyInput(controlId, value);
     });
-    this.eventEmitter.on('virtualConsole.midiInput', ({ entryPublicId, value }) => {
-      this.applyMidiInput(entryPublicId, value);
+    this.eventEmitter.on('virtualConsole.midiInput', ({ entryPublicId, value, deviceSerial }) => {
+      this.applyMidiInput(entryPublicId, value, deviceSerial);
     });
     this.eventEmitter.on('virtualConsole.inputsReleased', ({ controlIds }) => {
       this.releaseFlashButtons(controlIds);
@@ -174,9 +174,9 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     }
   }
 
-  private applyMidiInput(entryPublicId: string, value: number): void {
+  private applyMidiInput(entryPublicId: string, value: number, deviceSerial: string | null): void {
     for (const control of this.controls.values()) {
-      if (control.midiEntryPublicId === entryPublicId) {
+      if (control.midiEntryPublicId === entryPublicId && listensToDevice(control.midiDeviceSerials, deviceSerial)) {
         const ratio = clamp(value, 0, MIDI_MAX) / MIDI_MAX;
         const min = sliderMin(control);
         this.applyInput(
@@ -388,6 +388,7 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
           entryPublicId: control.midiEntryPublicId,
           state: this.ledState(control),
           feedback: control.feedback ?? null,
+          deviceSerials: control.midiDeviceSerials,
         });
       }
     }

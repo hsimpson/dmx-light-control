@@ -71,6 +71,27 @@ describe('matchIoDevices', () => {
     ]);
   });
 
+  it('GIVEN a device with a custom name WHEN matched THEN the name does not affect matching', () => {
+    const result = matchIoDevices([{ ...apc, customName: 'APC left' }], [plugged(apc, 'APC 28:0')]);
+
+    expect(result[0]).toMatchObject({ status: IoDeviceStatus.Connected, handle: 'APC 28:0' });
+  });
+
+  it('GIVEN two units with their own serials WHEN their ports are swapped THEN each keeps its own handle', () => {
+    const left = { ...apc, serial: '25082560709810', usbLocation: '3-9' };
+    const right = { ...apc, serial: '26062560878750', usbLocation: '3-10' };
+
+    const result = matchIoDevices(
+      [left, right],
+      [plugged(right, 'APC 28:0', '3-9'), plugged(left, 'APC 32:0', '3-10')],
+    );
+
+    expect(result.map(match => [match.status, match.handle])).toEqual([
+      [IoDeviceStatus.Connected, 'APC 32:0'],
+      [IoDeviceStatus.Connected, 'APC 28:0'],
+    ]);
+  });
+
   it('GIVEN two identical devices WHEN both moved THEN ambiguous and none connected', () => {
     const left = { ...apc, usbLocation: '3-1' };
     const right = { ...apc, usbLocation: '3-2' };

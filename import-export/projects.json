@@ -6,6 +6,7 @@
       "ioDevices": [
         {
           "audioChannels": null,
+          "customName": null,
           "kind": "DmxSerial",
           "manufacturer": "FTDI",
           "midiMappingPublicId": null,
@@ -16,18 +17,8 @@
           "vendorId": "0403"
         },
         {
-          "audioChannels": null,
-          "kind": "Midi",
-          "manufacturer": "AKAI professional",
-          "midiMappingPublicId": "53e6118d-be14-4c2b-8fc0-5898253ef422",
-          "name": "APC mini mk2",
-          "productId": "004f",
-          "serial": "Ver00.10",
-          "usbLocation": "3-10",
-          "vendorId": "09e8"
-        },
-        {
           "audioChannels": 1,
+          "customName": null,
           "kind": "SoundInput",
           "manufacturer": null,
           "midiMappingPublicId": null,
@@ -36,6 +27,30 @@
           "serial": null,
           "usbLocation": null,
           "vendorId": null
+        },
+        {
+          "audioChannels": null,
+          "customName": "Uplights",
+          "kind": "Midi",
+          "manufacturer": "AKAI professional",
+          "midiMappingPublicId": "53e6118d-be14-4c2b-8fc0-5898253ef422",
+          "name": "APC mini mk2",
+          "productId": "004f",
+          "serial": "25082560709810",
+          "usbLocation": "3-10",
+          "vendorId": "09e8"
+        },
+        {
+          "audioChannels": null,
+          "customName": "T-Bars",
+          "kind": "Midi",
+          "manufacturer": "AKAI professional",
+          "midiMappingPublicId": "53e6118d-be14-4c2b-8fc0-5898253ef422",
+          "name": "APC mini mk2",
+          "productId": "004f",
+          "serial": "26062560878750",
+          "usbLocation": "3-9",
+          "vendorId": "09e8"
         }
       ],
       "name": "Test-001",
@@ -23845,7 +23860,7 @@
       "roomHeight": 6.58,
       "roomLength": 14.6,
       "roomWidth": 12.2,
-      "updatedAt": "2026-11-07T14:54:01.160Z",
+      "updatedAt": "2026-11-10T00:14:05.491Z",
       "virtualConsole": {
         "height": 1080,
         "pages": [
@@ -23944,6 +23959,9 @@
                     "id": "f3be87ef-c570-4bcd-93d5-abd54c549650",
                     "label": "Red",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "562d9a63-04b0-4f89-9086-f4b39c182b9c",
                     "orientation": null,
                     "type": "button",
@@ -24023,6 +24041,9 @@
                     "id": "c207d246-c41c-4770-991d-813dde22081e",
                     "label": "Red",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "a495daeb-6e47-4248-a260-fa5647fc0a37",
                     "orientation": "vertical",
                     "type": "slider",
@@ -24102,6 +24123,9 @@
                     "id": "80282361-c4b6-4eaa-bda1-bd87ad69c7a9",
                     "label": "Green",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "56aa1b4b-ed1a-4876-ad06-44ae35956693",
                     "orientation": "vertical",
                     "type": "slider",
@@ -24181,6 +24205,9 @@
                     "id": "60c5a97f-c7db-4cac-9f83-3db24117a13b",
                     "label": "Blue",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "0fbd8f90-d8ac-4767-b2d0-150c5e6e03b4",
                     "orientation": "vertical",
                     "type": "slider",
@@ -24260,6 +24287,9 @@
                     "id": "d172cf69-6b6b-4e17-8856-e8fe9461d404",
                     "label": "UV",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "2f2c2f3f-4f9a-4971-8920-34bd561eb59e",
                     "orientation": "vertical",
                     "type": "slider",
@@ -24339,6 +24369,9 @@
                     "id": "6c49d06e-323d-4923-9e8a-6ddf69139094",
                     "label": "Strobe",
                     "lowerLimit": 63,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "b682d2d0-382f-4028-99a7-9f572fd1c6b7",
                     "orientation": "vertical",
                     "type": "slider",
@@ -24418,6 +24451,9 @@
                     "id": "0a41ee30-1770-43d3-9022-4794a7c8c60e",
                     "label": "Dimmer",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "09ff59ec-8ad4-436d-a3b3-1eb74c7b8627",
                     "orientation": "vertical",
                     "type": "slider",
@@ -24510,6 +24546,9 @@
                     "id": "c40d2ee5-fafe-4b9e-8c13-4dffe3b2ec53",
                     "label": "Green",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "c0bbcea9-7b1e-49aa-85bf-ca91fb79ff8b",
                     "orientation": null,
                     "type": "button",
@@ -24602,6 +24641,9 @@
                     "id": "2d0c57cc-93c8-49cb-9fc2-5ed72451e91d",
                     "label": "Blue",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "bcb55c86-1deb-478f-bb93-e07160a0d355",
                     "orientation": null,
                     "type": "button",
@@ -24694,6 +24736,9 @@
                     "id": "c4aeb389-6e22-43da-b677-dbfaa1f54c6e",
                     "label": "UV",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "9245a127-16f2-4158-8d6e-fe2ac85d6076",
                     "orientation": null,
                     "type": "button",
@@ -24773,7 +24818,7 @@
                       },
                       "on": {
                         "behavior": 6,
-                        "color": 3
+                        "color": 2
                       }
                     },
                     "fontFamily": "system-ui, sans-serif",
@@ -24786,6 +24831,9 @@
                     "id": "449a1f58-f597-40c2-8724-276a85ec8524",
                     "label": "Strobe",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "93a21e1b-8c3e-4725-a848-4cdf5c958a65",
                     "orientation": null,
                     "type": "button",
@@ -24807,6 +24855,7 @@
                 "id": "fb4f4504-9187-450d-94ab-5c0a8c9a2c1d",
                 "label": "Uplights",
                 "lowerLimit": null,
+                "midiDeviceSerials": null,
                 "midiEntryPublicId": null,
                 "orientation": null,
                 "type": "frame",
@@ -24909,7 +24958,20 @@
                       }
                     ],
                     "children": null,
-                    "feedback": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 5
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 5
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 5
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -24920,7 +24982,10 @@
                     "id": "2fd7f22f-7195-49c9-a8f3-b8db727d3b48",
                     "label": "Red",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "562d9a63-04b0-4f89-9086-f4b39c182b9c",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -25023,7 +25088,10 @@
                     "id": "20f86ee9-f1d2-4592-bd54-7682366b18bc",
                     "label": "Red",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "a495daeb-6e47-4248-a260-fa5647fc0a37",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -25126,7 +25194,10 @@
                     "id": "c9df92f3-1125-47d1-8bcf-f6b321b29c8e",
                     "label": "Green",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "56aa1b4b-ed1a-4876-ad06-44ae35956693",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -25229,7 +25300,10 @@
                     "id": "74e2fa23-c603-45e8-bf93-a278f28b552a",
                     "label": "Blue",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "0fbd8f90-d8ac-4767-b2d0-150c5e6e03b4",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -25320,7 +25394,10 @@
                     "id": "a22dcfd9-d76b-47b4-a7f6-7e12b039bb7e",
                     "label": "UV",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "be7b0a78-2e33-4e00-bf32-8254a510e9e9",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -25423,7 +25500,10 @@
                     "id": "a5b114fa-ad18-4592-9cce-6ecc4984cd4d",
                     "label": "Strobe",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "43df8ccc-e8e3-4f96-806c-08ecb05ee171",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -25526,7 +25606,10 @@
                     "id": "7a9bdfcb-c1d6-4bb4-9edc-9a3062c8e4ff",
                     "label": "Dimmer",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "09ff59ec-8ad4-436d-a3b3-1eb74c7b8627",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -25618,7 +25701,20 @@
                       }
                     ],
                     "children": null,
-                    "feedback": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 21
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 21
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 21
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -25629,7 +25725,10 @@
                     "id": "2106bda2-814f-46a7-978d-cb9507505789",
                     "label": "Green",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "c0bbcea9-7b1e-49aa-85bf-ca91fb79ff8b",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -25721,7 +25820,20 @@
                       }
                     ],
                     "children": null,
-                    "feedback": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 45
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 45
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 45
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -25732,7 +25844,10 @@
                     "id": "d97045e8-999c-409b-8af9-c34d47f15914",
                     "label": "Blue",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "bcb55c86-1deb-478f-bb93-e07160a0d355",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -25812,7 +25927,20 @@
                       }
                     ],
                     "children": null,
-                    "feedback": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 81
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 81
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 81
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 600,
@@ -25823,7 +25951,10 @@
                     "id": "a89421fd-b9e9-494f-b142-048fdfd3e35c",
                     "label": "UV",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "37314b0c-8601-408c-a47f-15027662cc68",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -25915,7 +26046,20 @@
                       }
                     ],
                     "children": null,
-                    "feedback": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 70
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 2
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 70
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -25926,7 +26070,10 @@
                     "id": "3d1947bb-6757-4712-8e51-9fbcbe3e4acb",
                     "label": "Strobe",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "3ff3b91a-8af2-4b36-a89d-d9853a797fad",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -26017,7 +26164,10 @@
                     "id": "bd9b1ba9-c79d-468d-9b9e-ac3cb8892738",
                     "label": "Amber",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "2f2c2f3f-4f9a-4971-8920-34bd561eb59e",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -26120,7 +26270,10 @@
                     "id": "69842afe-4b82-4cdc-8f9f-87be99b72cfe",
                     "label": "White",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "b682d2d0-382f-4028-99a7-9f572fd1c6b7",
                     "orientation": "vertical",
                     "type": "slider",
                     "upperLimit": null,
@@ -26200,7 +26353,20 @@
                       }
                     ],
                     "children": null,
-                    "feedback": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 13
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 13
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 13
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -26211,7 +26377,10 @@
                     "id": "eb6429f8-7efb-4df0-8ba9-5a14f76ecf24",
                     "label": "Amber",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "9245a127-16f2-4158-8d6e-fe2ac85d6076",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -26303,7 +26472,20 @@
                       }
                     ],
                     "children": null,
-                    "feedback": null,
+                    "feedback": {
+                      "monitor": {
+                        "behavior": 6,
+                        "color": 3
+                      },
+                      "off": {
+                        "behavior": 0,
+                        "color": 3
+                      },
+                      "on": {
+                        "behavior": 6,
+                        "color": 3
+                      }
+                    },
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 18,
                     "fontWeight": 700,
@@ -26314,7 +26496,10 @@
                     "id": "a8773c62-e663-4e09-b013-05cf3b576a22",
                     "label": "White",
                     "lowerLimit": null,
-                    "midiEntryPublicId": null,
+                    "midiDeviceSerials": [
+                      "26062560878750"
+                    ],
+                    "midiEntryPublicId": "93a21e1b-8c3e-4725-a848-4cdf5c958a65",
                     "orientation": null,
                     "type": "button",
                     "upperLimit": null,
@@ -26335,6 +26520,7 @@
                 "id": "9218d00b-8d74-4b8e-aa15-3906c642fe6e",
                 "label": "Light Bars",
                 "lowerLimit": null,
+                "midiDeviceSerials": null,
                 "midiEntryPublicId": null,
                 "orientation": null,
                 "type": "frame",
@@ -26388,6 +26574,9 @@
                     "id": "d393e0d2-2edf-47c1-b17c-27ed11daf008",
                     "label": "Polizei",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "ae73d643-ba01-46ea-98a4-fa3b098cb545",
                     "orientation": null,
                     "type": "button",
@@ -26431,6 +26620,9 @@
                     "id": "27e95930-0f78-49f6-ba1d-c23a403ad95b",
                     "label": "Bounce",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "7ef64fed-12df-4224-8c12-d19f34736ad4",
                     "orientation": null,
                     "type": "button",
@@ -26474,6 +26666,9 @@
                     "id": "c411772d-367d-4a32-a329-c2e826a9eca9",
                     "label": "Herzschlag",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "db470325-9847-4928-9d06-d523369248b0",
                     "orientation": null,
                     "type": "button",
@@ -26517,6 +26712,9 @@
                     "id": "999dfa5b-6a0e-487b-be2e-8ba68f77f8e9",
                     "label": "Farbverlauf",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "d19b15f7-30a2-4824-9b11-8d3cc34d5a76",
                     "orientation": null,
                     "type": "button",
@@ -26560,6 +26758,9 @@
                     "id": "5b5b833c-3d1e-4a10-8a2d-487382816252",
                     "label": "Komet",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "c2bb882c-6d3e-4d1d-83a2-8f6ac869515c",
                     "orientation": null,
                     "type": "button",
@@ -26603,6 +26804,9 @@
                     "id": "27a4a105-1ca7-453a-a08c-156866a5c835",
                     "label": "Symmetrie",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "37b0ffd5-af16-43dd-a9f6-84d93b68157a",
                     "orientation": null,
                     "type": "button",
@@ -26646,6 +26850,9 @@
                     "id": "988a967a-d561-4a8e-8668-c5544fd66a82",
                     "label": "Feuer",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "b92c8f8b-dd9e-40f8-91eb-c79ddf55b151",
                     "orientation": null,
                     "type": "button",
@@ -26689,6 +26896,9 @@
                     "id": "c78a29c3-6260-4c4c-ae20-d8c82a7bfca1",
                     "label": "Kreuz-Blitz",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "3bcc1e73-f7e9-4f00-b95a-4aad4a2a2d13",
                     "orientation": null,
                     "type": "button",
@@ -26732,6 +26942,9 @@
                     "id": "0c6730b4-17a5-47b6-911c-d8dba7bad019",
                     "label": "Chill",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "d7b52797-a180-4ce2-9038-6ba961dcae56",
                     "orientation": null,
                     "type": "button",
@@ -26775,6 +26988,9 @@
                     "id": "ed00082e-a374-47e9-95fa-ef2c13ba15cc",
                     "label": "Funkeln",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "9f97c36b-dea5-41bb-8610-f0cfc7071a58",
                     "orientation": null,
                     "type": "button",
@@ -26818,6 +27034,9 @@
                     "id": "267fada2-b251-4138-8669-db7d8b6accbc",
                     "label": "Build-Up",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "112de78e-76ae-4528-a14a-b0022fbe3e34",
                     "orientation": null,
                     "type": "button",
@@ -26861,6 +27080,9 @@
                     "id": "9f4fd69b-2b4b-45ab-aa18-eeb7dd903d14",
                     "label": "Warmweiss",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "518a2d36-9d3c-469e-b276-b05973489cd8",
                     "orientation": null,
                     "type": "button",
@@ -26904,6 +27126,9 @@
                     "id": "b79dd782-d6a6-4f90-bdde-b5fe0f3f36b4",
                     "label": "Rainbow",
                     "lowerLimit": null,
+                    "midiDeviceSerials": [
+                      "25082560709810"
+                    ],
                     "midiEntryPublicId": "aa80f03a-b8ce-406e-9b2e-16e01469dbe5",
                     "orientation": null,
                     "type": "button",
@@ -26925,6 +27150,7 @@
                 "id": "6be65722-ba28-401c-b08b-20cad58d46a6",
                 "label": "Uplights Sequenzen",
                 "lowerLimit": null,
+                "midiDeviceSerials": null,
                 "midiEntryPublicId": null,
                 "orientation": null,
                 "type": "frame",
@@ -27037,6 +27263,7 @@
                 "id": "094a4e73-5899-4f24-9081-3bce2e5a11ef",
                 "label": "Sound to light",
                 "lowerLimit": null,
+                "midiDeviceSerials": null,
                 "midiEntryPublicId": null,
                 "orientation": null,
                 "type": "audioTriggers",
@@ -27073,6 +27300,7 @@
                 "id": "9d4403ff-b957-479d-bf80-b8c46a6fafff",
                 "label": "Button",
                 "lowerLimit": null,
+                "midiDeviceSerials": null,
                 "midiEntryPublicId": null,
                 "orientation": null,
                 "type": "button",

@@ -29,9 +29,14 @@ const { fakeMidi } = vi.hoisted(() => {
 
   class FakeInput extends Emitter {
     public openedName: string | null = null;
+    public sysexEnabled = false;
+    private closing = false;
     public constructor() {
       super();
       state.inputs.push(this);
+    }
+    public ignoreTypes(sysex: boolean): void {
+      this.sysexEnabled = !sysex;
     }
     public getPortCount(): number {
       return state.inputNames.length;
@@ -41,10 +46,15 @@ const { fakeMidi } = vi.hoisted(() => {
     }
     public openPort(index: number): void {
       if (state.openFailure) throw state.openFailure;
+      if (this.closing) throw new Error('libuv would abort: reopened before the close completed');
       this.openedName = state.inputNames[index] ?? null;
     }
     public closePort(): void {
       this.openedName = null;
+      this.closing = true;
+      setTimeout(() => {
+        this.closing = false;
+      }, 0);
     }
   }
 
@@ -233,5 +243,78 @@ describe('MidiService', () => {
     expect(() => {
       service.close(APC);
     }).not.toThrow();
+  });
+
+  describe('probe', () => {
+    const REQUEST = [0xf0, 0x7e, 0xf7];
+    const SYSEX_REPLY = [0xf0, 0x01, 0xf7];
+    const parseSysEx = (message: readonly number[]) => (message[0] === 0xf0 ? 'reply' : null);
+    const probe = async (portName: string) => service.probe(portName, REQUEST, parseSysEx, 1000);
+
+    it('GIVEN a device that answers WHEN probed THEN sends the request, resolves the reply and closes its ports', async () => {
+      const result = probe(APC);
+      await vi.advanceTimersByTimeAsync(0);
+      const input = openedInput(APC);
+      const output = openedOutput(APC);
+      expect(input?.sysexEnabled).toBe(true);
+      expect(output?.sent).toEqual([REQUEST]);
+
+      input?.emit('message', 0, SYSEX_REPLY);
+
+      await expect(result).resolves.toBe('reply');
+      expect(input?.openedName).toBeNull();
+      expect(output?.openedName).toBeNull();
+    });
+
+    it('GIVEN only unrelated messages WHEN the timeout passes THEN resolves null', async () => {
+      const result = probe(APC);
+      await vi.advanceTimersByTimeAsync(0);
+
+      openedInput(APC)?.emit('message', 0, [0xb0, 48, 64]);
+      await vi.advanceTimersByTimeAsync(1000);
+
+      await expect(result).resolves.toBeNull();
+    });
+
+    it('GIVEN RtMidi fails to open WHEN probed THEN resolves null', async () => {
+      fakeMidi.state.openFailure = new Error('ALSA error');
+
+      await expect(probe(APC)).resolves.toBeNull();
+    });
+
+    it('GIVEN an unknown port WHEN probed THEN resolves null', async () => {
+      await expect(probe('Gone:Gone 40:0')).resolves.toBeNull();
+    });
+
+    it('GIVEN an input-only device WHEN probed THEN resolves null', async () => {
+      await expect(probe(KEYS)).resolves.toBeNull();
+    });
+
+    it('GIVEN two concurrent probes WHEN the first is running THEN the second waits for it', async () => {
+      fakeMidi.state.outputNames = [APC, KEYS];
+      const first = probe(APC);
+      const second = probe(KEYS);
+      await vi.advanceTimersByTimeAsync(0);
+      expect(openedInput(KEYS)).toBeUndefined();
+
+      openedInput(APC)?.emit('message', 0, SYSEX_REPLY);
+      await first;
+      await vi.advanceTimersByTimeAsync(0);
+      openedInput(KEYS)?.emit('message', 0, SYSEX_REPLY);
+
+      await expect(second).resolves.toBe('reply');
+    });
+
+    it('GIVEN a live device WHEN probed THEN the live input keeps ignoring SysEx', async () => {
+      service.open(APC);
+      const live = openedInput(APC);
+
+      const result = probe(APC);
+      await vi.advanceTimersByTimeAsync(1000);
+      await result;
+
+      expect(live?.sysexEnabled).toBe(false);
+      expect(service.openPortNames()).toContain(APC);
+    });
   });
 });

@@ -2,6 +2,13 @@ import { AppEventEmitter } from '@/events/app-event-emitter';
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import midi, { MidiMessage } from 'midi';
 
+// @types/midi only allows 3-byte messages; RtMidi sends any length, which SysEx needs.
+declare module 'midi' {
+  interface Output {
+    sendMessage(message: readonly number[]): void;
+  }
+}
+
 type OpenMidiDevice = {
   input: midi.Input;
   output: midi.Output | null;
@@ -13,6 +20,9 @@ export class MidiService implements OnModuleDestroy {
   // Long-lived and only used for listing: on ALSA every new Input/Output registers another sequencer client.
   private readonly inputLister = new midi.Input();
   private readonly outputLister = new midi.Output();
+  private readonly probeInput = new midi.Input();
+  private readonly probeOutput = new midi.Output();
+  private probing: Promise<unknown> = Promise.resolve();
   private readonly devices = new Map<string, OpenMidiDevice>();
 
   public constructor(private readonly eventEmitter: AppEventEmitter) {
@@ -77,6 +87,63 @@ export class MidiService implements OnModuleDestroy {
     this.logger.log(`Closed MIDI device "${portName}"`);
   }
 
+  /** Sends a request and returns the first reply `parseReply` accepts, or null. Live ports keep ignoring SysEx. */
+  public async probe<T>(
+    portName: string,
+    request: readonly number[],
+    parseReply: (message: readonly number[]) => T | null,
+    timeoutMs: number,
+  ): Promise<T | null> {
+    const run = async () => this.probeOnce(portName, request, parseReply, timeoutMs);
+    const result = this.probing.then(run, run);
+    // closePort only schedules libuv's close; reopening the probe ports before it ran aborts the process.
+    this.probing = result.then(nextEventLoopTurn);
+    return result;
+  }
+
+  private async probeOnce<T>(
+    portName: string,
+    request: readonly number[],
+    parseReply: (message: readonly number[]) => T | null,
+    timeoutMs: number,
+  ): Promise<T | null> {
+    const inputIndex = portNames(this.inputLister).indexOf(portName);
+    const outputIndex = findOutputIndex(portName, inputIndex, portNames(this.outputLister));
+    if (inputIndex < 0 || outputIndex < 0) return null;
+
+    try {
+      this.probeInput.ignoreTypes(false, true, true);
+      this.probeInput.openPort(inputIndex);
+      this.probeOutput.openPort(outputIndex);
+      return await this.awaitReply(request, parseReply, timeoutMs);
+    } catch (err) {
+      this.logger.warn(`MIDI probe of "${portName}" failed: ${err instanceof Error ? err.message : String(err)}`);
+      return null;
+    } finally {
+      closeDevice({ input: this.probeInput, output: this.probeOutput });
+    }
+  }
+
+  private async awaitReply<T>(
+    request: readonly number[],
+    parseReply: (message: readonly number[]) => T | null,
+    timeoutMs: number,
+  ): Promise<T | null> {
+    return new Promise(resolve => {
+      const timeout = setTimeout(() => {
+        resolve(null);
+      }, timeoutMs);
+      this.probeInput.on('message', (_deltaTime: number, message: MidiMessage) => {
+        const reply = parseReply(message);
+        if (reply !== null) {
+          clearTimeout(timeout);
+          resolve(reply);
+        }
+      });
+      this.probeOutput.sendMessage(request);
+    });
+  }
+
   private async sendMidiMessage(portName: string, message: MidiMessage): Promise<void> {
     const output = this.devices.get(portName)?.output;
     if (!output) return;
@@ -84,6 +151,10 @@ export class MidiService implements OnModuleDestroy {
     output.sendMessage(message);
     await new Promise(resolve => setTimeout(resolve, 200));
   }
+}
+
+async function nextEventLoopTurn(): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, 0));
 }
 
 function portNames(port: midi.Input | midi.Output): string[] {

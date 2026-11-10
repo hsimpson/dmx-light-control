@@ -16,6 +16,7 @@ graphql:
             environmentType
             ioDevices {
               audioChannels
+              customName
               kind
               manufacturer
               maxInputChannels

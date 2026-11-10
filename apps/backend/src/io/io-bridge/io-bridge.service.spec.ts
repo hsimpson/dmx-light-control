@@ -35,34 +35,43 @@ const apcEntries = [
   entry(FADER, MidiMessageType.ControlChange, 48),
 ];
 
-function build(midiMappingPublicId: string | null = MAPPING_ID) {
+type Unit = { port: string; serial: string | null };
+type FeedbackItem = {
+  entryPublicId: string;
+  state: 'off' | 'on' | 'monitor';
+  feedback: unknown;
+  deviceSerials?: string[];
+};
+
+function build(midiMappingPublicId: string | null = MAPPING_ID, units: Unit[] = [{ port: APC_PORT, serial: null }]) {
   const eventEmitter = new AppEventEmitter(new EventEmitter2());
   const devices = {
-    statuses: () => [
-      {
+    statuses: () =>
+      units.map(({ port, serial }) => ({
         device: {
           kind: IoDeviceKind.Midi,
           name: 'APC mini mk2',
           manufacturer: null,
-          serial: null,
+          serial,
           vendorId: null,
           productId: null,
           usbLocation: null,
           midiMappingPublicId,
         },
         status: IoDeviceStatus.Connected,
-        handle: APC_PORT,
-      },
-    ],
+        handle: port,
+      })),
   };
   const mappings = { findOneWithEntries: vi.fn().mockResolvedValue(mapping(apcEntries)) };
-  const inputs: { entryPublicId: string; value: number }[] = [];
+  const inputs: { entryPublicId: string; value: number; deviceSerial: string | null }[] = [];
   const sent: number[][] = [];
+  const sentByPort = new Map<string, number[][]>(units.map(({ port }) => [port, []]));
   eventEmitter.on('virtualConsole.midiInput', payload => {
     inputs.push(payload);
   });
-  eventEmitter.on('midi.sendMessage', ({ message }) => {
+  eventEmitter.on('midi.sendMessage', ({ portName, message }) => {
     sent.push(message);
+    sentByPort.get(portName)?.push(message);
   });
   const service = new IoBridgeService(
     eventEmitter,
@@ -70,18 +79,18 @@ function build(midiMappingPublicId: string | null = MAPPING_ID) {
     mappings as unknown as MidiMappingRepository,
   );
   service.onModuleInit();
-  const receive = async (message: MidiMessage) => {
-    eventEmitter.emit('midi.inputMessage', { portName: APC_PORT, message });
+  const receive = async (message: MidiMessage, portName = APC_PORT) => {
+    eventEmitter.emit('midi.inputMessage', { portName, message });
     await vi.waitFor(() => {
       expect(mappings.findOneWithEntries).toHaveBeenCalled();
     });
     await new Promise(resolve => setImmediate(resolve));
   };
-  const feedback = async (entries: { entryPublicId: string; state: 'off' | 'on' | 'monitor'; feedback: unknown }[]) => {
+  const feedback = async (entries: FeedbackItem[]) => {
     eventEmitter.emit('virtualConsole.feedback', { entries } as never);
     await new Promise(resolve => setImmediate(resolve));
   };
-  return { eventEmitter, mappings, inputs, sent, receive, feedback };
+  return { eventEmitter, mappings, inputs, sent, sentByPort, receive, feedback };
 }
 
 describe('IoBridgeService', () => {
@@ -94,10 +103,10 @@ describe('IoBridgeService', () => {
     await receive([0xb0, 48, 100]);
 
     expect(inputs).toEqual([
-      { entryPublicId: PAD, value: 127 },
-      { entryPublicId: PAD, value: 0 },
-      { entryPublicId: PAD, value: 0 },
-      { entryPublicId: FADER, value: 100 },
+      { entryPublicId: PAD, value: 127, deviceSerial: null },
+      { entryPublicId: PAD, value: 0, deviceSerial: null },
+      { entryPublicId: PAD, value: 0, deviceSerial: null },
+      { entryPublicId: FADER, value: 100, deviceSerial: null },
     ]);
   });
 
@@ -163,9 +172,80 @@ describe('IoBridgeService', () => {
     await receive([0x90, 7, 127]);
 
     expect(inputs).toEqual([
-      { entryPublicId: PAD, value: 127 },
-      { entryPublicId: PAD, value: 127 },
+      { entryPublicId: PAD, value: 127, deviceSerial: null },
+      { entryPublicId: PAD, value: 127, deviceSerial: null },
     ]);
     expect(mappings.findOneWithEntries).toHaveBeenCalledTimes(2);
+  });
+
+  describe('two units sharing one mapping', () => {
+    const UPLIGHTS = { port: 'APC mini mk2:APC mini mk2 Control 28:0', serial: '25082560709810' };
+    const T_BARS = { port: 'APC mini mk2:APC mini mk2 Control 32:0', serial: '26062560878750' };
+    const PAD_ON = [0x96, 0, 5];
+    const PAD_OFF = [0x90, 0, 0];
+    const padItem = (state: 'off' | 'on', deviceSerials?: string[]): FeedbackItem => ({
+      entryPublicId: PAD,
+      state,
+      feedback: null,
+      deviceSerials,
+    });
+    const buildUnits = () => build(MAPPING_ID, [UPLIGHTS, T_BARS]);
+
+    it('GIVEN a note from one unit WHEN it is played THEN the input carries that unit', async () => {
+      const { inputs, receive } = buildUnits();
+
+      await receive([0x90, 0, 127], T_BARS.port);
+
+      expect(inputs).toEqual([{ entryPublicId: PAD, value: 127, deviceSerial: T_BARS.serial }]);
+    });
+
+    it('GIVEN feedback scoped to one unit WHEN it arrives THEN only that unit lights up', async () => {
+      const { sentByPort, feedback } = buildUnits();
+
+      await feedback([padItem('on', [UPLIGHTS.serial])]);
+
+      expect(sentByPort.get(UPLIGHTS.port)).toContainEqual(PAD_ON);
+      expect(sentByPort.get(T_BARS.port)).toContainEqual(PAD_OFF);
+      expect(sentByPort.get(T_BARS.port)).not.toContainEqual(PAD_ON);
+    });
+
+    it('GIVEN one entry scoped differently per unit WHEN feedback arrives THEN each unit shows its own state', async () => {
+      const { sentByPort, feedback } = buildUnits();
+
+      await feedback([padItem('on', [T_BARS.serial]), padItem('off', [UPLIGHTS.serial])]);
+
+      expect(sentByPort.get(T_BARS.port)).toContainEqual(PAD_ON);
+      expect(sentByPort.get(UPLIGHTS.port)).toContainEqual(PAD_OFF);
+    });
+
+    it('GIVEN feedback without a scope WHEN it arrives THEN both units light up', async () => {
+      const { sentByPort, feedback } = buildUnits();
+
+      await feedback([padItem('on')]);
+
+      expect(sentByPort.get(UPLIGHTS.port)).toContainEqual(PAD_ON);
+      expect(sentByPort.get(T_BARS.port)).toContainEqual(PAD_ON);
+    });
+
+    it('GIVEN several items for one unit and entry WHEN feedback arrives THEN the last one wins for that unit', async () => {
+      const { sentByPort, feedback } = buildUnits();
+
+      await feedback([padItem('off'), padItem('on', [T_BARS.serial])]);
+
+      expect(sentByPort.get(T_BARS.port)).toContainEqual(PAD_ON);
+      expect(sentByPort.get(UPLIGHTS.port)).not.toContainEqual(PAD_ON);
+    });
+
+    it('GIVEN one unit changes WHEN feedback arrives again THEN the other unit gets nothing', async () => {
+      const { sentByPort, feedback } = buildUnits();
+      await feedback([padItem('on', [UPLIGHTS.serial])]);
+      sentByPort.get(UPLIGHTS.port)?.splice(0);
+      sentByPort.get(T_BARS.port)?.splice(0);
+
+      await feedback([padItem('off', [UPLIGHTS.serial])]);
+
+      expect(sentByPort.get(UPLIGHTS.port)).toEqual([PAD_OFF]);
+      expect(sentByPort.get(T_BARS.port)).toEqual([]);
+    });
   });
 });

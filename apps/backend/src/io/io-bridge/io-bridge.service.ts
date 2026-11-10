@@ -1,7 +1,7 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { IoDeviceManagerService } from '@/io/devices/io-device-manager.service';
 import type { ProjectIoDevice } from '@/io/devices/match-io-devices';
-import type { VirtualConsoleFeedback } from '@/io/virtual-console-playback/virtual-console-events';
+import { listensToDevice, type VirtualConsoleFeedback } from '@/io/virtual-console-playback/virtual-console-events';
 import { MidiMessageType, type MidiFeedback } from '@/midi-mappings/midi-mapping';
 import { MidiMappingRepository, type LoadedMidiMapping } from '@/midi-mappings/repositories/midi-mapping.repository';
 import { Injectable, OnModuleInit } from '@nestjs/common';
@@ -17,7 +17,7 @@ type MidiMappingEntry = LoadedMidiMapping['midiMappingEntries'][number];
 @Injectable()
 export class IoBridgeService implements OnModuleInit {
   private readonly mappings = new Map<string, Promise<LoadedMidiMapping | undefined>>();
-  private feedback = new Map<string, VirtualConsoleFeedback>();
+  private feedback: VirtualConsoleFeedback[] = [];
   /** Last LED message per port and note, so only changes are sent. */
   private readonly sentLeds = new Map<string, Map<number, string>>();
 
@@ -32,7 +32,7 @@ export class IoBridgeService implements OnModuleInit {
       await this.handleInput(portName, message);
     });
     this.eventEmitter.on('virtualConsole.feedback', async ({ entries }) => {
-      this.feedback = new Map(entries.map(item => [item.entryPublicId, item]));
+      this.feedback = entries;
       await this.syncLeds();
     });
     this.eventEmitter.on('midi.outputOpened', async ({ portName }) => {
@@ -46,7 +46,8 @@ export class IoBridgeService implements OnModuleInit {
   }
 
   private async handleInput(portName: string, message: MidiMessage): Promise<void> {
-    const mapping = await this.mappingFor(this.connectedDevices().get(portName));
+    const device = this.connectedDevices().get(portName);
+    const mapping = await this.mappingFor(device);
     const [status, number, value] = message;
     const kind = status & 0xf0;
     const messageType = kind === CONTROL_CHANGE ? MidiMessageType.ControlChange : MidiMessageType.Note;
@@ -61,6 +62,7 @@ export class IoBridgeService implements OnModuleInit {
       this.eventEmitter.emit('virtualConsole.midiInput', {
         entryPublicId: entry.publicId,
         value: kind === NOTE_OFF ? 0 : value,
+        deviceSerial: device?.serial ?? null,
       });
     }
   }
@@ -72,7 +74,7 @@ export class IoBridgeService implements OnModuleInit {
       const sent = this.sentLeds.get(portName) ?? new Map<number, string>();
       this.sentLeds.set(portName, sent);
       for (const entry of mapping?.midiMappingEntries ?? []) {
-        const message = this.ledMessage(entry);
+        const message = this.ledMessage(entry, device);
         if (message && sent.get(entry.number) !== message.join()) {
           sent.set(entry.number, message.join());
           this.eventEmitter.emit('midi.sendMessage', { portName, message });
@@ -82,8 +84,11 @@ export class IoBridgeService implements OnModuleInit {
   }
 
   /** Unbound entries show their default `off` state; `monitor` falls back to `on`. */
-  private ledMessage(entry: MidiMappingEntry): MidiMessage | undefined {
-    const item = entry.publicId ? this.feedback.get(entry.publicId) : undefined;
+  private ledMessage(entry: MidiMappingEntry, device: ProjectIoDevice): MidiMessage | undefined {
+    const item = this.feedback.findLast(
+      candidate =>
+        candidate.entryPublicId === entry.publicId && listensToDevice(candidate.deviceSerials, device.serial),
+    );
     const feedback: MidiFeedback | null | undefined = item?.feedback ?? entry.feedback;
     if (entry.messageType !== MidiMessageType.Note || !feedback) {
       return undefined;

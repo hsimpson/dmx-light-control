@@ -421,11 +421,15 @@ function assertFunctionBinding(control: VirtualConsoleControl): void {
 function assertMidiBinding(control: VirtualConsoleControl): void {
   const midiEntryPublicId = control.midiEntryPublicId ?? undefined;
   const feedback = control.feedback ?? undefined;
-  if (midiEntryPublicId === undefined && feedback === undefined) {
+  const hasDeviceScope = (control.midiDeviceSerials?.length ?? 0) > 0;
+  if (midiEntryPublicId === undefined && feedback === undefined && !hasDeviceScope) {
     return;
   }
   if (control.type === VIRTUAL_CONSOLE_CONTROL_TYPE.Frame) {
     throw new InvalidVirtualConsoleException('A frame cannot have a MIDI input.');
+  }
+  if (hasDeviceScope && midiEntryPublicId === undefined) {
+    throw new InvalidVirtualConsoleException('Control midiDeviceSerials needs a midiEntryPublicId.');
   }
   if (midiEntryPublicId !== undefined && !UUID_PATTERN.test(midiEntryPublicId)) {
     throw new InvalidVirtualConsoleException('Control midiEntryPublicId must be a UUID.');

@@ -11,9 +11,17 @@ import { ICON_SIZE } from '@/lib/constants';
 import { DmxSocketConnector } from '@/lib/dmx/dmx-socket-connector';
 import { dmxStore } from '@/lib/dmx/dmx-store';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { GetMidiMappingsDocument, GetProjectIoDevicesDocument, IoDeviceKind } from '@/shared/types/graphql/graphql';
+import {
+  ActiveIoDeviceStatesDocument,
+  GetMidiMappingsDocument,
+  GetProjectIoDevicesDocument,
+  IoDeviceKind,
+  type ActiveIoDeviceStatesQuery,
+  type GetMidiMappingsQuery,
+  type IoDeviceFieldsFragment,
+} from '@/shared/types/graphql/graphql';
 import { useQuery } from '@apollo/client/react';
-import { Button, Group, Select, Stack, Switch } from '@mantine/core';
+import { Button, Group, MultiSelect, Select, Stack, Switch } from '@mantine/core';
 import { BroadcastIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import type { VirtualConsoleControl } from './virtual-console-document';
@@ -24,45 +32,88 @@ type VirtualConsoleMidiFieldsProperties = {
   onPatch: (patch: Partial<VirtualConsoleControl>) => void;
 };
 
+type MidiMappings = GetMidiMappingsQuery['midiMappings'];
+type MidiSender = ActiveIoDeviceStatesQuery['ioDevices'][number];
+
+/** The units a control on this mapping can be limited to; a unit needs a serial to be told apart. */
+function unitOptions(devices: readonly IoDeviceFieldsFragment[], mappingPublicId: string | null | undefined) {
+  const options = devices.flatMap(device =>
+    device.serial && device.midiMappingPublicId === mappingPublicId
+      ? [{ value: device.serial, label: device.customName ?? `${device.name} (${device.serial})` }]
+      : [],
+  );
+  // Mantine throws on duplicate option values.
+  return options.filter((option, index) => options.findIndex(other => other.value === option.value) === index);
+}
+
+function findLearnedEntry(message: number[], sender: MidiSender | undefined, mappings: MidiMappings) {
+  const address = learnedAddress(message);
+  const entries = mappings.find(mapping => mapping.publicId === sender?.midiMappingPublicId)?.entries;
+  return address
+    ? entries?.find(
+        e => e.messageType === address.messageType && e.channel === address.channel && e.number === address.number,
+      )
+    : undefined;
+}
+
 /** Binds a button/slider to an entry of the mappings assigned to this project's MIDI controllers. */
 const VirtualConsoleMidiFields = ({ projectPublicId, control, onPatch }: VirtualConsoleMidiFieldsProperties) => {
   const { t } = useTranslation();
   const { data: devicesData } = useQuery(GetProjectIoDevicesDocument, { variables: { publicId: projectPublicId } });
   const { data: mappingsData } = useQuery(GetMidiMappingsDocument);
-  const assigned = new Set(
-    (devicesData?.project?.ioDevices ?? []).flatMap(device =>
-      device.kind === IoDeviceKind.Midi && device.midiMappingPublicId ? [device.midiMappingPublicId] : [],
-    ),
-  );
+  const midiDevices = (devicesData?.project?.ioDevices ?? []).filter(device => device.kind === IoDeviceKind.Midi);
+  const assigned = new Set(midiDevices.map(device => device.midiMappingPublicId));
   const mappings = (mappingsData?.midiMappings ?? []).filter(mapping => assigned.has(mapping.publicId));
   const entryMapping = mappings.find(mapping => mapping.entries.some(e => e.publicId === control.midiEntryPublicId));
   const entry = entryMapping?.entries.find(e => e.publicId === control.midiEntryPublicId);
+  const scope = control.midiDeviceSerials ?? [];
+  const mappingUnits = unitOptions(midiDevices, entryMapping?.publicId);
+  // A scope can name a unit that left the mapping; it must stay visible so it can be removed.
+  const units = [
+    ...mappingUnits,
+    ...scope
+      .filter(serial => !mappingUnits.some(unit => unit.value === serial))
+      .map(serial => ({ value: serial, label: serial })),
+  ];
   const [learning, setLearning] = useState(false);
+  const { data: statesData } = useQuery(ActiveIoDeviceStatesDocument, {
+    skip: !learning,
+    fetchPolicy: 'network-only',
+  });
+  const senders = statesData?.ioDevices;
 
   useEffect(() => {
     if (!learning) {
       return undefined;
     }
     return dmxStore.subscribe((state, previous) => {
-      const address =
-        state.lastMidiInput !== previous.lastMidiInput && state.lastMidiInput
-          ? learnedAddress(state.lastMidiInput.message)
-          : undefined;
-      // shortcut: first assigned mapping with this address wins, ignoring which port sent it; match by port if two controllers share addresses.
-      const learned = address
-        ? mappings
-            .flatMap(mapping => mapping.entries)
-            .find(
-              e =>
-                e.messageType === address.messageType && e.channel === address.channel && e.number === address.number,
-            )
-        : undefined;
+      const input = state.lastMidiInput;
+      if (!input || input === previous.lastMidiInput) {
+        return;
+      }
+      const sender = senders?.find(device => device.handle === input.portName);
+      const learned = findLearnedEntry(input.message, sender, mappings);
       if (learned) {
-        onPatch({ midiEntryPublicId: learned.publicId });
+        const shared = unitOptions(midiDevices, sender?.midiMappingPublicId).length > 1;
+        onPatch({
+          midiEntryPublicId: learned.publicId,
+          midiDeviceSerials: shared && sender?.serial ? [sender.serial] : undefined,
+        });
         setLearning(false);
       }
     });
-  }, [learning, mappings, onPatch]);
+  }, [learning, mappings, midiDevices, onPatch, senders]);
+
+  const pickEntry = (value: string | null) => {
+    if (!value) {
+      onPatch({ midiEntryPublicId: undefined, midiDeviceSerials: undefined, feedback: undefined });
+    } else if (entryMapping?.entries.some(e => e.publicId === value)) {
+      onPatch({ midiEntryPublicId: value });
+    } else {
+      // A scope names units of the previous mapping, which may not use the new one.
+      onPatch({ midiEntryPublicId: value, midiDeviceSerials: undefined });
+    }
+  };
 
   return (
     <Stack gap="xs">
@@ -86,9 +137,7 @@ const VirtualConsoleMidiFields = ({ projectPublicId, control, onPatch }: Virtual
             })),
           }))}
           value={control.midiEntryPublicId ?? null}
-          onChange={value => {
-            onPatch(value ? { midiEntryPublicId: value } : { midiEntryPublicId: undefined, feedback: undefined });
-          }}
+          onChange={pickEntry}
         />
         <Button
           flex="none"
@@ -103,6 +152,17 @@ const VirtualConsoleMidiFields = ({ projectPublicId, control, onPatch }: Virtual
             : t({ id: 'MidiMappingEntry.learn', defaultMessage: 'Learn' })}
         </Button>
       </Group>
+      {control.midiEntryPublicId && (units.length > 1 || scope.length > 0) ? (
+        <MultiSelect
+          label={t({ id: 'ProjectDetail.virtualConsole.midiDevices', defaultMessage: 'MIDI controllers' })}
+          placeholder={t({ id: 'ProjectDetail.virtualConsole.midiDevicesAll', defaultMessage: 'All controllers' })}
+          data={units}
+          value={scope}
+          onChange={serials => {
+            onPatch({ midiDeviceSerials: serials.length > 0 ? serials : undefined });
+          }}
+        />
+      ) : null}
       {control.midiEntryPublicId ? (
         <Switch
           label={t({ id: 'ProjectDetail.virtualConsole.feedbackOverride', defaultMessage: 'Own LED feedback' })}
