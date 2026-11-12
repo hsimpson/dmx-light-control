@@ -38,7 +38,7 @@ export class MidiService implements OnModuleDestroy {
   }
 
   public listPortNames(): string[] {
-    return portNames(this.inputLister);
+    return uniquePortNames(portNames(this.inputLister));
   }
 
   public openPortNames(): string[] {
@@ -49,12 +49,11 @@ export class MidiService implements OnModuleDestroy {
   public open(portName: string): boolean {
     if (this.devices.has(portName)) return true;
 
-    const inputIndex = portNames(this.inputLister).indexOf(portName);
+    const { inputIndex, outputIndex } = this.findPortIndexes(portName);
     if (inputIndex < 0) {
       this.logger.warn(`MIDI port "${portName}" is not available`);
       return false;
     }
-    const outputIndex = findOutputIndex(portName, inputIndex, portNames(this.outputLister));
 
     const input = new midi.Input();
     input.on('message', (_deltaTime: number, message: MidiMessage) => {
@@ -107,8 +106,7 @@ export class MidiService implements OnModuleDestroy {
     parseReply: (message: readonly number[]) => T | null,
     timeoutMs: number,
   ): Promise<T | null> {
-    const inputIndex = portNames(this.inputLister).indexOf(portName);
-    const outputIndex = findOutputIndex(portName, inputIndex, portNames(this.outputLister));
+    const { inputIndex, outputIndex } = this.findPortIndexes(portName);
     if (inputIndex < 0 || outputIndex < 0) return null;
 
     try {
@@ -122,6 +120,12 @@ export class MidiService implements OnModuleDestroy {
     } finally {
       closeDevice({ input: this.probeInput, output: this.probeOutput });
     }
+  }
+
+  private findPortIndexes(portName: string): { inputIndex: number; outputIndex: number } {
+    const inputNames = portNames(this.inputLister);
+    const inputIndex = uniquePortNames(inputNames).indexOf(portName);
+    return { inputIndex, outputIndex: findOutputIndex(inputIndex, inputNames, portNames(this.outputLister)) };
   }
 
   private async awaitReply<T>(
@@ -161,18 +165,38 @@ function portNames(port: midi.Input | midi.Output): string[] {
   return Array.from({ length: port.getPortCount() }, (_, index) => port.getPortName(index));
 }
 
+/** CoreMIDI lists identical units under the same names; later ones get Windows' "2- " prefix to stay addressable. */
+function uniquePortNames(names: readonly string[]): string[] {
+  const seen = new Map<string, number>();
+  return names.map(name => {
+    const count = (seen.get(name) ?? 0) + 1;
+    seen.set(name, count);
+    return count === 1 ? name : `${count}- ${name}`;
+  });
+}
+
 /**
- * Exact name first; otherwise the same-index output of the same device, because macOS names
- * paired endpoints differently (APC mini mk2: input "… Control", output "… Port 1").
+ * A unique exact name first; otherwise the k-th output of the same device prefix for its k-th input, because
+ * macOS names paired endpoints differently (APC mini mk2: input "… Control", output "… Port 1") and repeats
+ * names across identical units (the second unit's output "… Control" is not the first unit's).
  */
-function findOutputIndex(inputName: string, inputIndex: number, outputNames: readonly string[]): number {
-  const exactIndex = outputNames.indexOf(inputName);
-  if (exactIndex >= 0) return exactIndex;
+function findOutputIndex(inputIndex: number, inputNames: readonly string[], outputNames: readonly string[]): number {
+  const inputName = inputNames[inputIndex];
+  if (inputName === undefined) return -1;
+  if (occurrences(inputNames, inputName) === 1 && occurrences(outputNames, inputName) === 1) {
+    return outputNames.indexOf(inputName);
+  }
 
   const lastSpace = inputName.lastIndexOf(' ');
   if (lastSpace <= 0) return -1;
   const devicePrefix = inputName.slice(0, lastSpace + 1);
-  return outputNames[inputIndex]?.startsWith(devicePrefix) ? inputIndex : -1;
+  const position = inputNames.slice(0, inputIndex).filter(name => name.startsWith(devicePrefix)).length;
+  const outputIndexes = outputNames.flatMap((name, index) => (name.startsWith(devicePrefix) ? [index] : []));
+  return outputIndexes[position] ?? -1;
+}
+
+function occurrences(names: readonly string[], name: string): number {
+  return names.filter(candidate => candidate === name).length;
 }
 
 function closeDevice({ input, output }: OpenMidiDevice): void {

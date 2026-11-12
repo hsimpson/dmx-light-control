@@ -1,7 +1,7 @@
 import { IoDeviceKind, type AvailableIoDevice } from '../match-io-devices';
 import type { UsbIdentity } from '../usb-identity';
 
-// Windows prefixes duplicate MIDI port names with "2- ", "3- ", ...
+// Windows, and MidiService for CoreMIDI duplicates, prefix repeated MIDI port names with "2- ", "3- ", ...
 const WINDOWS_DUPLICATE_PREFIX = /^\d+- /;
 
 /**

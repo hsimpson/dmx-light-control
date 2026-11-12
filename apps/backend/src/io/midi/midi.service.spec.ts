@@ -29,6 +29,7 @@ const { fakeMidi } = vi.hoisted(() => {
 
   class FakeInput extends Emitter {
     public openedName: string | null = null;
+    public openedIndex: number | null = null;
     public sysexEnabled = false;
     private closing = false;
     public constructor() {
@@ -48,9 +49,11 @@ const { fakeMidi } = vi.hoisted(() => {
       if (state.openFailure) throw state.openFailure;
       if (this.closing) throw new Error('libuv would abort: reopened before the close completed');
       this.openedName = state.inputNames[index] ?? null;
+      this.openedIndex = index;
     }
     public closePort(): void {
       this.openedName = null;
+      this.openedIndex = null;
       this.closing = true;
       setTimeout(() => {
         this.closing = false;
@@ -60,6 +63,7 @@ const { fakeMidi } = vi.hoisted(() => {
 
   class FakeOutput {
     public openedName: string | null = null;
+    public openedIndex: number | null = null;
     public readonly sent: number[][] = [];
     public constructor() {
       state.outputs.push(this);
@@ -72,9 +76,11 @@ const { fakeMidi } = vi.hoisted(() => {
     }
     public openPort(index: number): void {
       this.openedName = state.outputNames[index] ?? null;
+      this.openedIndex = index;
     }
     public closePort(): void {
       this.openedName = null;
+      this.openedIndex = null;
     }
     public sendMessage(message: number[]): void {
       this.sent.push(message);
@@ -87,6 +93,9 @@ const { fakeMidi } = vi.hoisted(() => {
 vi.mock('midi', () => ({ default: { Input: fakeMidi.FakeInput, Output: fakeMidi.FakeOutput } }));
 
 const APC = 'APC mini mk2:APC mini mk2 Control 28:0';
+// macOS (CoreMIDI) with two APC mini mk2: identical port names, and only the first unit names its output "Port 1".
+const MAC_TWO_APC_INPUTS = ['APC mini mk2 Control', 'APC mini mk2 Notes', 'APC mini mk2 Control', 'APC mini mk2 Notes'];
+const MAC_TWO_APC_OUTPUTS = ['APC mini mk2 Port 1', 'APC mini mk2 Notes', 'APC mini mk2 Control', 'APC mini mk2 Notes'];
 const KEYS = 'Keys:Keys MIDI 1 32:0';
 
 function openedInput(name: string) {
@@ -127,6 +136,28 @@ describe('MidiService', () => {
 
   it('GIVEN connected devices WHEN listing THEN returns the input port names', () => {
     expect(service.listPortNames()).toEqual(['Midi Through:Midi Through Port-0 14:0', APC, KEYS]);
+  });
+
+  it('GIVEN identical port names WHEN listing THEN later duplicates get a numbered prefix', () => {
+    fakeMidi.state.inputNames = MAC_TWO_APC_INPUTS;
+
+    expect(service.listPortNames()).toEqual([
+      'APC mini mk2 Control',
+      'APC mini mk2 Notes',
+      '2- APC mini mk2 Control',
+      '2- APC mini mk2 Notes',
+    ]);
+  });
+
+  it('GIVEN two identical units WHEN each is opened by its listed name THEN each opens its own input and output', () => {
+    fakeMidi.state.inputNames = MAC_TWO_APC_INPUTS;
+    fakeMidi.state.outputNames = MAC_TWO_APC_OUTPUTS;
+
+    expect(service.open('APC mini mk2 Control')).toBe(true);
+    expect(service.open('2- APC mini mk2 Control')).toBe(true);
+
+    expect(fakeMidi.state.inputs.map(input => input.openedIndex).filter(index => index !== null)).toEqual([0, 2]);
+    expect(fakeMidi.state.outputs.map(output => output.openedIndex).filter(index => index !== null)).toEqual([0, 2]);
   });
 
   it('GIVEN a bidirectional device WHEN opened by name THEN both directions open at the current index', () => {
@@ -264,6 +295,21 @@ describe('MidiService', () => {
       await expect(result).resolves.toBe('reply');
       expect(input?.openedName).toBeNull();
       expect(output?.openedName).toBeNull();
+    });
+
+    it('GIVEN two identical units WHEN the second is probed THEN the request goes to its own output', async () => {
+      fakeMidi.state.inputNames = MAC_TWO_APC_INPUTS;
+      fakeMidi.state.outputNames = MAC_TWO_APC_OUTPUTS;
+
+      const result = probe('2- APC mini mk2 Control');
+      await vi.advanceTimersByTimeAsync(0);
+      const input = fakeMidi.state.inputs.find(candidate => candidate.openedIndex === 2);
+      const output = fakeMidi.state.outputs.find(candidate => candidate.openedIndex === 2);
+      expect(output?.sent).toEqual([REQUEST]);
+
+      input?.emit('message', 0, SYSEX_REPLY);
+
+      await expect(result).resolves.toBe('reply');
     });
 
     it('GIVEN only unrelated messages WHEN the timeout passes THEN resolves null', async () => {
