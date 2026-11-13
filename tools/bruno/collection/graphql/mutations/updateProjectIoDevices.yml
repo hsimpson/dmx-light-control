@@ -131,6 +131,7 @@ graphql:
                 midiDeviceSerials
                 midiEntryPublicId
                 orientation
+                tapTiming
                 type
                 upperLimit
                 valueType

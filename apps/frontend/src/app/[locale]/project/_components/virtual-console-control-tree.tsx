@@ -106,7 +106,7 @@ const VirtualConsoleControlTree = ({
                 }}
               />
             ) : null}
-            {control.type === 'button' ? (
+            {control.type === 'button' || control.type === 'globalTap' ? (
               <ButtonControl
                 control={control}
                 mode={mode}

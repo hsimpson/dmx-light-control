@@ -76,6 +76,13 @@ function toList(levels: LevelMap): SequenceChannelValue[] {
     .map(([channel, value]) => ({ channel, value }));
 }
 
+/** Duration of the step a raw `index` plays, with `timing` instead of its own when given. */
+export function stepDurationAt(sequence: SequenceProperties, index: number, timing?: StepTiming): number {
+  const steps = orderedSteps(sequence);
+  const step = steps[playIndex(index, steps.length, sequence.runOrder)];
+  return step ? stepDuration(timing ? { ...step, ...timing } : step) : 0;
+}
+
 /**
  * Output of a beat-driven sequence: `beats` is how many beats arrived so far, each one plays the next step once
  * with its own timing, or with `timing` when given. `from` is the output at the last beat, which that step fades in from.
@@ -104,24 +111,32 @@ export function steppedFrame(
   return { values: toList(levels), finished: singleShot && playedOut && beats === steps.length };
 }
 
-export function sequenceFrame(sequence: SequenceProperties, elapsedMs: number): SequenceFrame {
+/** Where a free-running sequence starts: the raw step `index` (before wrapping) and the output it fades in from. */
+export type SequenceStart = { index: number; from: readonly SequenceChannelValue[] };
+
+/** Output of a free-running sequence `elapsedMs` after `start`, with the raw index of the step playing now. */
+export function sequenceFrame(
+  sequence: SequenceProperties,
+  elapsedMs: number,
+  start: SequenceStart = { index: 0, from: [] },
+): SequenceFrame & { index: number } {
   const steps = orderedSteps(sequence);
+  let index = start.index;
   if (steps.length === 0) {
-    return { values: [], finished: true };
+    return { values: [], finished: true, index };
   }
 
   let remaining = Math.max(0, elapsedMs);
-  let from: LevelMap = new Map();
-  let index = 0;
+  let from: LevelMap = new Map(start.from.map(({ channel, value }) => [channel, value]));
   let zeroSteps = 0;
 
   for (let guard = 0; guard <= elapsedMs + steps.length + 1; guard += 1) {
     if (sequence.runOrder === SequenceRunOrder.SingleShot && index >= steps.length) {
-      return { values: toList(from), finished: true };
+      return { values: toList(from), finished: true, index };
     }
     const step = steps[playIndex(index, steps.length, sequence.runOrder)] ?? steps[0];
     if (step === undefined) {
-      return { values: toList(from), finished: true };
+      return { values: toList(from), finished: true, index };
     }
     const duration = stepDuration(step);
     if (duration === 0) {
@@ -129,17 +144,17 @@ export function sequenceFrame(sequence: SequenceProperties, elapsedMs: number): 
       index += 1;
       zeroSteps += 1;
       if (zeroSteps > steps.length) {
-        return { values: toList(from), finished: sequence.runOrder === SequenceRunOrder.SingleShot };
+        return { values: toList(from), finished: sequence.runOrder === SequenceRunOrder.SingleShot, index };
       }
       continue;
     }
     zeroSteps = 0;
     if (remaining < duration) {
-      return { values: toList(sample(step, from, remaining)), finished: false };
+      return { values: toList(sample(step, from, remaining)), finished: false, index };
     }
     remaining -= duration;
     from = endState(step);
     index += 1;
   }
-  return { values: toList(from), finished: true };
+  return { values: toList(from), finished: true, index };
 }

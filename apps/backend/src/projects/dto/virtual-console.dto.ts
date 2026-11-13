@@ -338,6 +338,13 @@ export class VirtualConsoleControlDto {
   })
   @Type(() => VirtualConsoleBeatBarDto)
   public beatBar?: VirtualConsoleBeatBarDto;
+
+  @Field(() => VirtualConsoleBeatTimingDto, {
+    nullable: true,
+    description: 'Step timing of a global tap control, in percent of the time between taps. Null: sequence timing.',
+  })
+  @Type(() => VirtualConsoleBeatTimingDto)
+  public tapTiming?: VirtualConsoleBeatTimingDto;
 }
 
 @ObjectType()
@@ -559,6 +566,15 @@ export class VirtualConsoleControlInput {
   @ValidateNested()
   @Type(() => VirtualConsoleBeatBarInput)
   public beatBar?: VirtualConsoleBeatBarInput;
+
+  @Field(() => VirtualConsoleBeatTimingInput, {
+    nullable: true,
+    description: 'Step timing of a global tap control, in percent of the time between taps. Null: sequence timing.',
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => VirtualConsoleBeatTimingInput)
+  public tapTiming?: VirtualConsoleBeatTimingInput;
 }
 
 @InputType()

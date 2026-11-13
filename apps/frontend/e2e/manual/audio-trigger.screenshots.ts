@@ -1,6 +1,6 @@
-import { expect, type Locator, type Page, test } from '@playwright/test';
-import path from 'node:path';
+import { expect, type Page, test } from '@playwright/test';
 import { mockGraphql, mockedProject } from '../graphql-mock';
+import { imagePath, shoot } from './manual-shots';
 
 const AUDIO_ID = '33333333-3333-4333-8333-333333333333';
 const FUNCTION_ID = '44444444-4444-4444-8444-444444444444';
@@ -98,6 +98,7 @@ const audioControl = {
     }),
     ...Array.from({ length: 7 }, () => bar()),
   ],
+  tapTiming: null,
   beatBar: {
     __typename: 'VirtualConsoleBeatBarDto',
     minThreshold: 20,
@@ -156,23 +157,6 @@ const LABELS = {
 } as const;
 
 type Locale = keyof typeof LABELS;
-
-const imagePath = (locale: Locale, name: string) =>
-  path.resolve(test.info().project.testDir, '../../../../docs/manual', locale, 'virtual-console/images', name);
-
-const PADDING = 12;
-
-/** Screenshot of the area that covers all given elements, plus a small margin. */
-const shoot = async (page: Page, file: string, locators: Locator[]) => {
-  const boxes = await Promise.all(locators.map(async locator => locator.boundingBox()));
-  const known = boxes.filter(box => box !== null);
-  expect(known).toHaveLength(locators.length);
-  const left = Math.max(0, Math.min(...known.map(box => box.x)) - PADDING);
-  const top = Math.max(0, Math.min(...known.map(box => box.y)) - PADDING);
-  const right = Math.max(...known.map(box => box.x + box.width)) + PADDING;
-  const bottom = Math.max(...known.map(box => box.y + box.height)) + PADDING;
-  await page.screenshot({ path: file, clip: { x: left, y: top, width: right - left, height: bottom - top } });
-};
 
 const stage = async (page: Page) => {
   await mockGraphql(page);

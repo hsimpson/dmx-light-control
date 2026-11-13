@@ -194,6 +194,9 @@ function assertControl(control: VirtualConsoleControl, ids: Set<string>, depth: 
     case VIRTUAL_CONSOLE_CONTROL_TYPE.AudioTriggers:
       assertAudioTriggers(control);
       break;
+    case VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap:
+      assertGlobalTap(control);
+      break;
   }
 }
 
@@ -202,7 +205,8 @@ function assertControlType(type: string): asserts type is VirtualConsoleControlT
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Frame &&
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Slider &&
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Button &&
-    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.AudioTriggers
+    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.AudioTriggers &&
+    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap
   ) {
     throw new InvalidVirtualConsoleException(`Unknown virtual console control type ${type}.`);
   }
@@ -312,7 +316,16 @@ function assertButton(control: VirtualConsoleControl): void {
   assertColor(control.foregroundColor, 'foregroundColor');
 }
 
+function assertGlobalTap(control: VirtualConsoleControl): void {
+  assertNoChildren(control);
+  assertColor(control.foregroundColor, 'foregroundColor');
+  if (control.tapTiming) assertBeatTiming(control.tapTiming, 'Tap timing');
+}
+
 function assertAudioFieldsAllowed(control: VirtualConsoleControl): void {
+  if ((control.tapTiming ?? undefined) !== undefined && control.type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap) {
+    throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have a tap timing.`);
+  }
   const hasAudioFields =
     (control.bandCount ?? undefined) !== undefined ||
     (control.audioBars ?? undefined) !== undefined ||
@@ -347,14 +360,14 @@ function assertBeatBar({ minThreshold, functionPublicId, timing }: VirtualConsol
   if ((functionPublicId ?? undefined) !== undefined && !UUID_PATTERN.test(functionPublicId ?? '')) {
     throw new InvalidVirtualConsoleException('Beat bar functionPublicId must be a UUID.');
   }
-  if (timing) assertBeatTiming(timing);
+  if (timing) assertBeatTiming(timing, 'Beat bar timing');
 }
 
-function assertBeatTiming({ fadeIn, hold, fadeOut }: VirtualConsoleBeatTiming): void {
+function assertBeatTiming({ fadeIn, hold, fadeOut }: VirtualConsoleBeatTiming, subject: string): void {
   const parts = [fadeIn, hold, fadeOut];
   if (!parts.every(part => isIntegerBetween(part, 0, 100)) || fadeIn + hold + fadeOut > 100) {
     throw new InvalidVirtualConsoleException(
-      'Beat bar timing must be whole percentages of the beat gap that add up to at most 100.',
+      `${subject} must be whole percentages of the beat gap that add up to at most 100.`,
     );
   }
 }

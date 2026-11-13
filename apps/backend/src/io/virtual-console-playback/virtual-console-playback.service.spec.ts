@@ -913,3 +913,107 @@ describe('VirtualConsolePlaybackService audio triggers', () => {
     expect(states.at(-1)).toEqual({ audio: 255 });
   });
 });
+
+describe('VirtualConsolePlaybackService global tap', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const tap = control('tap', 'globalTap', {
+    tapTiming: { fadeIn: 0, hold: 50, fadeOut: 50 },
+    midiEntryPublicId: 'tap-pad',
+  });
+
+  async function buildTap(controls: VirtualConsoleControl[] = [tap]) {
+    vi.useFakeTimers();
+    const built = await build(controls);
+    const taps: unknown[] = [];
+    built.eventEmitter.on('function.tap', payload => {
+      taps.push(payload);
+    });
+    return { ...built, taps };
+  }
+
+  it('GIVEN a first tap WHEN pressed THEN it taps without tempo and shows pressed until released', async () => {
+    const { taps, states, input } = await buildTap();
+
+    input('tap', 1);
+    const whilePressed = states.at(-1);
+    input('tap', 0);
+
+    expect(taps).toEqual([{}]);
+    expect(whilePressed).toEqual({ tap: 255 });
+    expect(states.at(-1)).toEqual({ tap: 0 });
+  });
+
+  it('GIVEN a held tap WHEN the press repeats THEN only the rising edge taps', async () => {
+    const { taps, input } = await buildTap();
+
+    input('tap', 1);
+    input('tap', 1);
+
+    expect(taps).toHaveLength(1);
+  });
+
+  it('GIVEN steady taps WHEN the gap is known THEN the tap carries the tempo and timing in ms', async () => {
+    const { taps, input } = await buildTap();
+
+    input('tap', 1);
+    input('tap', 0);
+    vi.advanceTimersByTime(500);
+    input('tap', 1);
+
+    expect(taps.at(-1)).toEqual({ gapMs: 500, timing: { fadeIn: 0, hold: 250, fadeOut: 250 } });
+  });
+
+  it('GIVEN a tap without timing WHEN the gap is known THEN only the tempo is sent', async () => {
+    const { taps, input } = await buildTap([control('tap', 'globalTap')]);
+
+    input('tap', 1);
+    input('tap', 0);
+    vi.advanceTimersByTime(400);
+    input('tap', 1);
+
+    expect(taps.at(-1)).toEqual({ gapMs: 400 });
+  });
+
+  it('GIVEN two tap controls WHEN tapped in turn THEN they share one tempo', async () => {
+    const { taps, input } = await buildTap([tap, control('tap-2', 'globalTap')]);
+
+    input('tap', 1);
+    vi.advanceTimersByTime(300);
+    input('tap-2', 1);
+
+    expect(taps.at(-1)).toEqual({ gapMs: 300 });
+  });
+
+  it('GIVEN a pad bound to the tap WHEN Note-On and Note-Off arrive THEN it taps once', async () => {
+    const { taps, midiInput } = await buildTap();
+
+    midiInput('tap-pad', 127);
+    midiInput('tap-pad', 0);
+
+    expect(taps).toHaveLength(1);
+  });
+
+  it('GIVEN a tap held while another project loads WHEN the project comes back THEN the next press taps', async () => {
+    const { taps, input, service, projects } = await buildTap();
+    input('tap', 1);
+    projects.findOneByPublicIdWithFixtures.mockResolvedValueOnce(undefined);
+    await service.reload(OTHER_PROJECT_ID);
+    await service.reload(PROJECT_ID);
+
+    input('tap', 1);
+
+    expect(taps).toHaveLength(2);
+  });
+
+  it('GIVEN a held tap WHEN its client disconnects THEN it is released', async () => {
+    const { states, input, eventEmitter } = await buildTap();
+    input('tap', 1);
+
+    eventEmitter.emit('virtualConsole.inputsReleased', { controlIds: ['tap'] });
+
+    expect(states.at(-1)).toEqual({ tap: 0 });
+  });
+});

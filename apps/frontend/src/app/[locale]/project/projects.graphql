@@ -77,6 +77,11 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
       fadeOut
     }
   }
+  tapTiming {
+    fadeIn
+    hold
+    fadeOut
+  }
 }
 
 fragment VirtualConsoleFields on VirtualConsoleDto {

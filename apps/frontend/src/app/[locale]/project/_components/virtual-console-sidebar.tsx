@@ -29,7 +29,7 @@ import {
   type VirtualConsoleDocument,
   type VirtualConsolePage,
 } from './virtual-console-document';
-import VirtualConsoleAudioFields from './virtual-console-audio-fields';
+import VirtualConsoleAudioFields, { BeatTimingFields } from './virtual-console-audio-fields';
 import VirtualConsoleFontModal from './virtual-console-font-modal';
 import VirtualConsoleMidiFields from './virtual-console-midi-fields';
 import {
@@ -153,6 +153,10 @@ const VirtualConsoleSidebar = ({
             type="audioTriggers"
             label={t({ id: 'ProjectDetail.virtualConsole.control.audioTriggers', defaultMessage: 'Audio triggers' })}
           />
+          <PaletteItem
+            type="globalTap"
+            label={t({ id: 'ProjectDetail.virtualConsole.control.globalTap', defaultMessage: 'Global tap' })}
+          />
         </Stack>
 
         <UnstyledButton onClick={onSelectCanvas}>
@@ -246,6 +250,7 @@ const DEFAULT_FOREGROUND: Partial<Record<VirtualConsoleControl['type'], string>>
   slider: '#4dabf7',
   button: '#ffffff',
   audioTriggers: '#40c057',
+  globalTap: '#ffffff',
 };
 
 const ControlFields = ({
@@ -506,6 +511,14 @@ const ControlFields = ({
           barIndex={audioBarIndex}
           onBarIndexChange={onAudioBarIndexChange}
           onPatch={onPatch}
+        />
+      ) : null}
+      {control.type === 'globalTap' ? (
+        <BeatTimingFields
+          timing={control.tapTiming}
+          onChange={tapTiming => {
+            onPatch({ tapTiming });
+          }}
         />
       ) : null}
       {control.type !== 'frame' ? (

@@ -73,6 +73,36 @@ describe('virtual console sidebar', () => {
     });
   });
 
+  it('GIVEN a global tap WHEN From sequence is picked THEN its tap timing is dropped', async () => {
+    const control = createControl('globalTap', 0, 0);
+    const document = createDefaultVirtualConsoleDocument();
+    const onControlPatch = vi.fn();
+    const { user } = renderWithProviders(
+      <VirtualConsoleSidebar
+        projectPublicId="proj-1"
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={vi.fn()}
+        onControlPatch={onControlPatch}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={control}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'control', controlId: control.id }}
+      />,
+      { apolloMocks: [] },
+    );
+
+    expect(screen.getByRole('textbox', { name: 'Hold (%)' })).toHaveValue('40');
+    await user.click(screen.getByRole('combobox', { name: 'Timing' }));
+    await user.click(await screen.findByRole('option', { name: 'From sequence', hidden: true }));
+
+    expect(onControlPatch).toHaveBeenLastCalledWith({ tapTiming: undefined });
+  });
+
   it('deletes the selected control from the sidebar', async () => {
     const control = createControl('button', 0, 0);
     const document = createDefaultVirtualConsoleDocument();
