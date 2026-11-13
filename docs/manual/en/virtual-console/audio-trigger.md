@@ -67,7 +67,7 @@ The control is **off** when the server starts and when you switch to another pro
 To switch it, use one of these:
 
 - **Pop-out window:** click the **Pop out** icon in the **Console** panel, then click the control's toggle. The toggle cannot be clicked in the editor.
-- **MIDI:** choose an entry under **MIDI input**. The controller's mapping must first be assigned on the **Input/Output** tab. If the entry has LED feedback, its LED shows whether the control is on.
+- **MIDI:** choose an entry under **MIDI input**. The controller's mapping must first be assigned on the **Input/Output** tab. If the entry has LED feedback, its LED shows whether the control is on. If several controllers use the same mapping, choose under **MIDI controllers** which ones the control responds to and lights up on; with none selected it uses all of them.
 
 Each press switches between on and off. Turning it off stops everything the control started.
 

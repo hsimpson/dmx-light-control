@@ -41,6 +41,9 @@ export class IoDeviceDto {
   })
   public usbLocation: string | null;
 
+  @Field(() => String, { nullable: true, description: 'User-chosen name of this device in the project' })
+  public customName: string | null;
+
   @Field(() => GraphQLUUID, {
     nullable: true,
     description: 'Public ID of the MIDI mapping assigned to this MIDI device in the project',
@@ -61,11 +64,15 @@ export class IoDeviceDto {
 export class IoDeviceStateDto extends IoDeviceDto {
   @Field(() => IoDeviceStatus, { description: 'Whether the configured device is currently connected' })
   public status: IoDeviceStatus;
+
+  @Field(() => String, { nullable: true, description: 'Port the device is open on; null while it is not connected' })
+  public handle: string | null;
 }
 
 const USB_ID_PATTERN = /^[0-9a-f]{4}$/;
 const USB_LOCATION_PATTERN = /^[A-Za-z0-9_#.:&-]{1,64}$/;
 const USB_TEXT_MAX_LENGTH = 255;
+const CUSTOM_NAME_MAX_LENGTH = 64;
 const SOUND_INPUT_CHANNELS: readonly SoundInputChannels[] = [1, 2];
 
 @InputType()
@@ -109,6 +116,12 @@ export class IoDeviceInput {
   @IsOptional()
   @Matches(USB_LOCATION_PATTERN, { message: 'usbLocation contains unsupported characters' })
   public usbLocation: string | null;
+
+  @Field(() => String, { nullable: true, description: 'User-chosen name of this device in the project' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(CUSTOM_NAME_MAX_LENGTH)
+  public customName?: string | null;
 
   @Field(() => GraphQLUUID, {
     nullable: true,

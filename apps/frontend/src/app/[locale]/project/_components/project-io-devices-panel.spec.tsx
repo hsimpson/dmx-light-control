@@ -49,6 +49,7 @@ const ftdi = {
   vendorId: '0403',
   productId: '6001',
   usbLocation: '3-10' as string | null,
+  customName: null as string | null,
   midiMappingPublicId: null as string | null,
   audioChannels: null as number | null,
 };
@@ -61,6 +62,7 @@ const apc = {
   vendorId: '09e8',
   productId: '004f',
   usbLocation: '3-9',
+  customName: null as string | null,
   midiMappingPublicId: null as string | null,
   audioChannels: null as number | null,
 };
@@ -73,6 +75,7 @@ const mic = {
   vendorId: null as string | null,
   productId: null as string | null,
   usbLocation: null as string | null,
+  customName: null as string | null,
   midiMappingPublicId: null as string | null,
   audioChannels: null as number | null,
 };
@@ -99,9 +102,10 @@ const activeStates = (states: (typeof ftdi & { status: IoDeviceStatus })[]) => (
   request: { query: ActiveIoDeviceStatesDocument },
   result: {
     data: {
-      ioDevices: states.map(({ midiMappingPublicId: _mapping, audioChannels: _channels, ...state }) => ({
+      ioDevices: states.map(({ customName: _customName, audioChannels: _channels, ...state }) => ({
         __typename: 'IoDeviceStateDto' as const,
         ...state,
+        handle: null,
       })),
     },
   },
@@ -330,6 +334,91 @@ describe('ProjectIoDevicesPanel', () => {
     await user.click(checkbox);
 
     expect(checkbox).not.toBeChecked();
+  });
+
+  describe('custom name', () => {
+    const NAME_FIELD = 'Custom name of APC mini mk2';
+
+    it('GIVEN a configured controller WHEN a name is entered and the field left THEN it is saved', async () => {
+      const save = saveMock([{ ...apc, customName: 'APC left' }]);
+      const { user } = renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {
+        apolloMocks: [
+          projectIoDevices([apc]),
+          availableIoDevices([]),
+          activeStates([]),
+          save.mock,
+          projectIoDevices([{ ...apc, customName: 'APC left' }]),
+          activeStates([]),
+        ],
+      });
+
+      await user.type(await screen.findByRole('textbox', { name: NAME_FIELD }), '  APC left ');
+      await user.tab();
+
+      await waitFor(() => {
+        expect(save.result).toHaveBeenCalledTimes(1);
+      });
+      expect(await screen.findByDisplayValue('APC left')).toBeInTheDocument();
+    });
+
+    it('GIVEN a named controller WHEN the name is cleared THEN null is saved', async () => {
+      const save = saveMock([apc]);
+      const { user } = renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {
+        apolloMocks: [
+          projectIoDevices([{ ...apc, customName: 'APC left' }]),
+          availableIoDevices([]),
+          activeStates([]),
+          save.mock,
+          projectIoDevices([apc]),
+          activeStates([]),
+        ],
+      });
+
+      await user.clear(await screen.findByDisplayValue('APC left'));
+      await user.tab();
+
+      await waitFor(() => {
+        expect(save.result).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('GIVEN a named controller WHEN the field is left unchanged THEN nothing is saved', async () => {
+      const save = saveMock([{ ...apc, customName: 'APC left' }]);
+      const { user } = renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {
+        apolloMocks: [
+          projectIoDevices([{ ...apc, customName: 'APC left' }]),
+          availableIoDevices([]),
+          activeStates([]),
+          save.mock,
+        ],
+      });
+
+      await user.click(await screen.findByDisplayValue('APC left'));
+      await user.tab();
+
+      expect(save.result).not.toHaveBeenCalled();
+    });
+
+    it('GIVEN an unused controller WHEN rendered THEN the name field is disabled and shows the device name', async () => {
+      renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {
+        apolloMocks: [projectIoDevices([]), availableIoDevices([apc]), activeStates([])],
+      });
+
+      const field = await screen.findByRole('textbox', { name: NAME_FIELD });
+
+      expect(field).toBeDisabled();
+      expect(field).toHaveAttribute('placeholder', 'APC mini mk2');
+    });
+
+    it('GIVEN a DMX output WHEN rendered THEN it has no name field', async () => {
+      renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {
+        apolloMocks: [projectIoDevices([ftdi]), availableIoDevices([]), activeStates([])],
+      });
+
+      await screen.findByRole('checkbox', { name: 'Use FT232R USB UART in this project' });
+
+      expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    });
   });
 
   it('GIVEN a configured controller WHEN a MIDI mapping is picked THEN the device is saved with it', async () => {

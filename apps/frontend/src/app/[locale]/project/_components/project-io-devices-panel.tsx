@@ -12,7 +12,7 @@ import {
   UpdateProjectIoDevicesDocument,
 } from '@/shared/types/graphql/graphql';
 import { useMutation, useQuery } from '@apollo/client/react';
-import { Badge, Checkbox, SegmentedControl, Select, Stack, Title } from '@mantine/core';
+import { Badge, Checkbox, SegmentedControl, Select, Stack, TextInput, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { DataTable } from 'mantine-datatable';
 import { buildIoDeviceRows, toIoDeviceInput, type IoDeviceRow } from './project-io-devices';
@@ -20,6 +20,7 @@ import SoundLevelMeter from './sound-level-meter';
 
 // Matches the backend hotplug poll, so plugging a device in shows up within one cycle.
 const IO_DEVICE_POLL_INTERVAL_MS = 2000;
+const CUSTOM_NAME_MAX_LENGTH = 64;
 
 const STATUS_COLORS: Record<IoDeviceStatus, string> = {
   [IoDeviceStatus.Connected]: 'green',
@@ -96,6 +97,36 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
 
   const assignMapping = async (row: IoDeviceRow, midiMappingPublicId: string | null) =>
     save(configured.map(device => (device === row.device ? { ...device, midiMappingPublicId } : device)));
+
+  const rename = async (row: IoDeviceRow, value: string) => {
+    const customName = value.trim() || null;
+    if (customName !== (row.device.customName ?? null)) {
+      await save(configured.map(device => (device === row.device ? { ...device, customName } : device)));
+    }
+  };
+
+  const customNameColumn = {
+    accessor: 'customName',
+    title: t({ id: 'ProjectDetail.io.customName', defaultMessage: 'Custom name' }),
+    render: (row: IoDeviceRow) => (
+      <TextInput
+        // Uncontrolled while typing; the key resets it when the row shows another stored name.
+        key={row.device.customName ?? ''}
+        size="xs"
+        maxLength={CUSTOM_NAME_MAX_LENGTH}
+        defaultValue={row.device.customName ?? ''}
+        placeholder={row.device.name}
+        disabled={!row.configured}
+        aria-label={t(
+          { id: 'ProjectDetail.io.customNameFor', defaultMessage: 'Custom name of {name}' },
+          { name: row.device.name },
+        )}
+        onBlur={event => {
+          void rename(row, event.currentTarget.value);
+        }}
+      />
+    ),
+  };
 
   const mappingColumn = {
     accessor: 'midiMappingPublicId',
@@ -191,6 +222,7 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
           title: t({ id: 'ProjectDetail.io.name', defaultMessage: 'Device' }),
           render: row => row.device.name,
         },
+        ...(kind === IoDeviceKind.Midi ? [customNameColumn] : []),
         {
           accessor: 'manufacturer',
           title: t({ id: 'ProjectDetail.io.manufacturer', defaultMessage: 'Manufacturer' }),

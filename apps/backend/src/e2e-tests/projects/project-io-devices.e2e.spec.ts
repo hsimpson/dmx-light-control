@@ -15,6 +15,7 @@ const ftdi = {
   vendorId: '0403',
   productId: '6001',
   usbLocation: '3-10',
+  customName: null,
   midiMappingPublicId: null,
   audioChannels: null,
 };
@@ -27,6 +28,7 @@ const apc = {
   vendorId: '09e8',
   productId: '004f',
   usbLocation: '7&2A3B4C5D&0&0000',
+  customName: null,
   midiMappingPublicId: null,
   audioChannels: null,
 };
@@ -39,17 +41,19 @@ const mic = {
   vendorId: null,
   productId: null,
   usbLocation: null,
+  customName: null,
   midiMappingPublicId: null,
   audioChannels: 2,
 };
 
-type IoDevice = Omit<typeof ftdi, 'midiMappingPublicId' | 'audioChannels'> & {
+type IoDevice = Omit<typeof ftdi, 'customName' | 'midiMappingPublicId' | 'audioChannels'> & {
+  customName: string | null;
   midiMappingPublicId: string | null;
   audioChannels: number | null;
 };
 
 const IO_DEVICE_FIELDS =
-  'kind name manufacturer serial vendorId productId usbLocation midiMappingPublicId audioChannels';
+  'kind name manufacturer serial vendorId productId usbLocation customName midiMappingPublicId audioChannels';
 
 const CREATE_PROJECT = gql`
   mutation ($input: CreateProjectInput!) {
@@ -204,10 +208,35 @@ describe('Project input/output devices', () => {
         vendorId: null,
         productId: null,
         usbLocation: null,
+        customName: null,
         midiMappingPublicId: null,
         audioChannels: null,
       },
     ]);
+  });
+
+  it('GIVEN a MIDI device with a custom name WHEN saved, exported and re-imported THEN the name round-trips', async () => {
+    const publicId = await createProject('IO Custom Name Project');
+    const named = { ...apc, customName: 'APC left' };
+    await updateIoDevices(publicId, [named]);
+
+    const exported = await graphqlQuery<{
+      exportProjects: { projects: { publicId: string; ioDevices: IoDevice[] }[] };
+    }>(server, EXPORT_PROJECTS);
+    const imported = await graphqlQuery<{ importProjects: { importedCount: number } }>(server, IMPORT_PROJECTS, {
+      variables: {
+        document: {
+          schemaVersion: 13,
+          projects: [{ publicId, name: 'IO Custom Name Project', ioDevices: [{ ...named, customName: 'APC right' }] }],
+        },
+      },
+    });
+
+    expect(exported.data?.exportProjects.projects.find(project => project.publicId === publicId)?.ioDevices).toEqual([
+      named,
+    ]);
+    expect(imported.errors).toBeUndefined();
+    await expect(storedIoDevices(publicId)).resolves.toEqual([{ ...named, customName: 'APC right' }]);
   });
 
   it('GIVEN an unknown project WHEN saved THEN PROJECT_NOT_FOUND', async () => {

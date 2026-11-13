@@ -95,6 +95,7 @@ export type VirtualConsoleControl = {
   functionPublicId?: string;
   functionName?: string;
   midiEntryPublicId?: string;
+  midiDeviceSerials?: string[];
   feedback?: MidiFeedbackValues;
   bandCount?: number;
   audioBars?: VirtualConsoleAudioBar[];

@@ -312,6 +312,12 @@ export class VirtualConsoleControlDto {
   @Field(() => GraphQLUUID, { nullable: true, description: 'MIDI mapping entry that drives this button or slider' })
   public midiEntryPublicId?: string | null;
 
+  @Field(() => [String], {
+    nullable: true,
+    description: 'Serials of the MIDI devices this control is bound to; empty means every device using the mapping',
+  })
+  public midiDeviceSerials?: string[] | null;
+
   @Field(() => MidiFeedbackDto, { nullable: true, description: "Overrides the MIDI entry's default LED feedback" })
   @Type(() => MidiFeedbackDto)
   public feedback?: MidiFeedbackDto | null;
@@ -509,6 +515,17 @@ export class VirtualConsoleControlInput {
   @IsOptional()
   @Matches(UUID_PATTERN, { message: 'midiEntryPublicId must be a UUID' })
   public midiEntryPublicId?: string | null;
+
+  @Field(() => [String], {
+    nullable: true,
+    description: 'Serials of the MIDI devices this control is bound to; empty means every device using the mapping',
+  })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(32)
+  @IsString({ each: true })
+  @Length(1, 255, { each: true })
+  public midiDeviceSerials?: string[] | null;
 
   @Field(() => MidiFeedbackInput, { nullable: true, description: "Overrides the MIDI entry's default LED feedback" })
   @IsOptional()

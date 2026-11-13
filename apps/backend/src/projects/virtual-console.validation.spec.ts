@@ -631,9 +631,18 @@ describe('assertValidVirtualConsole', () => {
       }).not.toThrow();
     });
 
+    it('GIVEN a control bound to an entry WHEN scoped to devices THEN the document is valid', () => {
+      const { document, button } = controls();
+      Object.assign(button, { midiEntryPublicId: ENTRY_ID, midiDeviceSerials: ['25082560709810'] });
+
+      expect(() => {
+        assertValidVirtualConsole(document);
+      }).not.toThrow();
+    });
+
     it('GIVEN a frame from an export WHEN its MIDI fields are null THEN the document is valid', () => {
       const { document, frame } = controls();
-      Object.assign(frame, { midiEntryPublicId: null, feedback: null });
+      Object.assign(frame, { midiEntryPublicId: null, midiDeviceSerials: null, feedback: null });
 
       expect(() => {
         assertValidVirtualConsole(document);
@@ -646,6 +655,14 @@ describe('assertValidVirtualConsole', () => {
         (c: ReturnType<typeof controls>) => Object.assign(c.frame, { midiEntryPublicId: ENTRY_ID }),
       ],
       ['a non-UUID entry id', (c: ReturnType<typeof controls>) => Object.assign(c.button, { midiEntryPublicId: 'x' })],
+      [
+        'a device scope without an entry',
+        (c: ReturnType<typeof controls>) => Object.assign(c.button, { midiDeviceSerials: ['25082560709810'] }),
+      ],
+      [
+        'a device scope on a frame',
+        (c: ReturnType<typeof controls>) => Object.assign(c.frame, { midiDeviceSerials: ['25082560709810'] }),
+      ],
       [
         'a behavior above 15',
         (c: ReturnType<typeof controls>) =>

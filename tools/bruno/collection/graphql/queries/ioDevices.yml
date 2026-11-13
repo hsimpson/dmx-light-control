@@ -12,6 +12,8 @@ graphql:
       query {
         ioDevices {
           audioChannels
+          customName
+          handle
           kind
           manufacturer
           maxInputChannels

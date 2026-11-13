@@ -364,6 +364,8 @@ export type ImportProjectsInput = {
 export type IoDeviceInput = {
   /** Captured channels of a sound input: 1 (mono) or 2 (stereo) */
   audioChannels?: number | null | undefined;
+  /** User-chosen name of this device in the project */
+  customName?: string | null | undefined;
   /** Device kind (DMX serial output, MIDI controller or sound input) */
   kind: IoDeviceKind;
   /** USB manufacturer name */
@@ -782,6 +784,8 @@ export type VirtualConsoleControlInput = {
   label: string;
   /** Inclusive lower DMX limit for a slider */
   lowerLimit?: number | null | undefined;
+  /** Serials of the MIDI devices this control is bound to; empty means every device using the mapping */
+  midiDeviceSerials?: Array<string> | null | undefined;
   /** MIDI mapping entry that drives this button or slider */
   midiEntryPublicId?: string | null | undefined;
   /** Slider orientation */
@@ -1764,6 +1768,7 @@ export type VirtualConsoleControlFieldsFragment = {
   functionPublicId: string | null;
   functionName: string | null;
   midiEntryPublicId: string | null;
+  midiDeviceSerials: Array<string> | null;
   bandCount: number | null;
   channelBindings: Array<{
     projectFixturePublicId: string;
@@ -1828,6 +1833,7 @@ export type VirtualConsoleFieldsFragment = {
       functionPublicId: string | null;
       functionName: string | null;
       midiEntryPublicId: string | null;
+      midiDeviceSerials: Array<string> | null;
       bandCount: number | null;
       children: Array<{
         id: string;
@@ -1852,6 +1858,7 @@ export type VirtualConsoleFieldsFragment = {
         functionPublicId: string | null;
         functionName: string | null;
         midiEntryPublicId: string | null;
+        midiDeviceSerials: Array<string> | null;
         bandCount: number | null;
         children: Array<{
           id: string;
@@ -1876,6 +1883,7 @@ export type VirtualConsoleFieldsFragment = {
           functionPublicId: string | null;
           functionName: string | null;
           midiEntryPublicId: string | null;
+          midiDeviceSerials: Array<string> | null;
           bandCount: number | null;
           children: Array<{
             id: string;
@@ -1900,6 +1908,7 @@ export type VirtualConsoleFieldsFragment = {
             functionPublicId: string | null;
             functionName: string | null;
             midiEntryPublicId: string | null;
+            midiDeviceSerials: Array<string> | null;
             bandCount: number | null;
             children: Array<{
               id: string;
@@ -1924,6 +1933,7 @@ export type VirtualConsoleFieldsFragment = {
               functionPublicId: string | null;
               functionName: string | null;
               midiEntryPublicId: string | null;
+              midiDeviceSerials: Array<string> | null;
               bandCount: number | null;
               children: Array<{
                 id: string;
@@ -1948,6 +1958,7 @@ export type VirtualConsoleFieldsFragment = {
                 functionPublicId: string | null;
                 functionName: string | null;
                 midiEntryPublicId: string | null;
+                midiDeviceSerials: Array<string> | null;
                 bandCount: number | null;
                 children: Array<{
                   id: string;
@@ -1972,6 +1983,7 @@ export type VirtualConsoleFieldsFragment = {
                   functionPublicId: string | null;
                   functionName: string | null;
                   midiEntryPublicId: string | null;
+                  midiDeviceSerials: Array<string> | null;
                   bandCount: number | null;
                   children: Array<{
                     id: string;
@@ -1996,6 +2008,7 @@ export type VirtualConsoleFieldsFragment = {
                     functionPublicId: string | null;
                     functionName: string | null;
                     midiEntryPublicId: string | null;
+                    midiDeviceSerials: Array<string> | null;
                     bandCount: number | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
@@ -2376,6 +2389,7 @@ export type GetProjectQuery = {
           functionPublicId: string | null;
           functionName: string | null;
           midiEntryPublicId: string | null;
+          midiDeviceSerials: Array<string> | null;
           bandCount: number | null;
           children: Array<{
             id: string;
@@ -2400,6 +2414,7 @@ export type GetProjectQuery = {
             functionPublicId: string | null;
             functionName: string | null;
             midiEntryPublicId: string | null;
+            midiDeviceSerials: Array<string> | null;
             bandCount: number | null;
             children: Array<{
               id: string;
@@ -2424,6 +2439,7 @@ export type GetProjectQuery = {
               functionPublicId: string | null;
               functionName: string | null;
               midiEntryPublicId: string | null;
+              midiDeviceSerials: Array<string> | null;
               bandCount: number | null;
               children: Array<{
                 id: string;
@@ -2448,6 +2464,7 @@ export type GetProjectQuery = {
                 functionPublicId: string | null;
                 functionName: string | null;
                 midiEntryPublicId: string | null;
+                midiDeviceSerials: Array<string> | null;
                 bandCount: number | null;
                 children: Array<{
                   id: string;
@@ -2472,6 +2489,7 @@ export type GetProjectQuery = {
                   functionPublicId: string | null;
                   functionName: string | null;
                   midiEntryPublicId: string | null;
+                  midiDeviceSerials: Array<string> | null;
                   bandCount: number | null;
                   children: Array<{
                     id: string;
@@ -2496,6 +2514,7 @@ export type GetProjectQuery = {
                     functionPublicId: string | null;
                     functionName: string | null;
                     midiEntryPublicId: string | null;
+                    midiDeviceSerials: Array<string> | null;
                     bandCount: number | null;
                     children: Array<{
                       id: string;
@@ -2520,6 +2539,7 @@ export type GetProjectQuery = {
                       functionPublicId: string | null;
                       functionName: string | null;
                       midiEntryPublicId: string | null;
+                      midiDeviceSerials: Array<string> | null;
                       bandCount: number | null;
                       children: Array<{
                         id: string;
@@ -2544,6 +2564,7 @@ export type GetProjectQuery = {
                         functionPublicId: string | null;
                         functionName: string | null;
                         midiEntryPublicId: string | null;
+                        midiDeviceSerials: Array<string> | null;
                         bandCount: number | null;
                         channelBindings: Array<{
                           projectFixturePublicId: string;
@@ -3164,6 +3185,7 @@ export type ExportProjectsQuery = {
             functionPublicId: string | null;
             functionName: string | null;
             midiEntryPublicId: string | null;
+            midiDeviceSerials: Array<string> | null;
             bandCount: number | null;
             children: Array<{
               id: string;
@@ -3188,6 +3210,7 @@ export type ExportProjectsQuery = {
               functionPublicId: string | null;
               functionName: string | null;
               midiEntryPublicId: string | null;
+              midiDeviceSerials: Array<string> | null;
               bandCount: number | null;
               children: Array<{
                 id: string;
@@ -3212,6 +3235,7 @@ export type ExportProjectsQuery = {
                 functionPublicId: string | null;
                 functionName: string | null;
                 midiEntryPublicId: string | null;
+                midiDeviceSerials: Array<string> | null;
                 bandCount: number | null;
                 children: Array<{
                   id: string;
@@ -3236,6 +3260,7 @@ export type ExportProjectsQuery = {
                   functionPublicId: string | null;
                   functionName: string | null;
                   midiEntryPublicId: string | null;
+                  midiDeviceSerials: Array<string> | null;
                   bandCount: number | null;
                   children: Array<{
                     id: string;
@@ -3260,6 +3285,7 @@ export type ExportProjectsQuery = {
                     functionPublicId: string | null;
                     functionName: string | null;
                     midiEntryPublicId: string | null;
+                    midiDeviceSerials: Array<string> | null;
                     bandCount: number | null;
                     children: Array<{
                       id: string;
@@ -3284,6 +3310,7 @@ export type ExportProjectsQuery = {
                       functionPublicId: string | null;
                       functionName: string | null;
                       midiEntryPublicId: string | null;
+                      midiDeviceSerials: Array<string> | null;
                       bandCount: number | null;
                       children: Array<{
                         id: string;
@@ -3308,6 +3335,7 @@ export type ExportProjectsQuery = {
                         functionPublicId: string | null;
                         functionName: string | null;
                         midiEntryPublicId: string | null;
+                        midiDeviceSerials: Array<string> | null;
                         bandCount: number | null;
                         children: Array<{
                           id: string;
@@ -3332,6 +3360,7 @@ export type ExportProjectsQuery = {
                           functionPublicId: string | null;
                           functionName: string | null;
                           midiEntryPublicId: string | null;
+                          midiDeviceSerials: Array<string> | null;
                           bandCount: number | null;
                           channelBindings: Array<{
                             projectFixturePublicId: string;
@@ -3591,6 +3620,7 @@ export type ExportProjectsQuery = {
         vendorId: string | null;
         productId: string | null;
         usbLocation: string | null;
+        customName: string | null;
         midiMappingPublicId: string | null;
         audioChannels: number | null;
       }>;
@@ -3678,6 +3708,7 @@ export type IoDeviceFieldsFragment = {
   vendorId: string | null;
   productId: string | null;
   usbLocation: string | null;
+  customName: string | null;
   midiMappingPublicId: string | null;
   audioChannels: number | null;
   maxInputChannels: number | null;
@@ -3698,6 +3729,7 @@ export type GetProjectIoDevicesQuery = {
       vendorId: string | null;
       productId: string | null;
       usbLocation: string | null;
+      customName: string | null;
       midiMappingPublicId: string | null;
       audioChannels: number | null;
       maxInputChannels: number | null;
@@ -3716,6 +3748,7 @@ export type AvailableIoDevicesQuery = {
     vendorId: string | null;
     productId: string | null;
     usbLocation: string | null;
+    customName: string | null;
     midiMappingPublicId: string | null;
     audioChannels: number | null;
     maxInputChannels: number | null;
@@ -3733,7 +3766,9 @@ export type ActiveIoDeviceStatesQuery = {
     vendorId: string | null;
     productId: string | null;
     usbLocation: string | null;
+    midiMappingPublicId: string | null;
     status: IoDeviceStatus;
+    handle: string | null;
   }>;
 };
 
@@ -3752,6 +3787,7 @@ export type UpdateProjectIoDevicesMutation = {
       vendorId: string | null;
       productId: string | null;
       usbLocation: string | null;
+      customName: string | null;
       midiMappingPublicId: string | null;
       audioChannels: number | null;
       maxInputChannels: number | null;
@@ -4504,6 +4540,7 @@ export const VirtualConsoleControlFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
           { kind: 'Field', name: { kind: 'Name', value: 'midiEntryPublicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'midiDeviceSerials' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'feedback' },
@@ -4777,6 +4814,7 @@ export const VirtualConsoleFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
           { kind: 'Field', name: { kind: 'Name', value: 'midiEntryPublicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'midiDeviceSerials' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'feedback' },
@@ -5077,6 +5115,7 @@ export const IoDeviceFieldsFragmentDoc = {
           { kind: 'Field', name: { kind: 'Name', value: 'vendorId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'usbLocation' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'customName' } },
           { kind: 'Field', name: { kind: 'Name', value: 'midiMappingPublicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'audioChannels' } },
           { kind: 'Field', name: { kind: 'Name', value: 'maxInputChannels' } },
@@ -7954,6 +7993,7 @@ export const GetProjectDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
           { kind: 'Field', name: { kind: 'Name', value: 'midiEntryPublicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'midiDeviceSerials' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'feedback' },
@@ -9221,6 +9261,7 @@ export const ExportProjectsDocument = {
                             { kind: 'Field', name: { kind: 'Name', value: 'vendorId' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'usbLocation' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'customName' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'midiMappingPublicId' } },
                             { kind: 'Field', name: { kind: 'Name', value: 'audioChannels' } },
                           ],
@@ -9277,6 +9318,7 @@ export const ExportProjectsDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'functionPublicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'functionName' } },
           { kind: 'Field', name: { kind: 'Name', value: 'midiEntryPublicId' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'midiDeviceSerials' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'feedback' },
@@ -9848,6 +9890,7 @@ export const GetProjectIoDevicesDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'vendorId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'usbLocation' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'customName' } },
           { kind: 'Field', name: { kind: 'Name', value: 'midiMappingPublicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'audioChannels' } },
           { kind: 'Field', name: { kind: 'Name', value: 'maxInputChannels' } },
@@ -9891,6 +9934,7 @@ export const AvailableIoDevicesDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'vendorId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'usbLocation' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'customName' } },
           { kind: 'Field', name: { kind: 'Name', value: 'midiMappingPublicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'audioChannels' } },
           { kind: 'Field', name: { kind: 'Name', value: 'maxInputChannels' } },
@@ -9922,7 +9966,9 @@ export const ActiveIoDeviceStatesDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'vendorId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'usbLocation' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'midiMappingPublicId' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'handle' } },
               ],
             },
           },
@@ -9993,6 +10039,7 @@ export const UpdateProjectIoDevicesDocument = {
           { kind: 'Field', name: { kind: 'Name', value: 'vendorId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'usbLocation' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'customName' } },
           { kind: 'Field', name: { kind: 'Name', value: 'midiMappingPublicId' } },
           { kind: 'Field', name: { kind: 'Name', value: 'audioChannels' } },
           { kind: 'Field', name: { kind: 'Name', value: 'maxInputChannels' } },

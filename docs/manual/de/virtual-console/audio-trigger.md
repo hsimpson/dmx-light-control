@@ -67,7 +67,7 @@ Das Steuerelement ist **aus**, wenn der Server startet und wenn Sie zu einem and
 Zum Schalten haben Sie zwei Möglichkeiten:
 
 - **Ausgekoppeltes Fenster:** Klicken Sie im Panel **Konsole** auf das Symbol **Auskoppeln** und dann auf den Schalter des Steuerelements. Im Editor lässt sich der Schalter nicht anklicken.
-- **MIDI:** Wählen Sie unter **MIDI-Eingang** einen Eintrag aus. Dem Controller muss vorher im Tab **Ein-/Ausgabe** ein MIDI-Mapping zugewiesen sein. Hat der Eintrag LED-Feedback, zeigt seine LED an, ob das Steuerelement eingeschaltet ist.
+- **MIDI:** Wählen Sie unter **MIDI-Eingang** einen Eintrag aus. Dem Controller muss vorher im Tab **Ein-/Ausgabe** ein MIDI-Mapping zugewiesen sein. Hat der Eintrag LED-Feedback, zeigt seine LED an, ob das Steuerelement eingeschaltet ist. Nutzen mehrere Controller dasselbe Mapping, wählen Sie unter **MIDI-Controller** aus, auf welche das Steuerelement reagiert und wo seine LED leuchtet; ohne Auswahl gilt es für alle.
 
 Jeder Druck schaltet zwischen ein und aus um. Beim Ausschalten stoppt alles, was das Steuerelement gestartet hat.
 

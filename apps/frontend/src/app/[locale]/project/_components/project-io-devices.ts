@@ -9,7 +9,10 @@ export type IoDeviceRow = {
   maxInputChannels: number | null;
 };
 
-type DeviceIdentity = Omit<IoDeviceFieldsFragment, 'midiMappingPublicId' | 'audioChannels' | 'maxInputChannels'>;
+type DeviceIdentity = Omit<
+  IoDeviceFieldsFragment,
+  'customName' | 'midiMappingPublicId' | 'audioChannels' | 'maxInputChannels'
+>;
 type DeviceState = DeviceIdentity & { status: IoDeviceStatus };
 
 const sameIdentity = (a: DeviceIdentity, b: DeviceIdentity) =>
@@ -63,6 +66,7 @@ export const toIoDeviceInput = ({
   vendorId,
   productId,
   usbLocation,
+  customName,
   midiMappingPublicId,
   audioChannels,
 }: IoDeviceFieldsFragment): IoDeviceInput => ({
@@ -73,6 +77,7 @@ export const toIoDeviceInput = ({
   vendorId,
   productId,
   usbLocation,
+  customName,
   midiMappingPublicId,
   audioChannels,
 });

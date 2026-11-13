@@ -902,6 +902,9 @@ type IoDeviceDto {
   """Captured channels of a sound input: 1 (mono) or 2 (stereo)"""
   audioChannels: Int
 
+  """User-chosen name of this device in the project"""
+  customName: String
+
   """Device kind (DMX serial output, MIDI controller or sound input)"""
   kind: IoDeviceKind!
 
@@ -939,6 +942,9 @@ type IoDeviceDto {
 input IoDeviceInput {
   """Captured channels of a sound input: 1 (mono) or 2 (stereo)"""
   audioChannels: Int
+
+  """User-chosen name of this device in the project"""
+  customName: String
 
   """Device kind (DMX serial output, MIDI controller or sound input)"""
   kind: IoDeviceKind!
@@ -979,6 +985,12 @@ enum IoDeviceKind {
 type IoDeviceStateDto {
   """Captured channels of a sound input: 1 (mono) or 2 (stereo)"""
   audioChannels: Int
+
+  """User-chosen name of this device in the project"""
+  customName: String
+
+  """Port the device is open on; null while it is not connected"""
+  handle: String
 
   """Device kind (DMX serial output, MIDI controller or sound input)"""
   kind: IoDeviceKind!
@@ -2255,6 +2267,11 @@ type VirtualConsoleControlDto {
   """Inclusive lower DMX limit for a slider"""
   lowerLimit: Int
 
+  """
+  Serials of the MIDI devices this control is bound to; empty means every device using the mapping
+  """
+  midiDeviceSerials: [String!]
+
   """MIDI mapping entry that drives this button or slider"""
   midiEntryPublicId: UUID
 
@@ -2340,6 +2357,11 @@ input VirtualConsoleControlInput {
 
   """Inclusive lower DMX limit for a slider"""
   lowerLimit: Int
+
+  """
+  Serials of the MIDI devices this control is bound to; empty means every device using the mapping
+  """
+  midiDeviceSerials: [String!]
 
   """MIDI mapping entry that drives this button or slider"""
   midiEntryPublicId: UUID

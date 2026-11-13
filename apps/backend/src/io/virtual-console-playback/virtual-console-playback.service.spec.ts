@@ -74,8 +74,8 @@ async function build(controls: VirtualConsoleControl[] = [frame]) {
   const input = (controlId: string, value: number) => {
     eventEmitter.emit('virtualConsole.input', { controlId, value });
   };
-  const midiInput = (entryPublicId: string, value: number) => {
-    eventEmitter.emit('virtualConsole.midiInput', { entryPublicId, value });
+  const midiInput = (entryPublicId: string, value: number, deviceSerial: string | null = null) => {
+    eventEmitter.emit('virtualConsole.midiInput', { entryPublicId, value, deviceSerial });
   };
   return { service, projects, eventEmitter, dmx, states, functions, feedback, input, midiInput };
 }
@@ -286,6 +286,59 @@ describe('VirtualConsolePlaybackService', () => {
       midiInput('cccccccc-cccc-4ccc-8ccc-cccccccccccc', 127);
 
       expect(states).toHaveLength(before);
+    });
+
+    describe('device scope', () => {
+      const UPLIGHTS = '25082560709810';
+      const T_BARS = '26062560878750';
+      const onUplights = { ...midiFlash, midiDeviceSerials: [UPLIGHTS] };
+
+      it('GIVEN a control scoped to one unit WHEN the other unit plays the entry THEN nothing happens', async () => {
+        const { states, midiInput } = await build([onUplights]);
+        const before = states.length;
+
+        midiInput(PAD, 127, T_BARS);
+
+        expect(states).toHaveLength(before);
+      });
+
+      it('GIVEN a control scoped to one unit WHEN that unit plays the entry THEN it reacts', async () => {
+        const { states, midiInput } = await build([onUplights]);
+
+        midiInput(PAD, 127, UPLIGHTS);
+
+        expect(states.at(-1)?.flash).toBeGreaterThan(0);
+      });
+
+      it('GIVEN a control without a scope WHEN either unit plays the entry THEN it reacts', async () => {
+        const { states, midiInput } = await build([midiFlash]);
+
+        midiInput(PAD, 127, T_BARS);
+        const fromTBars = states.at(-1)?.flash;
+        midiInput(PAD, 0, T_BARS);
+        midiInput(PAD, 127, UPLIGHTS);
+
+        expect(fromTBars).toBeGreaterThan(0);
+        expect(states.at(-1)?.flash).toBeGreaterThan(0);
+      });
+
+      it('GIVEN two controls on one entry scoped to different units WHEN one unit plays THEN only its control reacts', async () => {
+        const onTBars = { ...midiFlash, id: 'flash-t-bars', midiDeviceSerials: [T_BARS] };
+        const { states, midiInput } = await build([onUplights, onTBars]);
+
+        midiInput(PAD, 127, T_BARS);
+
+        expect(states.at(-1)?.['flash-t-bars']).toBeGreaterThan(0);
+        expect(states.at(-1)?.flash ?? 0).toBe(0);
+      });
+
+      it('GIVEN a scoped control WHEN feedback is emitted THEN it carries the scope', async () => {
+        const { feedback } = await build([onUplights]);
+
+        expect(feedback.at(-1)).toEqual([
+          { entryPublicId: PAD, state: 'off', feedback: override, deviceSerials: [UPLIGHTS] },
+        ]);
+      });
     });
 
     it('GIVEN a function button WHEN its function runs from it or from elsewhere THEN the LED shows on or monitor', async () => {

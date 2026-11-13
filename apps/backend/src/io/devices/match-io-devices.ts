@@ -28,6 +28,7 @@ export type IoDeviceIdentity = UsbIdentity & { kind: IoDeviceKind };
 
 /** A device as configured in a project; MIDI devices may name their mapping, sound inputs their channel count. */
 export type ProjectIoDevice = IoDeviceIdentity & {
+  customName?: string | null;
   midiMappingPublicId?: string | null;
   audioChannels?: SoundInputChannels | null;
 };

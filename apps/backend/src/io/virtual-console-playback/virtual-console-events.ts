@@ -7,13 +7,19 @@ export type VirtualConsoleFeedback = {
   entryPublicId: string;
   state: VirtualConsoleLedState;
   feedback: MidiFeedback | null;
+  deviceSerials?: string[] | null;
 };
+
+/** A control without a device scope is bound to every device using its mapping. */
+export function listensToDevice(serials: readonly string[] | null | undefined, deviceSerial: string | null): boolean {
+  return !serials?.length || (deviceSerial !== null && serials.includes(deviceSerial));
+}
 
 export type VirtualConsoleEvents = {
   /** A press (value > 0) / release (0) for buttons, or a raw slider value in control units. */
   'virtualConsole.input': { controlId: string; value: number };
-  /** A MIDI mapping entry was played: Note velocity or CC value 0-127 (Note-Off is 0). */
-  'virtualConsole.midiInput': { entryPublicId: string; value: number };
+  /** A MIDI mapping entry was played on a device: Note velocity or CC value 0-127 (Note-Off is 0). */
+  'virtualConsole.midiInput': { entryPublicId: string; value: number; deviceSerial: string | null };
   /** The client that pressed these controls is gone: flash buttons must not stay on. */
   'virtualConsole.inputsReleased': { controlIds: string[] };
   'virtualConsole.state.request': undefined;
