@@ -185,7 +185,13 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       return;
     }
     const type = event.dataTransfer.getData(VIRTUAL_CONSOLE_PALETTE_MIME);
-    if (type !== 'frame' && type !== 'slider' && type !== 'button' && type !== 'audioTriggers') {
+    if (
+      type !== 'frame' &&
+      type !== 'slider' &&
+      type !== 'button' &&
+      type !== 'audioTriggers' &&
+      type !== 'globalTap'
+    ) {
       return;
     }
     const bounds = canvasRef.current.getBoundingClientRect();

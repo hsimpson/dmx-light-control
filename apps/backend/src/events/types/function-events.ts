@@ -3,6 +3,8 @@ export type FunctionEvents = {
   'function.start': { functionPublicId: string; stepped?: boolean };
   /** Plays the next step of a function started with `stepped`; `timing` (ms) replaces that step's own. */
   'function.step': { functionPublicId: string; timing?: { fadeIn: number; hold: number; fadeOut: number } };
+  /** One tap for every running function; `timing` (ms) replaces the tapped step's own, `gapMs` is the tap tempo. */
+  'function.tap': { timing?: { fadeIn: number; hold: number; fadeOut: number }; gapMs?: number };
   'function.stop': { functionPublicId: string };
   'function.state.request': undefined;
   'function.state': { running: string[] };

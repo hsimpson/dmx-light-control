@@ -5,7 +5,7 @@ import { LoadedProject, ProjectRepository } from '@/projects/repositories/projec
 import {
   VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD,
   type VirtualConsoleAudioBar,
-  type VirtualConsoleBeatBar,
+  type VirtualConsoleBeatTiming,
   type VirtualConsoleControl,
 } from '@/projects/virtual-console';
 import { Injectable, OnModuleInit } from '@nestjs/common';
@@ -51,8 +51,10 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
   private readonly startedBy = new Map<string, string>();
   /** Enabled audio triggers controls; every control starts disabled after a load. */
   private readonly audio = new Map<string, AudioState>();
-  /** Last raw input per audio control, so a held key or turned knob toggles only on its rising edge. */
+  /** Last raw input per audio or tap control, so a held key or turned knob acts only on its rising edge. */
   private readonly audioInputs = new Map<string, number>();
+  /** One tempo for every global tap control: tapping on screen and on a pad counts as the same beat. */
+  private readonly tapTempo = new BeatTempo();
   /** Bars (`controlId:index`) currently above their max per function; the first starts it, the last stops it. */
   private readonly audioHolders = new Map<string, Set<string>>();
   /** Functions an audio bar started, so audio never stops one somebody else runs. */
@@ -145,6 +147,8 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     }
     if (control.type === 'audioTriggers') {
       this.applyAudioInput(control, value);
+    } else if (control.type === 'globalTap') {
+      this.applyTapInput(control, value);
     } else if (control.type === 'slider') {
       this.setValue(control, clamp(value, sliderMin(control), sliderMax(control)));
     } else if (control.functionPublicId) {
@@ -158,7 +162,9 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     for (const controlId of controlIds) {
       const control = this.controls.get(controlId);
       const releasesOnDisconnect =
-        (control?.type === 'button' && control.buttonMode !== 'toggle') || control?.type === 'audioTriggers';
+        (control?.type === 'button' && control.buttonMode !== 'toggle') ||
+        control?.type === 'audioTriggers' ||
+        control?.type === 'globalTap';
       if (releasesOnDisconnect) {
         this.applyInput(controlId, 0);
       }
@@ -207,6 +213,19 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     if (value > 0 && !wasPressed) this.toggleAudio(control);
   }
 
+  private applyTapInput(control: VirtualConsoleControl, value: number): void {
+    const wasPressed = (this.audioInputs.get(control.id) ?? 0) > 0;
+    this.audioInputs.set(control.id, value);
+    this.setValue(control, value > 0 ? DMX_MAX : 0);
+    if (value <= 0 || wasPressed) return;
+    const gapMs = this.tapTempo.push(Date.now());
+    const timing = stepTiming(control.tapTiming, gapMs);
+    this.eventEmitter.emit('function.tap', {
+      ...(gapMs === undefined ? {} : { gapMs }),
+      ...(timing ? { timing } : {}),
+    });
+  }
+
   private toggleAudio(control: VirtualConsoleControl): void {
     const enabled = this.audio.has(control.id);
     if (enabled) {
@@ -233,7 +252,7 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
       state.beat = 1;
       state.lastBeatAt = Date.now();
       state.gapMs = state.tempo.push(state.lastBeatAt);
-      const timing = beatStepTiming(beatBar, state.gapMs);
+      const timing = stepTiming(beatBar?.timing, state.gapMs);
       if (beatBar?.functionPublicId && !stepped.has(beatBar.functionPublicId)) {
         stepped.set(beatBar.functionPublicId, timing);
       }
@@ -353,6 +372,8 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
 
   private release(control: VirtualConsoleControl): void {
     this.releaseAudio(control);
+    // A release that arrives while the control is unloaded is dropped: forget the press, or the next one is swallowed.
+    this.audioInputs.delete(control.id);
     const functionPublicId = control.functionPublicId;
     if (functionPublicId && this.startedBy.get(functionPublicId) === control.id) {
       this.startedBy.delete(functionPublicId);
@@ -420,9 +441,8 @@ function knownBpm({ gapMs, lastBeatAt }: AudioState, now: number): number | unde
   return gapMs !== undefined && now - lastBeatAt <= BPM_TIMEOUT_MS ? Math.round(MS_PER_MINUTE / gapMs) : undefined;
 }
 
-/** Step timing in ms from the beat bar's percentages; none until a beat gap is known, so the sequence's own applies. */
-function beatStepTiming(beatBar: VirtualConsoleBeatBar | undefined, gapMs: number | undefined): StepTiming | undefined {
-  const timing = beatBar?.timing;
+/** Step timing in ms from percentages of the beat gap; none until a gap is known, so the sequence's own applies. */
+function stepTiming(timing: VirtualConsoleBeatTiming | undefined, gapMs: number | undefined): StepTiming | undefined {
   if (!timing || gapMs === undefined) return undefined;
   const part = (percent: number) => Math.round((gapMs * percent) / PERCENT);
   return { fadeIn: part(timing.fadeIn), hold: part(timing.hold), fadeOut: part(timing.fadeOut) };

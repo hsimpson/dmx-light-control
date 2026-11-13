@@ -37,7 +37,7 @@ export const VIRTUAL_CONSOLE_RESIZE_HANDLES = ['n', 's', 'e', 'w', 'ne', 'nw', '
 
 export type VirtualConsoleResizeHandle = (typeof VIRTUAL_CONSOLE_RESIZE_HANDLES)[number];
 
-export type VirtualConsoleControlType = 'frame' | 'slider' | 'button' | 'audioTriggers';
+export type VirtualConsoleControlType = 'frame' | 'slider' | 'button' | 'audioTriggers' | 'globalTap';
 export type VirtualConsoleSliderOrientation = 'vertical' | 'horizontal';
 export type VirtualConsoleSliderValueType = 'dmx' | 'percentage';
 export type VirtualConsoleButtonMode = 'flash' | 'toggle';
@@ -100,6 +100,8 @@ export type VirtualConsoleControl = {
   bandCount?: number;
   audioBars?: VirtualConsoleAudioBar[];
   beatBar?: VirtualConsoleBeatBar;
+  /** Step timing of a global tap; absent: each tapped step keeps the sequence's own timing. */
+  tapTiming?: VirtualConsoleBeatTiming;
 };
 
 export type VirtualConsolePage = {
@@ -206,6 +208,20 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         },
         ...font,
       };
+    case 'globalTap':
+      return {
+        id,
+        type,
+        x,
+        y,
+        width: 88,
+        height: 40,
+        label: 'Tap',
+        backgroundColor: '#e8590c',
+        foregroundColor: '#ffffff',
+        tapTiming: { ...VIRTUAL_CONSOLE_BEAT_DEFAULT_TIMING },
+        ...font,
+      };
   }
 };
 
@@ -277,6 +293,8 @@ const controlTypeToInput = (type: VirtualConsoleControlType): GqlVirtualConsoleC
       return GqlVirtualConsoleControlType.Slider;
     case 'audioTriggers':
       return GqlVirtualConsoleControlType.AudioTriggers;
+    case 'globalTap':
+      return GqlVirtualConsoleControlType.GlobalTap;
   }
 };
 

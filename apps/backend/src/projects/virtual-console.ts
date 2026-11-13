@@ -25,6 +25,7 @@ export const VIRTUAL_CONSOLE_CONTROL_TYPE = {
   Slider: 'slider',
   Button: 'button',
   AudioTriggers: 'audioTriggers',
+  GlobalTap: 'globalTap',
 } as const;
 
 export type VirtualConsoleControlType =
@@ -35,6 +36,7 @@ export enum VirtualConsoleControlTypeEnum {
   slider = 'slider',
   button = 'button',
   audioTriggers = 'audioTriggers',
+  globalTap = 'globalTap',
 }
 
 registerEnumType(VirtualConsoleControlTypeEnum, {
@@ -153,6 +155,8 @@ export type VirtualConsoleControl = {
   audioBars?: VirtualConsoleAudioBar[];
   /** Absent on audio triggers controls saved before beat bars existed. */
   beatBar?: VirtualConsoleBeatBar;
+  /** Step timing of a global tap control; absent: each tapped step keeps the sequence's own timing. */
+  tapTiming?: VirtualConsoleBeatTiming;
 };
 
 export type VirtualConsolePage = {

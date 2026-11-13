@@ -424,4 +424,112 @@ describe('FunctionPlaybackService', () => {
     listeners.get('function.state.request')?.(undefined as never);
     expect(states.at(-1)).toEqual([FUNCTION_ID]);
   });
+  describe('tap', () => {
+    function threeStepRow(runOrder = SequenceRunOrder.Loop) {
+      return {
+        ...sequenceRow(runOrder),
+        properties: {
+          type: ProjectFunctionType.Sequence,
+          sequence: {
+            direction: SequenceDirection.Forward,
+            runOrder,
+            steps: [10, 20, 30].map(value => ({
+              fadeIn: 0,
+              hold: 1000,
+              fadeOut: 0,
+              dmxValues: [{ channel: 4, value }],
+            })),
+          },
+        },
+      };
+    }
+
+    it('GIVEN a free-running sequence WHEN tapped THEN it jumps to the next step at once', async () => {
+      const { service, functions, universe } = build();
+      functions.findOneByPublicId.mockResolvedValue(threeStepRow());
+      await service.start(FUNCTION_ID);
+      vi.advanceTimersByTime(200);
+
+      service.tap();
+
+      expect(universe.getFrame()[4]).toBe(20);
+    });
+
+    it('GIVEN no gap is known WHEN the tapped step played out THEN it free-runs again at its own timing', async () => {
+      const { service, functions, universe } = build();
+      functions.findOneByPublicId.mockResolvedValue(threeStepRow());
+      await service.start(FUNCTION_ID);
+      service.tap();
+
+      vi.advanceTimersByTime(1000);
+      expect(universe.getFrame()[4]).toBe(30);
+      vi.advanceTimersByTime(1000);
+      expect(universe.getFrame()[4]).toBe(10);
+    });
+
+    it('GIVEN a tap gap WHEN no next tap comes THEN the step holds until the tap is overdue, then free-runs', async () => {
+      const { service, functions, universe } = build();
+      functions.findOneByPublicId.mockResolvedValue(threeStepRow());
+      await service.start(FUNCTION_ID);
+
+      service.tap({ fadeIn: 0, hold: 100, fadeOut: 0 }, 200);
+      vi.advanceTimersByTime(275);
+      expect(universe.getFrame()[4]).toBe(20);
+      vi.advanceTimersByTime(50);
+      expect(universe.getFrame()[4]).toBe(30);
+    });
+
+    it('GIVEN repeated taps WHEN each arrives THEN each plays the following step', async () => {
+      const { service, functions, universe, listeners } = build();
+      functions.findOneByPublicId.mockResolvedValue(threeStepRow());
+      await service.start(FUNCTION_ID);
+      const tap = listeners.get('function.tap') as (payload: unknown) => void;
+
+      tap({ timing: { fadeIn: 0, hold: 100, fadeOut: 0 }, gapMs: 100 });
+      vi.advanceTimersByTime(100);
+      tap({ timing: { fadeIn: 0, hold: 100, fadeOut: 0 }, gapMs: 100 });
+
+      expect(universe.getFrame()[4]).toBe(30);
+    });
+
+    it('GIVEN a beat-driven sequence WHEN tapped THEN it plays its next step and stays beat-driven', async () => {
+      const { service, functions, universe } = build();
+      functions.findOneByPublicId.mockResolvedValue(steppedRow());
+      await service.start(FUNCTION_ID, true);
+
+      service.tap();
+      expect(universe.getFrame()[4]).toBe(80);
+
+      vi.advanceTimersByTime(5000);
+      expect(universe.getFrame()[4]).toBe(0);
+    });
+
+    it('GIVEN a single shot WHEN its last step is tapped with a short gap THEN that step still plays out', async () => {
+      const { service, functions, universe } = build();
+      functions.findOneByPublicId.mockResolvedValue(threeStepRow(SequenceRunOrder.SingleShot));
+      await service.start(FUNCTION_ID);
+      vi.advanceTimersByTime(1100);
+
+      service.tap(undefined, 200);
+      vi.advanceTimersByTime(500);
+
+      expect(universe.getFrame()[4]).toBe(30);
+      expect(service.runningIds()).toEqual([FUNCTION_ID]);
+      vi.advanceTimersByTime(600);
+      expect(service.runningIds()).toEqual([]);
+    });
+
+    it('GIVEN a single shot on its last step WHEN tapped THEN the tap is ignored', async () => {
+      const { service, functions, universe } = build();
+      functions.findOneByPublicId.mockResolvedValue(threeStepRow(SequenceRunOrder.SingleShot));
+      await service.start(FUNCTION_ID);
+      vi.advanceTimersByTime(2100);
+
+      service.tap();
+
+      expect(universe.getFrame()[4]).toBe(30);
+      vi.advanceTimersByTime(1000);
+      expect(service.runningIds()).toEqual([]);
+    });
+  });
 });

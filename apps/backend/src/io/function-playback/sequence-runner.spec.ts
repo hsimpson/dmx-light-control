@@ -201,11 +201,19 @@ describe('sequenceFrame', () => {
       { fadeIn: 0, hold: 55, fadeOut: 0, dmxValues: [{ channel: 3, value: 0 }] },
     ];
     const sequenceProperties = sequence(steps, { runOrder: SequenceRunOrder.Loop });
-    expect(sequenceFrame(sequenceProperties, 0)).toEqual({ values: [{ channel: 3, value: 255 }], finished: false });
+    expect(sequenceFrame(sequenceProperties, 0)).toEqual({
+      values: [{ channel: 3, value: 255 }],
+      finished: false,
+      index: 0,
+    });
     expect(sequenceFrame(sequenceProperties, 54).values).toEqual([{ channel: 3, value: 255 }]);
     expect(sequenceFrame(sequenceProperties, 55).values).toEqual([{ channel: 3, value: 0 }]);
     expect(sequenceFrame(sequenceProperties, 109).values).toEqual([{ channel: 3, value: 0 }]);
-    expect(sequenceFrame(sequenceProperties, 110)).toEqual({ values: [{ channel: 3, value: 255 }], finished: false });
+    expect(sequenceFrame(sequenceProperties, 110)).toEqual({
+      values: [{ channel: 3, value: 255 }],
+      finished: false,
+      index: 2,
+    });
   });
 
   it('fades out to 0 before the next step when fadeOut is greater than 0', () => {
@@ -216,5 +224,31 @@ describe('sequenceFrame', () => {
     expect(sequenceFrame(sequence(steps, { runOrder: SequenceRunOrder.SingleShot }), 100).values).toEqual([
       { channel: 1, value: 0 },
     ]);
+  });
+});
+
+describe('sequenceFrame from a start step', () => {
+  it('GIVEN a start index WHEN sampled THEN it plays from that step and reports the raw step index', () => {
+    const steps = [step(10), step(20), step(30)];
+    expect(sequenceFrame(sequence(steps), 0, { index: 1, from: [] })).toEqual({
+      values: [{ channel: 1, value: 20 }],
+      finished: false,
+      index: 1,
+    });
+    expect(sequenceFrame(sequence(steps), 2000, { index: 1, from: [] }).index).toBe(3);
+  });
+
+  it('GIVEN start output WHEN the start step fades in THEN it fades from that output', () => {
+    const steps = [step(0), step(100, { fadeIn: 100 })];
+    expect(sequenceFrame(sequence(steps), 50, { index: 1, from: [{ channel: 1, value: 50 }] }).values).toEqual([
+      { channel: 1, value: 75 },
+    ]);
+  });
+
+  it('GIVEN a single shot started past its last step WHEN sampled THEN it is finished', () => {
+    const steps = [step(10), step(20)];
+    expect(
+      sequenceFrame(sequence(steps, { runOrder: SequenceRunOrder.SingleShot }), 0, { index: 2, from: [] }).finished,
+    ).toBe(true);
   });
 });

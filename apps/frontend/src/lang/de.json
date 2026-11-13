@@ -270,6 +270,7 @@
   "ProjectDetail.virtualConsole.control.audioTriggers": "Audio-Trigger",
   "ProjectDetail.virtualConsole.control.button": "Taster",
   "ProjectDetail.virtualConsole.control.frame": "Rahmen",
+  "ProjectDetail.virtualConsole.control.globalTap": "Globaler Tap",
   "ProjectDetail.virtualConsole.control.slider": "Regler",
   "ProjectDetail.virtualConsole.deleteControl": "Steuerelement löschen",
   "ProjectDetail.virtualConsole.deletePage": "Seite löschen",

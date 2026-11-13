@@ -115,6 +115,16 @@ describe('virtual-console-document', () => {
     });
   });
 
+  it('maps a global tap with its default tap timing to the input', () => {
+    const document = createDefaultVirtualConsoleDocument();
+    document.pages[0]?.controls.push(createControl('globalTap', 0, 0));
+
+    const input = virtualConsoleDocumentToInput(document).pages[0]?.controls[0];
+
+    expect(input?.type).toBe(VirtualConsoleControlType.GlobalTap);
+    expect(input?.tapTiming).toEqual({ fadeIn: 0, hold: 40, fadeOut: 60 });
+  });
+
   it('keeps channel bindings and drops an empty list', () => {
     const button = {
       ...createControl('button', 0, 0),

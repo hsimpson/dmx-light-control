@@ -12,7 +12,7 @@ import {
   VIRTUAL_CONSOLE_AUDIO_BANDS_MIN,
   VIRTUAL_CONSOLE_BEAT_DEFAULT_TIMING,
   type VirtualConsoleAudioBarMode,
-  type VirtualConsoleBeatBar,
+  type VirtualConsoleBeatTiming,
   type VirtualConsoleControl,
 } from './virtual-console-document';
 
@@ -57,16 +57,15 @@ const CommitNumberInput = ({ label, value, min, max, onCommit }: CommitNumberInp
 );
 
 type BeatTimingFieldsProperties = {
-  beatBar: VirtualConsoleBeatBar;
-  onChange: (beatBar: VirtualConsoleBeatBar) => void;
+  timing: VirtualConsoleBeatTiming | undefined;
+  onChange: (timing: VirtualConsoleBeatTiming | undefined) => void;
 };
 
 const TIMING_PARTS = ['fadeIn', 'hold', 'fadeOut'] as const;
 
-/** Follow beat: each part is a percent of the time between beats, together at most 100. */
-const BeatTimingFields = ({ beatBar, onChange }: BeatTimingFieldsProperties) => {
+/** Follow beat: each part is a percent of the time between beats (or taps), together at most 100. */
+export const BeatTimingFields = ({ timing, onChange }: BeatTimingFieldsProperties) => {
   const { t } = useTranslation();
-  const { timing, ...withoutTiming } = beatBar;
   const partLabels: Record<(typeof TIMING_PARTS)[number], string> = {
     fadeIn: t({ id: 'ProjectDetail.virtualConsole.audio.timingFadeIn', defaultMessage: 'Fade in (%)' }),
     hold: t({ id: 'ProjectDetail.virtualConsole.audio.timingHold', defaultMessage: 'Hold (%)' }),
@@ -90,8 +89,8 @@ const BeatTimingFields = ({ beatBar, onChange }: BeatTimingFieldsProperties) => 
         ]}
         value={timing ? 'beat' : 'sequence'}
         onChange={value => {
-          if (value === 'sequence') onChange(withoutTiming);
-          if (value === 'beat' && !timing) onChange({ ...beatBar, timing: { ...VIRTUAL_CONSOLE_BEAT_DEFAULT_TIMING } });
+          if (value === 'sequence') onChange(undefined);
+          if (value === 'beat' && !timing) onChange({ ...VIRTUAL_CONSOLE_BEAT_DEFAULT_TIMING });
         }}
       />
       {timing
@@ -103,7 +102,7 @@ const BeatTimingFields = ({ beatBar, onChange }: BeatTimingFieldsProperties) => 
               max={100 - TIMING_PARTS.reduce((sum, other) => (other === part ? sum : sum + timing[other]), 0)}
               value={timing[part]}
               onCommit={value => {
-                onChange({ ...beatBar, timing: { ...timing, [part]: value } });
+                onChange({ ...timing, [part]: value });
               }}
             />
           ))
@@ -193,9 +192,10 @@ const VirtualConsoleAudioFields = ({
             }}
           />
           <BeatTimingFields
-            beatBar={beatBar}
-            onChange={next => {
-              onPatch({ beatBar: next });
+            timing={beatBar.timing}
+            onChange={timing => {
+              const { timing: _previous, ...withoutTiming } = beatBar;
+              onPatch({ beatBar: timing ? { ...withoutTiming, timing } : withoutTiming });
             }}
           />
         </>

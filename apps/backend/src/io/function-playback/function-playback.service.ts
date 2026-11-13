@@ -3,6 +3,8 @@ import { DmxUniverseService } from '@/io/dmx/dmx-universe.service';
 import {
   type SequenceChannelValue,
   sequenceFrame,
+  type SequenceStart,
+  stepDurationAt,
   type StepTiming,
   steppedFrame,
 } from '@/io/function-playback/sequence-runner';
@@ -11,13 +13,21 @@ import { ProjectFunctionRepository } from '@/projects/repositories/project-funct
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
 const TICK_MS = 25;
+/** A tapped step holds this many tap gaps before the sequence free-runs again: a slightly late tap still counts. */
+const TAP_OVERDUE_GAPS = 1.5;
 
 type Runner = {
   sequence: SequenceProperties;
   startedAt: number;
+  /** Where free-running continues from; moves on when a tapped step hands back. */
+  start: SequenceStart;
   /** Set when beats drive the steps instead of their timing. */
   stepped?: { beats: number; beatAt: number; from: SequenceChannelValue[]; timing?: StepTiming };
+  /** Set while a tapped step of a free-running sequence plays; its timing runs again `until` then. */
+  tapped?: { index: number; at: number; until: number; from: SequenceChannelValue[]; timing?: StepTiming };
   lastValues: SequenceChannelValue[];
+  /** Raw index of the step playing now. */
+  lastIndex: number;
 };
 
 @Injectable()
@@ -39,6 +49,9 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     });
     this.eventEmitter.on('function.step', payload => {
       this.step(payload.functionPublicId, payload.timing);
+    });
+    this.eventEmitter.on('function.tap', payload => {
+      this.tap(payload.timing, payload.gapMs);
     });
     this.eventEmitter.on('function.stop', payload => {
       this.stop(payload.functionPublicId);
@@ -76,8 +89,10 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     this.runners.set(functionPublicId, {
       sequence: row.properties.sequence,
       startedAt: Date.now(),
+      start: { index: 0, from: [] },
       ...(stepped ? { stepped: { beats: 0, beatAt: Date.now(), from: [] } } : {}),
       lastValues: [],
+      lastIndex: 0,
     });
     this.ensureTicker();
     this.tick();
@@ -96,6 +111,28 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
       return;
     }
     runner.stepped = { beats: runner.stepped.beats + 1, beatAt: Date.now(), from: runner.lastValues, timing };
+    this.tick();
+  }
+
+  /**
+   * One tap for every running function: beat-driven ones play their next beat step, free-running ones jump to their
+   * next step now and free-run again once the next tap is overdue (`gapMs`) or, with no gap known, the step played out.
+   */
+  public tap(timing?: StepTiming, gapMs?: number): void {
+    const now = Date.now();
+    for (const [functionPublicId, runner] of this.runners) {
+      if (runner.stepped) {
+        this.step(functionPublicId, timing);
+        continue;
+      }
+      const index = runner.lastIndex + 1;
+      const { runOrder, steps } = runner.sequence;
+      if (runOrder === SequenceRunOrder.SingleShot && index >= steps.length) {
+        continue;
+      }
+      const holdMs = gapMs === undefined ? stepDurationAt(runner.sequence, index, timing) : gapMs * TAP_OVERDUE_GAPS;
+      runner.tapped = { index, at: now, until: now + holdMs, from: runner.lastValues, timing };
+    }
     this.tick();
   }
 
@@ -118,15 +155,7 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     const now = Date.now();
     let stateChanged = false;
     for (const [functionPublicId, runner] of this.runners) {
-      const frame = runner.stepped
-        ? steppedFrame(
-            runner.sequence,
-            runner.stepped.beats,
-            now - runner.stepped.beatAt,
-            runner.stepped.from,
-            runner.stepped.timing,
-          )
-        : sequenceFrame(runner.sequence, now - runner.startedAt);
+      const frame = this.frame(runner, now);
       runner.lastValues = frame.values;
       if (frame.finished) {
         this.runners.delete(functionPublicId);
@@ -150,6 +179,27 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  private frame(runner: Runner, now: number) {
+    if (runner.stepped) {
+      const { beats, beatAt, from, timing } = runner.stepped;
+      return steppedFrame(runner.sequence, beats, now - beatAt, from, timing);
+    }
+    // A single shot's last tapped step plays out in full: there is no next step to hand back to.
+    if (runner.tapped && (now < runner.tapped.until || isLastStep(runner.sequence, runner.tapped.index))) {
+      const { index, at, from, timing } = runner.tapped;
+      runner.lastIndex = index;
+      return steppedFrame(runner.sequence, index + 1, now - at, from, timing);
+    }
+    if (runner.tapped) {
+      runner.start = { index: runner.tapped.index + 1, from: runner.lastValues };
+      runner.startedAt = runner.tapped.until;
+      runner.tapped = undefined;
+    }
+    const frame = sequenceFrame(runner.sequence, now - runner.startedAt, runner.start);
+    runner.lastIndex = frame.index;
+    return frame;
+  }
+
   private ensureTicker(): void {
     if (this.timer !== undefined) {
       return;
@@ -171,3 +221,6 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     this.eventEmitter.emit('function.state', { running: this.runningIds() });
   }
 }
+
+const isLastStep = ({ runOrder, steps }: SequenceProperties, index: number) =>
+  runOrder === SequenceRunOrder.SingleShot && index + 1 >= steps.length;

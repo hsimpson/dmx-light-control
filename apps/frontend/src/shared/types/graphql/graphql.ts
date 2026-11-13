@@ -790,6 +790,8 @@ export type VirtualConsoleControlInput = {
   midiEntryPublicId?: string | null | undefined;
   /** Slider orientation */
   orientation?: VirtualConsoleSliderOrientation | null | undefined;
+  /** Step timing of a global tap control, in percent of the time between taps. Null: sequence timing. */
+  tapTiming?: VirtualConsoleBeatTimingInput | null | undefined;
   /** Control kind */
   type: VirtualConsoleControlType;
   /** Inclusive upper DMX limit for a slider or button */
@@ -809,6 +811,7 @@ export const enum VirtualConsoleControlType {
   AudioTriggers = 'audioTriggers',
   Button = 'button',
   Frame = 'frame',
+  GlobalTap = 'globalTap',
   Slider = 'slider',
 }
 
@@ -1800,6 +1803,7 @@ export type VirtualConsoleControlFieldsFragment = {
     functionName: string | null;
     timing: { fadeIn: number; hold: number; fadeOut: number } | null;
   } | null;
+  tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
 };
 
 export type VirtualConsoleFieldsFragment = {
@@ -2040,6 +2044,7 @@ export type VirtualConsoleFieldsFragment = {
                       functionName: string | null;
                       timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                     } | null;
+                    tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
                   }> | null;
                   channelBindings: Array<{
                     projectFixturePublicId: string;
@@ -2071,6 +2076,7 @@ export type VirtualConsoleFieldsFragment = {
                     functionName: string | null;
                     timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                   } | null;
+                  tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
                 }> | null;
                 channelBindings: Array<{
                   projectFixturePublicId: string;
@@ -2102,6 +2108,7 @@ export type VirtualConsoleFieldsFragment = {
                   functionName: string | null;
                   timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                 } | null;
+                tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -2133,6 +2140,7 @@ export type VirtualConsoleFieldsFragment = {
                 functionName: string | null;
                 timing: { fadeIn: number; hold: number; fadeOut: number } | null;
               } | null;
+              tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -2164,6 +2172,7 @@ export type VirtualConsoleFieldsFragment = {
               functionName: string | null;
               timing: { fadeIn: number; hold: number; fadeOut: number } | null;
             } | null;
+            tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
           }> | null;
           channelBindings: Array<{
             projectFixturePublicId: string;
@@ -2195,6 +2204,7 @@ export type VirtualConsoleFieldsFragment = {
             functionName: string | null;
             timing: { fadeIn: number; hold: number; fadeOut: number } | null;
           } | null;
+          tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
         }> | null;
         channelBindings: Array<{
           projectFixturePublicId: string;
@@ -2226,6 +2236,7 @@ export type VirtualConsoleFieldsFragment = {
           functionName: string | null;
           timing: { fadeIn: number; hold: number; fadeOut: number } | null;
         } | null;
+        tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
       }> | null;
       channelBindings: Array<{
         projectFixturePublicId: string;
@@ -2257,6 +2268,7 @@ export type VirtualConsoleFieldsFragment = {
         functionName: string | null;
         timing: { fadeIn: number; hold: number; fadeOut: number } | null;
       } | null;
+      tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
     }>;
   }>;
 };
@@ -2596,6 +2608,7 @@ export type GetProjectQuery = {
                           functionName: string | null;
                           timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                         } | null;
+                        tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
                       }> | null;
                       channelBindings: Array<{
                         projectFixturePublicId: string;
@@ -2627,6 +2640,7 @@ export type GetProjectQuery = {
                         functionName: string | null;
                         timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                       } | null;
+                      tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
                     }> | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
@@ -2658,6 +2672,7 @@ export type GetProjectQuery = {
                       functionName: string | null;
                       timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                     } | null;
+                    tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
                   }> | null;
                   channelBindings: Array<{
                     projectFixturePublicId: string;
@@ -2689,6 +2704,7 @@ export type GetProjectQuery = {
                     functionName: string | null;
                     timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                   } | null;
+                  tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
                 }> | null;
                 channelBindings: Array<{
                   projectFixturePublicId: string;
@@ -2720,6 +2736,7 @@ export type GetProjectQuery = {
                   functionName: string | null;
                   timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                 } | null;
+                tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -2751,6 +2768,7 @@ export type GetProjectQuery = {
                 functionName: string | null;
                 timing: { fadeIn: number; hold: number; fadeOut: number } | null;
               } | null;
+              tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -2782,6 +2800,7 @@ export type GetProjectQuery = {
               functionName: string | null;
               timing: { fadeIn: number; hold: number; fadeOut: number } | null;
             } | null;
+            tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
           }> | null;
           channelBindings: Array<{
             projectFixturePublicId: string;
@@ -2813,6 +2832,7 @@ export type GetProjectQuery = {
             functionName: string | null;
             timing: { fadeIn: number; hold: number; fadeOut: number } | null;
           } | null;
+          tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
         }>;
       }>;
     };
@@ -3392,6 +3412,7 @@ export type ExportProjectsQuery = {
                             functionName: string | null;
                             timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                           } | null;
+                          tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
                         }> | null;
                         channelBindings: Array<{
                           projectFixturePublicId: string;
@@ -3423,6 +3444,7 @@ export type ExportProjectsQuery = {
                           functionName: string | null;
                           timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                         } | null;
+                        tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
                       }> | null;
                       channelBindings: Array<{
                         projectFixturePublicId: string;
@@ -3454,6 +3476,7 @@ export type ExportProjectsQuery = {
                         functionName: string | null;
                         timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                       } | null;
+                      tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
                     }> | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
@@ -3485,6 +3508,7 @@ export type ExportProjectsQuery = {
                       functionName: string | null;
                       timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                     } | null;
+                    tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
                   }> | null;
                   channelBindings: Array<{
                     projectFixturePublicId: string;
@@ -3516,6 +3540,7 @@ export type ExportProjectsQuery = {
                     functionName: string | null;
                     timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                   } | null;
+                  tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
                 }> | null;
                 channelBindings: Array<{
                   projectFixturePublicId: string;
@@ -3547,6 +3572,7 @@ export type ExportProjectsQuery = {
                   functionName: string | null;
                   timing: { fadeIn: number; hold: number; fadeOut: number } | null;
                 } | null;
+                tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
               }> | null;
               channelBindings: Array<{
                 projectFixturePublicId: string;
@@ -3578,6 +3604,7 @@ export type ExportProjectsQuery = {
                 functionName: string | null;
                 timing: { fadeIn: number; hold: number; fadeOut: number } | null;
               } | null;
+              tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
             }> | null;
             channelBindings: Array<{
               projectFixturePublicId: string;
@@ -3609,6 +3636,7 @@ export type ExportProjectsQuery = {
               functionName: string | null;
               timing: { fadeIn: number; hold: number; fadeOut: number } | null;
             } | null;
+            tapTiming: { fadeIn: number; hold: number; fadeOut: number } | null;
           }>;
         }>;
       } | null;
@@ -4635,6 +4663,18 @@ export const VirtualConsoleControlFieldsFragmentDoc = {
               ],
             },
           },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'tapTiming' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -4906,6 +4946,18 @@ export const VirtualConsoleFieldsFragmentDoc = {
                     ],
                   },
                 },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'tapTiming' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
               ],
             },
           },
@@ -8088,6 +8140,18 @@ export const GetProjectDocument = {
               ],
             },
           },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'tapTiming' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -9410,6 +9474,18 @@ export const ExportProjectsDocument = {
                     ],
                   },
                 },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'tapTiming' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'fadeIn' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'hold' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'fadeOut' } },
               ],
             },
           },

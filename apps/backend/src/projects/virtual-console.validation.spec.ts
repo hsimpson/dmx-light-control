@@ -981,3 +981,46 @@ describe('audio triggers', () => {
     expect(sanitized.pages[0]?.controls[0]?.audioBars?.[1]).toEqual(idle);
   });
 });
+
+describe('global tap', () => {
+  const TAP_ID = '77777777-7777-4777-8777-777777777777';
+  const tapControl = (overrides: Partial<VirtualConsoleControl> = {}): VirtualConsoleControl => ({
+    id: TAP_ID,
+    type: VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap,
+    x: 0,
+    y: 0,
+    width: 88,
+    height: 40,
+    label: 'Tap',
+    backgroundColor: '#000000',
+    foregroundColor: '#ffffff',
+    ...overrides,
+  });
+  const documentWith = (control: VirtualConsoleControl): VirtualConsoleDocument =>
+    validDocument({ pages: [{ id: PAGE_ID, name: 'Page 1', controls: [control] }] });
+
+  it.each<[string, Partial<VirtualConsoleControl>]>([
+    ['no timing', {}],
+    ['a timing', { tapTiming: { fadeIn: 0, hold: 50, fadeOut: 50 } }],
+  ])('GIVEN a global tap with %s WHEN validated THEN it is accepted', (_case, overrides) => {
+    expect(() => {
+      assertValidVirtualConsole(documentWith(tapControl(overrides)));
+    }).not.toThrow();
+  });
+
+  it('GIVEN a tap timing over the gap WHEN validated THEN it is rejected', () => {
+    expect(() => {
+      assertValidVirtualConsole(documentWith(tapControl({ tapTiming: { fadeIn: 1, hold: 50, fadeOut: 50 } })));
+    }).toThrow('Tap timing');
+  });
+
+  it('GIVEN a tap timing on a button WHEN validated THEN it is rejected', () => {
+    const document = validDocument();
+    const button = document.pages[0]?.controls[1];
+    if (button) Object.assign(button, { tapTiming: { fadeIn: 0, hold: 50, fadeOut: 50 } });
+
+    expect(() => {
+      assertValidVirtualConsole(document);
+    }).toThrow('cannot have a tap timing');
+  });
+});
