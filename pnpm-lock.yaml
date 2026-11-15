@@ -168,7 +168,7 @@ importers:
     dependencies:
       '@apollo/client':
         specifier: ^4.3.7
-        version: 4.3.7(graphql-ws@6.4.1(@fastify/websocket@11.3.7)(graphql@17.1.0)(ws@8.22.1))(graphql@17.1.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)
+        version: 4.3.7(graphql-ws@6.4.1(@fastify/websocket@11.3.7)(graphql@17.1.0)(ws@8.22.2))(graphql@17.1.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)
       '@apollo/server':
         specifier: ^5.5.1
         version: 5.5.1(graphql@17.1.0)(supports-color@7.2.0)
@@ -311,8 +311,8 @@ importers:
         specifier: ^2.9.1
         version: 2.9.1
       ws:
-        specifier: ^8.22.1
-        version: 8.22.1
+        specifier: ^8.22.2
+        version: 8.22.2
       zod:
         specifier: ^4.6.7
         version: 4.6.7
@@ -10944,6 +10944,18 @@ packages:
       utf-8-validate:
         optional: true
 
+  ws@8.22.2:
+    resolution: {integrity: sha512-/rEZ2ejown2N5gxVTHUu9bVVC7ttu0/Tgzf5hbTOixR3Fs7mbbXgn2DbdbcKgJOmpQMtrIUWivtYuVMnp/W/yA==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   wsl-utils@0.1.0:
     resolution: {integrity: sha512-h3Fbisa2nKGPxCpm89Hk33lBLsnaGBvctQopaBSOW/uIs6FTe1ATyAnKFJrzVs9vpGdsTe73WF3V4lIsk4Gacw==}
     engines: {node: '>=18'}
@@ -11096,7 +11108,7 @@ snapshots:
     dependencies:
       graphql: 17.1.0
 
-  '@apollo/client@4.3.7(graphql-ws@6.4.1(@fastify/websocket@11.3.7)(graphql@17.1.0)(ws@8.22.1))(graphql@17.1.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)':
+  '@apollo/client@4.3.7(graphql-ws@6.4.1(@fastify/websocket@11.3.7)(graphql@17.1.0)(ws@8.22.2))(graphql@17.1.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rxjs@7.8.2)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@17.1.0)
       '@wry/caches': 1.0.1
@@ -11108,7 +11120,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.9.1
     optionalDependencies:
-      graphql-ws: 6.4.1(@fastify/websocket@11.3.7)(graphql@17.1.0)(ws@8.22.1)
+      graphql-ws: 6.4.1(@fastify/websocket@11.3.7)(graphql@17.1.0)(ws@8.22.2)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
@@ -12594,7 +12606,7 @@ snapshots:
     dependencies:
       duplexify: 4.1.3
       fastify-plugin: 6.0.1
-      ws: 8.22.1
+      ws: 8.22.2
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -12915,10 +12927,10 @@ snapshots:
       '@graphql-tools/utils': 12.1.0(graphql@17.1.0)
       '@whatwg-node/disposablestack': 0.0.6
       graphql: 17.1.0
-      graphql-ws: 6.4.1(@fastify/websocket@11.3.7)(graphql@17.1.0)(ws@8.22.1)
-      isows: 1.0.7(ws@8.22.1)
+      graphql-ws: 6.4.1(@fastify/websocket@11.3.7)(graphql@17.1.0)(ws@8.22.2)
+      isows: 1.0.7(ws@8.22.2)
       tslib: 2.9.1
-      ws: 8.22.1
+      ws: 8.22.2
     transitivePeerDependencies:
       - '@fastify/websocket'
       - bufferutil
@@ -12945,9 +12957,9 @@ snapshots:
       '@graphql-tools/utils': 12.1.0(graphql@17.1.0)
       '@types/ws': 8.18.2
       graphql: 17.1.0
-      isomorphic-ws: 5.0.0(ws@8.22.1)
+      isomorphic-ws: 5.0.0(ws@8.22.2)
       tslib: 2.9.1
-      ws: 8.22.1
+      ws: 8.22.2
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -12957,9 +12969,9 @@ snapshots:
       '@graphql-tools/utils': 13.2.1(graphql@17.1.0)
       '@types/ws': 8.18.2
       graphql: 17.1.0
-      isomorphic-ws: 5.0.0(ws@8.22.1)
+      isomorphic-ws: 5.0.0(ws@8.22.2)
       tslib: 2.9.1
-      ws: 8.22.1
+      ws: 8.22.2
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -13131,10 +13143,10 @@ snapshots:
       '@whatwg-node/fetch': 0.12.1
       '@whatwg-node/promise-helpers': 2.0.1
       graphql: 17.1.0
-      isomorphic-ws: 5.0.0(ws@8.22.1)
+      isomorphic-ws: 5.0.0(ws@8.22.2)
       sync-fetch: 0.7.1
       tslib: 2.9.1
-      ws: 8.22.1
+      ws: 8.22.2
     transitivePeerDependencies:
       - '@fastify/websocket'
       - '@types/node'
@@ -13153,10 +13165,10 @@ snapshots:
       '@whatwg-node/fetch': 0.12.1
       '@whatwg-node/promise-helpers': 2.0.1
       graphql: 17.1.0
-      isomorphic-ws: 5.0.0(ws@8.22.1)
+      isomorphic-ws: 5.0.0(ws@8.22.2)
       sync-fetch: 0.7.1
       tslib: 2.9.1
-      ws: 8.22.1
+      ws: 8.22.2
     transitivePeerDependencies:
       - '@fastify/websocket'
       - '@types/node'
@@ -18581,6 +18593,13 @@ snapshots:
       '@fastify/websocket': 11.3.7
       ws: 8.22.1
 
+  graphql-ws@6.4.1(@fastify/websocket@11.3.7)(graphql@17.1.0)(ws@8.22.2):
+    dependencies:
+      graphql: 17.1.0
+    optionalDependencies:
+      '@fastify/websocket': 11.3.7
+      ws: 8.22.2
+
   graphql@17.1.0: {}
 
   handle-thing@2.0.1:
@@ -19044,13 +19063,13 @@ snapshots:
 
   isobject@3.0.1: {}
 
-  isomorphic-ws@5.0.0(ws@8.22.1):
+  isomorphic-ws@5.0.0(ws@8.22.2):
     dependencies:
-      ws: 8.22.1
+      ws: 8.22.2
 
-  isows@1.0.7(ws@8.22.1):
+  isows@1.0.7(ws@8.22.2):
     dependencies:
-      ws: 8.22.1
+      ws: 8.22.2
 
   istanbul-lib-coverage@3.2.2: {}
 
@@ -22555,7 +22574,7 @@ snapshots:
       sockjs: 0.3.24
       spdy: 4.0.2(supports-color@7.2.0)
       webpack-dev-middleware: 7.4.5(webpack@5.111.0)
-      ws: 8.22.1
+      ws: 8.22.2
     optionalDependencies:
       webpack: 5.111.0(@swc/core@1.16.22(@swc/helpers@0.5.24))(cssnano@7.1.9(postcss@8.5.32))(csso@5.0.5)(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.32)(sharp@0.35.5(@types/node@26.6.6))(svgo@4.1.0)(webpack-cli@7.2.3)
       webpack-cli: 7.2.3(js-yaml@4.3.2)(json5@2.2.3)(webpack-dev-server@5.2.4)(webpack@5.111.0)
@@ -22748,6 +22767,8 @@ snapshots:
       signal-exit: 4.1.0
 
   ws@8.22.1: {}
+
+  ws@8.22.2: {}
 
   wsl-utils@0.1.0:
     dependencies:
