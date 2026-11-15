@@ -93,7 +93,7 @@
   },
   "dependencies": {
     "@apollo/client": "^4.3.7",
-    "@apollo/server": "^5.5.1",
+    "@apollo/server": "^5.5.2",
     "@as-integrations/fastify": "^3.1.0",
     "@dnd-kit/helpers": "^0.5.3",
     "@dnd-kit/react": "^0.5.3",
