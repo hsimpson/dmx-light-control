@@ -811,6 +811,7 @@ export const enum VirtualConsoleControlType {
   AudioTriggers = 'audioTriggers',
   Button = 'button',
   Frame = 'frame',
+  GlobalFade = 'globalFade',
   GlobalTap = 'globalTap',
   Slider = 'slider',
 }

@@ -52,6 +52,12 @@ export function dmxChannelUpdates(
   });
 }
 
+/** A level moving from `from` to `to` over `ms`, started `at`. */
+export type LevelFade = { from: number; to: number; at: number; ms: number };
+
+export const fadeLevel = ({ from, to, at, ms }: LevelFade, now: number): number =>
+  now >= at + ms ? to : Math.round(from + ((to - from) * (now - at)) / ms);
+
 type ChannelContribution = {
   channels: Set<number>;
   value: number;

@@ -13,6 +13,8 @@ import {
   extractControl,
   findControl,
   findFunctionBindings,
+  formatFadeTime,
+  globalFadeMs,
   patchAudioBar,
   resizeAudioBars,
   findControlAbsolutePosition,
@@ -542,3 +544,28 @@ describe('virtual-console-document', () => {
 });
 
 const createAudioBarsFor = (bandCount: number) => resizeAudioBars([], bandCount);
+
+describe('global fade time', () => {
+  it.each([
+    [0, 0],
+    [1, 100],
+    [50, 1683],
+    [100, 30_000],
+  ])('GIVEN position %i WHEN mapped THEN it is %i ms like the backend', (position, ms) => {
+    expect(globalFadeMs(position)).toBe(ms);
+  });
+
+  it.each([
+    [100, '0.10 s'],
+    [250, '0.25 s'],
+    [1682, '1.7 s'],
+    [12_345, '12 s'],
+    [30_000, '30 s'],
+  ])('GIVEN %i ms WHEN formatted THEN it reads %s', (ms, text) => {
+    expect(formatFadeTime(ms)).toBe(text);
+  });
+
+  it('GIVEN a new global fade WHEN created THEN it is a vertical control', () => {
+    expect(createControl('globalFade', 0, 0)).toMatchObject({ type: 'globalFade', orientation: 'vertical' });
+  });
+});

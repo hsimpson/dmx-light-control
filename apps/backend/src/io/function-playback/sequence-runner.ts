@@ -114,11 +114,15 @@ export function steppedFrame(
 /** Where a free-running sequence starts: the raw step `index` (before wrapping) and the output it fades in from. */
 export type SequenceStart = { index: number; from: readonly SequenceChannelValue[] };
 
-/** Output of a free-running sequence `elapsedMs` after `start`, with the raw index of the step playing now. */
+/**
+ * Output of a free-running sequence `elapsedMs` after `start`, with the raw index of the step playing now;
+ * `timing` replaces every step's own when given.
+ */
 export function sequenceFrame(
   sequence: SequenceProperties,
   elapsedMs: number,
   start: SequenceStart = { index: 0, from: [] },
+  timing?: StepTiming,
 ): SequenceFrame & { index: number } {
   const steps = orderedSteps(sequence);
   let index = start.index;
@@ -134,10 +138,11 @@ export function sequenceFrame(
     if (sequence.runOrder === SequenceRunOrder.SingleShot && index >= steps.length) {
       return { values: toList(from), finished: true, index };
     }
-    const step = steps[playIndex(index, steps.length, sequence.runOrder)] ?? steps[0];
-    if (step === undefined) {
+    const played = steps[playIndex(index, steps.length, sequence.runOrder)] ?? steps[0];
+    if (played === undefined) {
       return { values: toList(from), finished: true, index };
     }
+    const step = timing ? { ...played, ...timing } : played;
     const duration = stepDuration(step);
     if (duration === 0) {
       from = endState(step);

@@ -95,7 +95,7 @@ const VirtualConsoleControlTree = ({
                 />
               </FrameControl>
             ) : null}
-            {control.type === 'slider' ? (
+            {control.type === 'slider' || control.type === 'globalFade' ? (
               <SliderControl
                 control={control}
                 mode={mode}

@@ -197,6 +197,9 @@ function assertControl(control: VirtualConsoleControl, ids: Set<string>, depth: 
     case VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap:
       assertGlobalTap(control);
       break;
+    case VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalFade:
+      assertGlobalFade(control);
+      break;
   }
 }
 
@@ -206,7 +209,8 @@ function assertControlType(type: string): asserts type is VirtualConsoleControlT
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Slider &&
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Button &&
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.AudioTriggers &&
-    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap
+    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap &&
+    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalFade
   ) {
     throw new InvalidVirtualConsoleException(`Unknown virtual console control type ${type}.`);
   }
@@ -294,11 +298,15 @@ function assertDmxLimit(value: number | null | undefined, field: string, fallbac
   return value;
 }
 
-function assertSlider(control: VirtualConsoleControl): void {
-  assertNoChildren(control);
+function assertOrientation(control: VirtualConsoleControl): void {
   if (control.orientation !== 'vertical' && control.orientation !== 'horizontal') {
     throw new InvalidVirtualConsoleException('Slider orientation must be vertical or horizontal.');
   }
+}
+
+function assertSlider(control: VirtualConsoleControl): void {
+  assertNoChildren(control);
+  assertOrientation(control);
   if (control.valueType !== 'dmx' && control.valueType !== 'percentage') {
     throw new InvalidVirtualConsoleException('Slider valueType must be dmx or percentage.');
   }
@@ -320,6 +328,12 @@ function assertGlobalTap(control: VirtualConsoleControl): void {
   assertNoChildren(control);
   assertColor(control.foregroundColor, 'foregroundColor');
   if (control.tapTiming) assertBeatTiming(control.tapTiming, 'Tap timing');
+}
+
+function assertGlobalFade(control: VirtualConsoleControl): void {
+  assertNoChildren(control);
+  assertOrientation(control);
+  assertColor(control.foregroundColor, 'foregroundColor');
 }
 
 function assertAudioFieldsAllowed(control: VirtualConsoleControl): void {

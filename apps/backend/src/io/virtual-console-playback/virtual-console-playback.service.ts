@@ -3,16 +3,24 @@ import type { DmxValue } from '@/io/dmx/types/dmx.types';
 import { smoothLevel, type SpectrumFrame } from '@/io/sound-input/spectrum';
 import { LoadedProject, ProjectRepository } from '@/projects/repositories/project.repository';
 import {
+  globalFadeMs,
   VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD,
+  VIRTUAL_CONSOLE_FADE_POSITION_MAX,
   type VirtualConsoleAudioBar,
   type VirtualConsoleBeatTiming,
   type VirtualConsoleControl,
 } from '@/projects/virtual-console';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { barLevels, nextFunctionState, thresholdDmx } from './audio-triggers';
 import { BeatTempo } from './beat-tempo';
 import { listensToDevice, type VirtualConsoleFeedback, type VirtualConsoleLedState } from './virtual-console-events';
-import { controlToDmxValue, VirtualConsoleOutput, type VirtualConsoleBoundFixture } from './virtual-console-output';
+import {
+  controlToDmxValue,
+  fadeLevel,
+  type LevelFade,
+  VirtualConsoleOutput,
+  type VirtualConsoleBoundFixture,
+} from './virtual-console-output';
 
 const DMX_MAX = 255;
 const MIDI_MAX = 127;
@@ -24,6 +32,7 @@ const PERCENT = 100;
 /** In silence the last tempo is stale: show none once no beat came for this long. */
 const BPM_TIMEOUT_MS = 2000;
 const MS_PER_MINUTE = 60_000;
+const FADE_TICK_MS = 25;
 
 /** Live state of an enabled audio triggers control, per bar; `beat` is the pulse shown after the band bars. */
 type AudioState = {
@@ -40,7 +49,7 @@ type StepTiming = { fadeIn: number; hold: number; fadeOut: number };
 
 /** Plays the active project's saved virtual console: control values, DMX output and function start/stop. */
 @Injectable()
-export class VirtualConsolePlaybackService implements OnModuleInit {
+export class VirtualConsolePlaybackService implements OnModuleInit, OnModuleDestroy {
   private projectPublicId: string | null = null;
   private controls = new Map<string, VirtualConsoleControl>();
   private fixtures: VirtualConsoleBoundFixture[] = [];
@@ -59,6 +68,10 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
   private readonly audioHolders = new Map<string, Set<string>>();
   /** Functions an audio bar started, so audio never stops one somebody else runs. */
   private readonly audioStarted = new Set<string>();
+  /** Global fade time set by the last moved fade control; flash buttons with channels fade over it. */
+  private fadeMs = 0;
+  private readonly fades = new Map<string, LevelFade>();
+  private fadeTimer: ReturnType<typeof setInterval> | undefined;
   private lastSpectrumAt = 0;
   private lastLevels = '';
 
@@ -102,6 +115,11 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     });
   }
 
+  public onModuleDestroy(): void {
+    this.fades.clear();
+    this.stopFadeTimer();
+  }
+
   public async reload(projectPublicId: string | null): Promise<void> {
     const project = projectPublicId ? await this.projects.findOneByPublicIdWithFixtures(projectPublicId) : undefined;
     const controls = new Map(
@@ -124,6 +142,7 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
     this.fixtures = boundFixtures(project?.projectFixtures);
     if (!sameProject) {
       this.output = new VirtualConsoleOutput();
+      this.setFadeTime(0);
     }
     this.applyInitialLevels();
     this.emitState();
@@ -149,6 +168,10 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
       this.applyAudioInput(control, value);
     } else if (control.type === 'globalTap') {
       this.applyTapInput(control, value);
+    } else if (control.type === 'globalFade') {
+      const position = clamp(Math.round(value), 0, VIRTUAL_CONSOLE_FADE_POSITION_MAX);
+      this.setValue(control, position);
+      this.setFadeTime(globalFadeMs(position));
     } else if (control.type === 'slider') {
       this.setValue(control, clamp(value, sliderMin(control), sliderMax(control)));
     } else if (control.functionPublicId) {
@@ -173,7 +196,9 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
 
   private applyButton(control: VirtualConsoleControl, pressed: boolean): void {
     const upper = control.upperLimit ?? DMX_MAX;
-    if (control.buttonMode !== 'toggle') {
+    if (this.fadesLight(control)) {
+      this.fadeButton(control, pressed ? upper : 0);
+    } else if (control.buttonMode !== 'toggle') {
       this.setValue(control, pressed ? upper : 0);
     } else if (pressed) {
       this.setValue(control, (this.values.get(control.id) ?? 0) > 0 ? 0 : upper);
@@ -187,10 +212,68 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
         const min = sliderMin(control);
         this.applyInput(
           control.id,
-          control.type === 'slider' ? Math.round(min + ratio * (sliderMax(control) - min)) : value,
+          control.type === 'slider' || control.type === 'globalFade'
+            ? Math.round(min + ratio * (sliderMax(control) - min))
+            : value,
         );
       }
     }
+  }
+
+  /** A fade still running finishes through the fader too, or its next tick would bring the light back after an Off. */
+  private fadesLight(control: VirtualConsoleControl): boolean {
+    const flashesChannels = control.buttonMode !== 'toggle' && (control.channelBindings?.length ?? 0) > 0;
+    return flashesChannels && (this.fadeMs > 0 || this.fades.has(control.id));
+  }
+
+  private setFadeTime(ms: number): void {
+    if (ms === this.fadeMs) {
+      return;
+    }
+    this.fadeMs = ms;
+    this.eventEmitter.emit('function.fadeTime', { ms });
+  }
+
+  /** The button shows its target at once; its light follows, from wherever a fade still running left it. */
+  private fadeButton(control: VirtualConsoleControl, to: number): void {
+    const now = Date.now();
+    const running = this.fades.get(control.id);
+    // A repeated press (a second client, a doubled Note-On) must not restart the fade.
+    if (running?.to === to) {
+      return;
+    }
+    const from = running ? fadeLevel(running, now) : controlToDmxValue(control, this.values.get(control.id) ?? 0);
+    this.values.set(control.id, to);
+    this.emitState();
+    this.fades.set(control.id, { from, to, at: now, ms: this.fadeMs });
+    this.fadeTimer ??= setInterval(() => {
+      this.tickFades();
+    }, FADE_TICK_MS);
+    this.tickFades();
+  }
+
+  private tickFades(): void {
+    const now = Date.now();
+    const updates: DmxValue[] = [];
+    for (const [controlId, fade] of this.fades) {
+      const control = this.controls.get(controlId);
+      const level = fadeLevel(fade, now);
+      if (control) {
+        updates.push(...this.output.applyLevel(controlId, control.channelBindings ?? [], level, this.fixtures));
+      }
+      if (!control || now >= fade.at + fade.ms) {
+        this.fades.delete(controlId);
+      }
+    }
+    this.emitDmx(updates);
+    if (this.fades.size === 0) {
+      this.stopFadeTimer();
+    }
+  }
+
+  private stopFadeTimer(): void {
+    clearInterval(this.fadeTimer);
+    this.fadeTimer = undefined;
   }
 
   private applyFunctionButton(control: VirtualConsoleControl, functionPublicId: string, pressed: boolean) {
@@ -379,11 +462,19 @@ export class VirtualConsolePlaybackService implements OnModuleInit {
       this.startedBy.delete(functionPublicId);
       this.eventEmitter.emit('function.stop', { functionPublicId });
     }
-    if (controlToDmxValue(control, this.values.get(control.id) ?? 0) > 0) {
+    if (this.releaseFade(control) || controlToDmxValue(control, this.values.get(control.id) ?? 0) > 0) {
       // As DMX, so a percentage slider goes dark instead of back to its lowerLimit.
       this.writeDmx({ ...control, valueType: 'dmx' }, 0);
     }
     this.values.delete(control.id);
+  }
+
+  /** Whether the control's light was still fading; a removed fade control turns the fade time Off. */
+  private releaseFade(control: VirtualConsoleControl): boolean {
+    if (control.type === 'globalFade') {
+      this.setFadeTime(0);
+    }
+    return this.fades.delete(control.id);
   }
 
   private writeDmx(control: VirtualConsoleControl, value: number): void {
@@ -484,7 +575,7 @@ function boundFixtures(fixtures: LoadedProject['projectFixtures'] | undefined): 
 }
 
 const sliderMin = (control: VirtualConsoleControl) =>
-  control.valueType === 'percentage' ? 0 : (control.lowerLimit ?? 0);
+  control.valueType === 'percentage' || control.type === 'globalFade' ? 0 : (control.lowerLimit ?? 0);
 const sliderMax = (control: VirtualConsoleControl) =>
-  control.valueType === 'percentage' ? 100 : (control.upperLimit ?? DMX_MAX);
+  control.valueType === 'percentage' || control.type === 'globalFade' ? 100 : (control.upperLimit ?? DMX_MAX);
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));

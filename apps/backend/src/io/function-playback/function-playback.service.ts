@@ -36,6 +36,8 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
   // A stop that arrives while start awaits the database (quick flash press) must cancel that start.
   private readonly pendingStarts = new Map<string, symbol>();
   private timer: ReturnType<typeof setInterval> | undefined;
+  /** Global crossfade time; 0 leaves each step its own timing. */
+  private fadeMs = 0;
 
   public constructor(
     private readonly functions: ProjectFunctionRepository,
@@ -52,6 +54,9 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     });
     this.eventEmitter.on('function.tap', payload => {
       this.tap(payload.timing, payload.gapMs);
+    });
+    this.eventEmitter.on('function.fadeTime', ({ ms }) => {
+      this.setFadeTime(ms);
     });
     this.eventEmitter.on('function.stop', payload => {
       this.stop(payload.functionPublicId);
@@ -110,7 +115,14 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     if (runOrder === SequenceRunOrder.SingleShot && runner.stepped.beats >= steps.length) {
       return;
     }
-    runner.stepped = { beats: runner.stepped.beats + 1, beatAt: Date.now(), from: runner.lastValues, timing };
+    // Taken now: a fade time changed during the step must not stretch or cut a step already playing.
+    const stepTiming = timing ?? this.crossfade();
+    runner.stepped = {
+      beats: runner.stepped.beats + 1,
+      beatAt: Date.now(),
+      from: runner.lastValues,
+      timing: stepTiming,
+    };
     this.tick();
   }
 
@@ -130,8 +142,26 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
       if (runOrder === SequenceRunOrder.SingleShot && index >= steps.length) {
         continue;
       }
-      const holdMs = gapMs === undefined ? stepDurationAt(runner.sequence, index, timing) : gapMs * TAP_OVERDUE_GAPS;
-      runner.tapped = { index, at: now, until: now + holdMs, from: runner.lastValues, timing };
+      const stepTiming = timing ?? this.crossfade();
+      const holdMs =
+        gapMs === undefined ? stepDurationAt(runner.sequence, index, stepTiming) : gapMs * TAP_OVERDUE_GAPS;
+      runner.tapped = { index, at: now, until: now + holdMs, from: runner.lastValues, timing: stepTiming };
+    }
+    this.tick();
+  }
+
+  /** Free runners replay their current step from the output now, so a turned knob never jumps mid-step. */
+  public setFadeTime(ms: number): void {
+    if (ms === this.fadeMs) {
+      return;
+    }
+    this.fadeMs = ms;
+    const now = Date.now();
+    for (const runner of this.runners.values()) {
+      if (!runner.stepped && !runner.tapped) {
+        runner.start = { index: runner.lastIndex, from: runner.lastValues };
+        runner.startedAt = now;
+      }
     }
     this.tick();
   }
@@ -195,9 +225,13 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
       runner.startedAt = runner.tapped.until;
       runner.tapped = undefined;
     }
-    const frame = sequenceFrame(runner.sequence, now - runner.startedAt, runner.start);
+    const frame = sequenceFrame(runner.sequence, now - runner.startedAt, runner.start, this.crossfade());
     runner.lastIndex = frame.index;
     return frame;
+  }
+
+  private crossfade(): StepTiming | undefined {
+    return this.fadeMs > 0 ? { fadeIn: this.fadeMs, hold: 0, fadeOut: 0 } : undefined;
   }
 
   private ensureTicker(): void {

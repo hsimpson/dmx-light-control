@@ -64,6 +64,16 @@ describe('virtual console controls', () => {
     expect(screen.getByTestId('virtual-console-slider-handle')).toBeInTheDocument();
   });
 
+  it('GIVEN a global fade WHEN shown THEN its position reads as a fade time, off at 0', () => {
+    const control = createControl('globalFade', 0, 0);
+    const { rerender } = renderWithProviders(<SliderControl control={control} mode="play" value={0} />);
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('Off');
+    expect(screen.getByRole('slider')).toHaveAttribute('aria-valuemax', '100');
+
+    rerender(<SliderControl control={control} mode="play" value={100} />);
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('30 s');
+  });
+
   it('applies the slider foreground color to the text, fill and handle', () => {
     const control = { ...createControl('slider', 0, 0), foregroundColor: '#ff00ff' };
     renderWithProviders(<SliderControl control={control} mode="edit" />);

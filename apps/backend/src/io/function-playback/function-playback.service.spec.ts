@@ -144,6 +144,86 @@ describe('FunctionPlaybackService', () => {
     expect(universe.getFrame()[4]).toBe(100);
   });
 
+  it('GIVEN a global fade time WHEN a free-running function plays THEN every step crossfades over it', async () => {
+    const { service, functions, universe, listeners } = build();
+    functions.findOneByPublicId.mockResolvedValue(steppedRow());
+    const fadeTime = listeners.get('function.fadeTime') as (payload: unknown) => void;
+    fadeTime({ ms: 1000 });
+    await service.start(FUNCTION_ID);
+
+    vi.advanceTimersByTime(500);
+    expect(universe.getFrame()[4]).toBe(40);
+
+    vi.advanceTimersByTime(1000);
+    expect(universe.getFrame()[4]).toBe(140);
+  });
+
+  it('GIVEN a running function WHEN the fade time changes THEN the current step fades again from the output', async () => {
+    const { service, functions, universe, listeners } = build();
+    functions.findOneByPublicId.mockResolvedValue(steppedRow());
+    const fadeTime = listeners.get('function.fadeTime') as (payload: unknown) => void;
+    await service.start(FUNCTION_ID);
+    vi.advanceTimersByTime(50);
+
+    fadeTime({ ms: 1000 });
+    vi.advanceTimersByTime(500);
+
+    expect(universe.getFrame()[4]).toBe(80);
+  });
+
+  it('GIVEN a fade time back at 0 WHEN the function plays THEN its own step timing applies again', async () => {
+    const { service, functions, universe, listeners } = build();
+    functions.findOneByPublicId.mockResolvedValue(steppedRow());
+    const fadeTime = listeners.get('function.fadeTime') as (payload: unknown) => void;
+    fadeTime({ ms: 1000 });
+    fadeTime({ ms: 0 });
+    await service.start(FUNCTION_ID);
+
+    vi.advanceTimersByTime(250);
+
+    expect(universe.getFrame()[4]).toBe(100);
+  });
+
+  it('GIVEN a fade time WHEN a beat brings its own timing THEN the beat timing wins', async () => {
+    const { service, functions, universe, listeners } = build();
+    functions.findOneByPublicId.mockResolvedValue(steppedRow());
+    const fadeTime = listeners.get('function.fadeTime') as (payload: unknown) => void;
+    fadeTime({ ms: 1000 });
+    await service.start(FUNCTION_ID, true);
+
+    service.step(FUNCTION_ID, { fadeIn: 0, hold: 1000, fadeOut: 0 });
+
+    expect(universe.getFrame()[4]).toBe(80);
+  });
+
+  it('GIVEN a fade time WHEN a beat has no timing THEN the step crossfades over the fade time', async () => {
+    const { service, functions, universe, listeners } = build();
+    functions.findOneByPublicId.mockResolvedValue(steppedRow());
+    const fadeTime = listeners.get('function.fadeTime') as (payload: unknown) => void;
+    fadeTime({ ms: 1000 });
+    await service.start(FUNCTION_ID, true);
+
+    service.step(FUNCTION_ID);
+    vi.advanceTimersByTime(500);
+
+    expect(universe.getFrame()[4]).toBe(40);
+  });
+
+  it('GIVEN a beat step that has faded in WHEN the fade time is raised THEN that step keeps its look', async () => {
+    const { service, functions, universe, listeners } = build();
+    functions.findOneByPublicId.mockResolvedValue(steppedRow());
+    const fadeTime = listeners.get('function.fadeTime') as (payload: unknown) => void;
+    fadeTime({ ms: 100 });
+    await service.start(FUNCTION_ID, true);
+    service.step(FUNCTION_ID);
+    vi.advanceTimersByTime(2000);
+
+    fadeTime({ ms: 10_000 });
+    vi.advanceTimersByTime(25);
+
+    expect(universe.getFrame()[4]).toBe(80);
+  });
+
   it('GIVEN a function that is not running WHEN a step arrives THEN nothing happens', () => {
     const { service, universe } = build();
 

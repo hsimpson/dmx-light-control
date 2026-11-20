@@ -251,4 +251,16 @@ describe('sequenceFrame from a start step', () => {
       sequenceFrame(sequence(steps, { runOrder: SequenceRunOrder.SingleShot }), 0, { index: 2, from: [] }).finished,
     ).toBe(true);
   });
+
+  it('GIVEN a timing override WHEN sampled THEN every step uses it instead of its own', () => {
+    const steps = [step(0, { hold: 1000 }), step(100, { hold: 1000 })];
+    const crossfade = { fadeIn: 200, hold: 0, fadeOut: 0 };
+    const start = { index: 0, from: [] };
+
+    expect(sequenceFrame(sequence(steps), 300, start, crossfade)).toEqual({
+      values: [{ channel: 1, value: 50 }],
+      finished: false,
+      index: 1,
+    });
+  });
 });

@@ -157,6 +157,10 @@ const VirtualConsoleSidebar = ({
             type="globalTap"
             label={t({ id: 'ProjectDetail.virtualConsole.control.globalTap', defaultMessage: 'Global tap' })}
           />
+          <PaletteItem
+            type="globalFade"
+            label={t({ id: 'ProjectDetail.virtualConsole.control.globalFade', defaultMessage: 'Global fade' })}
+          />
         </Stack>
 
         <UnstyledButton onClick={onSelectCanvas}>
@@ -251,6 +255,7 @@ const DEFAULT_FOREGROUND: Partial<Record<VirtualConsoleControl['type'], string>>
   button: '#ffffff',
   audioTriggers: '#40c057',
   globalTap: '#ffffff',
+  globalFade: '#fab005',
 };
 
 const ControlFields = ({
@@ -398,28 +403,30 @@ const ControlFields = ({
           }}
         />
       ) : null}
+      {control.type === 'slider' || control.type === 'globalFade' ? (
+        <Select
+          allowDeselect={false}
+          data={[
+            {
+              value: 'vertical',
+              label: t({ id: 'ProjectDetail.virtualConsole.vertical', defaultMessage: 'Vertical' }),
+            },
+            {
+              value: 'horizontal',
+              label: t({ id: 'ProjectDetail.virtualConsole.horizontal', defaultMessage: 'Horizontal' }),
+            },
+          ]}
+          label={t({ id: 'ProjectDetail.virtualConsole.orientation', defaultMessage: 'Orientation' })}
+          value={control.orientation ?? 'vertical'}
+          onChange={value => {
+            if (value === 'vertical' || value === 'horizontal') {
+              onPatch({ orientation: value });
+            }
+          }}
+        />
+      ) : null}
       {control.type === 'slider' ? (
         <>
-          <Select
-            allowDeselect={false}
-            data={[
-              {
-                value: 'vertical',
-                label: t({ id: 'ProjectDetail.virtualConsole.vertical', defaultMessage: 'Vertical' }),
-              },
-              {
-                value: 'horizontal',
-                label: t({ id: 'ProjectDetail.virtualConsole.horizontal', defaultMessage: 'Horizontal' }),
-              },
-            ]}
-            label={t({ id: 'ProjectDetail.virtualConsole.orientation', defaultMessage: 'Orientation' })}
-            value={control.orientation ?? 'vertical'}
-            onChange={value => {
-              if (value === 'vertical' || value === 'horizontal') {
-                onPatch({ orientation: value });
-              }
-            }}
-          />
           <Select
             allowDeselect={false}
             data={[
