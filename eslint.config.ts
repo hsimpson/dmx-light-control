@@ -49,6 +49,8 @@ export default defineConfig(
       '@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'explicit' }],
       '@typescript-eslint/member-ordering': 'error',
       '@typescript-eslint/no-shadow': 'error',
+      // new in strictTypeChecked 8.73: flags idiomatic NestJS DTO literals and overflows the stack on tools/bruno
+      '@typescript-eslint/no-unsafe-class-instance-assignment': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
