@@ -40,21 +40,23 @@ export type VirtualConsoleResizeHandle = (typeof VIRTUAL_CONSOLE_RESIZE_HANDLES)
 export type VirtualConsoleControlType = 'frame' | 'slider' | 'button' | 'audioTriggers' | 'globalTap' | 'globalFade';
 
 export const VIRTUAL_CONSOLE_FADE_POSITION_MAX = 100;
-const FADE_MIN_MS = 100;
-const FADE_MAX_MS = 30_000;
+/** Same choices and default as the backend's `projects/virtual-console.ts`. */
+export const VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS = [1_000, 2_000, 5_000, 10_000, 30_000];
+export const VIRTUAL_CONSOLE_FADE_DEFAULT_MAX_MS = 5_000;
+const FADE_MIN_MS = 25;
+const MS_BELOW_MS = 100;
 const MS_PER_SECOND = 1000;
 const TENTHS_BELOW_MS = 10_000;
 
 /** Fade time (ms) of a global fade position, 0 is off; same as `globalFadeMs` in the backend's `projects/virtual-console.ts`. */
-export const globalFadeMs = (position: number): number =>
+export const globalFadeMs = (position: number, maxMs = VIRTUAL_CONSOLE_FADE_DEFAULT_MAX_MS): number =>
   position <= 0
     ? 0
-    : Math.round(
-        FADE_MIN_MS * (FADE_MAX_MS / FADE_MIN_MS) ** ((position - 1) / (VIRTUAL_CONSOLE_FADE_POSITION_MAX - 1)),
-      );
+    : Math.round(FADE_MIN_MS * (maxMs / FADE_MIN_MS) ** ((position - 1) / (VIRTUAL_CONSOLE_FADE_POSITION_MAX - 1)));
 
-/** Seconds with the precision a fade needs at that length: 0.25 s, 1.7 s, 12 s. */
+/** The precision a fade needs at that length: 25 ms, 0.25 s, 1.7 s, 12 s. */
 export const formatFadeTime = (ms: number): string => {
+  if (ms < MS_BELOW_MS) return `${ms} ms`;
   const seconds = ms / MS_PER_SECOND;
   if (ms < MS_PER_SECOND) return `${seconds.toFixed(2)} s`;
   return ms < TENTHS_BELOW_MS ? `${seconds.toFixed(1)} s` : `${Math.round(seconds)} s`;
@@ -123,6 +125,8 @@ export type VirtualConsoleControl = {
   beatBar?: VirtualConsoleBeatBar;
   /** Step timing of a global tap; absent: each tapped step keeps the sequence's own timing. */
   tapTiming?: VirtualConsoleBeatTiming;
+  /** Top of a global fade, one of `VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS`; absent: 5 s. */
+  fadeMaxMs?: number;
 };
 
 export type VirtualConsolePage = {
@@ -255,6 +259,7 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         backgroundColor: '#25262b',
         foregroundColor: '#fab005',
         orientation: 'vertical',
+        fadeMaxMs: VIRTUAL_CONSOLE_FADE_DEFAULT_MAX_MS,
         ...font,
       };
   }

@@ -68,7 +68,7 @@ const SliderControl = ({
   const fadeValue = () =>
     value === 0
       ? t({ id: 'ProjectDetail.virtualConsole.fadeOff', defaultMessage: 'Off' })
-      : formatFadeTime(globalFadeMs(value));
+      : formatFadeTime(globalFadeMs(value, control.fadeMaxMs));
   const displayValue = fade ? fadeValue() : percentage ? `${value}%` : String(value);
   const handleSize = isVertical ? control.width / 2 : control.height / 2;
   const handleOffset = `clamp(0px, calc(${ratio} * (100% - ${HANDLE_SIZE_PX}px)), calc(100% - ${HANDLE_SIZE_PX}px))`;

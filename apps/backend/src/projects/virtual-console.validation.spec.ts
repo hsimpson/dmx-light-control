@@ -1063,19 +1063,50 @@ describe('global fade', () => {
       assertValidVirtualConsole(documentWith(fadeControl({ channelBindings: bindings })));
     }).toThrow('cannot have channel bindings');
   });
+
+  it.each([1_000, 2_000, 5_000, 10_000, 30_000])(
+    'GIVEN a global fade with a %i ms maximum WHEN validated THEN it is accepted',
+    fadeMaxMs => {
+      expect(() => {
+        assertValidVirtualConsole(documentWith(fadeControl({ fadeMaxMs })));
+      }).not.toThrow();
+    },
+  );
+
+  it('GIVEN a global fade with a maximum outside the choices WHEN validated THEN it is rejected', () => {
+    expect(() => {
+      assertValidVirtualConsole(documentWith(fadeControl({ fadeMaxMs: 3_000 })));
+    }).toThrow('fadeMaxMs');
+  });
+
+  it('GIVEN a slider with a fade maximum WHEN validated THEN it is rejected', () => {
+    const slider = fadeControl({
+      type: VIRTUAL_CONSOLE_CONTROL_TYPE.Slider,
+      valueType: 'dmx',
+      fadeMaxMs: 5_000,
+    });
+
+    expect(() => {
+      assertValidVirtualConsole(documentWith(slider));
+    }).toThrow('cannot have a fade maximum');
+  });
 });
 
 describe('globalFadeMs', () => {
   it.each([
-    [0, 0],
-    [1, 100],
-    [100, 30_000],
-  ])('GIVEN position %i WHEN mapped THEN it is %i ms', (position, ms) => {
-    expect(globalFadeMs(position)).toBe(ms);
+    [0, undefined, 0],
+    [1, undefined, 25],
+    [2, undefined, 26],
+    [100, undefined, 5_000],
+    [1, 2_000, 25],
+    [100, 2_000, 2_000],
+    [100, 30_000, 30_000],
+  ])('GIVEN position %i and maximum %s WHEN mapped THEN it is %i ms', (position, maxMs, ms) => {
+    expect(globalFadeMs(position, maxMs)).toBe(ms);
   });
 
-  it('GIVEN the middle position WHEN mapped THEN it is spread logarithmically', () => {
-    expect(globalFadeMs(50)).toBeGreaterThan(1500);
-    expect(globalFadeMs(50)).toBeLessThan(1800);
+  it('GIVEN the middle position of a 30 s fade WHEN mapped THEN it is spread logarithmically', () => {
+    expect(globalFadeMs(50, 30_000)).toBeGreaterThan(800);
+    expect(globalFadeMs(50, 30_000)).toBeLessThan(900);
   });
 });

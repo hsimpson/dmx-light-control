@@ -9,6 +9,7 @@ import {
   VIRTUAL_CONSOLE_DEFAULT_PAGE_NAME,
   VIRTUAL_CONSOLE_DEFAULT_SNAP,
   VIRTUAL_CONSOLE_DEFAULT_WIDTH,
+  VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS,
   VIRTUAL_CONSOLE_FONT_SIZE_MAX,
   VIRTUAL_CONSOLE_FONT_SIZE_MIN,
   VIRTUAL_CONSOLE_FONT_WEIGHT_MAX,
@@ -334,11 +335,19 @@ function assertGlobalFade(control: VirtualConsoleControl): void {
   assertNoChildren(control);
   assertOrientation(control);
   assertColor(control.foregroundColor, 'foregroundColor');
+  if (control.fadeMaxMs !== undefined && !VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS.includes(control.fadeMaxMs)) {
+    throw new InvalidVirtualConsoleException(
+      `Global fade fadeMaxMs must be one of ${VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS.join(', ')}.`,
+    );
+  }
 }
 
 function assertAudioFieldsAllowed(control: VirtualConsoleControl): void {
   if ((control.tapTiming ?? undefined) !== undefined && control.type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap) {
     throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have a tap timing.`);
+  }
+  if ((control.fadeMaxMs ?? undefined) !== undefined && control.type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalFade) {
+    throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have a fade maximum.`);
   }
   const hasAudioFields =
     (control.bandCount ?? undefined) !== undefined ||

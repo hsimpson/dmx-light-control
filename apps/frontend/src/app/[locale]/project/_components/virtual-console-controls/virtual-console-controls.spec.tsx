@@ -71,7 +71,10 @@ describe('virtual console controls', () => {
     expect(screen.getByRole('slider')).toHaveAttribute('aria-valuemax', '100');
 
     rerender(<SliderControl control={control} mode="play" value={100} />);
-    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('30 s');
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('5.0 s');
+
+    rerender(<SliderControl control={{ ...control, fadeMaxMs: 2_000 }} mode="play" value={100} />);
+    expect(screen.getByTestId('virtual-console-slider-value')).toHaveTextContent('2.0 s');
   });
 
   it('applies the slider foreground color to the text, fill and handle', () => {

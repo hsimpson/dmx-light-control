@@ -158,6 +158,23 @@ describe('FunctionPlaybackService', () => {
     expect(universe.getFrame()[4]).toBe(140);
   });
 
+  it('GIVEN a fade time shorter than the steps WHEN a free-running function plays THEN it keeps its own speed', async () => {
+    const { service, functions, universe, listeners } = build();
+    functions.findOneByPublicId.mockResolvedValue(steppedRow());
+    const fadeTime = listeners.get('function.fadeTime') as (payload: unknown) => void;
+    fadeTime({ ms: 50 });
+    await service.start(FUNCTION_ID);
+
+    vi.advanceTimersByTime(25);
+    expect(universe.getFrame()[4]).toBe(40);
+
+    vi.advanceTimersByTime(150);
+    expect(universe.getFrame()[4]).toBe(80);
+
+    vi.advanceTimersByTime(50);
+    expect(universe.getFrame()[4]).toBe(140);
+  });
+
   it('GIVEN a running function WHEN the fade time changes THEN the current step fades again from the output', async () => {
     const { service, functions, universe, listeners } = build();
     functions.findOneByPublicId.mockResolvedValue(steppedRow());
@@ -545,6 +562,20 @@ describe('FunctionPlaybackService', () => {
       expect(universe.getFrame()[4]).toBe(30);
       vi.advanceTimersByTime(1000);
       expect(universe.getFrame()[4]).toBe(10);
+    });
+
+    it('GIVEN a short fade time and no gap WHEN tapped THEN the tapped step lasts its own length', async () => {
+      const { service, functions, universe, listeners } = build();
+      functions.findOneByPublicId.mockResolvedValue(threeStepRow());
+      const fadeTime = listeners.get('function.fadeTime') as (payload: unknown) => void;
+      fadeTime({ ms: 50 });
+      await service.start(FUNCTION_ID);
+      vi.advanceTimersByTime(100);
+
+      service.tap();
+      vi.advanceTimersByTime(900);
+
+      expect(universe.getFrame()[4]).toBe(20);
     });
 
     it('GIVEN a tap gap WHEN no next tap comes THEN the step holds until the tap is overdue, then free-runs', async () => {

@@ -762,6 +762,8 @@ export type VirtualConsoleControlInput = {
   channelBindings?: Array<VirtualConsoleChannelBindingInput> | null | undefined;
   /** Nested controls when this is a frame */
   children?: Array<VirtualConsoleControlInput> | null | undefined;
+  /** Fade time at the top of a global fade control in ms (1000, 2000, 5000, 10000 or 30000). Null: 5000. */
+  fadeMaxMs?: number | null | undefined;
   /** Overrides the MIDI entry's default LED feedback */
   feedback?: MidiFeedbackInput | null | undefined;
   /** CSS font family */
@@ -1774,6 +1776,7 @@ export type VirtualConsoleControlFieldsFragment = {
   midiEntryPublicId: string | null;
   midiDeviceSerials: Array<string> | null;
   bandCount: number | null;
+  fadeMaxMs: number | null;
   channelBindings: Array<{
     projectFixturePublicId: string;
     channelAssignmentPublicId: string;
@@ -1840,6 +1843,7 @@ export type VirtualConsoleFieldsFragment = {
       midiEntryPublicId: string | null;
       midiDeviceSerials: Array<string> | null;
       bandCount: number | null;
+      fadeMaxMs: number | null;
       children: Array<{
         id: string;
         type: VirtualConsoleControlType;
@@ -1865,6 +1869,7 @@ export type VirtualConsoleFieldsFragment = {
         midiEntryPublicId: string | null;
         midiDeviceSerials: Array<string> | null;
         bandCount: number | null;
+        fadeMaxMs: number | null;
         children: Array<{
           id: string;
           type: VirtualConsoleControlType;
@@ -1890,6 +1895,7 @@ export type VirtualConsoleFieldsFragment = {
           midiEntryPublicId: string | null;
           midiDeviceSerials: Array<string> | null;
           bandCount: number | null;
+          fadeMaxMs: number | null;
           children: Array<{
             id: string;
             type: VirtualConsoleControlType;
@@ -1915,6 +1921,7 @@ export type VirtualConsoleFieldsFragment = {
             midiEntryPublicId: string | null;
             midiDeviceSerials: Array<string> | null;
             bandCount: number | null;
+            fadeMaxMs: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -1940,6 +1947,7 @@ export type VirtualConsoleFieldsFragment = {
               midiEntryPublicId: string | null;
               midiDeviceSerials: Array<string> | null;
               bandCount: number | null;
+              fadeMaxMs: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -1965,6 +1973,7 @@ export type VirtualConsoleFieldsFragment = {
                 midiEntryPublicId: string | null;
                 midiDeviceSerials: Array<string> | null;
                 bandCount: number | null;
+                fadeMaxMs: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -1990,6 +1999,7 @@ export type VirtualConsoleFieldsFragment = {
                   midiEntryPublicId: string | null;
                   midiDeviceSerials: Array<string> | null;
                   bandCount: number | null;
+                  fadeMaxMs: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -2015,6 +2025,7 @@ export type VirtualConsoleFieldsFragment = {
                     midiEntryPublicId: string | null;
                     midiDeviceSerials: Array<string> | null;
                     bandCount: number | null;
+                    fadeMaxMs: number | null;
                     channelBindings: Array<{
                       projectFixturePublicId: string;
                       channelAssignmentPublicId: string;
@@ -2404,6 +2415,7 @@ export type GetProjectQuery = {
           midiEntryPublicId: string | null;
           midiDeviceSerials: Array<string> | null;
           bandCount: number | null;
+          fadeMaxMs: number | null;
           children: Array<{
             id: string;
             type: VirtualConsoleControlType;
@@ -2429,6 +2441,7 @@ export type GetProjectQuery = {
             midiEntryPublicId: string | null;
             midiDeviceSerials: Array<string> | null;
             bandCount: number | null;
+            fadeMaxMs: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -2454,6 +2467,7 @@ export type GetProjectQuery = {
               midiEntryPublicId: string | null;
               midiDeviceSerials: Array<string> | null;
               bandCount: number | null;
+              fadeMaxMs: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -2479,6 +2493,7 @@ export type GetProjectQuery = {
                 midiEntryPublicId: string | null;
                 midiDeviceSerials: Array<string> | null;
                 bandCount: number | null;
+                fadeMaxMs: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -2504,6 +2519,7 @@ export type GetProjectQuery = {
                   midiEntryPublicId: string | null;
                   midiDeviceSerials: Array<string> | null;
                   bandCount: number | null;
+                  fadeMaxMs: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -2529,6 +2545,7 @@ export type GetProjectQuery = {
                     midiEntryPublicId: string | null;
                     midiDeviceSerials: Array<string> | null;
                     bandCount: number | null;
+                    fadeMaxMs: number | null;
                     children: Array<{
                       id: string;
                       type: VirtualConsoleControlType;
@@ -2554,6 +2571,7 @@ export type GetProjectQuery = {
                       midiEntryPublicId: string | null;
                       midiDeviceSerials: Array<string> | null;
                       bandCount: number | null;
+                      fadeMaxMs: number | null;
                       children: Array<{
                         id: string;
                         type: VirtualConsoleControlType;
@@ -2579,6 +2597,7 @@ export type GetProjectQuery = {
                         midiEntryPublicId: string | null;
                         midiDeviceSerials: Array<string> | null;
                         bandCount: number | null;
+                        fadeMaxMs: number | null;
                         channelBindings: Array<{
                           projectFixturePublicId: string;
                           channelAssignmentPublicId: string;
@@ -3208,6 +3227,7 @@ export type ExportProjectsQuery = {
             midiEntryPublicId: string | null;
             midiDeviceSerials: Array<string> | null;
             bandCount: number | null;
+            fadeMaxMs: number | null;
             children: Array<{
               id: string;
               type: VirtualConsoleControlType;
@@ -3233,6 +3253,7 @@ export type ExportProjectsQuery = {
               midiEntryPublicId: string | null;
               midiDeviceSerials: Array<string> | null;
               bandCount: number | null;
+              fadeMaxMs: number | null;
               children: Array<{
                 id: string;
                 type: VirtualConsoleControlType;
@@ -3258,6 +3279,7 @@ export type ExportProjectsQuery = {
                 midiEntryPublicId: string | null;
                 midiDeviceSerials: Array<string> | null;
                 bandCount: number | null;
+                fadeMaxMs: number | null;
                 children: Array<{
                   id: string;
                   type: VirtualConsoleControlType;
@@ -3283,6 +3305,7 @@ export type ExportProjectsQuery = {
                   midiEntryPublicId: string | null;
                   midiDeviceSerials: Array<string> | null;
                   bandCount: number | null;
+                  fadeMaxMs: number | null;
                   children: Array<{
                     id: string;
                     type: VirtualConsoleControlType;
@@ -3308,6 +3331,7 @@ export type ExportProjectsQuery = {
                     midiEntryPublicId: string | null;
                     midiDeviceSerials: Array<string> | null;
                     bandCount: number | null;
+                    fadeMaxMs: number | null;
                     children: Array<{
                       id: string;
                       type: VirtualConsoleControlType;
@@ -3333,6 +3357,7 @@ export type ExportProjectsQuery = {
                       midiEntryPublicId: string | null;
                       midiDeviceSerials: Array<string> | null;
                       bandCount: number | null;
+                      fadeMaxMs: number | null;
                       children: Array<{
                         id: string;
                         type: VirtualConsoleControlType;
@@ -3358,6 +3383,7 @@ export type ExportProjectsQuery = {
                         midiEntryPublicId: string | null;
                         midiDeviceSerials: Array<string> | null;
                         bandCount: number | null;
+                        fadeMaxMs: number | null;
                         children: Array<{
                           id: string;
                           type: VirtualConsoleControlType;
@@ -3383,6 +3409,7 @@ export type ExportProjectsQuery = {
                           midiEntryPublicId: string | null;
                           midiDeviceSerials: Array<string> | null;
                           bandCount: number | null;
+                          fadeMaxMs: number | null;
                           channelBindings: Array<{
                             projectFixturePublicId: string;
                             channelAssignmentPublicId: string;
@@ -4676,6 +4703,7 @@ export const VirtualConsoleControlFieldsFragmentDoc = {
               ],
             },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'fadeMaxMs' } },
         ],
       },
     },
@@ -4962,6 +4990,7 @@ export const VirtualConsoleFieldsFragmentDoc = {
               ],
             },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'fadeMaxMs' } },
         ],
       },
     },
@@ -8153,6 +8182,7 @@ export const GetProjectDocument = {
               ],
             },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'fadeMaxMs' } },
         ],
       },
     },
@@ -9490,6 +9520,7 @@ export const ExportProjectsDocument = {
               ],
             },
           },
+          { kind: 'Field', name: { kind: 'Name', value: 'fadeMaxMs' } },
         ],
       },
     },

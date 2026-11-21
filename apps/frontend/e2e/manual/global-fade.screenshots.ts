@@ -3,7 +3,7 @@ import { mockGraphql, mockedProject } from '../graphql-mock';
 import { imagePath, shoot } from './manual-shots';
 
 const FADE_ID = '77777777-7777-4777-8777-777777777777';
-/** Fader position that reads 1.7 s. */
+/** Fader position that reads 0.34 s with the default 5 s maximum. */
 const FADE_POSITION = 50;
 
 const fadeControl = {
@@ -36,6 +36,7 @@ const fadeControl = {
   audioBars: null,
   beatBar: null,
   tapTiming: null,
+  fadeMaxMs: 5000,
   children: [],
 };
 
@@ -47,7 +48,16 @@ const demoProject = {
   },
 };
 
-for (const locale of ['en', 'de'] as const) {
+const LABELS = {
+  en: { orientation: 'Orientation', fadeMax: 'Maximum fade time' },
+  de: { orientation: 'Ausrichtung', fadeMax: 'Maximale Fade-Zeit' },
+} as const;
+
+type Locale = keyof typeof LABELS;
+
+for (const locale of Object.keys(LABELS) as Locale[]) {
+  const labels = LABELS[locale];
+
   test.describe(`global fade manual (${locale})`, () => {
     test.beforeEach(async ({ page }) => {
       await mockGraphql(page);
@@ -67,9 +77,28 @@ for (const locale of ['en', 'de'] as const) {
     test('control', async ({ page }) => {
       await page.goto(`/${locale}/project/${demoProject.publicId}/console/popout`);
       const slider = page.getByTestId('virtual-console-slider');
-      await expect(page.getByTestId('virtual-console-slider-value')).toHaveText('1.7 s');
+      await expect(page.getByTestId('virtual-console-slider-value')).toHaveText('0.34 s');
 
       await shoot(page, imagePath(locale, 'global-fade-control.png'), [slider]);
+    });
+
+    test('settings', async ({ page }) => {
+      await page.goto(`/${locale}/project/${demoProject.publicId}/console`);
+      await page.getByTestId(`virtual-console-control-${FADE_ID}`).click();
+      const properties = page.getByTestId('virtual-console-split').locator(':scope > :last-child');
+      const orientation = properties.getByRole('combobox', { name: labels.orientation, exact: true });
+      const fadeMax = properties.getByRole('combobox', { name: labels.fadeMax, exact: true });
+      await expect(fadeMax).toHaveValue('5 s');
+      await fadeMax.evaluate(element => {
+        element.scrollIntoView({ block: 'center' });
+      });
+
+      await shoot(page, imagePath(locale, 'global-fade-settings.png'), [
+        properties.getByText(labels.orientation, { exact: true }),
+        orientation,
+        properties.getByText(labels.fadeMax, { exact: true }),
+        fadeMax,
+      ]);
     });
   });
 }

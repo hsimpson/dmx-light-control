@@ -547,15 +547,21 @@ const createAudioBarsFor = (bandCount: number) => resizeAudioBars([], bandCount)
 
 describe('global fade time', () => {
   it.each([
-    [0, 0],
-    [1, 100],
-    [50, 1683],
-    [100, 30_000],
-  ])('GIVEN position %i WHEN mapped THEN it is %i ms like the backend', (position, ms) => {
-    expect(globalFadeMs(position)).toBe(ms);
+    [0, undefined, 0],
+    [1, undefined, 25],
+    [2, undefined, 26],
+    [50, undefined, 344],
+    [100, undefined, 5_000],
+    [100, 1_000, 1_000],
+    [50, 30_000, 836],
+    [100, 30_000, 30_000],
+  ])('GIVEN position %i and maximum %s WHEN mapped THEN it is %i ms like the backend', (position, maxMs, ms) => {
+    expect(globalFadeMs(position, maxMs)).toBe(ms);
   });
 
   it.each([
+    [25, '25 ms'],
+    [99, '99 ms'],
     [100, '0.10 s'],
     [250, '0.25 s'],
     [1682, '1.7 s'],
@@ -565,7 +571,11 @@ describe('global fade time', () => {
     expect(formatFadeTime(ms)).toBe(text);
   });
 
-  it('GIVEN a new global fade WHEN created THEN it is a vertical control', () => {
-    expect(createControl('globalFade', 0, 0)).toMatchObject({ type: 'globalFade', orientation: 'vertical' });
+  it('GIVEN a new global fade WHEN created THEN it is a vertical control with a 5 s maximum', () => {
+    expect(createControl('globalFade', 0, 0)).toMatchObject({
+      type: 'globalFade',
+      orientation: 'vertical',
+      fadeMaxMs: 5_000,
+    });
   });
 });

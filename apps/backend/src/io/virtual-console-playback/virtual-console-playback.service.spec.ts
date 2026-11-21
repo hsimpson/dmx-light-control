@@ -1035,51 +1035,61 @@ describe('VirtualConsolePlaybackService global fade', () => {
     return { ...built, fadeTimes };
   }
 
-  it('GIVEN a fade control WHEN moved THEN it sends the logarithmic fade time and publishes its position', async () => {
+  const oneSecondFade = [{ ...fade, fadeMaxMs: 1_000 }, flash, toggle];
+
+  it('GIVEN a fade control without a maximum WHEN moved THEN it sends fade times up to 5 s and publishes its position', async () => {
     const { fadeTimes, states, input } = await buildFade();
 
     input('fade', 1);
     input('fade', 100);
     input('fade', 0);
 
-    expect(fadeTimes).toEqual([100, 30_000, 0]);
+    expect(fadeTimes).toEqual([25, 5_000, 0]);
     expect(states.at(-1)).toEqual({ fade: 0 });
   });
 
-  it('GIVEN a fade control on a MIDI knob WHEN turned fully up THEN the fade time is 30 s', async () => {
-    const { fadeTimes, midiInput } = await buildFade();
+  it('GIVEN a 30 s fade control WHEN moved fully up THEN the fade time is 30 s', async () => {
+    const { fadeTimes, input } = await buildFade([{ ...fade, fadeMaxMs: 30_000 }]);
 
-    midiInput('fade-knob', 127);
+    input('fade', 100);
 
     expect(fadeTimes).toEqual([30_000]);
   });
 
+  it('GIVEN a 2 s fade control on a MIDI knob WHEN turned fully up THEN the fade time is 2 s', async () => {
+    const { fadeTimes, midiInput } = await buildFade([{ ...fade, fadeMaxMs: 2_000 }]);
+
+    midiInput('fade-knob', 127);
+
+    expect(fadeTimes).toEqual([2_000]);
+  });
+
   it('GIVEN a fade time WHEN a flash button is pressed and released THEN its level fades up and down', async () => {
-    const { dmx, states, input } = await buildFade();
-    input('fade', 1);
+    const { dmx, states, input } = await buildFade(oneSecondFade);
+    input('fade', 100);
 
     input('flash', 1);
-    expect(states.at(-1)).toEqual({ fade: 1, flash: 200 });
-    vi.advanceTimersByTime(50);
+    expect(states.at(-1)).toEqual({ fade: 100, flash: 200 });
+    vi.advanceTimersByTime(500);
     expect(dmx.at(-1)).toEqual([{ channel: 10, value: 100 }]);
-    vi.advanceTimersByTime(100);
+    vi.advanceTimersByTime(1000);
     expect(dmx.at(-1)).toEqual([{ channel: 10, value: 200 }]);
 
     input('flash', 0);
-    vi.advanceTimersByTime(50);
+    vi.advanceTimersByTime(500);
     expect(dmx.at(-1)).toEqual([{ channel: 10, value: 100 }]);
-    vi.advanceTimersByTime(100);
+    vi.advanceTimersByTime(1000);
     expect(dmx.at(-1)).toEqual([{ channel: 10, value: 0 }]);
   });
 
   it('GIVEN a flash button fading up WHEN released THEN it fades down from the level it reached', async () => {
-    const { dmx, input } = await buildFade();
-    input('fade', 1);
+    const { dmx, input } = await buildFade(oneSecondFade);
+    input('fade', 100);
     input('flash', 1);
-    vi.advanceTimersByTime(50);
+    vi.advanceTimersByTime(500);
 
     input('flash', 0);
-    vi.advanceTimersByTime(50);
+    vi.advanceTimersByTime(500);
 
     expect(dmx.at(-1)).toEqual([{ channel: 10, value: 50 }]);
   });
@@ -1098,20 +1108,20 @@ describe('VirtualConsolePlaybackService global fade', () => {
   });
 
   it('GIVEN a flash button fading up WHEN the same press arrives again THEN the fade carries on', async () => {
-    const { dmx, input } = await buildFade();
-    input('fade', 1);
+    const { dmx, input } = await buildFade(oneSecondFade);
+    input('fade', 100);
     input('flash', 1);
-    vi.advanceTimersByTime(50);
+    vi.advanceTimersByTime(500);
 
     input('flash', 1);
-    vi.advanceTimersByTime(50);
+    vi.advanceTimersByTime(500);
 
     expect(dmx.at(-1)).toEqual([{ channel: 10, value: 200 }]);
   });
 
   it('GIVEN a fade time WHEN a toggle button is pressed THEN it still switches at once', async () => {
-    const { dmx, input } = await buildFade();
-    input('fade', 1);
+    const { dmx, input } = await buildFade(oneSecondFade);
+    input('fade', 100);
 
     input('toggle', 1);
 
@@ -1119,14 +1129,14 @@ describe('VirtualConsolePlaybackService global fade', () => {
   });
 
   it('GIVEN a fading flash button WHEN it is removed from the console THEN its level goes dark at once', async () => {
-    const { dmx, projects, service, input } = await buildFade();
-    input('fade', 1);
+    const { dmx, projects, service, input } = await buildFade(oneSecondFade);
+    input('fade', 100);
     input('flash', 1);
-    vi.advanceTimersByTime(50);
+    vi.advanceTimersByTime(500);
     projects.findOneByPublicIdWithFixtures.mockResolvedValue(loadedProject([fade]));
 
     await service.reload(PROJECT_ID);
-    vi.advanceTimersByTime(100);
+    vi.advanceTimersByTime(1000);
 
     expect(dmx.at(-1)).toEqual([{ channel: 10, value: 0 }]);
   });

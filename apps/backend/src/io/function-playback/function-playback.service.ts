@@ -5,6 +5,7 @@ import {
   sequenceFrame,
   type SequenceStart,
   stepDurationAt,
+  type StepOverride,
   type StepTiming,
   steppedFrame,
 } from '@/io/function-playback/sequence-runner';
@@ -22,9 +23,9 @@ type Runner = {
   /** Where free-running continues from; moves on when a tapped step hands back. */
   start: SequenceStart;
   /** Set when beats drive the steps instead of their timing. */
-  stepped?: { beats: number; beatAt: number; from: SequenceChannelValue[]; timing?: StepTiming };
+  stepped?: { beats: number; beatAt: number; from: SequenceChannelValue[]; timing?: StepOverride };
   /** Set while a tapped step of a free-running sequence plays; its timing runs again `until` then. */
-  tapped?: { index: number; at: number; until: number; from: SequenceChannelValue[]; timing?: StepTiming };
+  tapped?: { index: number; at: number; until: number; from: SequenceChannelValue[]; timing?: StepOverride };
   lastValues: SequenceChannelValue[];
   /** Raw index of the step playing now. */
   lastIndex: number;
@@ -230,8 +231,8 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     return frame;
   }
 
-  private crossfade(): StepTiming | undefined {
-    return this.fadeMs > 0 ? { fadeIn: this.fadeMs, hold: 0, fadeOut: 0 } : undefined;
+  private crossfade(): StepOverride | undefined {
+    return this.fadeMs > 0 ? { crossfadeMs: this.fadeMs } : undefined;
   }
 
   private ensureTicker(): void {

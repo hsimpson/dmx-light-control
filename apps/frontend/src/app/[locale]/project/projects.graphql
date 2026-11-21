@@ -82,6 +82,7 @@ fragment VirtualConsoleControlFields on VirtualConsoleControlDto {
     hold
     fadeOut
   }
+  fadeMaxMs
 }
 
 fragment VirtualConsoleFields on VirtualConsoleDto {

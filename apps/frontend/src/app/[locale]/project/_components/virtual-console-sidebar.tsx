@@ -21,6 +21,8 @@ import { useState } from 'react';
 import { VIRTUAL_CONSOLE_COLOR_SWATCHES } from './virtual-console-color-palette';
 import {
   VIRTUAL_CONSOLE_DEFAULT_SNAP,
+  VIRTUAL_CONSOLE_FADE_DEFAULT_MAX_MS,
+  VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS,
   VIRTUAL_CONSOLE_PALETTE_MIME,
   VIRTUAL_CONSOLE_SNAP_MAX,
   VIRTUAL_CONSOLE_SNAP_MIN,
@@ -421,6 +423,20 @@ const ControlFields = ({
           onChange={value => {
             if (value === 'vertical' || value === 'horizontal') {
               onPatch({ orientation: value });
+            }
+          }}
+        />
+      ) : null}
+      {control.type === 'globalFade' ? (
+        <Select
+          allowDeselect={false}
+          data={VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS.map(ms => ({ value: String(ms), label: `${ms / 1000} s` }))}
+          label={t({ id: 'ProjectDetail.virtualConsole.fadeMax', defaultMessage: 'Maximum fade time' })}
+          value={String(control.fadeMaxMs ?? VIRTUAL_CONSOLE_FADE_DEFAULT_MAX_MS)}
+          onChange={value => {
+            const fadeMaxMs = Number(value);
+            if (VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS.includes(fadeMaxMs)) {
+              onPatch({ fadeMaxMs });
             }
           }}
         />

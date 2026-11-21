@@ -275,6 +275,7 @@
   "ProjectDetail.virtualConsole.control.slider": "Regler",
   "ProjectDetail.virtualConsole.deleteControl": "Steuerelement löschen",
   "ProjectDetail.virtualConsole.deletePage": "Seite löschen",
+  "ProjectDetail.virtualConsole.fadeMax": "Maximale Fade-Zeit",
   "ProjectDetail.virtualConsole.fadeOff": "Aus",
   "ProjectDetail.virtualConsole.feedbackOverride": "Eigenes LED-Feedback",
   "ProjectDetail.virtualConsole.font": "Schrift",

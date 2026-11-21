@@ -171,7 +171,7 @@ export class VirtualConsolePlaybackService implements OnModuleInit, OnModuleDest
     } else if (control.type === 'globalFade') {
       const position = clamp(Math.round(value), 0, VIRTUAL_CONSOLE_FADE_POSITION_MAX);
       this.setValue(control, position);
-      this.setFadeTime(globalFadeMs(position));
+      this.setFadeTime(globalFadeMs(position, control.fadeMaxMs));
     } else if (control.type === 'slider') {
       this.setValue(control, clamp(value, sliderMin(control), sliderMax(control)));
     } else if (control.functionPublicId) {
