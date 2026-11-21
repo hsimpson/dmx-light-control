@@ -17,18 +17,6 @@
           "vendorId": "0403"
         },
         {
-          "audioChannels": 1,
-          "customName": null,
-          "kind": "SoundInput",
-          "manufacturer": null,
-          "midiMappingPublicId": null,
-          "name": "800 Series Chipset Family Audio Context Engine (ACE)",
-          "productId": null,
-          "serial": null,
-          "usbLocation": null,
-          "vendorId": null
-        },
-        {
           "audioChannels": null,
           "customName": "Uplights",
           "kind": "Midi",
@@ -51,6 +39,30 @@
           "serial": "26062560878750",
           "usbLocation": "3-9",
           "vendorId": "09e8"
+        },
+        {
+          "audioChannels": null,
+          "customName": null,
+          "kind": "DmxSerial",
+          "manufacturer": "FTDI",
+          "midiMappingPublicId": null,
+          "name": "FTDI",
+          "productId": "6001",
+          "serial": "A50285BI",
+          "usbLocation": "01140000",
+          "vendorId": "0403"
+        },
+        {
+          "audioChannels": 1,
+          "customName": null,
+          "kind": "SoundInput",
+          "manufacturer": null,
+          "midiMappingPublicId": null,
+          "name": "C-Media Electronics Inc.: USB Audio Device",
+          "productId": null,
+          "serial": null,
+          "usbLocation": null,
+          "vendorId": null
         }
       ],
       "name": "Test-001",
@@ -207,47 +219,47 @@
             {
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
               "channelNumber": 1,
-              "publicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb"
+              "publicId": "65f01374-2e20-435b-95a3-94a56ec4f026"
             },
             {
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
               "channelNumber": 2,
-              "publicId": "340dd00c-3230-4831-a348-4c6716f0e3bd"
+              "publicId": "621d421f-eda1-4ad7-a484-6778c642d0b2"
             },
             {
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
               "channelNumber": 3,
-              "publicId": "fbe18bbc-b977-4065-bdac-a7188a17309b"
+              "publicId": "cb090624-bf1e-4926-aea7-ed1495709178"
             },
             {
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
               "channelNumber": 4,
-              "publicId": "99b40216-9342-47c7-95a3-332184ca4679"
+              "publicId": "37048a80-8213-463a-bf07-247b3c4dd421"
             },
             {
               "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
               "channelNumber": 5,
-              "publicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b"
+              "publicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19"
             },
             {
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
               "channelNumber": 6,
-              "publicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614"
+              "publicId": "9ac7458d-724d-490b-a1fe-257254993013"
             },
             {
               "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
               "channelNumber": 7,
-              "publicId": "b362658f-2f20-40b8-9658-23e687638ab8"
+              "publicId": "ff2ed06b-a709-40cd-bcde-48827dce1966"
             },
             {
               "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
               "channelNumber": 8,
-              "publicId": "c02e2980-eae1-46b7-95d5-00493c256d09"
+              "publicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7"
             },
             {
               "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
               "channelNumber": 9,
-              "publicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf"
+              "publicId": "40a4887a-46ac-4607-b730-e1882b778b7a"
             }
           ],
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -280,47 +292,47 @@
             {
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
               "channelNumber": 1,
-              "publicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb"
+              "publicId": "65f01374-2e20-435b-95a3-94a56ec4f026"
             },
             {
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
               "channelNumber": 2,
-              "publicId": "340dd00c-3230-4831-a348-4c6716f0e3bd"
+              "publicId": "621d421f-eda1-4ad7-a484-6778c642d0b2"
             },
             {
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
               "channelNumber": 3,
-              "publicId": "fbe18bbc-b977-4065-bdac-a7188a17309b"
+              "publicId": "cb090624-bf1e-4926-aea7-ed1495709178"
             },
             {
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
               "channelNumber": 4,
-              "publicId": "99b40216-9342-47c7-95a3-332184ca4679"
+              "publicId": "37048a80-8213-463a-bf07-247b3c4dd421"
             },
             {
               "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
               "channelNumber": 5,
-              "publicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b"
+              "publicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19"
             },
             {
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
               "channelNumber": 6,
-              "publicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614"
+              "publicId": "9ac7458d-724d-490b-a1fe-257254993013"
             },
             {
               "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
               "channelNumber": 7,
-              "publicId": "b362658f-2f20-40b8-9658-23e687638ab8"
+              "publicId": "ff2ed06b-a709-40cd-bcde-48827dce1966"
             },
             {
               "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
               "channelNumber": 8,
-              "publicId": "c02e2980-eae1-46b7-95d5-00493c256d09"
+              "publicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7"
             },
             {
               "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
               "channelNumber": 9,
-              "publicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf"
+              "publicId": "40a4887a-46ac-4607-b730-e1882b778b7a"
             }
           ],
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -353,47 +365,47 @@
             {
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
               "channelNumber": 1,
-              "publicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb"
+              "publicId": "65f01374-2e20-435b-95a3-94a56ec4f026"
             },
             {
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
               "channelNumber": 2,
-              "publicId": "340dd00c-3230-4831-a348-4c6716f0e3bd"
+              "publicId": "621d421f-eda1-4ad7-a484-6778c642d0b2"
             },
             {
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
               "channelNumber": 3,
-              "publicId": "fbe18bbc-b977-4065-bdac-a7188a17309b"
+              "publicId": "cb090624-bf1e-4926-aea7-ed1495709178"
             },
             {
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
               "channelNumber": 4,
-              "publicId": "99b40216-9342-47c7-95a3-332184ca4679"
+              "publicId": "37048a80-8213-463a-bf07-247b3c4dd421"
             },
             {
               "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
               "channelNumber": 5,
-              "publicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b"
+              "publicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19"
             },
             {
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
               "channelNumber": 6,
-              "publicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614"
+              "publicId": "9ac7458d-724d-490b-a1fe-257254993013"
             },
             {
               "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
               "channelNumber": 7,
-              "publicId": "b362658f-2f20-40b8-9658-23e687638ab8"
+              "publicId": "ff2ed06b-a709-40cd-bcde-48827dce1966"
             },
             {
               "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
               "channelNumber": 8,
-              "publicId": "c02e2980-eae1-46b7-95d5-00493c256d09"
+              "publicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7"
             },
             {
               "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
               "channelNumber": 9,
-              "publicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf"
+              "publicId": "40a4887a-46ac-4607-b730-e1882b778b7a"
             }
           ],
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -426,47 +438,47 @@
             {
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
               "channelNumber": 1,
-              "publicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb"
+              "publicId": "65f01374-2e20-435b-95a3-94a56ec4f026"
             },
             {
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
               "channelNumber": 2,
-              "publicId": "340dd00c-3230-4831-a348-4c6716f0e3bd"
+              "publicId": "621d421f-eda1-4ad7-a484-6778c642d0b2"
             },
             {
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
               "channelNumber": 3,
-              "publicId": "fbe18bbc-b977-4065-bdac-a7188a17309b"
+              "publicId": "cb090624-bf1e-4926-aea7-ed1495709178"
             },
             {
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
               "channelNumber": 4,
-              "publicId": "99b40216-9342-47c7-95a3-332184ca4679"
+              "publicId": "37048a80-8213-463a-bf07-247b3c4dd421"
             },
             {
               "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
               "channelNumber": 5,
-              "publicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b"
+              "publicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19"
             },
             {
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
               "channelNumber": 6,
-              "publicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614"
+              "publicId": "9ac7458d-724d-490b-a1fe-257254993013"
             },
             {
               "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
               "channelNumber": 7,
-              "publicId": "b362658f-2f20-40b8-9658-23e687638ab8"
+              "publicId": "ff2ed06b-a709-40cd-bcde-48827dce1966"
             },
             {
               "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
               "channelNumber": 8,
-              "publicId": "c02e2980-eae1-46b7-95d5-00493c256d09"
+              "publicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7"
             },
             {
               "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
               "channelNumber": 9,
-              "publicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf"
+              "publicId": "40a4887a-46ac-4607-b730-e1882b778b7a"
             }
           ],
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -499,47 +511,47 @@
             {
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
               "channelNumber": 1,
-              "publicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb"
+              "publicId": "65f01374-2e20-435b-95a3-94a56ec4f026"
             },
             {
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
               "channelNumber": 2,
-              "publicId": "340dd00c-3230-4831-a348-4c6716f0e3bd"
+              "publicId": "621d421f-eda1-4ad7-a484-6778c642d0b2"
             },
             {
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
               "channelNumber": 3,
-              "publicId": "fbe18bbc-b977-4065-bdac-a7188a17309b"
+              "publicId": "cb090624-bf1e-4926-aea7-ed1495709178"
             },
             {
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
               "channelNumber": 4,
-              "publicId": "99b40216-9342-47c7-95a3-332184ca4679"
+              "publicId": "37048a80-8213-463a-bf07-247b3c4dd421"
             },
             {
               "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
               "channelNumber": 5,
-              "publicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b"
+              "publicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19"
             },
             {
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
               "channelNumber": 6,
-              "publicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614"
+              "publicId": "9ac7458d-724d-490b-a1fe-257254993013"
             },
             {
               "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
               "channelNumber": 7,
-              "publicId": "b362658f-2f20-40b8-9658-23e687638ab8"
+              "publicId": "ff2ed06b-a709-40cd-bcde-48827dce1966"
             },
             {
               "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
               "channelNumber": 8,
-              "publicId": "c02e2980-eae1-46b7-95d5-00493c256d09"
+              "publicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7"
             },
             {
               "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
               "channelNumber": 9,
-              "publicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf"
+              "publicId": "40a4887a-46ac-4607-b730-e1882b778b7a"
             }
           ],
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -572,47 +584,47 @@
             {
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
               "channelNumber": 1,
-              "publicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb"
+              "publicId": "65f01374-2e20-435b-95a3-94a56ec4f026"
             },
             {
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
               "channelNumber": 2,
-              "publicId": "340dd00c-3230-4831-a348-4c6716f0e3bd"
+              "publicId": "621d421f-eda1-4ad7-a484-6778c642d0b2"
             },
             {
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
               "channelNumber": 3,
-              "publicId": "fbe18bbc-b977-4065-bdac-a7188a17309b"
+              "publicId": "cb090624-bf1e-4926-aea7-ed1495709178"
             },
             {
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
               "channelNumber": 4,
-              "publicId": "99b40216-9342-47c7-95a3-332184ca4679"
+              "publicId": "37048a80-8213-463a-bf07-247b3c4dd421"
             },
             {
               "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
               "channelNumber": 5,
-              "publicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b"
+              "publicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19"
             },
             {
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
               "channelNumber": 6,
-              "publicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614"
+              "publicId": "9ac7458d-724d-490b-a1fe-257254993013"
             },
             {
               "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
               "channelNumber": 7,
-              "publicId": "b362658f-2f20-40b8-9658-23e687638ab8"
+              "publicId": "ff2ed06b-a709-40cd-bcde-48827dce1966"
             },
             {
               "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
               "channelNumber": 8,
-              "publicId": "c02e2980-eae1-46b7-95d5-00493c256d09"
+              "publicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7"
             },
             {
               "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
               "channelNumber": 9,
-              "publicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf"
+              "publicId": "40a4887a-46ac-4607-b730-e1882b778b7a"
             }
           ],
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -645,47 +657,47 @@
             {
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
               "channelNumber": 1,
-              "publicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb"
+              "publicId": "65f01374-2e20-435b-95a3-94a56ec4f026"
             },
             {
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
               "channelNumber": 2,
-              "publicId": "340dd00c-3230-4831-a348-4c6716f0e3bd"
+              "publicId": "621d421f-eda1-4ad7-a484-6778c642d0b2"
             },
             {
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
               "channelNumber": 3,
-              "publicId": "fbe18bbc-b977-4065-bdac-a7188a17309b"
+              "publicId": "cb090624-bf1e-4926-aea7-ed1495709178"
             },
             {
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
               "channelNumber": 4,
-              "publicId": "99b40216-9342-47c7-95a3-332184ca4679"
+              "publicId": "37048a80-8213-463a-bf07-247b3c4dd421"
             },
             {
               "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
               "channelNumber": 5,
-              "publicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b"
+              "publicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19"
             },
             {
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
               "channelNumber": 6,
-              "publicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614"
+              "publicId": "9ac7458d-724d-490b-a1fe-257254993013"
             },
             {
               "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
               "channelNumber": 7,
-              "publicId": "b362658f-2f20-40b8-9658-23e687638ab8"
+              "publicId": "ff2ed06b-a709-40cd-bcde-48827dce1966"
             },
             {
               "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
               "channelNumber": 8,
-              "publicId": "c02e2980-eae1-46b7-95d5-00493c256d09"
+              "publicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7"
             },
             {
               "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
               "channelNumber": 9,
-              "publicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf"
+              "publicId": "40a4887a-46ac-4607-b730-e1882b778b7a"
             }
           ],
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -718,47 +730,47 @@
             {
               "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
               "channelNumber": 1,
-              "publicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb"
+              "publicId": "65f01374-2e20-435b-95a3-94a56ec4f026"
             },
             {
               "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
               "channelNumber": 2,
-              "publicId": "340dd00c-3230-4831-a348-4c6716f0e3bd"
+              "publicId": "621d421f-eda1-4ad7-a484-6778c642d0b2"
             },
             {
               "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
               "channelNumber": 3,
-              "publicId": "fbe18bbc-b977-4065-bdac-a7188a17309b"
+              "publicId": "cb090624-bf1e-4926-aea7-ed1495709178"
             },
             {
               "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
               "channelNumber": 4,
-              "publicId": "99b40216-9342-47c7-95a3-332184ca4679"
+              "publicId": "37048a80-8213-463a-bf07-247b3c4dd421"
             },
             {
               "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
               "channelNumber": 5,
-              "publicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b"
+              "publicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19"
             },
             {
               "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
               "channelNumber": 6,
-              "publicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614"
+              "publicId": "9ac7458d-724d-490b-a1fe-257254993013"
             },
             {
               "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
               "channelNumber": 7,
-              "publicId": "b362658f-2f20-40b8-9658-23e687638ab8"
+              "publicId": "ff2ed06b-a709-40cd-bcde-48827dce1966"
             },
             {
               "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
               "channelNumber": 8,
-              "publicId": "c02e2980-eae1-46b7-95d5-00493c256d09"
+              "publicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7"
             },
             {
               "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
               "channelNumber": 9,
-              "publicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf"
+              "publicId": "40a4887a-46ac-4607-b730-e1882b778b7a"
             }
           ],
           "channelModePublicId": "b92d01df-85bc-46e2-8b44-c238a8b4f767",
@@ -791,47 +803,47 @@
             {
               "channelDefinitionPublicId": "57a70470-3bc8-4d96-9c08-1e0d6db3ee1f",
               "channelNumber": 1,
-              "publicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee"
+              "publicId": "cd3b8233-237e-4784-ba2d-336f24ee2152"
             },
             {
               "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
               "channelNumber": 2,
-              "publicId": "921112f5-d19e-449b-9337-54d56fb0d620"
+              "publicId": "98a2921c-8d71-47de-99d9-539557a9a68e"
             },
             {
               "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
               "channelNumber": 3,
-              "publicId": "98712b8c-c91a-447f-8557-41ddface884c"
+              "publicId": "5554a90f-da95-459e-bd99-38374ccbd1e0"
             },
             {
               "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
               "channelNumber": 4,
-              "publicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5"
+              "publicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25"
             },
             {
               "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
               "channelNumber": 5,
-              "publicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9"
+              "publicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579"
             },
             {
               "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
               "channelNumber": 6,
-              "publicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5"
+              "publicId": "33df6d29-bda7-409d-a8a2-03a3c6356797"
             },
             {
               "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
               "channelNumber": 7,
-              "publicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d"
+              "publicId": "b3120700-8649-4391-a88e-7eed11416920"
             },
             {
               "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
               "channelNumber": 8,
-              "publicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b"
+              "publicId": "00668def-682e-4824-8bff-2b8f8f2a5de2"
             },
             {
               "channelDefinitionPublicId": "2b43d2bf-c59a-4467-933a-40cad34c5d0e",
               "channelNumber": 9,
-              "publicId": "5555ed87-e77c-4946-99f2-1e9c8146d4ed"
+              "publicId": "e7748d9b-e4f8-4814-b8c2-37979d05ce7b"
             }
           ],
           "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
@@ -864,47 +876,47 @@
             {
               "channelDefinitionPublicId": "57a70470-3bc8-4d96-9c08-1e0d6db3ee1f",
               "channelNumber": 1,
-              "publicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee"
+              "publicId": "cd3b8233-237e-4784-ba2d-336f24ee2152"
             },
             {
               "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
               "channelNumber": 2,
-              "publicId": "921112f5-d19e-449b-9337-54d56fb0d620"
+              "publicId": "98a2921c-8d71-47de-99d9-539557a9a68e"
             },
             {
               "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
               "channelNumber": 3,
-              "publicId": "98712b8c-c91a-447f-8557-41ddface884c"
+              "publicId": "5554a90f-da95-459e-bd99-38374ccbd1e0"
             },
             {
               "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
               "channelNumber": 4,
-              "publicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5"
+              "publicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25"
             },
             {
               "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
               "channelNumber": 5,
-              "publicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9"
+              "publicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579"
             },
             {
               "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
               "channelNumber": 6,
-              "publicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5"
+              "publicId": "33df6d29-bda7-409d-a8a2-03a3c6356797"
             },
             {
               "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
               "channelNumber": 7,
-              "publicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d"
+              "publicId": "b3120700-8649-4391-a88e-7eed11416920"
             },
             {
               "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
               "channelNumber": 8,
-              "publicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b"
+              "publicId": "00668def-682e-4824-8bff-2b8f8f2a5de2"
             },
             {
               "channelDefinitionPublicId": "2b43d2bf-c59a-4467-933a-40cad34c5d0e",
               "channelNumber": 9,
-              "publicId": "5555ed87-e77c-4946-99f2-1e9c8146d4ed"
+              "publicId": "e7748d9b-e4f8-4814-b8c2-37979d05ce7b"
             }
           ],
           "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
@@ -937,52 +949,52 @@
             {
               "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
               "channelNumber": 1,
-              "publicId": "62b16d87-b5b2-4c2d-a2b2-9e8f9565abd9"
+              "publicId": "7b359222-5712-445e-b97c-c6e2603905d5"
             },
             {
               "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
               "channelNumber": 2,
-              "publicId": "76492f26-02c0-44fd-9629-ef247c0c5ffa"
+              "publicId": "77786a1e-2832-4e75-829f-860f52dc5cb1"
             },
             {
               "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
               "channelNumber": 3,
-              "publicId": "b728cdcb-b876-4f38-97c0-e1775b432e8c"
+              "publicId": "64d8107b-0f7a-4d4a-8fae-6f8089b096d1"
             },
             {
               "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
               "channelNumber": 4,
-              "publicId": "5d0d51b5-572a-4d03-b5c1-1770dcfa8c2f"
+              "publicId": "cf59ec54-272b-4b8f-9777-91850a0436d2"
             },
             {
               "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
               "channelNumber": 5,
-              "publicId": "0d3a79ba-ac0e-4c3d-b220-196828cfb8be"
+              "publicId": "5c4dd5fd-a40a-423d-a8d7-f56252adf09a"
             },
             {
               "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
               "channelNumber": 6,
-              "publicId": "20fb5bb7-0ab6-4361-a9fa-4be5de1a38f0"
+              "publicId": "d0d21a9c-dd7f-419e-8910-3a3921dcef19"
             },
             {
               "channelDefinitionPublicId": "3172aaed-f0a8-47ed-a19d-922539fb06ce",
               "channelNumber": 7,
-              "publicId": "f97a5f59-50f8-4452-b32a-d21344965384"
+              "publicId": "5ad62e87-601b-4ee6-b4cb-d2fa2fcd2b62"
             },
             {
               "channelDefinitionPublicId": "874b038f-5dbd-4879-8de0-b8b9c02b28cf",
               "channelNumber": 8,
-              "publicId": "897b4a30-0517-4629-9dd2-da7a12cb08e2"
+              "publicId": "c579fa4a-f0c5-408f-8d1b-d30b8c6d7da8"
             },
             {
               "channelDefinitionPublicId": "fe018a8e-ee6f-4df6-a7b0-ded9b260165b",
               "channelNumber": 9,
-              "publicId": "ea8326eb-0131-47a8-baa1-fdd6937b41a1"
+              "publicId": "b16b9dc0-e5c4-4837-b067-926da34041b4"
             },
             {
               "channelDefinitionPublicId": "a41915dd-9e61-4b7e-8467-86d11c07c953",
               "channelNumber": 10,
-              "publicId": "ffa07fb0-d48e-41ea-859b-1fde9aec3548"
+              "publicId": "bc02cb19-acf1-4386-bf97-04ce83c01e38"
             }
           ],
           "channelModePublicId": "742dc3d6-2a99-4a43-9d73-a309b633aa2f",
@@ -1015,42 +1027,42 @@
             {
               "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
               "channelNumber": 1,
-              "publicId": "d67210f3-960c-4496-a8a3-55557d5d7e15"
+              "publicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4"
             },
             {
               "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
               "channelNumber": 2,
-              "publicId": "eb840ae3-8393-449c-ae49-85594192a8c6"
+              "publicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5"
             },
             {
               "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
               "channelNumber": 3,
-              "publicId": "ecd71226-0a54-433a-a1eb-a961980c2efd"
+              "publicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053"
             },
             {
               "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
               "channelNumber": 4,
-              "publicId": "93cc2ec0-11bf-4532-81a8-04a82183b430"
+              "publicId": "2abd329d-ed43-4399-8955-830dc531f824"
             },
             {
               "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
               "channelNumber": 5,
-              "publicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd"
+              "publicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6"
             },
             {
               "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
               "channelNumber": 6,
-              "publicId": "997e8eec-e02c-4e19-9517-9632fdc419f8"
+              "publicId": "b31fa286-f6de-45af-b77f-b51acf14d43d"
             },
             {
               "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
               "channelNumber": 7,
-              "publicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30"
+              "publicId": "bed769a7-3802-4b0e-b5e7-db0933792a84"
             },
             {
               "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
               "channelNumber": 8,
-              "publicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0"
+              "publicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9"
             }
           ],
           "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
@@ -1083,42 +1095,42 @@
             {
               "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
               "channelNumber": 1,
-              "publicId": "d67210f3-960c-4496-a8a3-55557d5d7e15"
+              "publicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4"
             },
             {
               "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
               "channelNumber": 2,
-              "publicId": "eb840ae3-8393-449c-ae49-85594192a8c6"
+              "publicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5"
             },
             {
               "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
               "channelNumber": 3,
-              "publicId": "ecd71226-0a54-433a-a1eb-a961980c2efd"
+              "publicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053"
             },
             {
               "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
               "channelNumber": 4,
-              "publicId": "93cc2ec0-11bf-4532-81a8-04a82183b430"
+              "publicId": "2abd329d-ed43-4399-8955-830dc531f824"
             },
             {
               "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
               "channelNumber": 5,
-              "publicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd"
+              "publicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6"
             },
             {
               "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
               "channelNumber": 6,
-              "publicId": "997e8eec-e02c-4e19-9517-9632fdc419f8"
+              "publicId": "b31fa286-f6de-45af-b77f-b51acf14d43d"
             },
             {
               "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
               "channelNumber": 7,
-              "publicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30"
+              "publicId": "bed769a7-3802-4b0e-b5e7-db0933792a84"
             },
             {
               "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
               "channelNumber": 8,
-              "publicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0"
+              "publicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9"
             }
           ],
           "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
@@ -1151,32 +1163,32 @@
             {
               "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
               "channelNumber": 1,
-              "publicId": "52232b26-8314-4dc2-a67c-52541d2a8541"
+              "publicId": "f60c8229-e41f-4c99-8837-a55c0710577c"
             },
             {
               "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
               "channelNumber": 2,
-              "publicId": "aee12557-745f-4163-898f-d9699716f41b"
+              "publicId": "cf3d43f7-12b8-4838-bbd9-50dc174b3f0b"
             },
             {
               "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
               "channelNumber": 3,
-              "publicId": "e35dbcae-a494-4267-a479-2eb701056630"
+              "publicId": "2e8ada5b-ab0e-46af-9219-c35b9aaf1151"
             },
             {
               "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
               "channelNumber": 4,
-              "publicId": "fc2d2a81-e7d1-43d1-b949-ba4547bda485"
+              "publicId": "fdd507f9-e5c2-4c05-9be5-cc20bb4e2df6"
             },
             {
               "channelDefinitionPublicId": "c874a0ac-df1e-4e49-8131-2386646dcd71",
               "channelNumber": 5,
-              "publicId": "b1755580-6d3a-40f2-ae8a-7a6cbe8fe8fd"
+              "publicId": "e539fabe-662a-46b5-a0e8-6cf2071f332c"
             },
             {
               "channelDefinitionPublicId": "93282597-1324-48a9-ac74-e5d9d6553657",
               "channelNumber": 6,
-              "publicId": "8c676eab-f1ae-491a-b9c4-35f3235c9d35"
+              "publicId": "fc983c43-c460-4101-9044-c99af47d1617"
             }
           ],
           "channelModePublicId": "827f5348-56af-4505-bfdb-573f5f47aaf1",
@@ -1209,32 +1221,32 @@
             {
               "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
               "channelNumber": 1,
-              "publicId": "52232b26-8314-4dc2-a67c-52541d2a8541"
+              "publicId": "f60c8229-e41f-4c99-8837-a55c0710577c"
             },
             {
               "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
               "channelNumber": 2,
-              "publicId": "aee12557-745f-4163-898f-d9699716f41b"
+              "publicId": "cf3d43f7-12b8-4838-bbd9-50dc174b3f0b"
             },
             {
               "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
               "channelNumber": 3,
-              "publicId": "e35dbcae-a494-4267-a479-2eb701056630"
+              "publicId": "2e8ada5b-ab0e-46af-9219-c35b9aaf1151"
             },
             {
               "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
               "channelNumber": 4,
-              "publicId": "fc2d2a81-e7d1-43d1-b949-ba4547bda485"
+              "publicId": "fdd507f9-e5c2-4c05-9be5-cc20bb4e2df6"
             },
             {
               "channelDefinitionPublicId": "c874a0ac-df1e-4e49-8131-2386646dcd71",
               "channelNumber": 5,
-              "publicId": "b1755580-6d3a-40f2-ae8a-7a6cbe8fe8fd"
+              "publicId": "e539fabe-662a-46b5-a0e8-6cf2071f332c"
             },
             {
               "channelDefinitionPublicId": "93282597-1324-48a9-ac74-e5d9d6553657",
               "channelNumber": 6,
-              "publicId": "8c676eab-f1ae-491a-b9c4-35f3235c9d35"
+              "publicId": "fc983c43-c460-4101-9044-c99af47d1617"
             }
           ],
           "channelModePublicId": "827f5348-56af-4505-bfdb-573f5f47aaf1",
@@ -1267,42 +1279,42 @@
             {
               "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
               "channelNumber": 1,
-              "publicId": "d67210f3-960c-4496-a8a3-55557d5d7e15"
+              "publicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4"
             },
             {
               "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
               "channelNumber": 2,
-              "publicId": "eb840ae3-8393-449c-ae49-85594192a8c6"
+              "publicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5"
             },
             {
               "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
               "channelNumber": 3,
-              "publicId": "ecd71226-0a54-433a-a1eb-a961980c2efd"
+              "publicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053"
             },
             {
               "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
               "channelNumber": 4,
-              "publicId": "93cc2ec0-11bf-4532-81a8-04a82183b430"
+              "publicId": "2abd329d-ed43-4399-8955-830dc531f824"
             },
             {
               "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
               "channelNumber": 5,
-              "publicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd"
+              "publicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6"
             },
             {
               "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
               "channelNumber": 6,
-              "publicId": "997e8eec-e02c-4e19-9517-9632fdc419f8"
+              "publicId": "b31fa286-f6de-45af-b77f-b51acf14d43d"
             },
             {
               "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
               "channelNumber": 7,
-              "publicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30"
+              "publicId": "bed769a7-3802-4b0e-b5e7-db0933792a84"
             },
             {
               "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
               "channelNumber": 8,
-              "publicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0"
+              "publicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9"
             }
           ],
           "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
@@ -1335,42 +1347,42 @@
             {
               "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
               "channelNumber": 1,
-              "publicId": "d67210f3-960c-4496-a8a3-55557d5d7e15"
+              "publicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4"
             },
             {
               "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
               "channelNumber": 2,
-              "publicId": "eb840ae3-8393-449c-ae49-85594192a8c6"
+              "publicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5"
             },
             {
               "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
               "channelNumber": 3,
-              "publicId": "ecd71226-0a54-433a-a1eb-a961980c2efd"
+              "publicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053"
             },
             {
               "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
               "channelNumber": 4,
-              "publicId": "93cc2ec0-11bf-4532-81a8-04a82183b430"
+              "publicId": "2abd329d-ed43-4399-8955-830dc531f824"
             },
             {
               "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
               "channelNumber": 5,
-              "publicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd"
+              "publicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6"
             },
             {
               "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
               "channelNumber": 6,
-              "publicId": "997e8eec-e02c-4e19-9517-9632fdc419f8"
+              "publicId": "b31fa286-f6de-45af-b77f-b51acf14d43d"
             },
             {
               "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
               "channelNumber": 7,
-              "publicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30"
+              "publicId": "bed769a7-3802-4b0e-b5e7-db0933792a84"
             },
             {
               "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
               "channelNumber": 8,
-              "publicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0"
+              "publicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9"
             }
           ],
           "channelModePublicId": "6d713664-b6c8-4823-8034-dd76ac76b7bc",
@@ -1403,52 +1415,52 @@
             {
               "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
               "channelNumber": 1,
-              "publicId": "62b16d87-b5b2-4c2d-a2b2-9e8f9565abd9"
+              "publicId": "7b359222-5712-445e-b97c-c6e2603905d5"
             },
             {
               "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
               "channelNumber": 2,
-              "publicId": "76492f26-02c0-44fd-9629-ef247c0c5ffa"
+              "publicId": "77786a1e-2832-4e75-829f-860f52dc5cb1"
             },
             {
               "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
               "channelNumber": 3,
-              "publicId": "b728cdcb-b876-4f38-97c0-e1775b432e8c"
+              "publicId": "64d8107b-0f7a-4d4a-8fae-6f8089b096d1"
             },
             {
               "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
               "channelNumber": 4,
-              "publicId": "5d0d51b5-572a-4d03-b5c1-1770dcfa8c2f"
+              "publicId": "cf59ec54-272b-4b8f-9777-91850a0436d2"
             },
             {
               "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
               "channelNumber": 5,
-              "publicId": "0d3a79ba-ac0e-4c3d-b220-196828cfb8be"
+              "publicId": "5c4dd5fd-a40a-423d-a8d7-f56252adf09a"
             },
             {
               "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
               "channelNumber": 6,
-              "publicId": "20fb5bb7-0ab6-4361-a9fa-4be5de1a38f0"
+              "publicId": "d0d21a9c-dd7f-419e-8910-3a3921dcef19"
             },
             {
               "channelDefinitionPublicId": "3172aaed-f0a8-47ed-a19d-922539fb06ce",
               "channelNumber": 7,
-              "publicId": "f97a5f59-50f8-4452-b32a-d21344965384"
+              "publicId": "5ad62e87-601b-4ee6-b4cb-d2fa2fcd2b62"
             },
             {
               "channelDefinitionPublicId": "874b038f-5dbd-4879-8de0-b8b9c02b28cf",
               "channelNumber": 8,
-              "publicId": "897b4a30-0517-4629-9dd2-da7a12cb08e2"
+              "publicId": "c579fa4a-f0c5-408f-8d1b-d30b8c6d7da8"
             },
             {
               "channelDefinitionPublicId": "fe018a8e-ee6f-4df6-a7b0-ded9b260165b",
               "channelNumber": 9,
-              "publicId": "ea8326eb-0131-47a8-baa1-fdd6937b41a1"
+              "publicId": "b16b9dc0-e5c4-4837-b067-926da34041b4"
             },
             {
               "channelDefinitionPublicId": "a41915dd-9e61-4b7e-8467-86d11c07c953",
               "channelNumber": 10,
-              "publicId": "ffa07fb0-d48e-41ea-859b-1fde9aec3548"
+              "publicId": "bc02cb19-acf1-4386-bf97-04ce83c01e38"
             }
           ],
           "channelModePublicId": "742dc3d6-2a99-4a43-9d73-a309b633aa2f",
@@ -1481,47 +1493,47 @@
             {
               "channelDefinitionPublicId": "57a70470-3bc8-4d96-9c08-1e0d6db3ee1f",
               "channelNumber": 1,
-              "publicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee"
+              "publicId": "cd3b8233-237e-4784-ba2d-336f24ee2152"
             },
             {
               "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
               "channelNumber": 2,
-              "publicId": "921112f5-d19e-449b-9337-54d56fb0d620"
+              "publicId": "98a2921c-8d71-47de-99d9-539557a9a68e"
             },
             {
               "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
               "channelNumber": 3,
-              "publicId": "98712b8c-c91a-447f-8557-41ddface884c"
+              "publicId": "5554a90f-da95-459e-bd99-38374ccbd1e0"
             },
             {
               "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
               "channelNumber": 4,
-              "publicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5"
+              "publicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25"
             },
             {
               "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
               "channelNumber": 5,
-              "publicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9"
+              "publicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579"
             },
             {
               "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
               "channelNumber": 6,
-              "publicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5"
+              "publicId": "33df6d29-bda7-409d-a8a2-03a3c6356797"
             },
             {
               "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
               "channelNumber": 7,
-              "publicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d"
+              "publicId": "b3120700-8649-4391-a88e-7eed11416920"
             },
             {
               "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
               "channelNumber": 8,
-              "publicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b"
+              "publicId": "00668def-682e-4824-8bff-2b8f8f2a5de2"
             },
             {
               "channelDefinitionPublicId": "2b43d2bf-c59a-4467-933a-40cad34c5d0e",
               "channelNumber": 9,
-              "publicId": "5555ed87-e77c-4946-99f2-1e9c8146d4ed"
+              "publicId": "e7748d9b-e4f8-4814-b8c2-37979d05ce7b"
             }
           ],
           "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
@@ -1554,47 +1566,47 @@
             {
               "channelDefinitionPublicId": "57a70470-3bc8-4d96-9c08-1e0d6db3ee1f",
               "channelNumber": 1,
-              "publicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee"
+              "publicId": "cd3b8233-237e-4784-ba2d-336f24ee2152"
             },
             {
               "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
               "channelNumber": 2,
-              "publicId": "921112f5-d19e-449b-9337-54d56fb0d620"
+              "publicId": "98a2921c-8d71-47de-99d9-539557a9a68e"
             },
             {
               "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
               "channelNumber": 3,
-              "publicId": "98712b8c-c91a-447f-8557-41ddface884c"
+              "publicId": "5554a90f-da95-459e-bd99-38374ccbd1e0"
             },
             {
               "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
               "channelNumber": 4,
-              "publicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5"
+              "publicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25"
             },
             {
               "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
               "channelNumber": 5,
-              "publicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9"
+              "publicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579"
             },
             {
               "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
               "channelNumber": 6,
-              "publicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5"
+              "publicId": "33df6d29-bda7-409d-a8a2-03a3c6356797"
             },
             {
               "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
               "channelNumber": 7,
-              "publicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d"
+              "publicId": "b3120700-8649-4391-a88e-7eed11416920"
             },
             {
               "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
               "channelNumber": 8,
-              "publicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b"
+              "publicId": "00668def-682e-4824-8bff-2b8f8f2a5de2"
             },
             {
               "channelDefinitionPublicId": "2b43d2bf-c59a-4467-933a-40cad34c5d0e",
               "channelNumber": 9,
-              "publicId": "5555ed87-e77c-4946-99f2-1e9c8146d4ed"
+              "publicId": "e7748d9b-e4f8-4814-b8c2-37979d05ce7b"
             }
           ],
           "channelModePublicId": "d2573ec4-edca-41cb-a76f-2413a473572c",
@@ -55398,7 +55410,7 @@
       "roomHeight": 6.58,
       "roomLength": 14.6,
       "roomWidth": 12.2,
-      "updatedAt": "2026-11-13T18:46:08.882Z",
+      "updatedAt": "2026-11-14T19:33:02.094Z",
       "virtualConsole": {
         "height": 1080,
         "pages": [
@@ -55580,49 +55592,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
@@ -55635,7 +55647,7 @@
                             "color": 5
                           },
                           "off": {
-                            "behavior": 0,
+                            "behavior": 2,
                             "color": 5
                           },
                           "on": {
@@ -55676,49 +55688,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "eafc3847-738f-4fbf-bd69-62f7a331f1cb",
+                            "channelAssignmentPublicId": "65f01374-2e20-435b-95a3-94a56ec4f026",
                             "channelDefinitionPublicId": "aa597568-bbec-48c1-958b-6e383be5dc2d",
                             "channelNumber": 1,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
@@ -55759,49 +55771,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
@@ -55842,49 +55854,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
@@ -55925,49 +55937,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
@@ -56008,49 +56020,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
@@ -56091,49 +56103,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "340dd00c-3230-4831-a348-4c6716f0e3bd",
+                            "channelAssignmentPublicId": "621d421f-eda1-4ad7-a484-6778c642d0b2",
                             "channelDefinitionPublicId": "fc331fb3-5021-4ef6-90d4-dc3ce21d335c",
                             "channelNumber": 2,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
@@ -56187,49 +56199,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "fbe18bbc-b977-4065-bdac-a7188a17309b",
+                            "channelAssignmentPublicId": "cb090624-bf1e-4926-aea7-ed1495709178",
                             "channelDefinitionPublicId": "230a37d9-e195-4432-8ff9-6663f1eb45a7",
                             "channelNumber": 3,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
@@ -56283,49 +56295,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "99b40216-9342-47c7-95a3-332184ca4679",
+                            "channelAssignmentPublicId": "37048a80-8213-463a-bf07-247b3c4dd421",
                             "channelDefinitionPublicId": "ece1055d-8cdc-468b-9040-60e252e344de",
                             "channelNumber": 4,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
@@ -56379,49 +56391,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "96f6026e-97c6-4e15-9f81-20f0b51b522b",
+                            "channelAssignmentPublicId": "5f25341b-22b8-478e-8bf4-1050c6f16c19",
                             "channelDefinitionPublicId": "f2cbacc6-2244-4b52-83cc-5a517a513e95",
                             "channelNumber": 5,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
@@ -56475,49 +56487,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "b362658f-2f20-40b8-9658-23e687638ab8",
+                            "channelAssignmentPublicId": "ff2ed06b-a709-40cd-bcde-48827dce1966",
                             "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
                             "channelNumber": 7,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
                           },
                           {
-                            "channelAssignmentPublicId": "b362658f-2f20-40b8-9658-23e687638ab8",
+                            "channelAssignmentPublicId": "ff2ed06b-a709-40cd-bcde-48827dce1966",
                             "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
                             "channelNumber": 7,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "b362658f-2f20-40b8-9658-23e687638ab8",
+                            "channelAssignmentPublicId": "ff2ed06b-a709-40cd-bcde-48827dce1966",
                             "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
                             "channelNumber": 7,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "b362658f-2f20-40b8-9658-23e687638ab8",
+                            "channelAssignmentPublicId": "ff2ed06b-a709-40cd-bcde-48827dce1966",
                             "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
                             "channelNumber": 7,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "b362658f-2f20-40b8-9658-23e687638ab8",
+                            "channelAssignmentPublicId": "ff2ed06b-a709-40cd-bcde-48827dce1966",
                             "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
                             "channelNumber": 7,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "b362658f-2f20-40b8-9658-23e687638ab8",
+                            "channelAssignmentPublicId": "ff2ed06b-a709-40cd-bcde-48827dce1966",
                             "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
                             "channelNumber": 7,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "b362658f-2f20-40b8-9658-23e687638ab8",
+                            "channelAssignmentPublicId": "ff2ed06b-a709-40cd-bcde-48827dce1966",
                             "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
                             "channelNumber": 7,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "b362658f-2f20-40b8-9658-23e687638ab8",
+                            "channelAssignmentPublicId": "ff2ed06b-a709-40cd-bcde-48827dce1966",
                             "channelDefinitionPublicId": "2f598d6b-1b0e-462c-9c8f-9b368c4e689f",
                             "channelNumber": 7,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
@@ -56558,49 +56570,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "c02e2980-eae1-46b7-95d5-00493c256d09",
+                            "channelAssignmentPublicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7",
                             "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
                             "channelNumber": 8,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
                           },
                           {
-                            "channelAssignmentPublicId": "c02e2980-eae1-46b7-95d5-00493c256d09",
+                            "channelAssignmentPublicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7",
                             "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
                             "channelNumber": 8,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "c02e2980-eae1-46b7-95d5-00493c256d09",
+                            "channelAssignmentPublicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7",
                             "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
                             "channelNumber": 8,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "c02e2980-eae1-46b7-95d5-00493c256d09",
+                            "channelAssignmentPublicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7",
                             "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
                             "channelNumber": 8,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "c02e2980-eae1-46b7-95d5-00493c256d09",
+                            "channelAssignmentPublicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7",
                             "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
                             "channelNumber": 8,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "c02e2980-eae1-46b7-95d5-00493c256d09",
+                            "channelAssignmentPublicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7",
                             "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
                             "channelNumber": 8,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "c02e2980-eae1-46b7-95d5-00493c256d09",
+                            "channelAssignmentPublicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7",
                             "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
                             "channelNumber": 8,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "c02e2980-eae1-46b7-95d5-00493c256d09",
+                            "channelAssignmentPublicId": "41b45dd0-fba0-462d-9b9d-0dc97b5372d7",
                             "channelDefinitionPublicId": "a340e94c-de49-4a08-97ce-c3a4225a63a4",
                             "channelNumber": 8,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
@@ -56641,49 +56653,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf",
+                            "channelAssignmentPublicId": "40a4887a-46ac-4607-b730-e1882b778b7a",
                             "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
                             "channelNumber": 9,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
                           },
                           {
-                            "channelAssignmentPublicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf",
+                            "channelAssignmentPublicId": "40a4887a-46ac-4607-b730-e1882b778b7a",
                             "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
                             "channelNumber": 9,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf",
+                            "channelAssignmentPublicId": "40a4887a-46ac-4607-b730-e1882b778b7a",
                             "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
                             "channelNumber": 9,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf",
+                            "channelAssignmentPublicId": "40a4887a-46ac-4607-b730-e1882b778b7a",
                             "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
                             "channelNumber": 9,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf",
+                            "channelAssignmentPublicId": "40a4887a-46ac-4607-b730-e1882b778b7a",
                             "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
                             "channelNumber": 9,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf",
+                            "channelAssignmentPublicId": "40a4887a-46ac-4607-b730-e1882b778b7a",
                             "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
                             "channelNumber": 9,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf",
+                            "channelAssignmentPublicId": "40a4887a-46ac-4607-b730-e1882b778b7a",
                             "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
                             "channelNumber": 9,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "e19d4a2f-3e67-4df5-8f23-778efe50bddf",
+                            "channelAssignmentPublicId": "40a4887a-46ac-4607-b730-e1882b778b7a",
                             "channelDefinitionPublicId": "7d0f3a8c-7c6e-4054-ba2d-b747f96a58ba",
                             "channelNumber": 9,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
@@ -56724,49 +56736,49 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                            "channelAssignmentPublicId": "9ac7458d-724d-490b-a1fe-257254993013",
                             "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
                             "channelNumber": 6,
                             "projectFixturePublicId": "3fec16ae-17c5-468b-9ee0-0965de847985"
                           },
                           {
-                            "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                            "channelAssignmentPublicId": "9ac7458d-724d-490b-a1fe-257254993013",
                             "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
                             "channelNumber": 6,
                             "projectFixturePublicId": "591dd5d6-9d42-4913-b80f-2ea0031ce5c5"
                           },
                           {
-                            "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                            "channelAssignmentPublicId": "9ac7458d-724d-490b-a1fe-257254993013",
                             "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
                             "channelNumber": 6,
                             "projectFixturePublicId": "fa924a5e-bcd9-471f-af61-bb37fff1d38b"
                           },
                           {
-                            "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                            "channelAssignmentPublicId": "9ac7458d-724d-490b-a1fe-257254993013",
                             "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
                             "channelNumber": 6,
                             "projectFixturePublicId": "78e8bd18-0019-4be3-9b4c-b86ca17ccec9"
                           },
                           {
-                            "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                            "channelAssignmentPublicId": "9ac7458d-724d-490b-a1fe-257254993013",
                             "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
                             "channelNumber": 6,
                             "projectFixturePublicId": "abb4d4bb-92cd-4511-8849-123435bb1475"
                           },
                           {
-                            "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                            "channelAssignmentPublicId": "9ac7458d-724d-490b-a1fe-257254993013",
                             "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
                             "channelNumber": 6,
                             "projectFixturePublicId": "5381afe9-5cf5-4abb-ad00-0dc7278faf73"
                           },
                           {
-                            "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                            "channelAssignmentPublicId": "9ac7458d-724d-490b-a1fe-257254993013",
                             "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
                             "channelNumber": 6,
                             "projectFixturePublicId": "a573ed98-dc7f-44ad-bea8-3f3d4f5af303"
                           },
                           {
-                            "channelAssignmentPublicId": "168460bf-9c63-40d9-b4c9-dfa8dea95614",
+                            "channelAssignmentPublicId": "9ac7458d-724d-490b-a1fe-257254993013",
                             "channelDefinitionPublicId": "abf72951-7fb7-47e8-a923-9f7f8d097119",
                             "channelNumber": 6,
                             "projectFixturePublicId": "0a57ba24-1877-4d9f-9ff6-cc591c31b1b1"
@@ -58161,73 +58173,73 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                            "channelAssignmentPublicId": "5554a90f-da95-459e-bd99-38374ccbd1e0",
                             "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
                           },
                           {
-                            "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                            "channelAssignmentPublicId": "5554a90f-da95-459e-bd99-38374ccbd1e0",
                             "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "62b16d87-b5b2-4c2d-a2b2-9e8f9565abd9",
+                            "channelAssignmentPublicId": "7b359222-5712-445e-b97c-c6e2603905d5",
                             "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
                             "channelNumber": 1,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                            "channelAssignmentPublicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4",
                             "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
                             "channelNumber": 1,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                            "channelAssignmentPublicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4",
                             "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
                             "channelNumber": 1,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "52232b26-8314-4dc2-a67c-52541d2a8541",
+                            "channelAssignmentPublicId": "f60c8229-e41f-4c99-8837-a55c0710577c",
                             "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
                             "channelNumber": 1,
                             "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
                           },
                           {
-                            "channelAssignmentPublicId": "52232b26-8314-4dc2-a67c-52541d2a8541",
+                            "channelAssignmentPublicId": "f60c8229-e41f-4c99-8837-a55c0710577c",
                             "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
                             "channelNumber": 1,
                             "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
                           },
                           {
-                            "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                            "channelAssignmentPublicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4",
                             "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
                             "channelNumber": 1,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                            "channelAssignmentPublicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4",
                             "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
                             "channelNumber": 1,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "62b16d87-b5b2-4c2d-a2b2-9e8f9565abd9",
+                            "channelAssignmentPublicId": "7b359222-5712-445e-b97c-c6e2603905d5",
                             "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
                             "channelNumber": 1,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                            "channelAssignmentPublicId": "5554a90f-da95-459e-bd99-38374ccbd1e0",
                             "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                            "channelAssignmentPublicId": "5554a90f-da95-459e-bd99-38374ccbd1e0",
                             "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
@@ -58281,73 +58293,73 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                            "channelAssignmentPublicId": "5554a90f-da95-459e-bd99-38374ccbd1e0",
                             "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
                           },
                           {
-                            "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                            "channelAssignmentPublicId": "5554a90f-da95-459e-bd99-38374ccbd1e0",
                             "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "62b16d87-b5b2-4c2d-a2b2-9e8f9565abd9",
+                            "channelAssignmentPublicId": "7b359222-5712-445e-b97c-c6e2603905d5",
                             "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
                             "channelNumber": 1,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                            "channelAssignmentPublicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4",
                             "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
                             "channelNumber": 1,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                            "channelAssignmentPublicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4",
                             "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
                             "channelNumber": 1,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "52232b26-8314-4dc2-a67c-52541d2a8541",
+                            "channelAssignmentPublicId": "f60c8229-e41f-4c99-8837-a55c0710577c",
                             "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
                             "channelNumber": 1,
                             "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
                           },
                           {
-                            "channelAssignmentPublicId": "52232b26-8314-4dc2-a67c-52541d2a8541",
+                            "channelAssignmentPublicId": "f60c8229-e41f-4c99-8837-a55c0710577c",
                             "channelDefinitionPublicId": "8902ec7a-06c5-414e-831c-0b2629007289",
                             "channelNumber": 1,
                             "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
                           },
                           {
-                            "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                            "channelAssignmentPublicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4",
                             "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
                             "channelNumber": 1,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "d67210f3-960c-4496-a8a3-55557d5d7e15",
+                            "channelAssignmentPublicId": "cd7a062d-1abf-44f6-8e53-017c967e74e4",
                             "channelDefinitionPublicId": "aee8b981-e07d-4c05-ba9c-58776a9ccae6",
                             "channelNumber": 1,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "62b16d87-b5b2-4c2d-a2b2-9e8f9565abd9",
+                            "channelAssignmentPublicId": "7b359222-5712-445e-b97c-c6e2603905d5",
                             "channelDefinitionPublicId": "09bc39b3-b586-4820-8a09-e62a03e11438",
                             "channelNumber": 1,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                            "channelAssignmentPublicId": "5554a90f-da95-459e-bd99-38374ccbd1e0",
                             "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "98712b8c-c91a-447f-8557-41ddface884c",
+                            "channelAssignmentPublicId": "5554a90f-da95-459e-bd99-38374ccbd1e0",
                             "channelDefinitionPublicId": "790c3c5d-dbd7-4846-a877-d53d34675aa8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
@@ -58388,73 +58400,73 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                            "channelAssignmentPublicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25",
                             "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
                             "channelNumber": 4,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
                           },
                           {
-                            "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                            "channelAssignmentPublicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25",
                             "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
                             "channelNumber": 4,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "76492f26-02c0-44fd-9629-ef247c0c5ffa",
+                            "channelAssignmentPublicId": "77786a1e-2832-4e75-829f-860f52dc5cb1",
                             "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
                             "channelNumber": 2,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                            "channelAssignmentPublicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5",
                             "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
                             "channelNumber": 2,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                            "channelAssignmentPublicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5",
                             "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
                             "channelNumber": 2,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "aee12557-745f-4163-898f-d9699716f41b",
+                            "channelAssignmentPublicId": "cf3d43f7-12b8-4838-bbd9-50dc174b3f0b",
                             "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
                             "channelNumber": 2,
                             "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
                           },
                           {
-                            "channelAssignmentPublicId": "aee12557-745f-4163-898f-d9699716f41b",
+                            "channelAssignmentPublicId": "cf3d43f7-12b8-4838-bbd9-50dc174b3f0b",
                             "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
                             "channelNumber": 2,
                             "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
                           },
                           {
-                            "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                            "channelAssignmentPublicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5",
                             "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
                             "channelNumber": 2,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                            "channelAssignmentPublicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5",
                             "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
                             "channelNumber": 2,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "76492f26-02c0-44fd-9629-ef247c0c5ffa",
+                            "channelAssignmentPublicId": "77786a1e-2832-4e75-829f-860f52dc5cb1",
                             "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
                             "channelNumber": 2,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                            "channelAssignmentPublicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25",
                             "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
                             "channelNumber": 4,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                            "channelAssignmentPublicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25",
                             "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
                             "channelNumber": 4,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
@@ -58495,73 +58507,73 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                            "channelAssignmentPublicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579",
                             "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
                             "channelNumber": 5,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
                           },
                           {
-                            "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                            "channelAssignmentPublicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579",
                             "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
                             "channelNumber": 5,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "b728cdcb-b876-4f38-97c0-e1775b432e8c",
+                            "channelAssignmentPublicId": "64d8107b-0f7a-4d4a-8fae-6f8089b096d1",
                             "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
                             "channelNumber": 3,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                            "channelAssignmentPublicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053",
                             "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                            "channelAssignmentPublicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053",
                             "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "e35dbcae-a494-4267-a479-2eb701056630",
+                            "channelAssignmentPublicId": "2e8ada5b-ab0e-46af-9219-c35b9aaf1151",
                             "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
                             "channelNumber": 3,
                             "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
                           },
                           {
-                            "channelAssignmentPublicId": "e35dbcae-a494-4267-a479-2eb701056630",
+                            "channelAssignmentPublicId": "2e8ada5b-ab0e-46af-9219-c35b9aaf1151",
                             "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
                             "channelNumber": 3,
                             "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
                           },
                           {
-                            "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                            "channelAssignmentPublicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053",
                             "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                            "channelAssignmentPublicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053",
                             "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "b728cdcb-b876-4f38-97c0-e1775b432e8c",
+                            "channelAssignmentPublicId": "64d8107b-0f7a-4d4a-8fae-6f8089b096d1",
                             "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
                             "channelNumber": 3,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                            "channelAssignmentPublicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579",
                             "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
                             "channelNumber": 5,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                            "channelAssignmentPublicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579",
                             "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
                             "channelNumber": 5,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
@@ -58602,61 +58614,61 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                            "channelAssignmentPublicId": "00668def-682e-4824-8bff-2b8f8f2a5de2",
                             "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
                             "channelNumber": 8,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
                           },
                           {
-                            "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                            "channelAssignmentPublicId": "00668def-682e-4824-8bff-2b8f8f2a5de2",
                             "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
                             "channelNumber": 8,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "20fb5bb7-0ab6-4361-a9fa-4be5de1a38f0",
+                            "channelAssignmentPublicId": "d0d21a9c-dd7f-419e-8910-3a3921dcef19",
                             "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
                             "channelNumber": 6,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                            "channelAssignmentPublicId": "b31fa286-f6de-45af-b77f-b51acf14d43d",
                             "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
                             "channelNumber": 6,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                            "channelAssignmentPublicId": "b31fa286-f6de-45af-b77f-b51acf14d43d",
                             "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
                             "channelNumber": 6,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                            "channelAssignmentPublicId": "b31fa286-f6de-45af-b77f-b51acf14d43d",
                             "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
                             "channelNumber": 6,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                            "channelAssignmentPublicId": "b31fa286-f6de-45af-b77f-b51acf14d43d",
                             "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
                             "channelNumber": 6,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "20fb5bb7-0ab6-4361-a9fa-4be5de1a38f0",
+                            "channelAssignmentPublicId": "d0d21a9c-dd7f-419e-8910-3a3921dcef19",
                             "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
                             "channelNumber": 6,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                            "channelAssignmentPublicId": "00668def-682e-4824-8bff-2b8f8f2a5de2",
                             "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
                             "channelNumber": 8,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                            "channelAssignmentPublicId": "00668def-682e-4824-8bff-2b8f8f2a5de2",
                             "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
                             "channelNumber": 8,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
@@ -58697,73 +58709,73 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                            "channelAssignmentPublicId": "98a2921c-8d71-47de-99d9-539557a9a68e",
                             "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
                             "channelNumber": 2,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
                           },
                           {
-                            "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                            "channelAssignmentPublicId": "98a2921c-8d71-47de-99d9-539557a9a68e",
                             "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
                             "channelNumber": 2,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "897b4a30-0517-4629-9dd2-da7a12cb08e2",
+                            "channelAssignmentPublicId": "c579fa4a-f0c5-408f-8d1b-d30b8c6d7da8",
                             "channelDefinitionPublicId": "874b038f-5dbd-4879-8de0-b8b9c02b28cf",
                             "channelNumber": 8,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                            "channelAssignmentPublicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9",
                             "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
                             "channelNumber": 8,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                            "channelAssignmentPublicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9",
                             "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
                             "channelNumber": 8,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "8c676eab-f1ae-491a-b9c4-35f3235c9d35",
+                            "channelAssignmentPublicId": "fc983c43-c460-4101-9044-c99af47d1617",
                             "channelDefinitionPublicId": "93282597-1324-48a9-ac74-e5d9d6553657",
                             "channelNumber": 6,
                             "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
                           },
                           {
-                            "channelAssignmentPublicId": "8c676eab-f1ae-491a-b9c4-35f3235c9d35",
+                            "channelAssignmentPublicId": "fc983c43-c460-4101-9044-c99af47d1617",
                             "channelDefinitionPublicId": "93282597-1324-48a9-ac74-e5d9d6553657",
                             "channelNumber": 6,
                             "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
                           },
                           {
-                            "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                            "channelAssignmentPublicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9",
                             "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
                             "channelNumber": 8,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                            "channelAssignmentPublicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9",
                             "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
                             "channelNumber": 8,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "897b4a30-0517-4629-9dd2-da7a12cb08e2",
+                            "channelAssignmentPublicId": "c579fa4a-f0c5-408f-8d1b-d30b8c6d7da8",
                             "channelDefinitionPublicId": "874b038f-5dbd-4879-8de0-b8b9c02b28cf",
                             "channelNumber": 8,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                            "channelAssignmentPublicId": "98a2921c-8d71-47de-99d9-539557a9a68e",
                             "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
                             "channelNumber": 2,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                            "channelAssignmentPublicId": "98a2921c-8d71-47de-99d9-539557a9a68e",
                             "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
                             "channelNumber": 2,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
@@ -58804,73 +58816,73 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee",
+                            "channelAssignmentPublicId": "cd3b8233-237e-4784-ba2d-336f24ee2152",
                             "channelDefinitionPublicId": "57a70470-3bc8-4d96-9c08-1e0d6db3ee1f",
                             "channelNumber": 1,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
                           },
                           {
-                            "channelAssignmentPublicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee",
+                            "channelAssignmentPublicId": "cd3b8233-237e-4784-ba2d-336f24ee2152",
                             "channelDefinitionPublicId": "57a70470-3bc8-4d96-9c08-1e0d6db3ee1f",
                             "channelNumber": 1,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "ffa07fb0-d48e-41ea-859b-1fde9aec3548",
+                            "channelAssignmentPublicId": "bc02cb19-acf1-4386-bf97-04ce83c01e38",
                             "channelDefinitionPublicId": "a41915dd-9e61-4b7e-8467-86d11c07c953",
                             "channelNumber": 10,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30",
+                            "channelAssignmentPublicId": "bed769a7-3802-4b0e-b5e7-db0933792a84",
                             "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
                             "channelNumber": 7,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30",
+                            "channelAssignmentPublicId": "bed769a7-3802-4b0e-b5e7-db0933792a84",
                             "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
                             "channelNumber": 7,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "b1755580-6d3a-40f2-ae8a-7a6cbe8fe8fd",
+                            "channelAssignmentPublicId": "e539fabe-662a-46b5-a0e8-6cf2071f332c",
                             "channelDefinitionPublicId": "c874a0ac-df1e-4e49-8131-2386646dcd71",
                             "channelNumber": 5,
                             "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
                           },
                           {
-                            "channelAssignmentPublicId": "b1755580-6d3a-40f2-ae8a-7a6cbe8fe8fd",
+                            "channelAssignmentPublicId": "e539fabe-662a-46b5-a0e8-6cf2071f332c",
                             "channelDefinitionPublicId": "c874a0ac-df1e-4e49-8131-2386646dcd71",
                             "channelNumber": 5,
                             "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
                           },
                           {
-                            "channelAssignmentPublicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30",
+                            "channelAssignmentPublicId": "bed769a7-3802-4b0e-b5e7-db0933792a84",
                             "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
                             "channelNumber": 7,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "4447ccb1-c7a7-433f-9e9f-42e5e377be30",
+                            "channelAssignmentPublicId": "bed769a7-3802-4b0e-b5e7-db0933792a84",
                             "channelDefinitionPublicId": "b11da99b-b1fb-41fe-96c1-588e76f32fcc",
                             "channelNumber": 7,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "ffa07fb0-d48e-41ea-859b-1fde9aec3548",
+                            "channelAssignmentPublicId": "bc02cb19-acf1-4386-bf97-04ce83c01e38",
                             "channelDefinitionPublicId": "a41915dd-9e61-4b7e-8467-86d11c07c953",
                             "channelNumber": 10,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee",
+                            "channelAssignmentPublicId": "cd3b8233-237e-4784-ba2d-336f24ee2152",
                             "channelDefinitionPublicId": "57a70470-3bc8-4d96-9c08-1e0d6db3ee1f",
                             "channelNumber": 1,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "dee674b7-5e90-4ed6-a1c8-b2f4fc9fe9ee",
+                            "channelAssignmentPublicId": "cd3b8233-237e-4784-ba2d-336f24ee2152",
                             "channelDefinitionPublicId": "57a70470-3bc8-4d96-9c08-1e0d6db3ee1f",
                             "channelNumber": 1,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
@@ -58911,73 +58923,73 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                            "channelAssignmentPublicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25",
                             "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
                             "channelNumber": 4,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
                           },
                           {
-                            "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                            "channelAssignmentPublicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25",
                             "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
                             "channelNumber": 4,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "76492f26-02c0-44fd-9629-ef247c0c5ffa",
+                            "channelAssignmentPublicId": "77786a1e-2832-4e75-829f-860f52dc5cb1",
                             "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
                             "channelNumber": 2,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                            "channelAssignmentPublicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5",
                             "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
                             "channelNumber": 2,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                            "channelAssignmentPublicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5",
                             "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
                             "channelNumber": 2,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "aee12557-745f-4163-898f-d9699716f41b",
+                            "channelAssignmentPublicId": "cf3d43f7-12b8-4838-bbd9-50dc174b3f0b",
                             "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
                             "channelNumber": 2,
                             "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
                           },
                           {
-                            "channelAssignmentPublicId": "aee12557-745f-4163-898f-d9699716f41b",
+                            "channelAssignmentPublicId": "cf3d43f7-12b8-4838-bbd9-50dc174b3f0b",
                             "channelDefinitionPublicId": "51b0a0be-d997-46ff-9944-998ec91be069",
                             "channelNumber": 2,
                             "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
                           },
                           {
-                            "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                            "channelAssignmentPublicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5",
                             "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
                             "channelNumber": 2,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "eb840ae3-8393-449c-ae49-85594192a8c6",
+                            "channelAssignmentPublicId": "d296e3d1-fa0a-49d8-814f-e3a10ac886b5",
                             "channelDefinitionPublicId": "124955a5-b62a-4d1b-9345-d546b0041284",
                             "channelNumber": 2,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "76492f26-02c0-44fd-9629-ef247c0c5ffa",
+                            "channelAssignmentPublicId": "77786a1e-2832-4e75-829f-860f52dc5cb1",
                             "channelDefinitionPublicId": "f98befc8-e5db-4b8f-9c01-b948cf566f36",
                             "channelNumber": 2,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                            "channelAssignmentPublicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25",
                             "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
                             "channelNumber": 4,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "833bfedc-b84f-4486-a589-27ab1d6c87d5",
+                            "channelAssignmentPublicId": "94409b88-06a4-4cf9-a57c-f4faaf7ebd25",
                             "channelDefinitionPublicId": "178cf97f-1de9-487b-a2d1-69bbbf082c33",
                             "channelNumber": 4,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
@@ -59031,73 +59043,73 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                            "channelAssignmentPublicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579",
                             "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
                             "channelNumber": 5,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
                           },
                           {
-                            "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                            "channelAssignmentPublicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579",
                             "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
                             "channelNumber": 5,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "b728cdcb-b876-4f38-97c0-e1775b432e8c",
+                            "channelAssignmentPublicId": "64d8107b-0f7a-4d4a-8fae-6f8089b096d1",
                             "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
                             "channelNumber": 3,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                            "channelAssignmentPublicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053",
                             "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                            "channelAssignmentPublicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053",
                             "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "e35dbcae-a494-4267-a479-2eb701056630",
+                            "channelAssignmentPublicId": "2e8ada5b-ab0e-46af-9219-c35b9aaf1151",
                             "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
                             "channelNumber": 3,
                             "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
                           },
                           {
-                            "channelAssignmentPublicId": "e35dbcae-a494-4267-a479-2eb701056630",
+                            "channelAssignmentPublicId": "2e8ada5b-ab0e-46af-9219-c35b9aaf1151",
                             "channelDefinitionPublicId": "fc15d6bc-f943-422e-afab-31607ed0023a",
                             "channelNumber": 3,
                             "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
                           },
                           {
-                            "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                            "channelAssignmentPublicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053",
                             "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "ecd71226-0a54-433a-a1eb-a961980c2efd",
+                            "channelAssignmentPublicId": "3652c6d0-656a-4fee-9377-4daf0e9d8053",
                             "channelDefinitionPublicId": "be3beb0f-059c-4745-b870-b5a96ba106f8",
                             "channelNumber": 3,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "b728cdcb-b876-4f38-97c0-e1775b432e8c",
+                            "channelAssignmentPublicId": "64d8107b-0f7a-4d4a-8fae-6f8089b096d1",
                             "channelDefinitionPublicId": "6c946bcd-ec30-49de-ae59-ace1f093dc5e",
                             "channelNumber": 3,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                            "channelAssignmentPublicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579",
                             "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
                             "channelNumber": 5,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "8ed5b51e-5374-47b5-b5e4-87c0ba6fa7b9",
+                            "channelAssignmentPublicId": "c85d19d7-c0f9-4ca9-8e8c-aed895cb2579",
                             "channelDefinitionPublicId": "b3430878-06da-4873-a81b-99e2c888fa01",
                             "channelNumber": 5,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
@@ -59151,61 +59163,61 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                            "channelAssignmentPublicId": "00668def-682e-4824-8bff-2b8f8f2a5de2",
                             "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
                             "channelNumber": 8,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
                           },
                           {
-                            "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                            "channelAssignmentPublicId": "00668def-682e-4824-8bff-2b8f8f2a5de2",
                             "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
                             "channelNumber": 8,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "20fb5bb7-0ab6-4361-a9fa-4be5de1a38f0",
+                            "channelAssignmentPublicId": "d0d21a9c-dd7f-419e-8910-3a3921dcef19",
                             "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
                             "channelNumber": 6,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                            "channelAssignmentPublicId": "b31fa286-f6de-45af-b77f-b51acf14d43d",
                             "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
                             "channelNumber": 6,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                            "channelAssignmentPublicId": "b31fa286-f6de-45af-b77f-b51acf14d43d",
                             "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
                             "channelNumber": 6,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                            "channelAssignmentPublicId": "b31fa286-f6de-45af-b77f-b51acf14d43d",
                             "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
                             "channelNumber": 6,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "997e8eec-e02c-4e19-9517-9632fdc419f8",
+                            "channelAssignmentPublicId": "b31fa286-f6de-45af-b77f-b51acf14d43d",
                             "channelDefinitionPublicId": "b65dbbe7-efe7-43a9-9d79-92aa8fcc54eb",
                             "channelNumber": 6,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "20fb5bb7-0ab6-4361-a9fa-4be5de1a38f0",
+                            "channelAssignmentPublicId": "d0d21a9c-dd7f-419e-8910-3a3921dcef19",
                             "channelDefinitionPublicId": "d7ae8070-db50-413e-a858-7abc74cfc7a0",
                             "channelNumber": 6,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                            "channelAssignmentPublicId": "00668def-682e-4824-8bff-2b8f8f2a5de2",
                             "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
                             "channelNumber": 8,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "1b44a3b0-e8cd-4675-82cc-bd0813e4859b",
+                            "channelAssignmentPublicId": "00668def-682e-4824-8bff-2b8f8f2a5de2",
                             "channelDefinitionPublicId": "ea0897af-b70c-409f-b5b0-c4b7820c2144",
                             "channelNumber": 8,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
@@ -59259,73 +59271,73 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                            "channelAssignmentPublicId": "98a2921c-8d71-47de-99d9-539557a9a68e",
                             "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
                             "channelNumber": 2,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
                           },
                           {
-                            "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                            "channelAssignmentPublicId": "98a2921c-8d71-47de-99d9-539557a9a68e",
                             "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
                             "channelNumber": 2,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "897b4a30-0517-4629-9dd2-da7a12cb08e2",
+                            "channelAssignmentPublicId": "c579fa4a-f0c5-408f-8d1b-d30b8c6d7da8",
                             "channelDefinitionPublicId": "874b038f-5dbd-4879-8de0-b8b9c02b28cf",
                             "channelNumber": 8,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                            "channelAssignmentPublicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9",
                             "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
                             "channelNumber": 8,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                            "channelAssignmentPublicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9",
                             "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
                             "channelNumber": 8,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "8c676eab-f1ae-491a-b9c4-35f3235c9d35",
+                            "channelAssignmentPublicId": "fc983c43-c460-4101-9044-c99af47d1617",
                             "channelDefinitionPublicId": "93282597-1324-48a9-ac74-e5d9d6553657",
                             "channelNumber": 6,
                             "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
                           },
                           {
-                            "channelAssignmentPublicId": "8c676eab-f1ae-491a-b9c4-35f3235c9d35",
+                            "channelAssignmentPublicId": "fc983c43-c460-4101-9044-c99af47d1617",
                             "channelDefinitionPublicId": "93282597-1324-48a9-ac74-e5d9d6553657",
                             "channelNumber": 6,
                             "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
                           },
                           {
-                            "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                            "channelAssignmentPublicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9",
                             "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
                             "channelNumber": 8,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "2f69b76e-c87a-4263-a3be-6216c8e0c3e0",
+                            "channelAssignmentPublicId": "a888fa9a-c2b0-4fd5-adeb-94de4520edf9",
                             "channelDefinitionPublicId": "5b00759e-02bc-4357-bc4e-52d6b877a264",
                             "channelNumber": 8,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "897b4a30-0517-4629-9dd2-da7a12cb08e2",
+                            "channelAssignmentPublicId": "c579fa4a-f0c5-408f-8d1b-d30b8c6d7da8",
                             "channelDefinitionPublicId": "874b038f-5dbd-4879-8de0-b8b9c02b28cf",
                             "channelNumber": 8,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                            "channelAssignmentPublicId": "98a2921c-8d71-47de-99d9-539557a9a68e",
                             "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
                             "channelNumber": 2,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
                           },
                           {
-                            "channelAssignmentPublicId": "921112f5-d19e-449b-9337-54d56fb0d620",
+                            "channelAssignmentPublicId": "98a2921c-8d71-47de-99d9-539557a9a68e",
                             "channelDefinitionPublicId": "c44bae3b-674e-4404-992c-693ed0c68f94",
                             "channelNumber": 2,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
@@ -59379,61 +59391,61 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                            "channelAssignmentPublicId": "b3120700-8649-4391-a88e-7eed11416920",
                             "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
                             "channelNumber": 7,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
                           },
                           {
-                            "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                            "channelAssignmentPublicId": "b3120700-8649-4391-a88e-7eed11416920",
                             "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
                             "channelNumber": 7,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "0d3a79ba-ac0e-4c3d-b220-196828cfb8be",
+                            "channelAssignmentPublicId": "5c4dd5fd-a40a-423d-a8d7-f56252adf09a",
                             "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
                             "channelNumber": 5,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                            "channelAssignmentPublicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6",
                             "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
                             "channelNumber": 5,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                            "channelAssignmentPublicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6",
                             "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
                             "channelNumber": 5,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                            "channelAssignmentPublicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6",
                             "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
                             "channelNumber": 5,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                            "channelAssignmentPublicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6",
                             "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
                             "channelNumber": 5,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "0d3a79ba-ac0e-4c3d-b220-196828cfb8be",
+                            "channelAssignmentPublicId": "5c4dd5fd-a40a-423d-a8d7-f56252adf09a",
                             "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
                             "channelNumber": 5,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                            "channelAssignmentPublicId": "b3120700-8649-4391-a88e-7eed11416920",
                             "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
                             "channelNumber": 7,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                            "channelAssignmentPublicId": "b3120700-8649-4391-a88e-7eed11416920",
                             "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
                             "channelNumber": 7,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
@@ -59474,73 +59486,73 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                            "channelAssignmentPublicId": "33df6d29-bda7-409d-a8a2-03a3c6356797",
                             "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
                             "channelNumber": 6,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
                           },
                           {
-                            "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                            "channelAssignmentPublicId": "33df6d29-bda7-409d-a8a2-03a3c6356797",
                             "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
                             "channelNumber": 6,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "5d0d51b5-572a-4d03-b5c1-1770dcfa8c2f",
+                            "channelAssignmentPublicId": "cf59ec54-272b-4b8f-9777-91850a0436d2",
                             "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
                             "channelNumber": 4,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                            "channelAssignmentPublicId": "2abd329d-ed43-4399-8955-830dc531f824",
                             "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
                             "channelNumber": 4,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                            "channelAssignmentPublicId": "2abd329d-ed43-4399-8955-830dc531f824",
                             "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
                             "channelNumber": 4,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "fc2d2a81-e7d1-43d1-b949-ba4547bda485",
+                            "channelAssignmentPublicId": "fdd507f9-e5c2-4c05-9be5-cc20bb4e2df6",
                             "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
                             "channelNumber": 4,
                             "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
                           },
                           {
-                            "channelAssignmentPublicId": "fc2d2a81-e7d1-43d1-b949-ba4547bda485",
+                            "channelAssignmentPublicId": "fdd507f9-e5c2-4c05-9be5-cc20bb4e2df6",
                             "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
                             "channelNumber": 4,
                             "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
                           },
                           {
-                            "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                            "channelAssignmentPublicId": "2abd329d-ed43-4399-8955-830dc531f824",
                             "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
                             "channelNumber": 4,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                            "channelAssignmentPublicId": "2abd329d-ed43-4399-8955-830dc531f824",
                             "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
                             "channelNumber": 4,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "5d0d51b5-572a-4d03-b5c1-1770dcfa8c2f",
+                            "channelAssignmentPublicId": "cf59ec54-272b-4b8f-9777-91850a0436d2",
                             "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
                             "channelNumber": 4,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                            "channelAssignmentPublicId": "33df6d29-bda7-409d-a8a2-03a3c6356797",
                             "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
                             "channelNumber": 6,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                            "channelAssignmentPublicId": "33df6d29-bda7-409d-a8a2-03a3c6356797",
                             "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
                             "channelNumber": 6,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
@@ -59581,61 +59593,61 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                            "channelAssignmentPublicId": "b3120700-8649-4391-a88e-7eed11416920",
                             "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
                             "channelNumber": 7,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
                           },
                           {
-                            "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                            "channelAssignmentPublicId": "b3120700-8649-4391-a88e-7eed11416920",
                             "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
                             "channelNumber": 7,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "0d3a79ba-ac0e-4c3d-b220-196828cfb8be",
+                            "channelAssignmentPublicId": "5c4dd5fd-a40a-423d-a8d7-f56252adf09a",
                             "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
                             "channelNumber": 5,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                            "channelAssignmentPublicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6",
                             "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
                             "channelNumber": 5,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                            "channelAssignmentPublicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6",
                             "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
                             "channelNumber": 5,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                            "channelAssignmentPublicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6",
                             "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
                             "channelNumber": 5,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "861f25ee-8dab-4eab-8e9a-4f966381fefd",
+                            "channelAssignmentPublicId": "c34c692a-d810-4b5c-a9fb-8070cf3f6eb6",
                             "channelDefinitionPublicId": "d10cee64-ff52-4e64-9cf6-a0a5675037b9",
                             "channelNumber": 5,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "0d3a79ba-ac0e-4c3d-b220-196828cfb8be",
+                            "channelAssignmentPublicId": "5c4dd5fd-a40a-423d-a8d7-f56252adf09a",
                             "channelDefinitionPublicId": "6914b89c-3c9a-4b66-8b7a-afee5cdbc70a",
                             "channelNumber": 5,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                            "channelAssignmentPublicId": "b3120700-8649-4391-a88e-7eed11416920",
                             "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
                             "channelNumber": 7,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "2753b4b2-bcb4-4aa6-8915-6cb2ef7cab8d",
+                            "channelAssignmentPublicId": "b3120700-8649-4391-a88e-7eed11416920",
                             "channelDefinitionPublicId": "5c9583f8-c042-465d-8ef4-a38be815fa00",
                             "channelNumber": 7,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
@@ -59689,73 +59701,73 @@
                         "buttonMode": null,
                         "channelBindings": [
                           {
-                            "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                            "channelAssignmentPublicId": "33df6d29-bda7-409d-a8a2-03a3c6356797",
                             "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
                             "channelNumber": 6,
                             "projectFixturePublicId": "a1188aa5-77f1-4b5f-9370-a92a1432442a"
                           },
                           {
-                            "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                            "channelAssignmentPublicId": "33df6d29-bda7-409d-a8a2-03a3c6356797",
                             "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
                             "channelNumber": 6,
                             "projectFixturePublicId": "381028c7-bb4c-4052-9135-f80467697064"
                           },
                           {
-                            "channelAssignmentPublicId": "5d0d51b5-572a-4d03-b5c1-1770dcfa8c2f",
+                            "channelAssignmentPublicId": "cf59ec54-272b-4b8f-9777-91850a0436d2",
                             "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
                             "channelNumber": 4,
                             "projectFixturePublicId": "f9decd3b-7c97-4513-9f63-f811a507c754"
                           },
                           {
-                            "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                            "channelAssignmentPublicId": "2abd329d-ed43-4399-8955-830dc531f824",
                             "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
                             "channelNumber": 4,
                             "projectFixturePublicId": "a0e2ab07-3d39-4971-a247-8b062b819780"
                           },
                           {
-                            "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                            "channelAssignmentPublicId": "2abd329d-ed43-4399-8955-830dc531f824",
                             "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
                             "channelNumber": 4,
                             "projectFixturePublicId": "2464da63-909a-43ba-a93a-c8a33d4f25de"
                           },
                           {
-                            "channelAssignmentPublicId": "fc2d2a81-e7d1-43d1-b949-ba4547bda485",
+                            "channelAssignmentPublicId": "fdd507f9-e5c2-4c05-9be5-cc20bb4e2df6",
                             "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
                             "channelNumber": 4,
                             "projectFixturePublicId": "3b8d5507-8dd7-4a34-a00c-91e7ede710dc"
                           },
                           {
-                            "channelAssignmentPublicId": "fc2d2a81-e7d1-43d1-b949-ba4547bda485",
+                            "channelAssignmentPublicId": "fdd507f9-e5c2-4c05-9be5-cc20bb4e2df6",
                             "channelDefinitionPublicId": "2dc9eb89-566c-4e49-92cb-6dbc3cf05864",
                             "channelNumber": 4,
                             "projectFixturePublicId": "c39eb6e5-b5ae-4349-8d7e-eebf47ea8399"
                           },
                           {
-                            "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                            "channelAssignmentPublicId": "2abd329d-ed43-4399-8955-830dc531f824",
                             "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
                             "channelNumber": 4,
                             "projectFixturePublicId": "cb3d2d77-1ab4-44db-a7e9-bca658315cd1"
                           },
                           {
-                            "channelAssignmentPublicId": "93cc2ec0-11bf-4532-81a8-04a82183b430",
+                            "channelAssignmentPublicId": "2abd329d-ed43-4399-8955-830dc531f824",
                             "channelDefinitionPublicId": "1634aab2-3078-4d95-8593-2be4cc07af14",
                             "channelNumber": 4,
                             "projectFixturePublicId": "a095dba7-8a57-4f17-8623-1b79f059248a"
                           },
                           {
-                            "channelAssignmentPublicId": "5d0d51b5-572a-4d03-b5c1-1770dcfa8c2f",
+                            "channelAssignmentPublicId": "cf59ec54-272b-4b8f-9777-91850a0436d2",
                             "channelDefinitionPublicId": "3293d612-4ff2-4be3-b8a9-473fcdcb2ce6",
                             "channelNumber": 4,
                             "projectFixturePublicId": "a21b1a73-94fa-43ff-b4fc-025b76c28689"
                           },
                           {
-                            "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                            "channelAssignmentPublicId": "33df6d29-bda7-409d-a8a2-03a3c6356797",
                             "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
                             "channelNumber": 6,
                             "projectFixturePublicId": "ce93e7f4-ce01-45ab-b992-f2e7dceed284"
                           },
                           {
-                            "channelAssignmentPublicId": "dbe02206-81f9-4bdf-9409-b079cd0d9cc5",
+                            "channelAssignmentPublicId": "33df6d29-bda7-409d-a8a2-03a3c6356797",
                             "channelDefinitionPublicId": "b467bd39-8e63-411d-9e1d-3f021a774393",
                             "channelNumber": 6,
                             "projectFixturePublicId": "0c8f305c-fe11-4823-9902-36265f01106f"
@@ -59880,6 +59892,53 @@
                 "width": 145,
                 "x": 1440,
                 "y": 530
+              },
+              {
+                "audioBars": null,
+                "backgroundColor": "#ff0000",
+                "bandCount": null,
+                "beatBar": null,
+                "borderColor": null,
+                "borderWidth": null,
+                "buttonMode": "toggle",
+                "channelBindings": null,
+                "children": null,
+                "feedback": {
+                  "monitor": {
+                    "behavior": 11,
+                    "color": 5
+                  },
+                  "off": {
+                    "behavior": 2,
+                    "color": 5
+                  },
+                  "on": {
+                    "behavior": 11,
+                    "color": 5
+                  }
+                },
+                "fontFamily": "system-ui, sans-serif",
+                "fontSize": 16,
+                "fontWeight": 600,
+                "foregroundColor": "#ffffff",
+                "functionName": null,
+                "functionPublicId": null,
+                "height": 120,
+                "id": "0e2435b6-5989-4722-8774-081cac1a219c",
+                "label": "Button",
+                "lowerLimit": null,
+                "midiDeviceSerials": [
+                  "25082560709810"
+                ],
+                "midiEntryPublicId": "55693152-c542-4b13-90ad-94b0990f6975",
+                "orientation": null,
+                "tapTiming": null,
+                "type": "button",
+                "upperLimit": 255,
+                "valueType": null,
+                "width": 230,
+                "x": 1405,
+                "y": 705
               }
             ],
             "id": "1b4e1ba9-ae65-4975-9100-45a89d34f008",
