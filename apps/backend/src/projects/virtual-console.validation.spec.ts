@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { InvalidVirtualConsoleException } from './project.exceptions';
 import {
+  globalFadeMs,
   VIRTUAL_CONSOLE_CONTROL_TYPE,
   VIRTUAL_CONSOLE_DEFAULT_HEIGHT,
   VIRTUAL_CONSOLE_DEFAULT_WIDTH,
@@ -1022,5 +1023,90 @@ describe('global tap', () => {
     expect(() => {
       assertValidVirtualConsole(document);
     }).toThrow('cannot have a tap timing');
+  });
+});
+
+describe('global fade', () => {
+  const FADE_ID = '88888888-8888-4888-8888-888888888888';
+  const fadeControl = (overrides: Partial<VirtualConsoleControl> = {}): VirtualConsoleControl => ({
+    id: FADE_ID,
+    type: VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalFade,
+    x: 0,
+    y: 0,
+    width: 64,
+    height: 200,
+    label: 'Fade',
+    backgroundColor: '#000000',
+    foregroundColor: '#ffffff',
+    orientation: 'vertical',
+    ...overrides,
+  });
+  const documentWith = (control: VirtualConsoleControl): VirtualConsoleDocument =>
+    validDocument({ pages: [{ id: PAGE_ID, name: 'Page 1', controls: [control] }] });
+
+  it('GIVEN a global fade WHEN validated THEN it is accepted', () => {
+    expect(() => {
+      assertValidVirtualConsole(documentWith(fadeControl()));
+    }).not.toThrow();
+  });
+
+  it('GIVEN a global fade without orientation WHEN validated THEN it is rejected', () => {
+    expect(() => {
+      assertValidVirtualConsole(documentWith(fadeControl({ orientation: undefined })));
+    }).toThrow('orientation');
+  });
+
+  it('GIVEN a global fade with channel bindings WHEN validated THEN it is rejected', () => {
+    const bindings = [{ projectFixturePublicId: FIXTURE_ID, channelAssignmentPublicId: ASSIGNMENT_ID }];
+
+    expect(() => {
+      assertValidVirtualConsole(documentWith(fadeControl({ channelBindings: bindings })));
+    }).toThrow('cannot have channel bindings');
+  });
+
+  it.each([1_000, 2_000, 5_000, 10_000, 30_000])(
+    'GIVEN a global fade with a %i ms maximum WHEN validated THEN it is accepted',
+    fadeMaxMs => {
+      expect(() => {
+        assertValidVirtualConsole(documentWith(fadeControl({ fadeMaxMs })));
+      }).not.toThrow();
+    },
+  );
+
+  it('GIVEN a global fade with a maximum outside the choices WHEN validated THEN it is rejected', () => {
+    expect(() => {
+      assertValidVirtualConsole(documentWith(fadeControl({ fadeMaxMs: 3_000 })));
+    }).toThrow('fadeMaxMs');
+  });
+
+  it('GIVEN a slider with a fade maximum WHEN validated THEN it is rejected', () => {
+    const slider = fadeControl({
+      type: VIRTUAL_CONSOLE_CONTROL_TYPE.Slider,
+      valueType: 'dmx',
+      fadeMaxMs: 5_000,
+    });
+
+    expect(() => {
+      assertValidVirtualConsole(documentWith(slider));
+    }).toThrow('cannot have a fade maximum');
+  });
+});
+
+describe('globalFadeMs', () => {
+  it.each([
+    [0, undefined, 0],
+    [1, undefined, 25],
+    [2, undefined, 26],
+    [100, undefined, 5_000],
+    [1, 2_000, 25],
+    [100, 2_000, 2_000],
+    [100, 30_000, 30_000],
+  ])('GIVEN position %i and maximum %s WHEN mapped THEN it is %i ms', (position, maxMs, ms) => {
+    expect(globalFadeMs(position, maxMs)).toBe(ms);
+  });
+
+  it('GIVEN the middle position of a 30 s fade WHEN mapped THEN it is spread logarithmically', () => {
+    expect(globalFadeMs(50, 30_000)).toBeGreaterThan(800);
+    expect(globalFadeMs(50, 30_000)).toBeLessThan(900);
   });
 });

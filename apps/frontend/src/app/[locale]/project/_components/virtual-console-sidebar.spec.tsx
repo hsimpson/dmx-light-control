@@ -103,6 +103,37 @@ describe('virtual console sidebar', () => {
     expect(onControlPatch).toHaveBeenLastCalledWith({ tapTiming: undefined });
   });
 
+  it('GIVEN a global fade WHEN a maximum fade time is picked THEN it is patched in ms', async () => {
+    const control = createControl('globalFade', 0, 0);
+    const document = createDefaultVirtualConsoleDocument();
+    const onControlPatch = vi.fn();
+    const { user } = renderWithProviders(
+      <VirtualConsoleSidebar
+        projectPublicId="proj-1"
+        document={document}
+        dirty={false}
+        onCanvasSizeChange={vi.fn()}
+        onControlPatch={onControlPatch}
+        onDeleteControl={vi.fn()}
+        onPageNameChange={vi.fn()}
+        onSave={vi.fn()}
+        onSelectCanvas={vi.fn()}
+        saving={false}
+        selectedControl={control}
+        selectedPage={document.pages[0]}
+        selection={{ kind: 'control', controlId: control.id }}
+      />,
+      { apolloMocks: [] },
+    );
+
+    const maximum = screen.getByRole('combobox', { name: 'Maximum fade time' });
+    expect(maximum).toHaveValue('5 s');
+    await user.click(maximum);
+    await user.click(await screen.findByRole('option', { name: '30 s', hidden: true }));
+
+    expect(onControlPatch).toHaveBeenLastCalledWith({ fadeMaxMs: 30_000 });
+  });
+
   it('deletes the selected control from the sidebar', async () => {
     const control = createControl('button', 0, 0);
     const document = createDefaultVirtualConsoleDocument();

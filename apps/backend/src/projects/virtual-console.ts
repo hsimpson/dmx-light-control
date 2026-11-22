@@ -19,6 +19,20 @@ export const VIRTUAL_CONSOLE_SNAP_MAX = 128;
 export const VIRTUAL_CONSOLE_AUDIO_BANDS_MIN = 1;
 export const VIRTUAL_CONSOLE_AUDIO_BANDS_MAX = 16;
 export const VIRTUAL_CONSOLE_BEAT_DEFAULT_THRESHOLD = 20;
+export const VIRTUAL_CONSOLE_FADE_POSITION_MAX = 100;
+export const VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS = [1_000, 2_000, 5_000, 10_000, 30_000];
+export const VIRTUAL_CONSOLE_FADE_DEFAULT_MAX_MS = 5_000;
+/** One function playback tick; a shorter fade cannot show. */
+const FADE_MIN_MS = 25;
+
+/**
+ * Fade time (ms) of a global fade position: 0 is off, 1 to 100 spread logarithmically over 25 ms to `maxMs`.
+ * The frontend repeats this in `globalFadeMs` (`virtual-console-document.ts`); change both together.
+ */
+export const globalFadeMs = (position: number, maxMs = VIRTUAL_CONSOLE_FADE_DEFAULT_MAX_MS): number =>
+  position <= 0
+    ? 0
+    : Math.round(FADE_MIN_MS * (maxMs / FADE_MIN_MS) ** ((position - 1) / (VIRTUAL_CONSOLE_FADE_POSITION_MAX - 1)));
 
 export const VIRTUAL_CONSOLE_CONTROL_TYPE = {
   Frame: 'frame',
@@ -26,6 +40,7 @@ export const VIRTUAL_CONSOLE_CONTROL_TYPE = {
   Button: 'button',
   AudioTriggers: 'audioTriggers',
   GlobalTap: 'globalTap',
+  GlobalFade: 'globalFade',
 } as const;
 
 export type VirtualConsoleControlType =
@@ -37,6 +52,7 @@ export enum VirtualConsoleControlTypeEnum {
   button = 'button',
   audioTriggers = 'audioTriggers',
   globalTap = 'globalTap',
+  globalFade = 'globalFade',
 }
 
 registerEnumType(VirtualConsoleControlTypeEnum, {
@@ -157,6 +173,8 @@ export type VirtualConsoleControl = {
   beatBar?: VirtualConsoleBeatBar;
   /** Step timing of a global tap control; absent: each tapped step keeps the sequence's own timing. */
   tapTiming?: VirtualConsoleBeatTiming;
+  /** Top of a global fade control, one of `VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS`; absent: 5 s. */
+  fadeMaxMs?: number;
 };
 
 export type VirtualConsolePage = {

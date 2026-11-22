@@ -251,4 +251,39 @@ describe('sequenceFrame from a start step', () => {
       sequenceFrame(sequence(steps, { runOrder: SequenceRunOrder.SingleShot }), 0, { index: 2, from: [] }).finished,
     ).toBe(true);
   });
+
+  it('GIVEN a timing override WHEN sampled THEN every step uses it instead of its own', () => {
+    const steps = [step(0, { hold: 1000 }), step(100, { hold: 1000 })];
+    const crossfade = { fadeIn: 200, hold: 0, fadeOut: 0 };
+    const start = { index: 0, from: [] };
+
+    expect(sequenceFrame(sequence(steps), 300, start, crossfade)).toEqual({
+      values: [{ channel: 1, value: 50 }],
+      finished: false,
+      index: 1,
+    });
+  });
+
+  it('GIVEN a crossfade shorter than the steps WHEN sampled THEN each step fades in over it and keeps its own length', () => {
+    const steps = [step(0, { hold: 1000 }), step(100, { hold: 1000 })];
+    const start = { index: 0, from: [] };
+
+    expect(sequenceFrame(sequence(steps), 1100, start, { crossfadeMs: 200 })).toEqual({
+      values: [{ channel: 1, value: 50 }],
+      finished: false,
+      index: 1,
+    });
+    expect(sequenceFrame(sequence(steps), 1900, start, { crossfadeMs: 200 }).index).toBe(1);
+  });
+
+  it('GIVEN a crossfade longer than the steps WHEN sampled THEN each step stretches to the crossfade', () => {
+    const steps = [step(0, { hold: 100 }), step(100, { hold: 100 })];
+    const start = { index: 0, from: [] };
+
+    expect(sequenceFrame(sequence(steps), 1500, start, { crossfadeMs: 1000 })).toEqual({
+      values: [{ channel: 1, value: 50 }],
+      finished: false,
+      index: 1,
+    });
+  });
 });

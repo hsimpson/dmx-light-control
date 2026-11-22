@@ -8,6 +8,8 @@ import {
   type KeyboardEvent,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
+import { useTranslation } from '@/lib/i18n/use-translation';
+import { formatFadeTime, globalFadeMs } from '../virtual-console-document';
 import { controlFontStyle } from '../virtual-console-fonts';
 import classes from './slider-control.module.css';
 import type { VirtualConsoleControlProperties } from './virtual-console-control-properties';
@@ -37,8 +39,10 @@ const SliderControl = ({
   onPlayValue,
   value: controlledValue,
 }: VirtualConsoleControlProperties & { value?: number }) => {
+  const { t } = useTranslation();
   const orientation = control.orientation ?? 'vertical';
-  const percentage = control.valueType === 'percentage';
+  const fade = control.type === 'globalFade';
+  const percentage = control.valueType === 'percentage' || fade;
   const lowerLimit = control.lowerLimit ?? 0;
   const upperLimit = control.upperLimit ?? 255;
   const min = percentage ? 0 : lowerLimit;
@@ -61,7 +65,11 @@ const SliderControl = ({
   );
   const ratio = max === min ? 0 : (value - min) / (max - min);
   const isVertical = orientation === 'vertical';
-  const displayValue = control.valueType === 'percentage' ? `${value}%` : String(value);
+  const fadeValue = () =>
+    value === 0
+      ? t({ id: 'ProjectDetail.virtualConsole.fadeOff', defaultMessage: 'Off' })
+      : formatFadeTime(globalFadeMs(value, control.fadeMaxMs));
+  const displayValue = fade ? fadeValue() : percentage ? `${value}%` : String(value);
   const handleSize = isVertical ? control.width / 2 : control.height / 2;
   const handleOffset = `clamp(0px, calc(${ratio} * (100% - ${HANDLE_SIZE_PX}px)), calc(100% - ${HANDLE_SIZE_PX}px))`;
   const fillColor = control.foregroundColor ?? '#4dabf7';

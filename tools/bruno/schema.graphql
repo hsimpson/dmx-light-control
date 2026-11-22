@@ -3387,6 +3387,11 @@ type VirtualConsoleControlDto {
   children: [VirtualConsoleControlDto!]
 
   """
+  Fade time at the top of a global fade control in ms (1000, 2000, 5000, 10000 or 30000). Null: 5000.
+  """
+  fadeMaxMs: Int
+
+  """
   Overrides the MIDI entry's default LED feedback
   """
   feedback: MidiFeedbackDto
@@ -3539,6 +3544,11 @@ input VirtualConsoleControlInput {
   children: [VirtualConsoleControlInput!]
 
   """
+  Fade time at the top of a global fade control in ms (1000, 2000, 5000, 10000 or 30000). Null: 5000.
+  """
+  fadeMaxMs: Int
+
+  """
   Overrides the MIDI entry's default LED feedback
   """
   feedback: MidiFeedbackInput
@@ -3651,6 +3661,7 @@ enum VirtualConsoleControlType {
   audioTriggers
   button
   frame
+  globalFade
   globalTap
   slider
 }

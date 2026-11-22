@@ -12,6 +12,9 @@ export type SequenceFrame = {
 
 export type StepTiming = Pick<SequenceStep, 'fadeIn' | 'hold' | 'fadeOut'>;
 
+/** Replaces a step's own timing: a fixed timing, or a crossfade that never makes the step shorter than its own. */
+export type StepOverride = StepTiming | { crossfadeMs: number };
+
 type LevelMap = Map<number, number>;
 
 function targetMap(step: SequenceStep): LevelMap {
@@ -20,6 +23,17 @@ function targetMap(step: SequenceStep): LevelMap {
 
 function stepDuration(step: SequenceStep): number {
   return step.fadeIn + step.hold + step.fadeOut;
+}
+
+function timed(step: SequenceStep, override?: StepOverride): SequenceStep {
+  if (override === undefined) {
+    return step;
+  }
+  if ('crossfadeMs' in override) {
+    const fadeIn = override.crossfadeMs;
+    return { ...step, fadeIn, hold: Math.max(0, stepDuration(step) - fadeIn), fadeOut: 0 };
+  }
+  return { ...step, ...override };
 }
 
 function orderedSteps(sequence: SequenceProperties): SequenceStep[] {
@@ -77,10 +91,10 @@ function toList(levels: LevelMap): SequenceChannelValue[] {
 }
 
 /** Duration of the step a raw `index` plays, with `timing` instead of its own when given. */
-export function stepDurationAt(sequence: SequenceProperties, index: number, timing?: StepTiming): number {
+export function stepDurationAt(sequence: SequenceProperties, index: number, timing?: StepOverride): number {
   const steps = orderedSteps(sequence);
   const step = steps[playIndex(index, steps.length, sequence.runOrder)];
-  return step ? stepDuration(timing ? { ...step, ...timing } : step) : 0;
+  return step ? stepDuration(timed(step, timing)) : 0;
 }
 
 /**
@@ -92,7 +106,7 @@ export function steppedFrame(
   beats: number,
   elapsedMs: number,
   from: readonly SequenceChannelValue[],
-  timing?: StepTiming,
+  timing?: StepOverride,
 ): SequenceFrame {
   const steps = orderedSteps(sequence);
   const singleShot = sequence.runOrder === SequenceRunOrder.SingleShot;
@@ -103,7 +117,7 @@ export function steppedFrame(
   if (played === undefined) {
     return { values: [], finished: false };
   }
-  const step = timing ? { ...played, ...timing } : played;
+  const step = timed(played, timing);
   const playedOut = elapsedMs >= stepDuration(step);
   const levels = playedOut
     ? endState(step)
@@ -114,11 +128,15 @@ export function steppedFrame(
 /** Where a free-running sequence starts: the raw step `index` (before wrapping) and the output it fades in from. */
 export type SequenceStart = { index: number; from: readonly SequenceChannelValue[] };
 
-/** Output of a free-running sequence `elapsedMs` after `start`, with the raw index of the step playing now. */
+/**
+ * Output of a free-running sequence `elapsedMs` after `start`, with the raw index of the step playing now;
+ * `timing` replaces every step's own when given.
+ */
 export function sequenceFrame(
   sequence: SequenceProperties,
   elapsedMs: number,
   start: SequenceStart = { index: 0, from: [] },
+  timing?: StepOverride,
 ): SequenceFrame & { index: number } {
   const steps = orderedSteps(sequence);
   let index = start.index;
@@ -134,10 +152,11 @@ export function sequenceFrame(
     if (sequence.runOrder === SequenceRunOrder.SingleShot && index >= steps.length) {
       return { values: toList(from), finished: true, index };
     }
-    const step = steps[playIndex(index, steps.length, sequence.runOrder)] ?? steps[0];
-    if (step === undefined) {
+    const played = steps[playIndex(index, steps.length, sequence.runOrder)] ?? steps[0];
+    if (played === undefined) {
       return { values: toList(from), finished: true, index };
     }
+    const step = timed(played, timing);
     const duration = stepDuration(step);
     if (duration === 0) {
       from = endState(step);

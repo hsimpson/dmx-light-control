@@ -17,18 +17,6 @@
           "vendorId": "0403"
         },
         {
-          "audioChannels": 1,
-          "customName": null,
-          "kind": "SoundInput",
-          "manufacturer": null,
-          "midiMappingPublicId": null,
-          "name": "800 Series Chipset Family Audio Context Engine (ACE)",
-          "productId": null,
-          "serial": null,
-          "usbLocation": null,
-          "vendorId": null
-        },
-        {
           "audioChannels": null,
           "customName": "Uplights",
           "kind": "Midi",
@@ -51,6 +39,30 @@
           "serial": "26062560878750",
           "usbLocation": "3-9",
           "vendorId": "09e8"
+        },
+        {
+          "audioChannels": null,
+          "customName": null,
+          "kind": "DmxSerial",
+          "manufacturer": "FTDI",
+          "midiMappingPublicId": null,
+          "name": "FTDI",
+          "productId": "6001",
+          "serial": "A50285BI",
+          "usbLocation": "01140000",
+          "vendorId": "0403"
+        },
+        {
+          "audioChannels": 1,
+          "customName": null,
+          "kind": "SoundInput",
+          "manufacturer": null,
+          "midiMappingPublicId": null,
+          "name": "C-Media Electronics Inc.: USB Audio Device",
+          "productId": null,
+          "serial": null,
+          "usbLocation": null,
+          "vendorId": null
         }
       ],
       "name": "Test-001",
@@ -55398,7 +55410,7 @@
       "roomHeight": 6.58,
       "roomLength": 14.6,
       "roomWidth": 12.2,
-      "updatedAt": "2026-11-13T18:46:08.882Z",
+      "updatedAt": "2026-11-21T16:19:43.696Z",
       "virtualConsole": {
         "height": 1080,
         "pages": [
@@ -55496,6 +55508,7 @@
                 "buttonMode": null,
                 "channelBindings": null,
                 "children": null,
+                "fadeMaxMs": null,
                 "feedback": null,
                 "fontFamily": "system-ui, sans-serif",
                 "fontSize": 16,
@@ -55515,8 +55528,8 @@
                 "upperLimit": null,
                 "valueType": null,
                 "width": 470,
-                "x": 1415,
-                "y": 10
+                "x": 1480,
+                "y": 5
               },
               {
                 "audioBars": null,
@@ -55528,6 +55541,7 @@
                 "buttonMode": "toggle",
                 "channelBindings": null,
                 "children": null,
+                "fadeMaxMs": null,
                 "feedback": null,
                 "fontFamily": "system-ui, sans-serif",
                 "fontSize": 16,
@@ -55547,7 +55561,7 @@
                 "upperLimit": 255,
                 "valueType": null,
                 "width": 145,
-                "x": 1595,
+                "x": 1760,
                 "y": 530
               },
               {
@@ -55629,13 +55643,14 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
                             "color": 5
                           },
                           "off": {
-                            "behavior": 0,
+                            "behavior": 2,
                             "color": 5
                           },
                           "on": {
@@ -55725,6 +55740,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -55808,6 +55824,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -55891,6 +55908,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -55974,6 +55992,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -56057,6 +56076,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -56140,6 +56160,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -56236,6 +56257,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -56332,6 +56354,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -56428,6 +56451,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -56524,6 +56548,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -56607,6 +56632,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -56690,6 +56716,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -56773,6 +56800,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -56798,6 +56826,7 @@
                         "y": 85
                       }
                     ],
+                    "fadeMaxMs": null,
                     "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
@@ -56840,6 +56869,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -56887,6 +56917,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -56934,6 +56965,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -56981,6 +57013,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57028,6 +57061,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57075,6 +57109,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57122,6 +57157,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57169,6 +57205,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57216,6 +57253,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57263,6 +57301,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57310,6 +57349,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57357,6 +57397,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57404,6 +57445,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57442,6 +57484,7 @@
                         "y": 0
                       }
                     ],
+                    "fadeMaxMs": null,
                     "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
@@ -57465,6 +57508,7 @@
                     "y": 0
                   }
                 ],
+                "fadeMaxMs": null,
                 "feedback": null,
                 "fontFamily": "system-ui, sans-serif",
                 "fontSize": 18,
@@ -57484,8 +57528,8 @@
                 "upperLimit": null,
                 "valueType": null,
                 "width": 730,
-                "x": 670,
-                "y": 10
+                "x": 740,
+                "y": 5
               },
               {
                 "audioBars": null,
@@ -57517,6 +57561,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57564,6 +57609,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57611,6 +57657,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57658,6 +57705,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57705,6 +57753,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57752,6 +57801,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57799,6 +57849,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57846,6 +57897,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57893,6 +57945,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57940,6 +57993,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -57987,6 +58041,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -58034,6 +58089,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -58081,6 +58137,7 @@
                         "buttonMode": "toggle",
                         "channelBindings": null,
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -58119,6 +58176,7 @@
                         "y": 0
                       }
                     ],
+                    "fadeMaxMs": null,
                     "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
@@ -58234,6 +58292,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -58354,6 +58413,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -58461,6 +58521,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -58568,6 +58629,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -58663,6 +58725,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -58770,6 +58833,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -58877,6 +58941,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -58898,7 +58963,7 @@
                         "upperLimit": null,
                         "valueType": "dmx",
                         "width": 80,
-                        "x": 560,
+                        "x": 640,
                         "y": 85
                       },
                       {
@@ -58984,6 +59049,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -59104,6 +59170,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -59212,6 +59279,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -59332,6 +59400,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -59440,6 +59509,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -59547,6 +59617,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": null,
                         "fontFamily": "system-ui, sans-serif",
                         "fontSize": 16,
@@ -59642,6 +59713,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -59762,6 +59834,7 @@
                           }
                         ],
                         "children": null,
+                        "fadeMaxMs": null,
                         "feedback": {
                           "monitor": {
                             "behavior": 6,
@@ -59798,8 +59871,44 @@
                         "width": 80,
                         "x": 320,
                         "y": 0
+                      },
+                      {
+                        "audioBars": null,
+                        "backgroundColor": "#ff7300",
+                        "bandCount": null,
+                        "beatBar": null,
+                        "borderColor": null,
+                        "borderWidth": null,
+                        "buttonMode": null,
+                        "channelBindings": null,
+                        "children": null,
+                        "fadeMaxMs": 5000,
+                        "feedback": null,
+                        "fontFamily": "system-ui, sans-serif",
+                        "fontSize": 14,
+                        "fontWeight": 600,
+                        "foregroundColor": "#ffffff",
+                        "functionName": null,
+                        "functionPublicId": null,
+                        "height": 300,
+                        "id": "4b62f716-d625-4d2b-887c-d07f88c90569",
+                        "label": "Fade-Time",
+                        "lowerLimit": null,
+                        "midiDeviceSerials": [
+                          "26062560878750"
+                        ],
+                        "midiEntryPublicId": "128690f9-65e7-41a9-a909-4556048a60ac",
+                        "orientation": "vertical",
+                        "tapTiming": null,
+                        "type": "globalFade",
+                        "upperLimit": null,
+                        "valueType": null,
+                        "width": 80,
+                        "x": 560,
+                        "y": 85
                       }
                     ],
+                    "fadeMaxMs": null,
                     "feedback": null,
                     "fontFamily": "system-ui, sans-serif",
                     "fontSize": 16,
@@ -59818,11 +59927,12 @@
                     "type": "frame",
                     "upperLimit": null,
                     "valueType": null,
-                    "width": 645,
+                    "width": 725,
                     "x": 0,
                     "y": 220
                   }
                 ],
+                "fadeMaxMs": null,
                 "feedback": null,
                 "fontFamily": "system-ui, sans-serif",
                 "fontSize": 18,
@@ -59841,9 +59951,9 @@
                 "type": "frame",
                 "upperLimit": null,
                 "valueType": null,
-                "width": 650,
-                "x": 10,
-                "y": 10
+                "width": 730,
+                "x": 5,
+                "y": 5
               },
               {
                 "audioBars": null,
@@ -59855,6 +59965,7 @@
                 "buttonMode": null,
                 "channelBindings": null,
                 "children": null,
+                "fadeMaxMs": null,
                 "feedback": null,
                 "fontFamily": "system-ui, sans-serif",
                 "fontSize": 14,
@@ -59878,8 +59989,56 @@
                 "upperLimit": null,
                 "valueType": null,
                 "width": 145,
-                "x": 1440,
+                "x": 1595,
                 "y": 530
+              },
+              {
+                "audioBars": null,
+                "backgroundColor": "#ff0000",
+                "bandCount": null,
+                "beatBar": null,
+                "borderColor": null,
+                "borderWidth": null,
+                "buttonMode": "toggle",
+                "channelBindings": null,
+                "children": null,
+                "fadeMaxMs": null,
+                "feedback": {
+                  "monitor": {
+                    "behavior": 11,
+                    "color": 5
+                  },
+                  "off": {
+                    "behavior": 2,
+                    "color": 5
+                  },
+                  "on": {
+                    "behavior": 11,
+                    "color": 5
+                  }
+                },
+                "fontFamily": "system-ui, sans-serif",
+                "fontSize": 16,
+                "fontWeight": 600,
+                "foregroundColor": "#ffffff",
+                "functionName": null,
+                "functionPublicId": null,
+                "height": 120,
+                "id": "0e2435b6-5989-4722-8774-081cac1a219c",
+                "label": "Button",
+                "lowerLimit": null,
+                "midiDeviceSerials": [
+                  "25082560709810"
+                ],
+                "midiEntryPublicId": "55693152-c542-4b13-90ad-94b0990f6975",
+                "orientation": null,
+                "tapTiming": null,
+                "type": "button",
+                "upperLimit": 255,
+                "valueType": null,
+                "width": 230,
+                "x": 1665,
+                "y": 635
               }
             ],
             "id": "1b4e1ba9-ae65-4975-9100-45a89d34f008",
@@ -59897,6 +60056,7 @@
                 "buttonMode": null,
                 "channelBindings": null,
                 "children": null,
+                "fadeMaxMs": null,
                 "feedback": null,
                 "fontFamily": null,
                 "fontSize": null,

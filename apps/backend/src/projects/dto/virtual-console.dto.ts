@@ -3,6 +3,7 @@ import {
   VIRTUAL_CONSOLE_AUDIO_BANDS_MAX,
   VIRTUAL_CONSOLE_AUDIO_BANDS_MIN,
   VIRTUAL_CONSOLE_CONTROL_SIZE_MIN,
+  VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS,
   VIRTUAL_CONSOLE_FONT_SIZE_MAX,
   VIRTUAL_CONSOLE_FONT_SIZE_MIN,
   VIRTUAL_CONSOLE_FONT_WEIGHT_MAX,
@@ -23,6 +24,7 @@ import {
   ArrayMaxSize,
   IsArray,
   IsEnum,
+  IsIn,
   IsInt,
   IsNumber,
   IsOptional,
@@ -345,6 +347,12 @@ export class VirtualConsoleControlDto {
   })
   @Type(() => VirtualConsoleBeatTimingDto)
   public tapTiming?: VirtualConsoleBeatTimingDto;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Fade time at the top of a global fade control in ms (1000, 2000, 5000, 10000 or 30000). Null: 5000.',
+  })
+  public fadeMaxMs?: number;
 }
 
 @ObjectType()
@@ -575,6 +583,14 @@ export class VirtualConsoleControlInput {
   @ValidateNested()
   @Type(() => VirtualConsoleBeatTimingInput)
   public tapTiming?: VirtualConsoleBeatTimingInput;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Fade time at the top of a global fade control in ms (1000, 2000, 5000, 10000 or 30000). Null: 5000.',
+  })
+  @IsOptional()
+  @IsIn(VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS)
+  public fadeMaxMs?: number;
 }
 
 @InputType()

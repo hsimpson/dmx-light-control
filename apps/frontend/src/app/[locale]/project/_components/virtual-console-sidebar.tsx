@@ -21,6 +21,8 @@ import { useState } from 'react';
 import { VIRTUAL_CONSOLE_COLOR_SWATCHES } from './virtual-console-color-palette';
 import {
   VIRTUAL_CONSOLE_DEFAULT_SNAP,
+  VIRTUAL_CONSOLE_FADE_DEFAULT_MAX_MS,
+  VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS,
   VIRTUAL_CONSOLE_PALETTE_MIME,
   VIRTUAL_CONSOLE_SNAP_MAX,
   VIRTUAL_CONSOLE_SNAP_MIN,
@@ -157,6 +159,10 @@ const VirtualConsoleSidebar = ({
             type="globalTap"
             label={t({ id: 'ProjectDetail.virtualConsole.control.globalTap', defaultMessage: 'Global tap' })}
           />
+          <PaletteItem
+            type="globalFade"
+            label={t({ id: 'ProjectDetail.virtualConsole.control.globalFade', defaultMessage: 'Global fade' })}
+          />
         </Stack>
 
         <UnstyledButton onClick={onSelectCanvas}>
@@ -251,6 +257,7 @@ const DEFAULT_FOREGROUND: Partial<Record<VirtualConsoleControl['type'], string>>
   button: '#ffffff',
   audioTriggers: '#40c057',
   globalTap: '#ffffff',
+  globalFade: '#fab005',
 };
 
 const ControlFields = ({
@@ -398,28 +405,44 @@ const ControlFields = ({
           }}
         />
       ) : null}
+      {control.type === 'slider' || control.type === 'globalFade' ? (
+        <Select
+          allowDeselect={false}
+          data={[
+            {
+              value: 'vertical',
+              label: t({ id: 'ProjectDetail.virtualConsole.vertical', defaultMessage: 'Vertical' }),
+            },
+            {
+              value: 'horizontal',
+              label: t({ id: 'ProjectDetail.virtualConsole.horizontal', defaultMessage: 'Horizontal' }),
+            },
+          ]}
+          label={t({ id: 'ProjectDetail.virtualConsole.orientation', defaultMessage: 'Orientation' })}
+          value={control.orientation ?? 'vertical'}
+          onChange={value => {
+            if (value === 'vertical' || value === 'horizontal') {
+              onPatch({ orientation: value });
+            }
+          }}
+        />
+      ) : null}
+      {control.type === 'globalFade' ? (
+        <Select
+          allowDeselect={false}
+          data={VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS.map(ms => ({ value: String(ms), label: `${ms / 1000} s` }))}
+          label={t({ id: 'ProjectDetail.virtualConsole.fadeMax', defaultMessage: 'Maximum fade time' })}
+          value={String(control.fadeMaxMs ?? VIRTUAL_CONSOLE_FADE_DEFAULT_MAX_MS)}
+          onChange={value => {
+            const fadeMaxMs = Number(value);
+            if (VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS.includes(fadeMaxMs)) {
+              onPatch({ fadeMaxMs });
+            }
+          }}
+        />
+      ) : null}
       {control.type === 'slider' ? (
         <>
-          <Select
-            allowDeselect={false}
-            data={[
-              {
-                value: 'vertical',
-                label: t({ id: 'ProjectDetail.virtualConsole.vertical', defaultMessage: 'Vertical' }),
-              },
-              {
-                value: 'horizontal',
-                label: t({ id: 'ProjectDetail.virtualConsole.horizontal', defaultMessage: 'Horizontal' }),
-              },
-            ]}
-            label={t({ id: 'ProjectDetail.virtualConsole.orientation', defaultMessage: 'Orientation' })}
-            value={control.orientation ?? 'vertical'}
-            onChange={value => {
-              if (value === 'vertical' || value === 'horizontal') {
-                onPatch({ orientation: value });
-              }
-            }}
-          />
           <Select
             allowDeselect={false}
             data={[

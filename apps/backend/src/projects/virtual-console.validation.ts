@@ -9,6 +9,7 @@ import {
   VIRTUAL_CONSOLE_DEFAULT_PAGE_NAME,
   VIRTUAL_CONSOLE_DEFAULT_SNAP,
   VIRTUAL_CONSOLE_DEFAULT_WIDTH,
+  VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS,
   VIRTUAL_CONSOLE_FONT_SIZE_MAX,
   VIRTUAL_CONSOLE_FONT_SIZE_MIN,
   VIRTUAL_CONSOLE_FONT_WEIGHT_MAX,
@@ -197,6 +198,9 @@ function assertControl(control: VirtualConsoleControl, ids: Set<string>, depth: 
     case VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap:
       assertGlobalTap(control);
       break;
+    case VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalFade:
+      assertGlobalFade(control);
+      break;
   }
 }
 
@@ -206,7 +210,8 @@ function assertControlType(type: string): asserts type is VirtualConsoleControlT
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Slider &&
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Button &&
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.AudioTriggers &&
-    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap
+    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap &&
+    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalFade
   ) {
     throw new InvalidVirtualConsoleException(`Unknown virtual console control type ${type}.`);
   }
@@ -294,11 +299,15 @@ function assertDmxLimit(value: number | null | undefined, field: string, fallbac
   return value;
 }
 
-function assertSlider(control: VirtualConsoleControl): void {
-  assertNoChildren(control);
+function assertOrientation(control: VirtualConsoleControl): void {
   if (control.orientation !== 'vertical' && control.orientation !== 'horizontal') {
     throw new InvalidVirtualConsoleException('Slider orientation must be vertical or horizontal.');
   }
+}
+
+function assertSlider(control: VirtualConsoleControl): void {
+  assertNoChildren(control);
+  assertOrientation(control);
   if (control.valueType !== 'dmx' && control.valueType !== 'percentage') {
     throw new InvalidVirtualConsoleException('Slider valueType must be dmx or percentage.');
   }
@@ -322,9 +331,23 @@ function assertGlobalTap(control: VirtualConsoleControl): void {
   if (control.tapTiming) assertBeatTiming(control.tapTiming, 'Tap timing');
 }
 
+function assertGlobalFade(control: VirtualConsoleControl): void {
+  assertNoChildren(control);
+  assertOrientation(control);
+  assertColor(control.foregroundColor, 'foregroundColor');
+  if (control.fadeMaxMs !== undefined && !VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS.includes(control.fadeMaxMs)) {
+    throw new InvalidVirtualConsoleException(
+      `Global fade fadeMaxMs must be one of ${VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS.join(', ')}.`,
+    );
+  }
+}
+
 function assertAudioFieldsAllowed(control: VirtualConsoleControl): void {
   if ((control.tapTiming ?? undefined) !== undefined && control.type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap) {
     throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have a tap timing.`);
+  }
+  if ((control.fadeMaxMs ?? undefined) !== undefined && control.type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalFade) {
+    throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have a fade maximum.`);
   }
   const hasAudioFields =
     (control.bandCount ?? undefined) !== undefined ||
