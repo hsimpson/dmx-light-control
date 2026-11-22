@@ -194,8 +194,8 @@ importers:
         specifier: ^10.1.9
         version: 10.1.9
       '@fastify/static':
-        specifier: ^10.1.11
-        version: 10.1.11
+        specifier: ^10.1.12
+        version: 10.1.12
       '@fastify/websocket':
         specifier: ^11.3.7
         version: 11.3.7
@@ -240,7 +240,7 @@ importers:
         version: 12.5.1(@nestjs/common@12.5.1(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.5.1)(rxjs@7.8.2)(supports-color@7.2.0)
       '@nestjs/platform-fastify':
         specifier: ^12.5.1
-        version: 12.5.1(@fastify/multipart@10.1.9)(@fastify/static@10.1.11)(@nestjs/common@12.5.1(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.5.1)(rxjs@7.8.2)
+        version: 12.5.1(@fastify/multipart@10.1.9)(@fastify/static@10.1.12)(@nestjs/common@12.5.1(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.5.1)(rxjs@7.8.2)
       '@phosphor-icons/react':
         specifier: ^2.1.10
         version: 2.1.10(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -1945,8 +1945,8 @@ packages:
   '@fastify/send@4.2.1':
     resolution: {integrity: sha512-zOB8L9z444PnGbd1Nd7gNXPz/7bnDR8Z4KNTNSwLVQuE3cTGsU9qUj1N4SjXKK0Tq4cauZYTwB+tqvlqosuKsw==}
 
-  '@fastify/static@10.1.11':
-    resolution: {integrity: sha512-WjEpDqkzOziIipghh4ki3ZNfLCmI1kRWlYKar3+9FiuY2LzoeogKiDqxIH68r6vYUSxvUzyEiV1BOP0yfW+glQ==}
+  '@fastify/static@10.1.12':
+    resolution: {integrity: sha512-D0pmf8OgurIsKiIjxC8ZJP/bCYnUSAiU6PS/se/6Me63UoliAu8FqrzDRX8FdgJMqFMXy45ISlfUZ1Gi6AJnqA==}
 
   '@fastify/websocket@11.3.7':
     resolution: {integrity: sha512-fkkS87CkAOY/MzvJrB94S729RxvIbLHXv2LNGkPifli4/q4IdeicpcFoxgJ3oVmIRVNSi4W6FZai5AmRhzhhTw==}
@@ -12674,7 +12674,7 @@ snapshots:
       http-errors: 2.0.1
       mime: 3.0.0
 
-  '@fastify/static@10.1.11':
+  '@fastify/static@10.1.12':
     dependencies:
       '@fastify/accept-negotiator': 2.1.2
       '@fastify/error': 4.2.1
@@ -14214,7 +14214,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@nestjs/platform-fastify@12.5.1(@fastify/multipart@10.1.9)(@fastify/static@10.1.11)(@nestjs/common@12.5.1(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.5.1)(rxjs@7.8.2)':
+  '@nestjs/platform-fastify@12.5.1(@fastify/multipart@10.1.9)(@fastify/static@10.1.12)(@nestjs/common@12.5.1(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.5.1)(rxjs@7.8.2)':
     dependencies:
       '@fastify/cors': 11.4.1
       '@fastify/formbody': 9.0.1
@@ -14230,7 +14230,7 @@ snapshots:
       tslib: 2.9.1
     optionalDependencies:
       '@fastify/multipart': 10.1.9
-      '@fastify/static': 10.1.11
+      '@fastify/static': 10.1.12
 
   '@nestjs/schematics@11.1.0(prettier@3.10.1)(typescript@6.0.3)':
     dependencies:
