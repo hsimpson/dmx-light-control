@@ -98,7 +98,7 @@
     "@dnd-kit/helpers": "^0.5.3",
     "@dnd-kit/react": "^0.5.3",
     "@fastify/multipart": "^10.1.9",
-    "@fastify/static": "^10.1.11",
+    "@fastify/static": "^10.1.12",
     "@fastify/websocket": "^11.3.7",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@mantine/core": "^9.8.1",
