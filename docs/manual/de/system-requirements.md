@@ -2,7 +2,7 @@
 
 ## Linux
 
-Der Server braucht die PulseAudio-Client-Bibliothek, auch auf Systemen mit PipeWire und auch dann, wenn kein Projekt einen Audioeingang verwendet. Ohne sie startet der Server nicht, und im Log steht `libpulse.so.0: cannot open shared object file`.
+Der Server braucht die PulseAudio-Client-Bibliothek, auch auf Systemen mit PipeWire und auch dann, wenn kein Projekt einen Audioeingang oder Audioausgang verwendet. Ohne sie startet der Server nicht, und im Log steht `libpulse.so.0: cannot open shared object file`.
 
 Unter Debian und Ubuntu installieren Sie sie mit:
 

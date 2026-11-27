@@ -41,6 +41,7 @@ export const VIRTUAL_CONSOLE_CONTROL_TYPE = {
   AudioTriggers: 'audioTriggers',
   GlobalTap: 'globalTap',
   GlobalFade: 'globalFade',
+  Show: 'show',
 } as const;
 
 export type VirtualConsoleControlType =
@@ -53,6 +54,7 @@ export enum VirtualConsoleControlTypeEnum {
   audioTriggers = 'audioTriggers',
   globalTap = 'globalTap',
   globalFade = 'globalFade',
+  show = 'show',
 }
 
 registerEnumType(VirtualConsoleControlTypeEnum, {
@@ -175,6 +177,8 @@ export type VirtualConsoleControl = {
   tapTiming?: VirtualConsoleBeatTiming;
   /** Top of a global fade control, one of `VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS`; absent: 5 s. */
   fadeMaxMs?: number;
+  /** The show a show control plays; absent until one is picked. Not exported: shows are not part of project export. */
+  showPublicId?: string | null;
 };
 
 export type VirtualConsolePage = {

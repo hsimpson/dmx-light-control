@@ -1,0 +1,50 @@
+fragment ShowFields on ShowDto {
+  publicId
+  name
+  durationMs
+  beatsMs
+  audioClips {
+    publicId
+    fileName
+    startMs
+    durationMs
+    beatsMs
+    peaks
+  }
+  lightTracks {
+    id
+    name
+    clips {
+      id
+      functionPublicId
+      startMs
+      durationMs
+      followBeat
+    }
+  }
+}
+
+query GetShows($projectPublicId: UUID!) {
+  shows(projectPublicId: $projectPublicId) {
+    ...ShowFields
+  }
+}
+
+mutation AddShow($input: AddShowInput!) {
+  addShow(input: $input) {
+    ...ShowFields
+  }
+}
+
+mutation UpdateShow($input: UpdateShowInput!) {
+  updateShow(input: $input) {
+    ...ShowFields
+  }
+}
+
+mutation DeleteShow($publicId: UUID!) {
+  deleteShow(publicId: $publicId) {
+    publicId
+    deleted
+  }
+}

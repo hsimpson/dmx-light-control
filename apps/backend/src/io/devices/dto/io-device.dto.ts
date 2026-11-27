@@ -17,7 +17,9 @@ import { IoDeviceKind, IoDeviceStatus } from '../match-io-devices';
 
 @ObjectType()
 export class IoDeviceDto {
-  @Field(() => IoDeviceKind, { description: 'Device kind (DMX serial output, MIDI controller or sound input)' })
+  @Field(() => IoDeviceKind, {
+    description: 'Device kind (DMX serial output, MIDI controller, sound input or audio output)',
+  })
   public kind: IoDeviceKind;
 
   @Field({ description: 'USB product name' })
@@ -77,7 +79,9 @@ const SOUND_INPUT_CHANNELS: readonly SoundInputChannels[] = [1, 2];
 
 @InputType()
 export class IoDeviceInput {
-  @Field(() => IoDeviceKind, { description: 'Device kind (DMX serial output, MIDI controller or sound input)' })
+  @Field(() => IoDeviceKind, {
+    description: 'Device kind (DMX serial output, MIDI controller, sound input or audio output)',
+  })
   @IsEnum(IoDeviceKind)
   public kind: IoDeviceKind;
 
@@ -141,15 +145,29 @@ export class IoDeviceInput {
 
 /** A project captures from at most one sound input. */
 export function AtMostOneSoundInput(): PropertyDecorator {
+  return atMostOneOfKind(IoDeviceKind.SoundInput, 'atMostOneSoundInput', 'a project can have at most one sound input');
+}
+
+/** A project plays its shows on at most one audio output. */
+export function AtMostOneAudioOutput(): PropertyDecorator {
+  return atMostOneOfKind(
+    IoDeviceKind.AudioOutput,
+    'atMostOneAudioOutput',
+    'a project can have at most one audio output',
+  );
+}
+
+function atMostOneOfKind(kind: IoDeviceKind, name: string, message: string): PropertyDecorator {
   return ValidateBy({
-    name: 'atMostOneSoundInput',
+    name,
     validator: {
-      validate: (devices: unknown) => !Array.isArray(devices) || devices.filter(isSoundInputDevice).length <= 1,
-      defaultMessage: () => 'a project can have at most one sound input',
+      validate: (devices: unknown) =>
+        !Array.isArray(devices) || devices.filter(device => isDeviceOfKind(device, kind)).length <= 1,
+      defaultMessage: () => message,
     },
   });
 }
 
-function isSoundInputDevice(device: unknown): boolean {
-  return typeof device === 'object' && device !== null && 'kind' in device && device.kind === IoDeviceKind.SoundInput;
+function isDeviceOfKind(device: unknown, kind: IoDeviceKind): boolean {
+  return typeof device === 'object' && device !== null && 'kind' in device && device.kind === kind;
 }

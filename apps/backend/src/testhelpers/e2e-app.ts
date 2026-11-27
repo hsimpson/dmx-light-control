@@ -6,12 +6,15 @@ import { DmxSendService } from '@/io/dmx/dmx-send.service';
 import { MidiService } from '@/io/midi/midi.service';
 import { SerialSendService } from '@/io/serial/serial-send.service';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModuleBuilder } from '@nestjs/testing';
 
-export async function createE2eApp(): Promise<NestFastifyApplication> {
+/** `override` replaces more I/O providers on top of the standard fakes (e.g. the audio output). */
+export async function createE2eApp(
+  override: (builder: TestingModuleBuilder) => TestingModuleBuilder = builder => builder,
+): Promise<NestFastifyApplication> {
   process.env.BACKEND_PORT ??= '3000';
 
-  const moduleFixture = await Test.createTestingModule({
+  const builder = Test.createTestingModule({
     imports: [AppModule],
   })
     .overrideProvider(SerialSendService)
@@ -30,8 +33,8 @@ export async function createE2eApp(): Promise<NestFastifyApplication> {
     .useValue({
       listPortNames: () => [],
       openPortNames: () => [],
-    })
-    .compile();
+    });
+  const moduleFixture = await override(builder).compile();
 
   const app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
   registerGlobals(app);

@@ -17,6 +17,8 @@ erDiagram
     fixtures ||--o{ project_fixtures : "fixture_id"
     fixture_channel_modes ||--o{ project_fixtures : "fixture_channel_mode_id"
     projects ||--o{ project_functions : "project_id"
+    projects ||--o{ shows : "project_id"
+    shows ||--o{ show_audio_clips : "show_id"
     fixtures {
         integer id PK
         uuid public_id UK
@@ -157,6 +159,27 @@ erDiagram
         doubleprecision default_size_x
         doubleprecision default_size_y
         doubleprecision default_size_z
+        timestamp created_at
+        timestamp updated_at
+    }
+    shows {
+        integer id PK
+        uuid public_id UK
+        integer project_id FK,UK
+        varchar name UK
+        jsonb light_tracks
+        timestamp created_at
+        timestamp updated_at
+    }
+    show_audio_clips {
+        integer id PK
+        uuid public_id UK
+        integer show_id FK
+        varchar file_name
+        integer start_ms
+        integer duration_ms
+        jsonb beats_ms
+        jsonb peaks
         timestamp created_at
         timestamp updated_at
     }

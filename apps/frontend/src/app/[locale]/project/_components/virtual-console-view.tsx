@@ -191,7 +191,8 @@ const VirtualConsoleView = ({ projectPublicId, mode = 'edit' }: VirtualConsoleVi
       type !== 'button' &&
       type !== 'audioTriggers' &&
       type !== 'globalTap' &&
-      type !== 'globalFade'
+      type !== 'globalFade' &&
+      type !== 'show'
     ) {
       return;
     }

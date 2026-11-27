@@ -1,4 +1,14 @@
-export const PROJECT_DETAIL_TABS = ['fixtures', 'functions', 'universe', 'dmx', '2d', '3d', 'console', 'io'] as const;
+export const PROJECT_DETAIL_TABS = [
+  'fixtures',
+  'functions',
+  'universe',
+  'dmx',
+  '2d',
+  '3d',
+  'console',
+  'shows',
+  'io',
+] as const;
 
 export type ProjectDetailTab = (typeof PROJECT_DETAIL_TABS)[number];
 

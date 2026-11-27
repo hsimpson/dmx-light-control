@@ -15,6 +15,7 @@ import ProjectFixtureTable from './project-fixture-table';
 import ProjectFunctionTable from './project-function-table';
 import ProjectIoDevicesPanel from './project-io-devices-panel';
 import ProjectTabEmptyState from './project-tab-empty-state';
+import ShowManagerView from './show-manager/show-manager-view';
 import ThreeDView from './three-d-view';
 import UniverseView from './universe-view';
 import VirtualConsoleView from './virtual-console-view';
@@ -47,6 +48,7 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
     '2d': t({ id: 'ProjectDetail.tabs.twoDView', defaultMessage: '2D View' }),
     '3d': t({ id: 'ProjectDetail.tabs.threeDView', defaultMessage: '3D View' }),
     console: t({ id: 'ProjectDetail.tabs.virtualConsole', defaultMessage: 'Virtual Console' }),
+    shows: t({ id: 'ProjectDetail.tabs.shows', defaultMessage: 'Show manager' }),
     io: t({ id: 'ProjectDetail.tabs.io', defaultMessage: 'Input/Output' }),
   };
 
@@ -88,6 +90,10 @@ const ProjectDetailTabs = ({ projectPublicId }: ProjectDetailTabsProperties) => 
 
       <Tabs.Panel value="console" pt="md" keepMounted={false} className={classes.threeDPanel}>
         <VirtualConsoleView projectPublicId={projectPublicId} />
+      </Tabs.Panel>
+
+      <Tabs.Panel value="shows" pt="md" keepMounted={false}>
+        <ShowManagerView projectPublicId={projectPublicId} />
       </Tabs.Panel>
 
       <Tabs.Panel value="io" pt="md" keepMounted={false}>

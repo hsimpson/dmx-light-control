@@ -71,6 +71,13 @@ describe('UpdateProjectIoDevicesInput', () => {
     await expect(errorsFor([mic, { ...mic, name: 'Line In' }])).resolves.toContain('atMostOneSoundInput');
   });
 
+  it('GIVEN two audio outputs WHEN validated THEN rejects the list, one next to a sound input is fine', async () => {
+    const speakers = { ...mic, kind: 'AudioOutput', name: 'Speakers', audioChannels: null };
+
+    await expect(errorsFor([speakers, { ...speakers, name: 'HDMI' }])).resolves.toContain('atMostOneAudioOutput');
+    await expect(errorsFor([mic, speakers])).resolves.toBe('[]');
+  });
+
   it('GIVEN a non-UUID project id WHEN validated THEN rejects publicId', async () => {
     await expect(errorsFor([ftdi], 'not-a-uuid')).resolves.toContain('"property":"publicId"');
   });

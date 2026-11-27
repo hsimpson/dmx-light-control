@@ -30,6 +30,7 @@ import {
   assertVirtualConsoleChannelBindings,
   assertVirtualConsoleFunctionBindings,
   remapVirtualConsoleBindingsForImport,
+  keepShowBindings,
   remapVirtualConsoleFunctionsForImport,
   sanitizeVirtualConsoleForImport,
   stripVirtualConsoleBindingHints,
@@ -360,6 +361,8 @@ export class ProjectImportExportService {
       return virtualConsole;
     }
     const bindingFixtures = await this.bindingFixturesForImport(tx, incoming);
+    // Shows are not exported; a show control keeps its show only when this project already has it.
+    const existingShows = await this.existingShowIds(tx, incoming.publicId);
     const importHints = this.importBindingHints(incoming);
     const sanitized = sanitizeVirtualConsoleForImport(virtualConsole);
     const functionsRemapped = remapVirtualConsoleFunctionsForImport(sanitized, this.importFunctions(incoming));
@@ -369,11 +372,20 @@ export class ProjectImportExportService {
       async assignmentPublicId => await this.findAssignmentChannelNumber(tx, assignmentPublicId),
       importHints,
     );
-    const stored = stripVirtualConsoleBindingHints(remapped);
+    const stored = keepShowBindings(stripVirtualConsoleBindingHints(remapped), id => existingShows.has(id));
     assertValidVirtualConsole(stored);
     assertVirtualConsoleChannelBindings(stored, bindingFixtures);
     assertVirtualConsoleFunctionBindings(stored, new Set(this.importFunctions(incoming).map(fn => fn.publicId)));
     return stored;
+  }
+
+  private async existingShowIds(tx: Tx, projectPublicId: string | null | undefined): Promise<Set<string>> {
+    if (!projectPublicId) return new Set();
+    const existing = await tx.query.project.findFirst({
+      where: { publicId: projectPublicId },
+      with: { shows: { columns: { publicId: true } } },
+    });
+    return new Set((existing?.shows ?? []).flatMap(show => (show.publicId ? [show.publicId] : [])));
   }
 
   private assignFunctionPublicIds(incoming: ImportProjectsInput['projects'][number]): void {

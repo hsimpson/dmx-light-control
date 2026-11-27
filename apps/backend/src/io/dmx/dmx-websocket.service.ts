@@ -8,6 +8,7 @@ import {
   dmxWsDeltaMessage,
   dmxWsFunctionStateMessage,
   dmxWsMidiInputMessage,
+  dmxWsShowStateMessage,
   dmxWsSnapshotMessage,
   dmxWsSoundLevelMessage,
   parseDmxWsClientMessage,
@@ -46,6 +47,9 @@ export class DmxWebsocketService implements OnModuleInit, OnModuleDestroy {
     this.eventEmitter.on('virtualConsole.audioLevels', ({ levels, bpm }) => {
       this.broadcast(JSON.stringify(dmxWsAudioLevelsMessage(levels, bpm)));
     });
+    this.eventEmitter.on('show.state', state => {
+      this.broadcast(JSON.stringify(dmxWsShowStateMessage(state)));
+    });
     this.eventEmitter.on('soundInput.level', ({ levels }) => {
       this.broadcast(JSON.stringify(dmxWsSoundLevelMessage(levels)));
     });
@@ -64,6 +68,7 @@ export class DmxWebsocketService implements OnModuleInit, OnModuleDestroy {
     socket.send(JSON.stringify(dmxWsSnapshotMessage(this.universe.snapshot())));
     this.eventEmitter.emit('function.state.request');
     this.eventEmitter.emit('virtualConsole.state.request');
+    this.eventEmitter.emit('show.state.request');
     // Controls this client holds (last value > 0); released when it disconnects so flash buttons don't stick.
     const held = new Set<string>();
     socket.on('message', raw => {
@@ -88,6 +93,15 @@ export class DmxWebsocketService implements OnModuleInit, OnModuleDestroy {
         this.eventEmitter.emit(parsed.type === 'functionStart' ? 'function.start' : 'function.stop', {
           functionPublicId: parsed.functionPublicId,
         });
+        return;
+      case 'showPlay':
+        this.eventEmitter.emit('show.play', { showPublicId: parsed.showPublicId, fromMs: parsed.fromMs });
+        return;
+      case 'showPause':
+        this.eventEmitter.emit('show.pause');
+        return;
+      case 'showStop':
+        this.eventEmitter.emit('show.stop');
         return;
       case 'controlValue':
         if (parsed.value > 0) {

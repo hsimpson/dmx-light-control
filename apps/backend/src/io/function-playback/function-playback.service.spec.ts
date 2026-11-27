@@ -86,6 +86,28 @@ describe('FunctionPlaybackService', () => {
     expect(universe.getFrame()[4]).toBe(0);
   });
 
+  it('GIVEN a stepped start with 2 beats taken WHEN it starts THEN it plays the second step at once', async () => {
+    const { service, functions, universe } = build();
+    functions.findOneByPublicId.mockResolvedValue(steppedRow());
+
+    await service.start(FUNCTION_ID, true, 2);
+    vi.advanceTimersByTime(150);
+
+    expect(universe.getFrame()[4]).toBe(200);
+  });
+
+  it('GIVEN a stepped start still loading WHEN a beat arrives THEN the runner starts one step further', async () => {
+    const { service, functions, universe } = build();
+    functions.findOneByPublicId.mockResolvedValue(steppedRow());
+
+    const starting = service.start(FUNCTION_ID, true, 1);
+    service.step(FUNCTION_ID);
+    await starting;
+    vi.advanceTimersByTime(150);
+
+    expect(universe.getFrame()[4]).toBe(200);
+  });
+
   it('GIVEN a stepped function WHEN beats arrive THEN each plays one step and timing alone never advances', async () => {
     const { service, functions, universe } = build();
     functions.findOneByPublicId.mockResolvedValue(steppedRow());

@@ -115,6 +115,39 @@ describe('DmxWebsocketClient', () => {
     vi.useRealTimers();
   });
 
+  it('GIVEN a show WHEN the transport is used and state arrives THEN messages go out and valid state is stored', () => {
+    const store = createDmxStore();
+    const client = new DmxWebsocketClient(store, 'ws://test/dmx', FakeWebSocket);
+    client.connect();
+    const socket = FakeWebSocket.instances[0];
+    socket?.open();
+
+    client.playShow('show-1', 1500);
+    client.pauseShow();
+    client.stopShow();
+    socket?.receive({
+      type: 'showState',
+      showPublicId: 'show-1',
+      status: 'playing',
+      positionMs: 1500,
+      durationMs: 9000,
+    });
+    socket?.receive({ type: 'showState', showPublicId: 'show-1', status: 'exploded', positionMs: 0, durationMs: 0 });
+
+    expect(socket?.sent.map((raw): unknown => JSON.parse(raw))).toEqual([
+      { type: 'showPlay', showPublicId: 'show-1', fromMs: 1500 },
+      { type: 'showPause' },
+      { type: 'showStop' },
+    ]);
+    expect(store.getState().showPlayback).toEqual({
+      showPublicId: 'show-1',
+      status: 'playing',
+      positionMs: 1500,
+      durationMs: 9000,
+    });
+    client.disconnect();
+  });
+
   it('queues set until a snapshot arrives, then flushes automatically', () => {
     const store = createDmxStore();
     const client = new DmxWebsocketClient(store, 'ws://localhost/dmx', FakeWebSocket);

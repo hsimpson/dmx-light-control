@@ -21,6 +21,8 @@ import { GlobalGqlExceptionFilter } from './graphql/graphql-exception.filter';
 import { formatErrorHandler } from './graphql/graphql-format-error';
 import { MidiMappingsModule } from './midi-mappings/midi-mappings.module';
 import { ProjectsModule } from './projects/projects.module';
+import { ShowsModule } from './shows/shows.module';
+import { ShowPlaybackModule } from './io/show-playback/show-playback.module';
 
 @Module({
   imports: [
@@ -52,6 +54,8 @@ import { ProjectsModule } from './projects/projects.module';
     FixturesModule,
     MidiMappingsModule,
     ProjectsModule,
+    ShowsModule,
+    ShowPlaybackModule,
   ],
   providers: [
     {

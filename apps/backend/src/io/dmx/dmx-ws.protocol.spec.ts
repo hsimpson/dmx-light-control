@@ -49,4 +49,33 @@ describe('parseDmxWsSetMessage', () => {
     ).toBeUndefined();
     expect(parseDmxWsClientMessage('{"type":"controlValue","controlId":"c-1","value":1e999}')).toBeUndefined();
   });
+
+  it('GIVEN show transport messages WHEN parsed THEN play keeps a valid start position and pause/stop need nothing', () => {
+    expect(
+      parseDmxWsClientMessage(
+        JSON.stringify({ type: 'showPlay', showPublicId: '5f0c1a2b-3c4d-4e5f-8a9b-0c1d2e3f4a5b', fromMs: 1500 }),
+      ),
+    ).toEqual({
+      type: 'showPlay',
+      showPublicId: '5f0c1a2b-3c4d-4e5f-8a9b-0c1d2e3f4a5b',
+      fromMs: 1500,
+    });
+    expect(
+      parseDmxWsClientMessage(
+        JSON.stringify({ type: 'showPlay', showPublicId: '5f0c1a2b-3c4d-4e5f-8a9b-0c1d2e3f4a5b' }),
+      ),
+    ).toEqual({
+      type: 'showPlay',
+      showPublicId: '5f0c1a2b-3c4d-4e5f-8a9b-0c1d2e3f4a5b',
+    });
+    expect(
+      parseDmxWsClientMessage(
+        JSON.stringify({ type: 'showPlay', showPublicId: '5f0c1a2b-3c4d-4e5f-8a9b-0c1d2e3f4a5b', fromMs: -1 }),
+      ),
+    ).toBeUndefined();
+    expect(parseDmxWsClientMessage(JSON.stringify({ type: 'showPlay', showPublicId: '' }))).toBeUndefined();
+    expect(parseDmxWsClientMessage(JSON.stringify({ type: 'showPlay', showPublicId: 'x' }))).toBeUndefined();
+    expect(parseDmxWsClientMessage(JSON.stringify({ type: 'showPause' }))).toEqual({ type: 'showPause' });
+    expect(parseDmxWsClientMessage(JSON.stringify({ type: 'showStop' }))).toEqual({ type: 'showStop' });
+  });
 });

@@ -1,4 +1,5 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
+import { AudioOutputService } from '@/io/audio-output/audio-output.service';
 import { MidiService } from '@/io/midi/midi.service';
 import { SerialSendService } from '@/io/serial/serial-send.service';
 import { SoundInputService } from '@/io/sound-input/sound-input.service';
@@ -19,23 +20,37 @@ const { hardware } = vi.hoisted(() => {
     midiPorts: [] as string[],
     serialOpenFailures: new Set<string>(),
     openSerialPaths: new Set<string>(),
-    audioDevices: [] as { id: number; name: string; inputChannels: number; preferredSampleRate: number }[],
+    audioDevices: [] as {
+      id: number;
+      name: string;
+      inputChannels: number;
+      outputChannels: number;
+      preferredSampleRate: number;
+    }[],
     audioStream: null as { deviceId: number; nChannels: number } | null,
+    outputStream: null as { deviceId: number; nChannels: number } | null,
   };
 
+  type StreamParameters = { deviceId: number; nChannels: number };
+
+  // One instance per service, like RtAudio: the sound input captures, the audio output plays.
   class FakeRtAudio {
     public readonly start = vi.fn<() => void>();
+    public readonly write = vi.fn<(pcm: Buffer) => void>();
+    private kind: 'audioStream' | 'outputStream' | null = null;
     public getDevices(): typeof state.audioDevices {
       return state.audioDevices;
     }
-    public openStream(_output: null, input: { deviceId: number; nChannels: number }): void {
-      state.audioStream = input;
+    public openStream(output: StreamParameters | null, input: StreamParameters | null): void {
+      this.kind = input ? 'audioStream' : 'outputStream';
+      state[this.kind] = input ?? output;
     }
     public isStreamOpen(): boolean {
-      return state.audioStream !== null;
+      return this.kind !== null;
     }
     public closeStream(): void {
-      state.audioStream = null;
+      if (this.kind) state[this.kind] = null;
+      this.kind = null;
     }
   }
 
@@ -139,11 +154,22 @@ const mic: ProjectIoDevice = {
   audioChannels: 2,
 };
 
+const speakers: ProjectIoDevice = {
+  kind: IoDeviceKind.AudioOutput,
+  vendorId: null,
+  productId: null,
+  name: 'USB Speakers',
+  manufacturer: null,
+  serial: null,
+  usbLocation: null,
+};
+
 describe('IoDeviceManagerService', () => {
   let eventEmitter: AppEventEmitter;
   let serialSend: SerialSendService;
   let midi: MidiService;
   let soundInput: SoundInputService;
+  let audioOutput: AudioOutputService;
   let available: AvailableIoDevice[];
   let listAvailable: MockInstance<IoDeviceDiscoveryService['listAvailable']>;
   let manager: IoDeviceManagerService;
@@ -152,7 +178,22 @@ describe('IoDeviceManagerService', () => {
     available.push({ ...device, usbLocation, handle });
     if (device.kind === IoDeviceKind.Midi) hardware.state.midiPorts.push(handle);
     if (device.kind === IoDeviceKind.SoundInput) {
-      hardware.state.audioDevices.push({ id: 129, name: handle, inputChannels: 2, preferredSampleRate: 48000 });
+      hardware.state.audioDevices.push({
+        id: 129,
+        name: handle,
+        inputChannels: 2,
+        outputChannels: 0,
+        preferredSampleRate: 48000,
+      });
+    }
+    if (device.kind === IoDeviceKind.AudioOutput) {
+      hardware.state.audioDevices.push({
+        id: 130,
+        name: handle,
+        inputChannels: 0,
+        outputChannels: 2,
+        preferredSampleRate: 48000,
+      });
     }
   }
 
@@ -180,15 +221,17 @@ describe('IoDeviceManagerService', () => {
       openSerialPaths: new Set(),
       audioDevices: [],
       audioStream: null,
+      outputStream: null,
     });
 
     eventEmitter = new AppEventEmitter(new EventEmitter2());
     serialSend = new SerialSendService(eventEmitter);
     midi = new MidiService(eventEmitter);
     soundInput = new SoundInputService(eventEmitter);
-    const discovery = new IoDeviceDiscoveryService(midi, soundInput, '/nonexistent');
+    audioOutput = new AudioOutputService();
+    const discovery = new IoDeviceDiscoveryService(midi, soundInput, audioOutput, '/nonexistent');
     listAvailable = vi.spyOn(discovery, 'listAvailable').mockImplementation(async () => Promise.resolve(available));
-    manager = new IoDeviceManagerService(discovery, serialSend, midi, soundInput, eventEmitter);
+    manager = new IoDeviceManagerService(discovery, serialSend, midi, soundInput, audioOutput, eventEmitter);
     manager.onModuleInit();
   });
 
@@ -197,7 +240,33 @@ describe('IoDeviceManagerService', () => {
     serialSend.onModuleDestroy();
     midi.onModuleDestroy();
     soundInput.onModuleDestroy();
+    audioOutput.onModuleDestroy();
     vi.useRealTimers();
+  });
+
+  it('GIVEN a configured audio output WHEN the project activates THEN it plays in stereo next to the sound input', async () => {
+    plug(mic, 'StreamCam');
+    plug(speakers, 'USB Speakers');
+
+    await activate([mic, speakers]);
+
+    expect(hardware.state.outputStream).toEqual({ deviceId: 130, nChannels: 2 });
+    expect(hardware.state.audioStream).toEqual({ deviceId: 129, nChannels: 2 });
+    expect(statuses()).toEqual([
+      ['StreamCam', IoDeviceStatus.Connected],
+      ['USB Speakers', IoDeviceStatus.Connected],
+    ]);
+  });
+
+  it('GIVEN an open audio output WHEN it is unplugged THEN the stream closes and it shows as missing', async () => {
+    plug(speakers, 'USB Speakers');
+    await activate([speakers]);
+
+    unplug('USB Speakers');
+    await vi.advanceTimersByTimeAsync(IO_DEVICE_POLL_INTERVAL_MS);
+
+    expect(hardware.state.outputStream).toBeNull();
+    expect(statuses()).toEqual([['USB Speakers', IoDeviceStatus.Missing]]);
   });
 
   it('GIVEN a configured sound input WHEN the project activates THEN it is captured with its channel count', async () => {

@@ -36,6 +36,8 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
   private readonly runners = new Map<string, Runner>();
   // A stop that arrives while start awaits the database (quick flash press) must cancel that start.
   private readonly pendingStarts = new Map<string, symbol>();
+  // Beats that arrive while a stepped start still loads; a show's clip would otherwise stay one step behind.
+  private readonly pendingSteps = new Map<string, number>();
   private timer: ReturnType<typeof setInterval> | undefined;
   /** Global crossfade time; 0 leaves each step its own timing. */
   private fadeMs = 0;
@@ -48,7 +50,7 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
 
   public onModuleInit(): void {
     this.eventEmitter.on('function.start', payload => {
-      void this.start(payload.functionPublicId, payload.stepped);
+      void this.start(payload.functionPublicId, payload.stepped, payload.beats);
     });
     this.eventEmitter.on('function.step', payload => {
       this.step(payload.functionPublicId, payload.timing);
@@ -81,7 +83,7 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     return [...this.runners.keys()].sort();
   }
 
-  public async start(functionPublicId: string, stepped = false): Promise<void> {
+  public async start(functionPublicId: string, stepped = false, beats = 0): Promise<void> {
     const startToken = Symbol(functionPublicId);
     this.pendingStarts.set(functionPublicId, startToken);
     const row = await this.functions.findOneByPublicId(functionPublicId);
@@ -96,7 +98,9 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
       sequence: row.properties.sequence,
       startedAt: Date.now(),
       start: { index: 0, from: [] },
-      ...(stepped ? { stepped: { beats: 0, beatAt: Date.now(), from: [] } } : {}),
+      ...(stepped
+        ? { stepped: { beats: beats + this.takePendingSteps(functionPublicId), beatAt: Date.now(), from: [] } }
+        : {}),
       lastValues: [],
       lastIndex: 0,
     });
@@ -109,6 +113,9 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
   public step(functionPublicId: string, timing?: StepTiming): void {
     const runner = this.runners.get(functionPublicId);
     if (!runner?.stepped) {
+      if (this.pendingStarts.has(functionPublicId)) {
+        this.pendingSteps.set(functionPublicId, (this.pendingSteps.get(functionPublicId) ?? 0) + 1);
+      }
       return;
     }
     const { runOrder, steps } = runner.sequence;
@@ -169,6 +176,7 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
 
   public stop(functionPublicId: string): void {
     this.pendingStarts.delete(functionPublicId);
+    this.pendingSteps.delete(functionPublicId);
     if (!this.runners.delete(functionPublicId)) {
       return;
     }
@@ -180,6 +188,12 @@ export class FunctionPlaybackService implements OnModuleInit, OnModuleDestroy {
     if (this.runners.size === 0) {
       this.stopTicker();
     }
+  }
+
+  private takePendingSteps(functionPublicId: string): number {
+    const steps = this.pendingSteps.get(functionPublicId) ?? 0;
+    this.pendingSteps.delete(functionPublicId);
+    return steps;
   }
 
   private tick(): void {

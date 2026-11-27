@@ -35,6 +35,10 @@ vi.mock('./virtual-console-view', () => ({
   default: () => <div data-testid="virtual-console-view" />,
 }));
 
+vi.mock('./show-manager/show-manager-view', () => ({
+  default: () => <div data-testid="show-manager-view" />,
+}));
+
 vi.mock('./project-io-devices-panel', () => ({
   default: () => <div data-testid="project-io-devices-panel" />,
 }));
@@ -57,6 +61,7 @@ describe('ProjectDetailTabs', () => {
       '2D View',
       '3D View',
       'Virtual Console',
+      'Show manager',
       'Input/Output',
     ]);
     expect(screen.getByTestId('project-fixture-table')).toBeInTheDocument();

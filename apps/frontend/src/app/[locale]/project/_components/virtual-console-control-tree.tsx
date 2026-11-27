@@ -4,6 +4,7 @@ import AudioTriggersControl from '@/app/[locale]/project/_components/virtual-con
 import ButtonControl from '@/app/[locale]/project/_components/virtual-console-controls/button-control';
 import FrameControl from '@/app/[locale]/project/_components/virtual-console-controls/frame-control';
 import ResizeHandles from '@/app/[locale]/project/_components/virtual-console-controls/resize-handles';
+import ShowControl from '@/app/[locale]/project/_components/virtual-console-controls/show-control';
 import SliderControl from '@/app/[locale]/project/_components/virtual-console-controls/slider-control';
 import type { VirtualConsoleControlMode } from '@/app/[locale]/project/_components/virtual-console-controls/virtual-console-control-properties';
 import {
@@ -126,6 +127,7 @@ const VirtualConsoleControlTree = ({
                 }}
               />
             ) : null}
+            {control.type === 'show' ? <ShowControl control={control} mode={mode} selected={selected} /> : null}
             {mode === 'edit' && selected ? (
               <ResizeHandles
                 onResizePointerDown={(handle, event) => {

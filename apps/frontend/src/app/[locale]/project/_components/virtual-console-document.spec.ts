@@ -579,3 +579,16 @@ describe('global fade time', () => {
     });
   });
 });
+
+describe('show control', () => {
+  it('GIVEN a show control with a show WHEN turned into input THEN it keeps its type and show', () => {
+    const control = { ...createControl('show', 10, 20), showPublicId: 'show-1' };
+    const document = createDefaultVirtualConsoleDocument();
+    const page = document.pages[0];
+    if (!page) throw new Error('default page missing');
+
+    const input = virtualConsoleDocumentToInput({ ...document, pages: [{ ...page, controls: [control] }] });
+
+    expect(input.pages[0]?.controls[0]).toMatchObject({ type: 'show', showPublicId: 'show-1', x: 10, y: 20 });
+  });
+});

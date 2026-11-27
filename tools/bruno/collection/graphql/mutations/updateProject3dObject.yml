@@ -1,7 +1,7 @@
 info:
   name: updateProject3dObject
   type: graphql
-  seq: 26
+  seq: 28
 
 graphql:
   method: POST

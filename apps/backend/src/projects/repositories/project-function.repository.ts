@@ -4,8 +4,10 @@ import { relations } from '@/db/relations';
 import project from '@/projects/entities/project.entity';
 import projectFunction from '@/projects/entities/project-function.entity';
 import { removeFunctionBindings } from '@/projects/virtual-console.validation';
+import show from '@/shows/entities/show.entity';
+import { clipFunctionIds, removeFunctionClips } from '@/shows/show';
 import { Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
 @Injectable()
@@ -36,6 +38,13 @@ export class ProjectFunctionRepository extends BaseRepository<typeof projectFunc
           .update(project)
           .set({ virtualConsole: removeFunctionBindings(projectRow.virtualConsole, publicId) })
           .where(eq(project.id, projectId));
+      }
+      const shows = await tx.query.show.findMany({ where: { projectId } });
+      for (const row of shows.filter(candidate => clipFunctionIds(candidate.lightTracks).has(publicId))) {
+        await tx
+          .update(show)
+          .set({ lightTracks: removeFunctionClips(row.lightTracks, publicId) })
+          .where(and(eq(show.projectId, projectId), eq(show.name, row.name)));
       }
       await tx.delete(projectFunction).where(eq(projectFunction.publicId, publicId));
     });

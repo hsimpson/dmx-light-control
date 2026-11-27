@@ -1,0 +1,128 @@
+.scroll {
+  overflow: auto;
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-sm);
+  user-select: none;
+}
+
+.content {
+  position: relative;
+}
+
+.row {
+  display: flex;
+  height: 56px;
+  border-bottom: 1px solid var(--mantine-color-default-border);
+}
+
+.rulerRow {
+  height: 28px;
+}
+
+.label {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  /* Same as LABEL_WIDTH_PX in show-timeline.tsx. */
+  flex: 0 0 140px;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--mantine-spacing-xs);
+  overflow: hidden;
+  font-size: var(--mantine-font-size-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  background: var(--mantine-color-body);
+  border-right: 1px solid var(--mantine-color-default-border);
+}
+
+.labelSelected {
+  font-weight: 700;
+  background: var(--mantine-color-default-hover);
+}
+
+.lane {
+  position: relative;
+  flex: 1 0 auto;
+}
+
+.ruler {
+  cursor: pointer;
+}
+
+.tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  padding-left: 3px;
+  font-size: var(--mantine-font-size-xs);
+  color: var(--mantine-color-dimmed);
+  border-left: 1px solid var(--mantine-color-default-border);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.beat {
+  position: absolute;
+  top: 28px;
+  bottom: 0;
+  width: 1px;
+  background: var(--mantine-color-orange-light-color);
+  opacity: 0.35;
+}
+
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--mantine-color-red-filled);
+}
+
+.clip {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  z-index: 1;
+  overflow: hidden;
+  padding: 2px 6px;
+  font-size: var(--mantine-font-size-xs);
+  white-space: nowrap;
+  cursor: grab;
+  touch-action: none;
+  border-radius: var(--mantine-radius-xs);
+  color: var(--mantine-color-white);
+  background: var(--mantine-color-blue-filled);
+}
+
+.audioClip {
+  background: var(--mantine-color-teal-filled);
+}
+
+.clipSelected {
+  outline: 2px solid var(--mantine-color-yellow-filled);
+}
+
+.waveform {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: var(--mantine-color-white);
+  opacity: 0.45;
+}
+
+.resize {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: ew-resize;
+}

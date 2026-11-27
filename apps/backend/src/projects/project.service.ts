@@ -48,6 +48,7 @@ import {
   assertValidVirtualConsole,
   assertVirtualConsoleChannelBindings,
   assertVirtualConsoleFunctionBindings,
+  assertVirtualConsoleShowBindings,
   normalizeVirtualConsole,
   VirtualConsoleBindingFixture,
 } from './virtual-console.validation';
@@ -329,6 +330,9 @@ export class ProjectService {
       input.virtualConsole,
       new Set(project.projectFunctions.flatMap(fn => (fn.publicId ? [fn.publicId] : []))),
     );
+    if (project.id) {
+      assertVirtualConsoleShowBindings(input.virtualConsole, await this.projectRepository.showPublicIds(project.id));
+    }
     const updated = await this.projectRepository.updateOneByPublicId(input.publicId, {
       virtualConsole: input.virtualConsole,
     });

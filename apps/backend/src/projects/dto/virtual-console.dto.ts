@@ -29,6 +29,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
   Length,
   Matches,
   Max,
@@ -353,6 +354,9 @@ export class VirtualConsoleControlDto {
     description: 'Fade time at the top of a global fade control in ms (1000, 2000, 5000, 10000 or 30000). Null: 5000.',
   })
   public fadeMaxMs?: number;
+
+  @Field(() => GraphQLUUID, { nullable: true, description: 'The show a show control plays' })
+  public showPublicId?: string | null;
 }
 
 @ObjectType()
@@ -591,6 +595,11 @@ export class VirtualConsoleControlInput {
   @IsOptional()
   @IsIn(VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS)
   public fadeMaxMs?: number;
+
+  @Field(() => GraphQLUUID, { nullable: true, description: 'The show a show control plays' })
+  @IsOptional()
+  @IsUUID('4')
+  public showPublicId?: string | null;
 }
 
 @InputType()

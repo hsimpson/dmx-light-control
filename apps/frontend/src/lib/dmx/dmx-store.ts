@@ -17,6 +17,18 @@ export type MidiInput = {
   message: number[];
 };
 
+export type ShowPlaybackStatus = 'playing' | 'paused' | 'stopped';
+
+/** The backend's single show playback; `showPublicId` is null while nothing is loaded. */
+export type ShowPlaybackState = {
+  showPublicId: string | null;
+  status: ShowPlaybackStatus;
+  positionMs: number;
+  durationMs: number;
+};
+
+export const STOPPED_SHOW: ShowPlaybackState = { showPublicId: null, status: 'stopped', positionMs: 0, durationMs: 0 };
+
 export type DmxStoreState = {
   channels: number[];
   status: DmxConnectionStatus;
@@ -30,6 +42,7 @@ export type DmxStoreState = {
   audioLevels: Record<string, number[]>;
   /** Beats per minute per enabled audio triggers control while the backend knows one. */
   audioBpm: Record<string, number>;
+  showPlayback: ShowPlaybackState;
   applySnapshot: (values: ArrayLike<number>) => void;
   applyDelta: (updates: DmxChannelUpdate[]) => void;
   setStatus: (status: DmxConnectionStatus) => void;
@@ -39,6 +52,7 @@ export type DmxStoreState = {
   setSoundLevels: (levels: number[]) => void;
   setAudioLevels: (levels: Record<string, number[]>) => void;
   setAudioBpm: (bpm: Record<string, number>) => void;
+  setShowPlayback: (state: ShowPlaybackState) => void;
 };
 
 function createZeroChannels(): number[] {
@@ -59,6 +73,7 @@ export function createDmxStore() {
     soundLevels: null,
     audioLevels: {},
     audioBpm: {},
+    showPlayback: STOPPED_SHOW,
     applySnapshot: values => {
       const next = createZeroChannels();
       const length = Math.min(DMX_CHANNEL_COUNT, values.length);
@@ -111,6 +126,9 @@ export function createDmxStore() {
     setAudioBpm: audioBpm => {
       set({ audioBpm });
     },
+    setShowPlayback: showPlayback => {
+      set({ showPlayback });
+    },
   }));
 }
 
@@ -129,6 +147,7 @@ export function resetDmxStore(): void {
     soundLevels: null,
     audioLevels: {},
     audioBpm: {},
+    showPlayback: STOPPED_SHOW,
     status: 'idle',
   });
 }

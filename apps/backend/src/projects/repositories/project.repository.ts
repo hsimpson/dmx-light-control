@@ -35,4 +35,9 @@ export class ProjectRepository extends BaseRepository<typeof schema.project> {
   public async findManyWithFixtures() {
     return this.db.query.project.findMany({ with: projectRelations });
   }
+
+  public async showPublicIds(projectId: number): Promise<Set<string>> {
+    const shows = await this.db.query.show.findMany({ where: { projectId }, columns: { publicId: true } });
+    return new Set(shows.flatMap(show => (show.publicId ? [show.publicId] : [])));
+  }
 }

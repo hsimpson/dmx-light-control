@@ -1,4 +1,5 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
+import { EventEmitter2 } from 'eventemitter2';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DmxUniverseService } from './dmx-universe.service';
 import { handleDmxWebsocketConnection, type DmxWsSocket } from './dmx-websocket.connection';
@@ -199,6 +200,58 @@ describe('DmxWebsocketService', () => {
     expect(emitted).toContainEqual(['virtualConsole.input', { controlId: 'held', value: 1 }]);
     expect(emitted.at(-1)).toEqual(['virtualConsole.inputsReleased', { controlIds: ['held'] }]);
     expect(client.sent).toEqual([JSON.stringify({ type: 'controlState', values: { held: 255 } })]);
+    service.onModuleDestroy();
+  });
+
+  it('GIVEN a client WHEN it drives a show THEN transport becomes events and the show state is broadcast', () => {
+    const eventEmitter = new AppEventEmitter(new EventEmitter2());
+    const emitted: string[] = [];
+    eventEmitter.on('show.state.request', () => {
+      emitted.push('show.state.request');
+    });
+    eventEmitter.on('show.play', payload => {
+      emitted.push(`show.play ${JSON.stringify(payload)}`);
+    });
+    eventEmitter.on('show.pause', () => {
+      emitted.push('show.pause');
+    });
+    eventEmitter.on('show.stop', () => {
+      emitted.push('show.stop');
+    });
+    const service = new DmxWebsocketService(new DmxUniverseService(), eventEmitter);
+    service.onModuleInit();
+    const client = new FakeSocket();
+    handleDmxWebsocketConnection(client);
+    client.sent.length = 0;
+
+    client.emit(
+      'message',
+      JSON.stringify({ type: 'showPlay', showPublicId: '5f0c1a2b-3c4d-4e5f-8a9b-0c1d2e3f4a5b', fromMs: 250 }),
+    );
+    client.emit('message', JSON.stringify({ type: 'showPause' }));
+    client.emit('message', JSON.stringify({ type: 'showStop' }));
+    eventEmitter.emit('show.state', {
+      showPublicId: '5f0c1a2b-3c4d-4e5f-8a9b-0c1d2e3f4a5b',
+      status: 'playing',
+      positionMs: 250,
+      durationMs: 9000,
+    });
+
+    expect(emitted).toEqual([
+      'show.state.request',
+      'show.play {"showPublicId":"5f0c1a2b-3c4d-4e5f-8a9b-0c1d2e3f4a5b","fromMs":250}',
+      'show.pause',
+      'show.stop',
+    ]);
+    expect(client.sent).toEqual([
+      JSON.stringify({
+        type: 'showState',
+        showPublicId: '5f0c1a2b-3c4d-4e5f-8a9b-0c1d2e3f4a5b',
+        status: 'playing',
+        positionMs: 250,
+        durationMs: 9000,
+      }),
+    ]);
     service.onModuleDestroy();
   });
 });

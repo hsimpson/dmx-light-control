@@ -1,7 +1,7 @@
 info:
   name: updateProject
   type: graphql
-  seq: 25
+  seq: 27
 
 graphql:
   method: POST
@@ -132,6 +132,7 @@ graphql:
                 midiDeviceSerials
                 midiEntryPublicId
                 orientation
+                showPublicId
                 tapTiming
                 type
                 upperLimit

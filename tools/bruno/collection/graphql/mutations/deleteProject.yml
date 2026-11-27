@@ -1,7 +1,7 @@
 info:
   name: deleteProject
   type: graphql
-  seq: 14
+  seq: 15
 
 graphql:
   method: POST

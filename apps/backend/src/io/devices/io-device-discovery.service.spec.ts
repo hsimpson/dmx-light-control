@@ -1,5 +1,6 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { MidiService } from '@/io/midi/midi.service';
+import { AudioOutputService } from '@/io/audio-output/audio-output.service';
 import { SoundInputService } from '@/io/sound-input/sound-input.service';
 import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -11,7 +12,7 @@ import { IoDeviceKind } from './match-io-devices';
 const { listSerialPorts, midiPortNames, audioDevices, runCommandMock, inquiry } = vi.hoisted(() => ({
   listSerialPorts: vi.fn<() => Promise<Record<string, string | undefined>[]>>(),
   midiPortNames: { value: [] as string[] },
-  audioDevices: { value: [] as { id: number; name: string; inputChannels: number }[] },
+  audioDevices: { value: [] as { id: number; name: string; inputChannels: number; outputChannels?: number }[] },
   runCommandMock: vi.fn<(file: string, args: readonly string[]) => Promise<string>>(),
   inquiry: {
     replies: new Map<string, number[]>(),
@@ -125,7 +126,12 @@ describe('IoDeviceDiscoveryService', () => {
 
     const eventEmitter = { on: vi.fn<() => void>() } as unknown as AppEventEmitter;
     audioDevices.value = [];
-    service = new IoDeviceDiscoveryService(new MidiService(eventEmitter), new SoundInputService(eventEmitter), sysRoot);
+    service = new IoDeviceDiscoveryService(
+      new MidiService(eventEmitter),
+      new SoundInputService(eventEmitter),
+      new AudioOutputService(),
+      sysRoot,
+    );
   });
 
   afterEach(async () => {
@@ -346,6 +352,31 @@ describe('IoDeviceDiscoveryService', () => {
         serial: null,
         usbLocation: null,
         maxInputChannels: 2,
+      },
+    ]);
+  });
+
+  it('GIVEN audio devices WHEN listing THEN playback-capable ones are name-only audio outputs', async () => {
+    setPlatform('linux');
+    listSerialPorts.mockResolvedValue([]);
+    midiPortNames.value = [];
+    audioDevices.value = [
+      { id: 129, name: 'StreamCam', inputChannels: 2, outputChannels: 0 },
+      { id: 130, name: 'HDMI Output', inputChannels: 0, outputChannels: 2 },
+    ];
+
+    const listed = await service.listAvailable();
+
+    expect(listed.filter(device => device.kind === IoDeviceKind.AudioOutput)).toEqual([
+      {
+        kind: IoDeviceKind.AudioOutput,
+        handle: 'HDMI Output',
+        vendorId: null,
+        productId: null,
+        name: 'HDMI Output',
+        manufacturer: null,
+        serial: null,
+        usbLocation: null,
       },
     ]);
   });

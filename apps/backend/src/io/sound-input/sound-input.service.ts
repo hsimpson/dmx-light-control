@@ -1,6 +1,7 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
-import { RtAudio, RtAudioApi, RtAudioErrorType, RtAudioFormat, RtAudioStreamFlags } from 'audify';
+import { createRtAudio, errorMessage } from '@/io/rt-audio';
+import { RtAudio, RtAudioErrorType, RtAudioFormat, RtAudioStreamFlags } from 'audify';
 import { FFT_HOP, monoSamples, SpectrumAnalyser } from './spectrum';
 
 export type SoundInputChannels = 1 | 2;
@@ -145,22 +146,4 @@ export function peakLevels(pcm: Buffer, channels: number): number[] {
     if (level > (peaks[channel] ?? 0)) peaks[channel] = level;
   }
   return peaks;
-}
-
-// PipeWire/PulseAudio hold the ALSA hardware devices, so on Linux their sources are used when a server runs
-// (it always lists at least its sinks, so a mic plugged in later still shows up).
-function createRtAudio(): RtAudio | null {
-  try {
-    if (process.platform === 'linux') {
-      const pulse = new RtAudio(RtAudioApi.LINUX_PULSE);
-      if (pulse.getDevices().length > 0) return pulse;
-    }
-    return new RtAudio();
-  } catch {
-    return null;
-  }
-}
-
-function errorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
 }

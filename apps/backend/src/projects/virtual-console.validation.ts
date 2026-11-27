@@ -201,6 +201,9 @@ function assertControl(control: VirtualConsoleControl, ids: Set<string>, depth: 
     case VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalFade:
       assertGlobalFade(control);
       break;
+    case VIRTUAL_CONSOLE_CONTROL_TYPE.Show:
+      assertShowControl(control);
+      break;
   }
 }
 
@@ -211,7 +214,8 @@ function assertControlType(type: string): asserts type is VirtualConsoleControlT
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Button &&
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.AudioTriggers &&
     type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap &&
-    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalFade
+    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalFade &&
+    type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Show
   ) {
     throw new InvalidVirtualConsoleException(`Unknown virtual console control type ${type}.`);
   }
@@ -342,7 +346,19 @@ function assertGlobalFade(control: VirtualConsoleControl): void {
   }
 }
 
+function assertShowControl(control: VirtualConsoleControl): void {
+  assertNoChildren(control);
+  assertColor(control.foregroundColor, 'foregroundColor');
+  const showPublicId = control.showPublicId ?? undefined;
+  if (showPublicId !== undefined && !UUID_PATTERN.test(showPublicId)) {
+    throw new InvalidVirtualConsoleException('Show control showPublicId must be a UUID.');
+  }
+}
+
 function assertAudioFieldsAllowed(control: VirtualConsoleControl): void {
+  if ((control.showPublicId ?? undefined) !== undefined && control.type !== VIRTUAL_CONSOLE_CONTROL_TYPE.Show) {
+    throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot play a show.`);
+  }
   if ((control.tapTiming ?? undefined) !== undefined && control.type !== VIRTUAL_CONSOLE_CONTROL_TYPE.GlobalTap) {
     throw new InvalidVirtualConsoleException(`Control type ${control.type} cannot have a tap timing.`);
   }
@@ -844,4 +860,46 @@ function assertUniqueId(id: string, ids: Set<string>): void {
     throw new InvalidVirtualConsoleException(`Duplicate virtual console id ${id}.`);
   }
   ids.add(id);
+}
+
+const mapControls = (
+  document: VirtualConsoleDocument,
+  map: (control: VirtualConsoleControl) => VirtualConsoleControl,
+): VirtualConsoleDocument => {
+  const visit = (control: VirtualConsoleControl): VirtualConsoleControl => {
+    const next = map(control);
+    return control.children ? { ...next, children: control.children.map(visit) } : next;
+  };
+  return { ...document, pages: document.pages.map(page => ({ ...page, controls: page.controls.map(visit) })) };
+};
+
+const showIdsOf = (controls: readonly VirtualConsoleControl[]): string[] =>
+  controls.flatMap(control => [
+    ...(control.showPublicId ? [control.showPublicId] : []),
+    ...showIdsOf(control.children ?? []),
+  ]);
+
+/** Show ids the console's show controls point at. */
+export function virtualConsoleShowIds(document: VirtualConsoleDocument): string[] {
+  return showIdsOf(document.pages.flatMap(page => page.controls));
+}
+
+/** Unsets show controls whose show is not kept (deleted, or unknown after an import). */
+export function keepShowBindings(
+  document: VirtualConsoleDocument,
+  keep: (showPublicId: string) => boolean,
+): VirtualConsoleDocument {
+  return mapControls(document, control =>
+    control.showPublicId && !keep(control.showPublicId) ? { ...control, showPublicId: undefined } : control,
+  );
+}
+
+export function assertVirtualConsoleShowBindings(
+  document: VirtualConsoleDocument,
+  showPublicIds: ReadonlySet<string>,
+): void {
+  const foreign = virtualConsoleShowIds(document).find(id => !showPublicIds.has(id));
+  if (foreign) {
+    throw new InvalidVirtualConsoleException(`Show ${foreign} does not belong to this project.`);
+  }
 }

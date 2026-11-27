@@ -1,4 +1,4 @@
-import { createDmxStore, type DmxChannelUpdate } from './dmx-store';
+import { createDmxStore, type DmxChannelUpdate, type ShowPlaybackState } from './dmx-store';
 
 type DmxStoreApi = ReturnType<typeof createDmxStore>;
 
@@ -51,6 +51,19 @@ export class DmxWebsocketClient {
   /** Buttons send 1 on press and 0 on release; sliders send their raw value. The backend owns the result. */
   public sendControlValue(controlId: string, value: number): void {
     this.send({ type: 'controlValue', controlId, value });
+  }
+
+  /** Plays the show from `fromMs`; without it a paused show resumes and any other starts at the beginning. */
+  public playShow(showPublicId: string, fromMs?: number): void {
+    this.send({ type: 'showPlay', showPublicId, fromMs });
+  }
+
+  public pauseShow(): void {
+    this.send({ type: 'showPause' });
+  }
+
+  public stopShow(): void {
+    this.send({ type: 'showStop' });
   }
 
   public setChannels(values: DmxChannelUpdate[]): void {
@@ -146,6 +159,11 @@ export class DmxWebsocketClient {
         );
       return;
     }
+    if (message.type === 'showState') {
+      const state = parseShowState(parsed);
+      if (state) this.store.getState().setShowPlayback(state);
+      return;
+    }
     if (message.type === 'functionState' && Array.isArray(message.running)) {
       this.store.getState().setRunningFunctionIds(message.running.filter((id): id is string => typeof id === 'string'));
       return;
@@ -213,4 +231,17 @@ function parseAudioLevels(levels: object): Record<string, number[]> {
         : [],
     ),
   );
+}
+
+const SHOW_STATUSES: readonly ShowPlaybackState['status'][] = ['playing', 'paused', 'stopped'];
+
+function parseShowState(message: object): ShowPlaybackState | undefined {
+  const fields = new Map<string, unknown>(Object.entries(message));
+  const showPublicId = fields.get('showPublicId');
+  const status = SHOW_STATUSES.find(candidate => candidate === fields.get('status'));
+  const positionMs = fields.get('positionMs');
+  const durationMs = fields.get('durationMs');
+  if (!status || typeof positionMs !== 'number' || typeof durationMs !== 'number') return undefined;
+  if (showPublicId !== null && typeof showPublicId !== 'string') return undefined;
+  return { showPublicId, status, positionMs, durationMs };
 }

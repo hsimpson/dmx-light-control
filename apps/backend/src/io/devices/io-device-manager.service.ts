@@ -1,4 +1,5 @@
 import { AppEventEmitter } from '@/events/app-event-emitter';
+import { AudioOutputService } from '@/io/audio-output/audio-output.service';
 import { MidiService } from '@/io/midi/midi.service';
 import { SerialSendService } from '@/io/serial/serial-send.service';
 import { SoundInputService } from '@/io/sound-input/sound-input.service';
@@ -30,6 +31,7 @@ export class IoDeviceManagerService implements OnModuleInit, OnModuleDestroy {
     private readonly serialSend: SerialSendService,
     private readonly midi: MidiService,
     private readonly soundInput: SoundInputService,
+    private readonly audioOutput: AudioOutputService,
     private readonly eventEmitter: AppEventEmitter,
   ) {}
 
@@ -87,12 +89,17 @@ export class IoDeviceManagerService implements OnModuleInit, OnModuleDestroy {
     const sound = matches.find(match => match.device.kind === IoDeviceKind.SoundInput && match.handle);
     this.soundInput.sync(sound?.handle ? { handle: sound.handle, channels: sound.device.audioChannels ?? 1 } : null);
 
+    const output = matches.find(match => match.device.kind === IoDeviceKind.AudioOutput && match.handle);
+    this.audioOutput.sync(output?.handle ?? null);
+
     const soundHandle = this.soundInput.openHandle();
+    const outputHandle = this.audioOutput.openHandle();
     // Per kind, because a MIDI port and a sound input can share a name.
     const open: Record<IoDeviceKind, Set<string>> = {
       [IoDeviceKind.DmxSerial]: new Set(this.serialSend.openPaths()),
       [IoDeviceKind.Midi]: new Set(this.midi.openPortNames()),
       [IoDeviceKind.SoundInput]: new Set(soundHandle ? [soundHandle] : []),
+      [IoDeviceKind.AudioOutput]: new Set(outputHandle ? [outputHandle] : []),
     };
     this.matches = matches.map(match =>
       match.handle && !open[match.device.kind].has(match.handle)

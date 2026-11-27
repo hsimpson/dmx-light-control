@@ -1,7 +1,7 @@
 info:
   name: deleteProjectFixture
   type: graphql
-  seq: 16
+  seq: 17
 
 graphql:
   method: POST

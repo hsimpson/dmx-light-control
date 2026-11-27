@@ -173,6 +173,29 @@ describe('ProjectIoDevicesPanel', () => {
     });
   });
 
+  it('GIVEN a configured audio output WHEN another one is picked THEN it replaces the first without channels', async () => {
+    const speakers = { ...mic, kind: IoDeviceKind.AudioOutput, name: 'Speakers' };
+    const hdmi = { ...speakers, name: 'HDMI' };
+    const save = saveMock([{ ...mic, audioChannels: 1 }, hdmi]);
+    const { user } = renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {
+      apolloMocks: [
+        projectIoDevices([{ ...mic, audioChannels: 1 }, speakers]),
+        availableIoDevices([speakers, hdmi]),
+        activeStates([]),
+        save.mock,
+        projectIoDevices([{ ...mic, audioChannels: 1 }, hdmi]),
+        activeStates([]),
+      ],
+    });
+
+    expect(await screen.findByRole('heading', { name: 'Audio output' })).toBeInTheDocument();
+    await user.click(await screen.findByRole('checkbox', { name: 'Use HDMI in this project' }));
+
+    await waitFor(() => {
+      expect(save.result).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('GIVEN a configured mono sound input WHEN Stereo is picked THEN it is saved with 2 channels', async () => {
     const save = saveMock([{ ...mic, audioChannels: 2 }]);
     const { user } = renderWithProviders(<ProjectIoDevicesPanel projectPublicId="proj-1" />, {

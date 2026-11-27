@@ -37,7 +37,8 @@ export const VIRTUAL_CONSOLE_RESIZE_HANDLES = ['n', 's', 'e', 'w', 'ne', 'nw', '
 
 export type VirtualConsoleResizeHandle = (typeof VIRTUAL_CONSOLE_RESIZE_HANDLES)[number];
 
-export type VirtualConsoleControlType = 'frame' | 'slider' | 'button' | 'audioTriggers' | 'globalTap' | 'globalFade';
+export type VirtualConsoleControlType =
+  'frame' | 'slider' | 'button' | 'audioTriggers' | 'globalTap' | 'globalFade' | 'show';
 
 export const VIRTUAL_CONSOLE_FADE_POSITION_MAX = 100;
 /** Same choices and default as the backend's `projects/virtual-console.ts`. */
@@ -127,6 +128,8 @@ export type VirtualConsoleControl = {
   tapTiming?: VirtualConsoleBeatTiming;
   /** Top of a global fade, one of `VIRTUAL_CONSOLE_FADE_MAX_OPTIONS_MS`; absent: 5 s. */
   fadeMaxMs?: number;
+  /** The show a show control plays; absent until one is picked. */
+  showPublicId?: string;
 };
 
 export type VirtualConsolePage = {
@@ -262,6 +265,19 @@ export const createControl = (type: VirtualConsoleControlType, x: number, y: num
         fadeMaxMs: VIRTUAL_CONSOLE_FADE_DEFAULT_MAX_MS,
         ...font,
       };
+    case 'show':
+      return {
+        id,
+        type,
+        x,
+        y,
+        width: 320,
+        height: 96,
+        label: 'Show',
+        backgroundColor: '#1a1b1e',
+        foregroundColor: '#ffffff',
+        ...font,
+      };
   }
 };
 
@@ -337,6 +353,8 @@ const controlTypeToInput = (type: VirtualConsoleControlType): GqlVirtualConsoleC
       return GqlVirtualConsoleControlType.GlobalTap;
     case 'globalFade':
       return GqlVirtualConsoleControlType.GlobalFade;
+    case 'show':
+      return GqlVirtualConsoleControlType.Show;
   }
 };
 

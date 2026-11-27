@@ -1,8 +1,9 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 import path from 'node:path';
 
-export const imagePath = (locale: string, name: string) =>
-  path.resolve(test.info().project.testDir, '../../../../docs/manual', locale, 'virtual-console/images', name);
+/** `section` is the manual folder of the page that shows the image. */
+export const imagePath = (locale: string, name: string, section = 'virtual-console') =>
+  path.resolve(test.info().project.testDir, '../../../../docs/manual', locale, section, 'images', name);
 
 const PADDING = 12;
 

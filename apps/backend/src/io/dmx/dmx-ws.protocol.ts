@@ -1,3 +1,4 @@
+import type { ShowPlaybackState } from '@/io/show-playback/show-events';
 import { DmxValue } from './types/dmx.types';
 
 export const DMX_WS_PATH = '/dmx';
@@ -56,7 +57,18 @@ export type DmxWsAudioLevelsMessage = {
   bpm: Record<string, number>;
 };
 
-export type DmxWsClientMessage = DmxWsSetMessage | DmxWsFunctionMessage | DmxWsControlValueMessage;
+export type DmxWsShowPlayMessage = { type: 'showPlay'; showPublicId: string; fromMs?: number };
+
+export type DmxWsShowTransportMessage = { type: 'showPause' | 'showStop' };
+
+export type DmxWsShowStateMessage = { type: 'showState' } & ShowPlaybackState;
+
+export type DmxWsClientMessage =
+  DmxWsSetMessage | DmxWsFunctionMessage | DmxWsControlValueMessage | DmxWsShowPlayMessage | DmxWsShowTransportMessage;
+
+export function dmxWsShowStateMessage(state: ShowPlaybackState): DmxWsShowStateMessage {
+  return { type: 'showState', ...state };
+}
 
 export function dmxWsSnapshotMessage(channels: number[]): DmxWsSnapshotMessage {
   return { type: 'snapshot', channels };
@@ -105,7 +117,15 @@ export function parseDmxWsClientMessage(raw: string): DmxWsClientMessage | undef
     functionPublicId?: unknown;
     controlId?: unknown;
     value?: unknown;
+    showPublicId?: unknown;
+    fromMs?: unknown;
   };
+  if (message.type === 'showPause' || message.type === 'showStop') {
+    return { type: message.type };
+  }
+  if (message.type === 'showPlay') {
+    return parseShowPlay(message.showPublicId, message.fromMs);
+  }
   if (message.type === 'controlValue') {
     return parseControlValue(message.controlId, message.value);
   }
@@ -138,6 +158,16 @@ export function parseDmxWsSetMessage(raw: string): DmxValue[] | undefined {
     return undefined;
   }
   return message.values;
+}
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Must be a UUID: the database rejects anything else; an unknown one plays nothing.
+function parseShowPlay(showPublicId: unknown, fromMs: unknown): DmxWsShowPlayMessage | undefined {
+  if (typeof showPublicId !== 'string' || !UUID_PATTERN.test(showPublicId)) return undefined;
+  if (fromMs === undefined) return { type: 'showPlay', showPublicId };
+  if (typeof fromMs !== 'number' || !Number.isFinite(fromMs) || fromMs < 0) return undefined;
+  return { type: 'showPlay', showPublicId, fromMs };
 }
 
 // Ids are allowlisted later against the active console; here only the shape is checked.

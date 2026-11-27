@@ -121,6 +121,18 @@ input AddProjectFunctionInput {
   type: ProjectFunctionType!
 }
 
+input AddShowInput {
+  """
+  Unique name within the project
+  """
+  name: String!
+
+  """
+  The public ID of the project
+  """
+  projectPublicId: UUID!
+}
+
 input ChannelValuesInput {
   """
   The list of DMX channel values
@@ -281,6 +293,18 @@ type DeleteProjectPayload {
 
   """
   The public id of the project that was requested for deletion
+  """
+  publicId: UUID!
+}
+
+type DeleteShowPayload {
+  """
+  True if a show was deleted, false if no show matched the public id
+  """
+  deleted: Boolean!
+
+  """
+  The public id of the show that was requested for deletion
   """
   publicId: UUID!
 }
@@ -1406,7 +1430,7 @@ type IoDeviceDto {
   customName: String
 
   """
-  Device kind (DMX serial output, MIDI controller or sound input)
+  Device kind (DMX serial output, MIDI controller, sound input or audio output)
   """
   kind: IoDeviceKind!
 
@@ -1463,7 +1487,7 @@ input IoDeviceInput {
   customName: String
 
   """
-  Device kind (DMX serial output, MIDI controller or sound input)
+  Device kind (DMX serial output, MIDI controller, sound input or audio output)
   """
   kind: IoDeviceKind!
 
@@ -1507,6 +1531,7 @@ input IoDeviceInput {
 Kind of input/output device
 """
 enum IoDeviceKind {
+  AudioOutput
   DmxSerial
   Midi
   SoundInput
@@ -1529,7 +1554,7 @@ type IoDeviceStateDto {
   handle: String
 
   """
-  Device kind (DMX serial output, MIDI controller or sound input)
+  Device kind (DMX serial output, MIDI controller, sound input or audio output)
   """
   kind: IoDeviceKind!
 
@@ -1893,6 +1918,11 @@ type Mutation {
   addProjectFunction(input: AddProjectFunctionInput!): ProjectFunctionDto!
 
   """
+  add an empty show to a project
+  """
+  addShow(input: AddShowInput!): ShowDto!
+
+  """
   create a new fixture; creates the vendor when only a name is given
   """
   createFixture(input: CreateFixtureInput!): FixtureDto!
@@ -1951,6 +1981,11 @@ type Mutation {
   delete a project function by public id and remove it from virtual console buttons
   """
   deleteProjectFunction(publicId: UUID!): DeleteProjectFunctionPayload!
+
+  """
+  delete a show and its audio files
+  """
+  deleteShow(publicId: UUID!): DeleteShowPayload!
 
   """
   import fixtures and related entities from a versioned JSON document, upserting by publicId or name
@@ -2016,6 +2051,11 @@ type Mutation {
   replace the virtual console layout for a project
   """
   updateProjectVirtualConsole(input: UpdateProjectVirtualConsoleInput!): ProjectDto!
+
+  """
+  rename a show, replace its light tracks and move its audio clips
+  """
+  updateShow(input: UpdateShowInput!): ShowDto!
 }
 
 type Project3dObjectDto {
@@ -2618,6 +2658,11 @@ type Query {
   get all scene object types that can be placed in a project
   """
   sceneObjectTypes: [SceneObjectTypeDto!]!
+
+  """
+  get all shows of a project, ordered by name
+  """
+  shows(projectPublicId: UUID!): [ShowDto!]!
 }
 
 """
@@ -2807,6 +2852,190 @@ input SequenceStepInput {
   Hold time in milliseconds
   """
   hold: Int!
+}
+
+type ShowAudioClipDto {
+  """
+  Detected beats in milliseconds from the start of the clip
+  """
+  beatsMs: [Int!]!
+
+  """
+  The date and time when the entity was created
+  """
+  createdAt: DateTime!
+
+  """
+  Length of the decoded audio in milliseconds
+  """
+  durationMs: Int!
+
+  """
+  Original name of the uploaded audio file
+  """
+  fileName: String!
+
+  """
+  Waveform peaks from 0 to 1, 20 per second
+  """
+  peaks: [Float!]!
+
+  """
+  The public id, unique identifier of the entity
+  """
+  publicId: UUID!
+
+  """
+  Start on the show timeline in milliseconds
+  """
+  startMs: Int!
+
+  """
+  The date and time when the entity was last updated
+  """
+  updatedAt: DateTime!
+}
+
+input ShowAudioClipPositionInput {
+  """
+  The public ID of an audio clip of this show
+  """
+  publicId: UUID!
+
+  """
+  New start on the show timeline in milliseconds
+  """
+  startMs: Int!
+}
+
+type ShowDto {
+  """
+  Clips of the single audio track, ordered by start
+  """
+  audioClips: [ShowAudioClipDto!]!
+
+  """
+  Every audio beat on the show timeline in milliseconds, ascending
+  """
+  beatsMs: [Int!]!
+
+  """
+  The date and time when the entity was created
+  """
+  createdAt: DateTime!
+
+  """
+  End of the last clip in milliseconds
+  """
+  durationMs: Int!
+
+  """
+  Light tracks in display order
+  """
+  lightTracks: [ShowLightTrackDto!]!
+
+  """
+  The unique name of this show within the project
+  """
+  name: String!
+
+  """
+  The public id, unique identifier of the entity
+  """
+  publicId: UUID!
+
+  """
+  The date and time when the entity was last updated
+  """
+  updatedAt: DateTime!
+}
+
+type ShowLightClipDto {
+  """
+  Length of the clip in milliseconds
+  """
+  durationMs: Int!
+
+  """
+  True steps the function on every beat of the show instead of letting it run free
+  """
+  followBeat: Boolean!
+
+  """
+  The project function this clip plays
+  """
+  functionPublicId: UUID!
+
+  """
+  Client-generated id of the clip, unique within the show
+  """
+  id: String!
+
+  """
+  Start on the show timeline in milliseconds
+  """
+  startMs: Int!
+}
+
+input ShowLightClipInput {
+  """
+  Length of the clip in milliseconds
+  """
+  durationMs: Int!
+
+  """
+  True steps the function on every beat of the show instead of letting it run free
+  """
+  followBeat: Boolean!
+
+  """
+  The project function this clip plays
+  """
+  functionPublicId: UUID!
+
+  """
+  Client-generated id of the clip, unique within the show
+  """
+  id: String!
+
+  """
+  Start on the show timeline in milliseconds
+  """
+  startMs: Int!
+}
+
+type ShowLightTrackDto {
+  """
+  Function clips on this track; they may overlap
+  """
+  clips: [ShowLightClipDto!]!
+
+  """
+  Client-generated id of the track, unique within the show
+  """
+  id: String!
+
+  """
+  Display name of the track
+  """
+  name: String!
+}
+
+input ShowLightTrackInput {
+  """
+  Function clips on this track; they may overlap
+  """
+  clips: [ShowLightClipInput!]!
+
+  """
+  Client-generated id of the track, unique within the show
+  """
+  id: String!
+
+  """
+  Display name of the track
+  """
+  name: String!
 }
 
 """
@@ -3137,6 +3366,28 @@ input UpdateProjectVirtualConsoleInput {
   virtualConsole: VirtualConsoleInput!
 }
 
+input UpdateShowInput {
+  """
+  New start positions of audio clips; clips not listed keep their position
+  """
+  audioClips: [ShowAudioClipPositionInput!]
+
+  """
+  Replacement light tracks. Replaces every track and clip.
+  """
+  lightTracks: [ShowLightTrackInput!]
+
+  """
+  Unique name within the project
+  """
+  name: String
+
+  """
+  The public ID of the show
+  """
+  publicId: UUID!
+}
+
 type VirtualConsoleAudioBarDto {
   """
   Fixture channels this bar drives
@@ -3462,6 +3713,11 @@ type VirtualConsoleControlDto {
   orientation: VirtualConsoleSliderOrientation
 
   """
+  The show a show control plays
+  """
+  showPublicId: UUID
+
+  """
   Step timing of a global tap control, in percent of the time between taps. Null: sequence timing.
   """
   tapTiming: VirtualConsoleBeatTimingDto
@@ -3619,6 +3875,11 @@ input VirtualConsoleControlInput {
   orientation: VirtualConsoleSliderOrientation
 
   """
+  The show a show control plays
+  """
+  showPublicId: UUID
+
+  """
   Step timing of a global tap control, in percent of the time between taps. Null: sequence timing.
   """
   tapTiming: VirtualConsoleBeatTimingInput
@@ -3663,6 +3924,7 @@ enum VirtualConsoleControlType {
   frame
   globalFade
   globalTap
+  show
   slider
 }
 

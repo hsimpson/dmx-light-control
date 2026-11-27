@@ -6,6 +6,7 @@ export enum IoDeviceKind {
   DmxSerial = 'DmxSerial',
   Midi = 'Midi',
   SoundInput = 'SoundInput',
+  AudioOutput = 'AudioOutput',
 }
 
 registerEnumType(IoDeviceKind, {

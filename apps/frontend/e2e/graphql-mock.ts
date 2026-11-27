@@ -235,6 +235,34 @@ const ledPalettesDto = ({ rgb, single }: { rgb?: MockedLedPalette; single?: Mock
   return { __typename: 'MidiLedPalettesDto', rgb: palette(rgb), single: palette(single) };
 };
 
+type MockedShow = {
+  publicId: string;
+  name: string;
+  lightTracks: {
+    id: string;
+    name: string;
+    clips: { id: string; functionPublicId: string; startMs: number; durationMs: number; followBeat: boolean }[];
+  }[];
+};
+
+// Audio clips need the backend's decoder, so mocked shows have none.
+const showDto = (show: MockedShow) => ({
+  __typename: 'ShowDto',
+  publicId: show.publicId,
+  name: show.name,
+  durationMs: Math.max(
+    0,
+    ...show.lightTracks.flatMap(track => track.clips.map(clip => clip.startMs + clip.durationMs)),
+  ),
+  beatsMs: [],
+  audioClips: [],
+  lightTracks: show.lightTracks.map(track => ({
+    __typename: 'ShowLightTrackDto',
+    ...track,
+    clips: track.clips.map(clip => ({ __typename: 'ShowLightClipDto', ...clip })),
+  })),
+});
+
 export const mockGraphql = async (page: Page) => {
   const fixtures = [mockedFixture];
   const projects: (typeof mockedProject)[] = [{ ...mockedProject }];
@@ -245,6 +273,7 @@ export const mockGraphql = async (page: Page) => {
   const projectIoDevices: Record<string, MockedIoDevice[]> = { [mockedProject.publicId]: [] };
   let activeProjectPublicId: string | null = null;
   const midiMappings = [{ ...mockedMidiMapping, entries: [] as MockedMidiMappingEntry[] }];
+  const shows: MockedShow[] = [];
 
   await page.route('**/graphql', async route => {
     if (route.request().method() === 'OPTIONS') {
@@ -281,6 +310,7 @@ export const mockGraphql = async (page: Page) => {
           feedback?: MockedMidiMappingEntry['feedback'];
           ledType?: string | null;
           ledPalettes?: { rgb?: MockedLedPalette; single?: MockedLedPalette };
+          lightTracks?: MockedShow['lightTracks'];
         };
         document?: { schemaVersion: number; projects: { publicId?: string; name: string }[] };
       };
@@ -337,6 +367,28 @@ export const mockGraphql = async (page: Page) => {
       };
       mapping?.entries.push(entry);
       body = { data: { addMidiMappingEntry: entry } };
+    } else if (postData.operationName === 'GetShows') {
+      body = { data: { shows: shows.map(showDto) } };
+    } else if (postData.operationName === 'AddShow') {
+      const show: MockedShow = {
+        publicId: `show-${shows.length + 1}`,
+        name: postData.variables?.input?.name ?? '',
+        lightTracks: [],
+      };
+      shows.push(show);
+      body = { data: { addShow: showDto(show) } };
+    } else if (postData.operationName === 'UpdateShow') {
+      const input = postData.variables?.input;
+      const show = shows.find(candidate => candidate.publicId === input?.publicId);
+      if (show) {
+        show.name = input?.name ?? show.name;
+        show.lightTracks = input?.lightTracks ?? show.lightTracks;
+      }
+      body = { data: { updateShow: show ? showDto(show) : null } };
+    } else if (postData.operationName === 'DeleteShow') {
+      const index = shows.findIndex(show => show.publicId === postData.variables?.publicId);
+      if (index >= 0) shows.splice(index, 1);
+      body = { data: { deleteShow: { publicId: postData.variables?.publicId, deleted: index >= 0 } } };
     } else if (postData.operationName === 'ActivateProject') {
       activeProjectPublicId = postData.variables?.publicId ?? null;
       body = { data: { activateProject: { __typename: 'ProjectDto', publicId: activeProjectPublicId } } };

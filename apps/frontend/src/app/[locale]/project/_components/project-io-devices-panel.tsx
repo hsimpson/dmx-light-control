@@ -22,6 +22,9 @@ import SoundLevelMeter from './sound-level-meter';
 const IO_DEVICE_POLL_INTERVAL_MS = 2000;
 const CUSTOM_NAME_MAX_LENGTH = 64;
 
+// A project has one sound input and one audio output: picking another replaces it.
+const SINGLE_DEVICE_KINDS: readonly IoDeviceKind[] = [IoDeviceKind.SoundInput, IoDeviceKind.AudioOutput];
+
 const STATUS_COLORS: Record<IoDeviceStatus, string> = {
   [IoDeviceStatus.Connected]: 'green',
   [IoDeviceStatus.Missing]: 'red',
@@ -83,11 +86,12 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
     }
   };
 
-  const add = (device: IoDeviceRow['device']) =>
-    device.kind === IoDeviceKind.SoundInput
-      ? // A project has one sound input: picking another replaces it.
-        [...configured.filter(entry => entry.kind !== IoDeviceKind.SoundInput), { ...device, audioChannels: 1 }]
-      : [...configured, device];
+  const add = (device: IoDeviceRow['device']) => {
+    const kept = SINGLE_DEVICE_KINDS.includes(device.kind)
+      ? configured.filter(entry => entry.kind !== device.kind)
+      : configured;
+    return [...kept, device.kind === IoDeviceKind.SoundInput ? { ...device, audioChannels: 1 } : device];
+  };
 
   const toggle = async (row: IoDeviceRow) =>
     save(row.configured ? configured.filter(device => device !== row.device) : add(row.device));
@@ -262,6 +266,8 @@ const ProjectIoDevicesPanel = ({ projectPublicId }: ProjectIoDevicesPanelPropert
       {renderTable(IoDeviceKind.Midi)}
       <Title order={3}>{t({ id: 'ProjectDetail.io.soundInputs', defaultMessage: 'Sound input' })}</Title>
       {renderTable(IoDeviceKind.SoundInput)}
+      <Title order={3}>{t({ id: 'ProjectDetail.io.audioOutputs', defaultMessage: 'Audio output' })}</Title>
+      {renderTable(IoDeviceKind.AudioOutput)}
     </Stack>
   );
 };

@@ -15,7 +15,9 @@ import {
   assertValidVirtualConsole,
   assertVirtualConsoleChannelBindings,
   assertVirtualConsoleFunctionBindings,
+  assertVirtualConsoleShowBindings,
   defaultVirtualConsoleDocument,
+  keepShowBindings,
   enrichVirtualConsoleForExport,
   remapVirtualConsoleBindingsForImport,
   remapVirtualConsoleFunctionsForImport,
@@ -1108,5 +1110,79 @@ describe('globalFadeMs', () => {
   it('GIVEN the middle position of a 30 s fade WHEN mapped THEN it is spread logarithmically', () => {
     expect(globalFadeMs(50, 30_000)).toBeGreaterThan(800);
     expect(globalFadeMs(50, 30_000)).toBeLessThan(900);
+  });
+});
+
+describe('show control', () => {
+  const SHOW_CONTROL_ID = '99999999-9999-4999-8999-999999999999';
+  const SHOW_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+  const showControl = (overrides: Partial<VirtualConsoleControl> = {}): VirtualConsoleControl => ({
+    id: SHOW_CONTROL_ID,
+    type: VIRTUAL_CONSOLE_CONTROL_TYPE.Show,
+    x: 0,
+    y: 0,
+    width: 320,
+    height: 96,
+    label: 'Show',
+    backgroundColor: '#000000',
+    foregroundColor: '#ffffff',
+    showPublicId: SHOW_ID,
+    ...overrides,
+  });
+  const documentWith = (...controls: VirtualConsoleControl[]): VirtualConsoleDocument =>
+    validDocument({ pages: [{ id: PAGE_ID, name: 'Page 1', controls }] });
+
+  it('GIVEN a show control with or without a show WHEN validated THEN it is accepted', () => {
+    expect(() => {
+      assertValidVirtualConsole(documentWith(showControl()));
+      assertValidVirtualConsole(documentWith(showControl({ showPublicId: null })));
+    }).not.toThrow();
+  });
+
+  it('GIVEN a show control with a malformed show id WHEN validated THEN it is rejected', () => {
+    expect(() => {
+      assertValidVirtualConsole(documentWith(showControl({ showPublicId: 'opening' })));
+    }).toThrow('showPublicId');
+  });
+
+  it('GIVEN a button with a show WHEN validated THEN it is rejected', () => {
+    expect(() => {
+      assertValidVirtualConsole(
+        documentWith(showControl({ type: VIRTUAL_CONSOLE_CONTROL_TYPE.Button, buttonMode: 'toggle' })),
+      );
+    }).toThrow('cannot play a show');
+  });
+
+  it('GIVEN a show of another project WHEN bindings are checked THEN it is rejected, its own show passes', () => {
+    expect(() => {
+      assertVirtualConsoleShowBindings(documentWith(showControl()), new Set());
+    }).toThrow(InvalidVirtualConsoleException);
+    expect(() => {
+      assertVirtualConsoleShowBindings(documentWith(showControl()), new Set([SHOW_ID]));
+    }).not.toThrow();
+  });
+
+  it('GIVEN a show control inside a frame WHEN its show is dropped THEN only that control loses it', () => {
+    const otherShow = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+    const frame: VirtualConsoleControl = {
+      id: FRAME_ID,
+      type: VIRTUAL_CONSOLE_CONTROL_TYPE.Frame,
+      x: 0,
+      y: 0,
+      width: 400,
+      height: 400,
+      label: 'Frame',
+      backgroundColor: '#000000',
+      borderWidth: 1,
+      borderColor: '#ffffff',
+      children: [showControl()],
+    };
+    const other = showControl({ id: BUTTON_ID, showPublicId: otherShow });
+
+    const kept = keepShowBindings(documentWith(frame, other), id => id !== SHOW_ID);
+
+    const [keptFrame, keptOther] = kept.pages[0]?.controls ?? [];
+    expect(keptFrame?.children?.[0]?.showPublicId).toBeUndefined();
+    expect(keptOther?.showPublicId).toBe(otherShow);
   });
 });

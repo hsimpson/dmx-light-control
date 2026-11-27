@@ -1,7 +1,7 @@
 info:
   name: updateMidiMapping
   type: graphql
-  seq: 23
+  seq: 25
 
 graphql:
   method: POST

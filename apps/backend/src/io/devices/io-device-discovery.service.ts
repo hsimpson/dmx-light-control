@@ -1,3 +1,4 @@
+import { AudioOutputService } from '@/io/audio-output/audio-output.service';
 import { MidiService } from '@/io/midi/midi.service';
 import { SoundInputService } from '@/io/sound-input/sound-input.service';
 import { Inject, Injectable, Logger } from '@nestjs/common';
@@ -38,12 +39,13 @@ export class IoDeviceDiscoveryService {
   public constructor(
     private readonly midiService: MidiService,
     private readonly soundInput: SoundInputService,
+    private readonly audioOutput: AudioOutputService,
     @Inject(IO_DEVICES_SYS_ROOT) private readonly sysRoot: string,
   ) {}
 
   public async listAvailable(): Promise<AvailableIoDevice[]> {
     const [serial, midi] = await Promise.all([this.listSerialDevices(), this.listMidiDevices()]);
-    return [...serial, ...midi, ...this.listSoundInputs()];
+    return [...serial, ...midi, ...this.listSoundInputs(), ...this.listAudioOutputs()];
   }
 
   // shortcut: sound inputs match by name only (no USB ids); identical interfaces show as Ambiguous.
@@ -51,6 +53,11 @@ export class IoDeviceDiscoveryService {
     return this.soundInput
       .listInputs()
       .map(({ name, maxInputChannels }) => ({ ...nameOnlyDevice(IoDeviceKind.SoundInput, name), maxInputChannels }));
+  }
+
+  // shortcut: audio outputs match by name only, like sound inputs.
+  private listAudioOutputs(): AvailableIoDevice[] {
+    return this.audioOutput.listOutputs().map(({ name }) => nameOnlyDevice(IoDeviceKind.AudioOutput, name));
   }
 
   private async listSerialDevices(): Promise<AvailableIoDevice[]> {

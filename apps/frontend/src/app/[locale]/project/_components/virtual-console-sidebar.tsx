@@ -34,6 +34,7 @@ import {
 import VirtualConsoleAudioFields, { BeatTimingFields } from './virtual-console-audio-fields';
 import VirtualConsoleFontModal from './virtual-console-font-modal';
 import VirtualConsoleMidiFields from './virtual-console-midi-fields';
+import VirtualConsoleShowField from './virtual-console-show-field';
 import {
   VIRTUAL_CONSOLE_DEFAULT_FONT_SIZE,
   findVirtualConsoleFont,
@@ -163,6 +164,10 @@ const VirtualConsoleSidebar = ({
             type="globalFade"
             label={t({ id: 'ProjectDetail.virtualConsole.control.globalFade', defaultMessage: 'Global fade' })}
           />
+          <PaletteItem
+            type="show"
+            label={t({ id: 'ProjectDetail.virtualConsole.control.show', defaultMessage: 'Show' })}
+          />
         </Stack>
 
         <UnstyledButton onClick={onSelectCanvas}>
@@ -258,6 +263,7 @@ const DEFAULT_FOREGROUND: Partial<Record<VirtualConsoleControl['type'], string>>
   audioTriggers: '#40c057',
   globalTap: '#ffffff',
   globalFade: '#fab005',
+  show: '#ffffff',
 };
 
 const ControlFields = ({
@@ -424,6 +430,15 @@ const ControlFields = ({
             if (value === 'vertical' || value === 'horizontal') {
               onPatch({ orientation: value });
             }
+          }}
+        />
+      ) : null}
+      {control.type === 'show' ? (
+        <VirtualConsoleShowField
+          projectPublicId={projectPublicId}
+          showPublicId={control.showPublicId}
+          onChange={showPublicId => {
+            onPatch({ showPublicId });
           }}
         />
       ) : null}
