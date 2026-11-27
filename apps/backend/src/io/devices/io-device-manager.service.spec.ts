@@ -117,7 +117,7 @@ vi.mock('audify', () => ({
   RtAudio: hardware.FakeRtAudio,
   RtAudioApi: { LINUX_PULSE: 4 },
   RtAudioFormat: { RTAUDIO_SINT16: 2 },
-  RtAudioStreamFlags: { RTAUDIO_MINIMIZE_LATENCY: 2 },
+  RtAudioStreamFlags: { RTAUDIO_MINIMIZE_LATENCY: 2, RTAUDIO_SCHEDULE_REALTIME: 8 },
   RtAudioErrorType: { WARNING: 0, DEBUG_WARNING: 1 },
 }));
 

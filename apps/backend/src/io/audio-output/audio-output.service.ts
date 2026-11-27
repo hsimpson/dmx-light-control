@@ -1,7 +1,7 @@
 import { AUDIO_BYTES_PER_FRAME, AUDIO_CHANNELS, AUDIO_SAMPLE_RATE } from '@/io/audio-file/decode-audio';
 import { createRtAudio, errorMessage } from '@/io/rt-audio';
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
-import { RtAudio, RtAudioErrorType, RtAudioFormat } from 'audify';
+import { RtAudio, RtAudioErrorType, RtAudioFormat, RtAudioStreamFlags } from 'audify';
 
 /** Sample frames per device buffer: ~21 ms at 48 kHz, the granularity of the playback clock. */
 export const AUDIO_OUTPUT_FRAMES = 1024;
@@ -76,7 +76,8 @@ export class AudioOutputService implements OnModuleDestroy {
         () => {
           rtAudio.write(this.source?.() ?? SILENCE);
         },
-        undefined,
+        // The native binding requires a number here; realtime priority keeps the device fed when the system is busy.
+        RtAudioStreamFlags.RTAUDIO_SCHEDULE_REALTIME,
         (type, message) => {
           this.onStreamError(type, message);
         },

@@ -27,9 +27,11 @@ const { audio } = vi.hoisted(() => {
       _name: string,
       _onInput: null,
       onFrame: () => void,
-      _flags: undefined,
+      flags: number,
       onError: (type: number, message: string) => void,
     ): void {
+      // Like the native binding, which throws "A number was expected" otherwise.
+      if (typeof flags !== 'number') throw new TypeError('A number was expected');
       state.stream = { output, sampleRate, onFrame, onError };
     }
     public write(pcm: Buffer): void {
@@ -50,6 +52,7 @@ vi.mock('audify', () => ({
   RtAudio: audio.FakeRtAudio,
   RtAudioApi: { LINUX_PULSE: 4 },
   RtAudioFormat: { RTAUDIO_SINT16: 2 },
+  RtAudioStreamFlags: { RTAUDIO_MINIMIZE_LATENCY: 2, RTAUDIO_SCHEDULE_REALTIME: 8 },
   RtAudioErrorType: { WARNING: 0, DEBUG_WARNING: 1, DRIVER_ERROR: 8 },
 }));
 
