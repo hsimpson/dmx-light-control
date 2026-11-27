@@ -1,9 +1,19 @@
 'use client';
 
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { useRef, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react';
+import {
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react';
 import {
   moveAudioClip,
+  moveLightClipToTrack,
+  removeLightClip,
   SHOW_MIN_CLIP_MS,
   showBeatsMs,
   showDurationMs,
@@ -26,7 +36,13 @@ const MS_PER_SECOND = 1000;
 
 export type ShowSelection = { kind: 'light' | 'audio'; id: string } | null;
 
-type Drag = { kind: 'move' | 'resize' | 'audio'; id: string; originX: number; startMs: number; durationMs: number };
+type Drag = {
+  kind: 'move' | 'resize' | 'audio' | 'scrub';
+  id: string;
+  originX: number;
+  startMs: number;
+  durationMs: number;
+};
 
 type ShowTimelineProperties = {
   show: ShowDocument;
@@ -55,6 +71,10 @@ const ShowTimeline = ({
 }: ShowTimelineProperties) => {
   const { t } = useTranslation();
   const dragRef = useRef<Drag | null>(null);
+  const [dragging, setDragging] = useState(false);
+  // The marker while it is dragged; the seek itself waits for release, so a playing show jumps once.
+  const [scrubMs, setScrubMs] = useState<number | null>(null);
+  const markerMs = scrubMs ?? playheadMs;
   const beatsMs = showBeatsMs(show);
   const isSelected = (kind: 'light' | 'audio', id: string) => selection?.kind === kind && selection.id === id;
   const toPx = (ms: number) => (ms / MS_PER_SECOND) * pixelsPerSecond;
@@ -66,23 +86,30 @@ const ShowTimeline = ({
 
   const startDrag = (drag: Omit<Drag, 'originX'>, event: PointerEvent<HTMLElement>) => {
     event.stopPropagation();
-    // jsdom (tests) has no pointer capture.
-    if (typeof event.currentTarget.setPointerCapture === 'function') {
-      event.currentTarget.setPointerCapture(event.pointerId);
-    }
     dragRef.current = { ...drag, originX: event.clientX };
+    setDragging(true);
   };
 
-  const dragTo = (event: PointerEvent<HTMLElement>) => {
+  const moveClip = (drag: Drag, deltaMs: number, clientX: number, clientY: number) => {
+    const startMs = Math.max(0, Math.round(snapMs(drag.startMs + deltaMs)));
+    const moved = updateLightClip(show, drag.id, { startMs });
+    const trackId = lightTrackAt(clientX, clientY);
+    onChange(trackId ? moveLightClipToTrack(moved, drag.id, trackId) : moved);
+    if (trackId) onSelectTrack(trackId);
+  };
+
+  const dragTo = (clientX: number, clientY: number) => {
     const drag = dragRef.current;
     if (!drag) return;
-    const deltaMs = toMs(event.clientX - drag.originX);
-    if (drag.kind === 'audio') {
+    const deltaMs = toMs(clientX - drag.originX);
+    if (drag.kind === 'scrub') {
+      setScrubMs(Math.max(0, Math.round(drag.startMs + deltaMs)));
+    } else if (drag.kind === 'audio') {
       // Its own beats move with it; snapping to them would hold it in place.
       const others = showBeatsMs({ ...show, audioClips: show.audioClips.filter(clip => clip.publicId !== drag.id) });
       onChange(moveAudioClip(show, drag.id, snapMs(drag.startMs + deltaMs, others)));
     } else if (drag.kind === 'move') {
-      onChange(updateLightClip(show, drag.id, { startMs: Math.max(0, Math.round(snapMs(drag.startMs + deltaMs))) }));
+      moveClip(drag, deltaMs, clientX, clientY);
     } else {
       const endMs = snapMs(drag.startMs + drag.durationMs + deltaMs);
       onChange(
@@ -91,17 +118,51 @@ const ShowTimeline = ({
     }
   };
 
-  const endDrag = () => {
+  const onDragEnd = useEffectEvent(() => {
+    if (dragRef.current?.kind === 'scrub' && scrubMs !== null) onSeek(scrubMs);
     dragRef.current = null;
-  };
+    setDragging(false);
+    setScrubMs(null);
+  });
 
-  // Ends the drag however the pointer leaves: release, cancel (touch scroll) or lost capture.
-  const dragHandlers = {
-    onPointerMove: dragTo,
-    onPointerUp: endDrag,
-    onPointerCancel: endDrag,
-    onLostPointerCapture: endDrag,
-  };
+  // Followed on the window: a clip dragged onto another track is a new element, so its own pointer events stop.
+  const onWindowPointerMove = useEffectEvent((event: globalThis.PointerEvent) => {
+    dragTo(event.clientX, event.clientY);
+  });
+  useEffect(() => {
+    if (!dragging) return;
+    const move = (event: globalThis.PointerEvent) => {
+      onWindowPointerMove(event);
+    };
+    const end = () => {
+      onDragEnd();
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+    return () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
+    };
+  }, [dragging]);
+
+  const onWindowKeyDown = useEffectEvent((event: globalThis.KeyboardEvent) => {
+    if (selection?.kind !== 'light' || (event.key !== 'Delete' && event.key !== 'Backspace')) return;
+    if (isTextEntry(event.target)) return;
+    event.preventDefault();
+    onChange(removeLightClip(show, selection.id));
+    onSelect(null);
+  });
+  useEffect(() => {
+    const keyDown = (event: globalThis.KeyboardEvent) => {
+      onWindowKeyDown(event);
+    };
+    window.addEventListener('keydown', keyDown);
+    return () => {
+      window.removeEventListener('keydown', keyDown);
+    };
+  }, []);
 
   const onActivate = (activate: () => void) => (event: KeyboardEvent<HTMLElement>) => {
     if (event.key !== 'Enter' && event.key !== ' ') return;
@@ -109,8 +170,11 @@ const ShowTimeline = ({
     activate();
   };
 
-  const seek = (event: PointerEvent<HTMLDivElement>) => {
-    onSeek(Math.max(0, Math.round(toMs(event.clientX - event.currentTarget.getBoundingClientRect().left))));
+  /** Pressing on the ruler puts the marker there; dragging moves it on. */
+  const startScrub = (event: PointerEvent<HTMLDivElement>) => {
+    const ms = Math.max(0, Math.round(toMs(event.clientX - event.currentTarget.getBoundingClientRect().left)));
+    setScrubMs(ms);
+    startDrag({ kind: 'scrub', id: '', startMs: ms, durationMs: 0 }, event);
   };
 
   const clipBox = (startMs: number, durationMs: number): CSSProperties => ({
@@ -126,8 +190,9 @@ const ShowTimeline = ({
           <div
             className={`${classes.lane} ${classes.ruler}`}
             aria-label={t({ id: 'ShowManager.timeline', defaultMessage: 'Timeline' })}
-            onPointerDown={seek}
+            onPointerDown={startScrub}
           >
+            <div className={classes.playheadGrip} style={{ left: toPx(markerMs) }} aria-hidden />
             {ticks.map(seconds => (
               <span key={seconds} className={classes.tick} style={{ left: seconds * pixelsPerSecond }}>
                 {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
@@ -157,7 +222,6 @@ const ShowTimeline = ({
                 onKeyDown={onActivate(() => {
                   onSelect({ kind: 'audio', id: clip.publicId });
                 })}
-                {...dragHandlers}
               >
                 <Waveform clip={clip} />
                 {clip.fileName}
@@ -181,7 +245,7 @@ const ShowTimeline = ({
             >
               {track.name}
             </div>
-            <div className={classes.lane}>
+            <div className={classes.lane} data-track-id={track.id}>
               {track.clips.map(clip => (
                 <div
                   key={clip.id}
@@ -200,7 +264,6 @@ const ShowTimeline = ({
                     onSelectTrack(track.id);
                     onSelect({ kind: 'light', id: clip.id });
                   })}
-                  {...dragHandlers}
                 >
                   {functionNames.get(clip.functionPublicId) ?? '?'}
                   <div
@@ -213,12 +276,6 @@ const ShowTimeline = ({
                         event,
                       );
                     }}
-                    {...dragHandlers}
-                    onPointerMove={event => {
-                      // The clip around it would run the same move again.
-                      event.stopPropagation();
-                      dragTo(event);
-                    }}
                   />
                 </div>
               ))}
@@ -229,12 +286,30 @@ const ShowTimeline = ({
           {[...new Set(beatsMs)].map(beat => (
             <div key={beat} className={classes.beat} style={{ left: toPx(beat) }} data-testid="show-beat" />
           ))}
-          <div className={classes.playhead} style={{ left: toPx(playheadMs) }} data-testid="show-playhead" />
+          <div className={classes.playhead} style={{ left: toPx(markerMs) }} data-testid="show-playhead" />
         </div>
       </div>
     </div>
   );
 };
+
+/** The light track lane under a screen point, if any; jsdom has no hit testing. */
+function lightTrackAt(clientX: number, clientY: number): string | undefined {
+  if (typeof document.elementsFromPoint !== 'function') return undefined;
+  const lane = document
+    .elementsFromPoint(clientX, clientY)
+    .map(element => element.closest<HTMLElement>('[data-track-id]'))
+    .find(element => element !== null);
+  return lane?.dataset.trackId;
+}
+
+// Delete in a text field edits the text, not the timeline.
+function isTextEntry(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+  );
+}
 
 /** Mirrored peak envelope; one SVG unit per peak, stretched to the clip. */
 const Waveform = ({ clip }: { clip: ShowAudioClip }) => {

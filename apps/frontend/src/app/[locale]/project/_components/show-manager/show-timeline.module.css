@@ -47,7 +47,19 @@
 }
 
 .ruler {
-  cursor: pointer;
+  cursor: ew-resize;
+}
+
+/* Handle on top of the red marker; the ruler around it is draggable too. */
+.playheadGrip {
+  position: absolute;
+  top: 0;
+  z-index: 3;
+  width: 12px;
+  height: 12px;
+  margin-left: -5px;
+  border-radius: 0 0 6px 6px;
+  background: var(--mantine-color-red-filled);
 }
 
 .tick {

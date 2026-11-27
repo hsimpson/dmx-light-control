@@ -48,7 +48,7 @@ The vertical lines on the timeline are the beats the server found in the audio. 
 
 1. Click **Add light track**. Click a track name to select the track.
 2. Click **Add function**: a clip of 8 s with the project's first function appears on the selected track at the red playhead.
-3. Drag a clip to move it, drag its right edge to make it longer or shorter. Clip edges snap to a beat line close by.
+3. Drag a clip to move it, also onto another light track, and drag its right edge to make it longer or shorter. Clip edges snap to a beat line close by.
 4. Click **Save**.
 
 Click a track name without a clip selected to rename the track (**Track name**) or delete it (**Remove track**). Use the magnifier icons to zoom the timeline in and out.
@@ -61,7 +61,7 @@ Click a clip to change it:
 
 - **Function**: the function the clip plays.
 - **Follow beat** (on for new clips): the function starts dark and takes one step on every beat inside the clip. Off: the function runs from the start of the clip with its own timing.
-- **Remove clip** deletes the clip.
+- **Remove clip**, or the Delete key, deletes the clip.
 
 ### Overlapping clips
 
@@ -75,7 +75,7 @@ Clips on different tracks may overlap.
 
 Use **Play**, **Pause** and **Stop** at the top right. The times show the elapsed, total and remaining time.
 
-- Click the time ruler to jump there while the show plays. While it is paused or stopped, the click sets where **Play** starts.
+- Drag the red marker, or click or drag anywhere on the time ruler, to move back and forward. While the show plays it jumps there when you let go. While it is paused or stopped, the marker sets where **Play** starts.
 - **Pause** stops the music and the show's functions and keeps the position; **Play** continues from there.
 - At the end of the show, or on **Stop**, the show's functions stop.
 - The server plays the saved show. Unsaved changes play after you click **Save**.

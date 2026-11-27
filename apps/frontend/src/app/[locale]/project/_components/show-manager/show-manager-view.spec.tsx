@@ -182,6 +182,7 @@ describe('ShowManagerView', () => {
     expect(screen.getByLabelText('Remaining')).toHaveTextContent('-1:59');
     await user.click(screen.getByRole('button', { name: 'Pause' }));
     fireEvent.pointerDown(screen.getByLabelText('Timeline'), { clientX: 400 });
+    fireEvent.pointerUp(window);
 
     expect(socket.pauseShow).toHaveBeenCalledTimes(1);
     // 400 px at the default 40 px per second.
@@ -197,6 +198,7 @@ describe('ShowManagerView', () => {
     });
 
     fireEvent.pointerDown(await screen.findByLabelText('Timeline'), { clientX: 400 });
+    fireEvent.pointerUp(window);
     expect(socket.playShow).not.toHaveBeenCalled();
     await user.click(screen.getByRole('button', { name: 'Play' }));
 

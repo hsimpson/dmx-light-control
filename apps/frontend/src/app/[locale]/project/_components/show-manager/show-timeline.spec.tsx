@@ -2,7 +2,7 @@ import { renderWithProviders } from '@/testhelpers/render-with-providers';
 import { fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { ShowDocument } from './show-document';
-import ShowTimeline from './show-timeline';
+import ShowTimeline, { type ShowSelection } from './show-timeline';
 
 const show: ShowDocument = {
   publicId: 'show-1',
@@ -25,28 +25,30 @@ const show: ShowDocument = {
       name: 'Front',
       clips: [{ id: 'clip-1', functionPublicId: 'fn-1', startMs: 1000, durationMs: 1000, followBeat: true }],
     },
+    { id: 'track-2', name: 'Back', clips: [] },
   ],
 };
 
-function renderTimeline() {
+function renderTimeline(selection: ShowSelection = null) {
   const onChange = vi.fn<(next: ShowDocument) => void>();
   const onSelect = vi.fn();
+  const onSeek = vi.fn();
   const view = renderWithProviders(
     <ShowTimeline
       show={show}
       functionNames={new Map([['fn-1', 'Chase']])}
       pixelsPerSecond={100}
       playheadMs={0}
-      selection={null}
+      selection={selection}
       selectedTrackId={null}
       onSelect={onSelect}
       onSelectTrack={vi.fn()}
       onChange={onChange}
-      onSeek={vi.fn()}
+      onSeek={onSeek}
     />,
   );
   const lastChange = () => onChange.mock.calls.at(-1)?.[0];
-  return { ...view, onChange, onSelect, lastChange };
+  return { ...view, onChange, onSelect, onSeek, lastChange };
 }
 
 describe('ShowTimeline', () => {
@@ -64,8 +66,8 @@ describe('ShowTimeline', () => {
   });
 
   it('GIVEN a light clip WHEN its right edge is dragged far from beats THEN only its length changes', () => {
-    const { container, lastChange } = renderTimeline();
-    const handle = container.querySelector('[aria-hidden="true"]:not(svg)');
+    const { lastChange } = renderTimeline();
+    const handle = screen.getByRole('button', { name: 'Chase' }).querySelector('[aria-hidden="true"]');
     if (!handle) throw new Error('resize handle missing');
 
     fireEvent.pointerDown(handle, { clientX: 0 });
@@ -75,8 +77,8 @@ describe('ShowTimeline', () => {
   });
 
   it('GIVEN a light clip WHEN shrunk below the minimum THEN it keeps the minimum length', () => {
-    const { container, lastChange } = renderTimeline();
-    const handle = container.querySelector('[aria-hidden="true"]:not(svg)');
+    const { lastChange } = renderTimeline();
+    const handle = screen.getByRole('button', { name: 'Chase' }).querySelector('[aria-hidden="true"]');
     if (!handle) throw new Error('resize handle missing');
 
     fireEvent.pointerDown(handle, { clientX: 0 });
@@ -124,5 +126,69 @@ describe('ShowTimeline', () => {
     fireEvent.keyDown(screen.getByRole('button', { name: 'Chase' }), { key: 'Enter' });
 
     expect(onSelect).toHaveBeenCalledWith({ kind: 'light', id: 'clip-1' });
+  });
+
+  it('GIVEN a selected light clip WHEN Delete is pressed THEN it is removed and the selection cleared', () => {
+    const { onSelect, lastChange } = renderTimeline({ kind: 'light', id: 'clip-1' });
+
+    fireEvent.keyDown(window, { key: 'Delete' });
+
+    expect(lastChange()?.lightTracks[0]?.clips).toEqual([]);
+    expect(onSelect).toHaveBeenCalledWith(null);
+  });
+
+  it('GIVEN a selected light clip WHEN Delete is typed in a text field THEN the clip stays', () => {
+    const { onChange } = renderTimeline({ kind: 'light', id: 'clip-1' });
+    const field = document.createElement('input');
+    document.body.append(field);
+
+    fireEvent.keyDown(field, { key: 'Delete' });
+
+    expect(onChange).not.toHaveBeenCalled();
+    field.remove();
+  });
+
+  it('GIVEN a selected audio clip WHEN Delete is pressed THEN nothing is removed', () => {
+    const { onChange } = renderTimeline({ kind: 'audio', id: 'audio-1' });
+
+    fireEvent.keyDown(window, { key: 'Delete' });
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('GIVEN a light clip WHEN dragged over another light track THEN it moves there and keeps its timing', () => {
+    const { container, lastChange } = renderTimeline();
+    const backLane = container.querySelector('[data-track-id="track-2"]');
+    if (!backLane) throw new Error('lane missing');
+    // jsdom has no layout; pretend the pointer is over the second track.
+    document.elementsFromPoint = () => [backLane];
+    const clip = screen.getByRole('button', { name: 'Chase' });
+
+    fireEvent.pointerDown(clip, { clientX: 0, clientY: 0 });
+    fireEvent.pointerMove(clip, { clientX: 0, clientY: 60 });
+
+    expect(lastChange()?.lightTracks.map(track => track.clips.map(c => [c.id, c.startMs]))).toEqual([
+      [],
+      [['clip-1', 1000]],
+    ]);
+    Reflect.deleteProperty(document, 'elementsFromPoint');
+  });
+
+  it('GIVEN the marker WHEN dragged along the ruler and back THEN it follows and seeks once on release', () => {
+    const { onSeek } = renderTimeline();
+    const ruler = screen.getByLabelText('Timeline');
+    const marker = screen.getByTestId('show-playhead');
+
+    fireEvent.pointerDown(ruler, { clientX: 300 });
+    fireEvent.pointerMove(window, { clientX: 500 });
+    expect(marker).toHaveStyle({ left: '500px' });
+    fireEvent.pointerMove(window, { clientX: 200 });
+    expect(marker).toHaveStyle({ left: '200px' });
+    expect(onSeek).not.toHaveBeenCalled();
+    fireEvent.pointerUp(window);
+
+    // 200 px at 100 px/s.
+    expect(onSeek).toHaveBeenCalledExactlyOnceWith(2000);
+    expect(marker).toHaveStyle({ left: '0px' });
   });
 });

@@ -48,7 +48,7 @@ Die senkrechten Linien auf der Zeitleiste sind die Beats, die der Server im Audi
 
 1. Klicken Sie auf **Lichtspur hinzufügen**. Klicken Sie auf einen Spurnamen, um die Spur auszuwählen.
 2. Klicken Sie auf **Funktion hinzufügen**: Auf der ausgewählten Spur erscheint am roten Abspielkopf ein Clip von 8 s mit der ersten Funktion des Projekts.
-3. Ziehen Sie einen Clip, um ihn zu verschieben, und ziehen Sie seinen rechten Rand, um ihn länger oder kürzer zu machen. Clip-Ränder rasten an einer nahen Beat-Linie ein.
+3. Ziehen Sie einen Clip, um ihn zu verschieben, auch auf eine andere Lichtspur, und ziehen Sie seinen rechten Rand, um ihn länger oder kürzer zu machen. Clip-Ränder rasten an einer nahen Beat-Linie ein.
 4. Klicken Sie auf **Speichern**.
 
 Klicken Sie ohne ausgewählten Clip auf einen Spurnamen, um die Spur umzubenennen (**Spurname**) oder zu löschen (**Spur entfernen**). Mit den Lupen-Symbolen vergrößern und verkleinern Sie die Zeitleiste.
@@ -61,7 +61,7 @@ Klicken Sie einen Clip an, um ihn zu ändern:
 
 - **Funktion**: die Funktion, die der Clip abspielt.
 - **Dem Beat folgen** (bei neuen Clips an): Die Funktion startet dunkel und geht auf jedem Beat innerhalb des Clips einen Schritt weiter. Aus: Die Funktion läuft ab dem Anfang des Clips mit ihrem eigenen Timing.
-- **Clip entfernen** löscht den Clip.
+- **Clip entfernen** oder die Entf-Taste löscht den Clip.
 
 ### Überlappende Clips
 
@@ -75,7 +75,7 @@ Clips auf verschiedenen Spuren dürfen sich überlappen.
 
 Nutzen Sie **Abspielen**, **Pause** und **Stopp** oben rechts. Die Zeiten zeigen vergangene, gesamte und verbleibende Zeit.
 
-- Klicken Sie während der Wiedergabe auf das Zeitlineal, um dorthin zu springen. Ist die Show pausiert oder gestoppt, legt der Klick fest, wo **Abspielen** beginnt.
+- Ziehen Sie die rote Markierung oder klicken bzw. ziehen Sie irgendwo auf dem Zeitlineal, um vor- und zurückzuspulen. Läuft die Show, springt sie beim Loslassen dorthin. Ist sie pausiert oder gestoppt, legt die Markierung fest, wo **Abspielen** beginnt.
 - **Pause** hält Musik und Funktionen der Show an und behält die Position; **Abspielen** macht dort weiter.
 - Am Ende der Show oder bei **Stopp** werden die Funktionen der Show beendet.
 - Der Server spielt die gespeicherte Show. Ungespeicherte Änderungen werden erst nach **Speichern** abgespielt.

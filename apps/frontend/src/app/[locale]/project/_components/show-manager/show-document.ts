@@ -53,6 +53,14 @@ export const removeLightClip = (show: ShowDocument, clipId: string): ShowDocumen
   lightTracks: show.lightTracks.map(track => ({ ...track, clips: track.clips.filter(clip => clip.id !== clipId) })),
 });
 
+/** Moves a clip to the end of another track, keeping its timing; unknown clip or track leaves the show as it is. */
+export const moveLightClipToTrack = (show: ShowDocument, clipId: string, trackId: string): ShowDocument => {
+  const clip = findLightClip(show, clipId);
+  const target = show.lightTracks.find(track => track.id === trackId);
+  if (!clip || !target || target.clips.some(candidate => candidate.id === clipId)) return show;
+  return addLightClip(removeLightClip(show, clipId), trackId, clip);
+};
+
 export const moveAudioClip = (show: ShowDocument, publicId: string, startMs: number): ShowDocument => ({
   ...show,
   audioClips: show.audioClips.map(clip =>
