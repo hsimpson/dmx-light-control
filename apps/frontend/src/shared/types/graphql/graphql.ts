@@ -539,6 +539,15 @@ export type ShowAudioClipPositionInput = {
   startMs: number;
 };
 
+export type ShowCueInput = {
+  /** Client-generated id of the cue, unique within the show */
+  id: string;
+  /** Position on the show timeline in milliseconds */
+  ms: number;
+  /** Display name of the cue */
+  name: string;
+};
+
 export type ShowLightClipInput = {
   /** Length of the clip in milliseconds */
   durationMs: number;
@@ -724,6 +733,8 @@ export type UpdateProjectVirtualConsoleInput = {
 export type UpdateShowInput = {
   /** New start positions of audio clips; clips not listed keep their position */
   audioClips?: Array<ShowAudioClipPositionInput> | null | undefined;
+  /** Replacement cue points. Replaces every cue. */
+  cues?: Array<ShowCueInput> | null | undefined;
   /** Replacement light tracks. Replaces every track and clip. */
   lightTracks?: Array<ShowLightTrackInput> | null | undefined;
   /** Unique name within the project */
@@ -3951,6 +3962,7 @@ export type ShowFieldsFragment = {
     name: string;
     clips: Array<{ id: string; functionPublicId: string; startMs: number; durationMs: number; followBeat: boolean }>;
   }>;
+  cues: Array<{ id: string; name: string; ms: number }>;
 };
 
 export type GetShowsQueryVariables = Exact<{
@@ -3976,6 +3988,7 @@ export type GetShowsQuery = {
       name: string;
       clips: Array<{ id: string; functionPublicId: string; startMs: number; durationMs: number; followBeat: boolean }>;
     }>;
+    cues: Array<{ id: string; name: string; ms: number }>;
   }>;
 };
 
@@ -4002,6 +4015,7 @@ export type AddShowMutation = {
       name: string;
       clips: Array<{ id: string; functionPublicId: string; startMs: number; durationMs: number; followBeat: boolean }>;
     }>;
+    cues: Array<{ id: string; name: string; ms: number }>;
   };
 };
 
@@ -4028,6 +4042,7 @@ export type UpdateShowMutation = {
       name: string;
       clips: Array<{ id: string; functionPublicId: string; startMs: number; durationMs: number; followBeat: boolean }>;
     }>;
+    cues: Array<{ id: string; name: string; ms: number }>;
   };
 };
 
@@ -5439,6 +5454,18 @@ export const ShowFieldsFragmentDoc = {
                     ],
                   },
                 },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cues' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'ms' } },
               ],
             },
           },
@@ -10522,6 +10549,18 @@ export const GetShowsDocument = {
               ],
             },
           },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cues' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'ms' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -10613,6 +10652,18 @@ export const AddShowDocument = {
               ],
             },
           },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cues' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'ms' } },
+              ],
+            },
+          },
         ],
       },
     },
@@ -10701,6 +10752,18 @@ export const UpdateShowDocument = {
                     ],
                   },
                 },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'cues' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'ms' } },
               ],
             },
           },

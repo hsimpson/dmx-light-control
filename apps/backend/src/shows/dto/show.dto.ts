@@ -21,6 +21,7 @@ const MAX_SHOW_MS = 12 * 60 * 60 * 1000;
 const MAX_LIGHT_TRACKS = 64;
 const MAX_CLIPS_PER_TRACK = 2000;
 const MAX_AUDIO_CLIPS = 200;
+const MAX_CUES = 500;
 
 @ObjectType()
 export class ShowLightClipDto {
@@ -54,6 +55,18 @@ export class ShowLightTrackDto {
 }
 
 @ObjectType()
+export class ShowCueDto {
+  @Field({ description: 'Client-generated id of the cue, unique within the show' })
+  public id: string;
+
+  @Field({ description: 'Display name of the cue' })
+  public name: string;
+
+  @Field(() => Int, { description: 'Position on the show timeline in milliseconds' })
+  public ms: number;
+}
+
+@ObjectType()
 export class ShowAudioClipDto extends BaseDto {
   @Field({ description: 'Original name of the uploaded audio file' })
   public fileName: string;
@@ -83,6 +96,10 @@ export class ShowDto extends BaseDto {
   @Field(() => [ShowLightTrackDto], { description: 'Light tracks in display order' })
   @Type(() => ShowLightTrackDto)
   public lightTracks: ShowLightTrackDto[];
+
+  @Field(() => [ShowCueDto], { description: 'Cue points on the show timeline, ascending by position' })
+  @Type(() => ShowCueDto)
+  public cues: ShowCueDto[];
 
   @Field(() => [Int], { description: 'Every audio beat on the show timeline in milliseconds, ascending' })
   public beatsMs: number[];
@@ -140,6 +157,25 @@ export class ShowLightTrackInput {
 }
 
 @InputType()
+export class ShowCueInput {
+  @Field({ description: 'Client-generated id of the cue, unique within the show' })
+  @IsString()
+  @Length(1, 64)
+  public id: string;
+
+  @Field({ description: 'Display name of the cue' })
+  @IsString()
+  @Length(0, 64)
+  public name: string;
+
+  @Field(() => Int, { description: 'Position on the show timeline in milliseconds' })
+  @IsInt()
+  @Min(0)
+  @Max(MAX_SHOW_MS)
+  public ms: number;
+}
+
+@InputType()
 export class ShowAudioClipPositionInput {
   @Field(() => GraphQLUUID, { description: 'The public ID of an audio clip of this show' })
   @IsUUID('4')
@@ -186,6 +222,14 @@ export class UpdateShowInput {
   @ValidateNested({ each: true })
   @Type(() => ShowLightTrackInput)
   public lightTracks?: ShowLightTrackInput[];
+
+  @Field(() => [ShowCueInput], { nullable: true, description: 'Replacement cue points. Replaces every cue.' })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(MAX_CUES)
+  @ValidateNested({ each: true })
+  @Type(() => ShowCueInput)
+  public cues?: ShowCueInput[];
 
   @Field(() => [ShowAudioClipPositionInput], {
     nullable: true,

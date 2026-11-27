@@ -243,6 +243,7 @@ type MockedShow = {
     name: string;
     clips: { id: string; functionPublicId: string; startMs: number; durationMs: number; followBeat: boolean }[];
   }[];
+  cues: { id: string; name: string; ms: number }[];
 };
 
 // Audio clips need the backend's decoder, so mocked shows have none.
@@ -261,6 +262,7 @@ const showDto = (show: MockedShow) => ({
     ...track,
     clips: track.clips.map(clip => ({ __typename: 'ShowLightClipDto', ...clip })),
   })),
+  cues: show.cues.map(cue => ({ __typename: 'ShowCueDto', ...cue })),
 });
 
 export const mockGraphql = async (page: Page) => {
@@ -311,6 +313,7 @@ export const mockGraphql = async (page: Page) => {
           ledType?: string | null;
           ledPalettes?: { rgb?: MockedLedPalette; single?: MockedLedPalette };
           lightTracks?: MockedShow['lightTracks'];
+          cues?: MockedShow['cues'];
         };
         document?: { schemaVersion: number; projects: { publicId?: string; name: string }[] };
       };
@@ -374,6 +377,7 @@ export const mockGraphql = async (page: Page) => {
         publicId: `show-${shows.length + 1}`,
         name: postData.variables?.input?.name ?? '',
         lightTracks: [],
+        cues: [],
       };
       shows.push(show);
       body = { data: { addShow: showDto(show) } };
@@ -383,6 +387,7 @@ export const mockGraphql = async (page: Page) => {
       if (show) {
         show.name = input?.name ?? show.name;
         show.lightTracks = input?.lightTracks ?? show.lightTracks;
+        show.cues = input?.cues ?? show.cues;
       }
       body = { data: { updateShow: show ? showDto(show) : null } };
     } else if (postData.operationName === 'DeleteShow') {

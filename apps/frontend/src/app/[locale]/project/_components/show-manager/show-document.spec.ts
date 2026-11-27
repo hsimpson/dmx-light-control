@@ -1,16 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import {
+  addCue,
   addLightClip,
   addLightTrack,
   audioClipsOverlap,
   createLightClip,
   formatShowTime,
   moveAudioClip,
+  removeCue,
   removeLightClip,
   showBeatsMs,
   showDurationMs,
   snapToBeat,
   toUpdateShowInput,
+  updateCue,
   updateLightClip,
   type ShowDocument,
 } from './show-document';
@@ -31,6 +34,7 @@ const emptyShow = (): ShowDocument => ({
   beatsMs: [],
   audioClips: [],
   lightTracks: [],
+  cues: [],
 });
 
 describe('show document', () => {
@@ -46,6 +50,21 @@ describe('show document', () => {
     expect(added.lightTracks[0]?.clips[0]).toMatchObject({ functionPublicId: 'fn-1', startMs: 1235, followBeat: true });
     expect(changed.lightTracks[0]?.clips[0]).toMatchObject({ followBeat: false, durationMs: 500 });
     expect(removed.lightTracks[0]?.clips).toEqual([]);
+  });
+
+  it('GIVEN a show WHEN a cue is added, moved, renamed and removed THEN only that cue changes', () => {
+    const withCues = addCue(addCue(emptyShow(), 1000.4, 'Intro'), 5000, 'Chorus');
+    const id = withCues.cues[0]?.id ?? '';
+
+    const changed = updateCue(withCues, id, { ms: 2000, name: 'Verse' });
+    const removed = removeCue(changed, id);
+
+    expect(withCues.cues.map(cue => [cue.name, cue.ms])).toEqual([
+      ['Intro', 1000],
+      ['Chorus', 5000],
+    ]);
+    expect(changed.cues[0]).toMatchObject({ name: 'Verse', ms: 2000 });
+    expect(removed.cues.map(cue => cue.name)).toEqual(['Chorus']);
   });
 
   it('GIVEN a moved audio clip WHEN beats are listed THEN they move with it and stay sorted', () => {
@@ -88,6 +107,7 @@ describe('show document', () => {
       ...emptyShow(),
       __typename: 'ShowDto',
       audioClips: [{ ...audioClip('a', 500, 1000, [10]), __typename: 'ShowAudioClipDto' }],
+      cues: [{ __typename: 'ShowCueDto', id: 'q', name: 'Drop', ms: 700 }],
       lightTracks: [
         {
           __typename: 'ShowLightTrackDto',
@@ -118,6 +138,7 @@ describe('show document', () => {
         },
       ],
       audioClips: [{ publicId: 'a', startMs: 500 }],
+      cues: [{ id: 'q', name: 'Drop', ms: 700 }],
     });
   });
 });

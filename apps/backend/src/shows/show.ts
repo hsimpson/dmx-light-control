@@ -9,6 +9,9 @@ export type ShowLightClip = {
 
 export type ShowLightTrack = { id: string; name: string; clips: ShowLightClip[] };
 
+/** A named marker on the show timeline to jump to. */
+export type ShowCue = { id: string; name: string; ms: number };
+
 export type ShowAudioClipTiming = { startMs: number; durationMs: number; beatsMs: number[] };
 
 /** Every audio clip's beats on the show's timeline, ascending. */

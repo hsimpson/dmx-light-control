@@ -3,9 +3,9 @@
 import { getDmxWebsocketClient } from '@/lib/dmx/dmx-socket-connector';
 import { useDmxStore } from '@/lib/dmx/dmx-store';
 import { useTranslation } from '@/lib/i18n/use-translation';
-import { ActionIcon, Group, Progress, Stack, Text } from '@mantine/core';
+import { ActionIcon, Box, Group, Progress, Stack, Text, Tooltip, UnstyledButton } from '@mantine/core';
 import { PauseIcon, PlayIcon, StopIcon } from '@phosphor-icons/react';
-import { formatShowTime } from './show-document';
+import { formatShowTime, type ShowCue } from './show-document';
 
 type ShowTransportProperties = {
   showPublicId: string;
@@ -14,10 +14,20 @@ type ShowTransportProperties = {
   /** Where Play starts; without it a paused show resumes and a stopped one starts at the beginning. */
   startMs?: number;
   compact?: boolean;
+  /** Marks on the progress bar; clicking one plays the show from there. */
+  cues?: readonly ShowCue[];
 };
 
+const NO_CUES: readonly ShowCue[] = [];
+
 /** Play, pause and stop for one show, with elapsed, total and remaining time from the backend's playback. */
-const ShowTransport = ({ showPublicId, durationMs, startMs, compact = false }: ShowTransportProperties) => {
+const ShowTransport = ({
+  showPublicId,
+  durationMs,
+  startMs,
+  compact = false,
+  cues = NO_CUES,
+}: ShowTransportProperties) => {
   const { t } = useTranslation();
   const playback = useDmxStore(state => state.showPlayback);
   const loaded = playback.showPublicId === showPublicId;
@@ -78,7 +88,33 @@ const ShowTransport = ({ showPublicId, durationMs, startMs, compact = false }: S
           -{formatShowTime(Math.max(0, totalMs - positionMs))}
         </Text>
       </Group>
-      <Progress size="sm" value={totalMs > 0 ? (positionMs / totalMs) * 100 : 0} transitionDuration={0} />
+      <Box pos="relative">
+        <Progress size="sm" value={totalMs > 0 ? (positionMs / totalMs) * 100 : 0} transitionDuration={0} />
+        {totalMs > 0
+          ? cues.map(cue => (
+              <Tooltip key={cue.id} label={`${cue.name} ${formatShowTime(cue.ms)}`} withinPortal>
+                <UnstyledButton
+                  aria-label={t({ id: 'ShowManager.jumpToCue', defaultMessage: 'Jump to {name}' }, { name: cue.name })}
+                  data-testid="show-transport-cue"
+                  onClick={() => {
+                    getDmxWebsocketClient()?.playShow(showPublicId, cue.ms);
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: -5,
+                    left: `${Math.min(100, (cue.ms / totalMs) * 100)}%`,
+                    // 12 px hit area around a 2 px mark, centred on the cue.
+                    width: 12,
+                    height: 18,
+                    marginLeft: -6,
+                    background:
+                      'linear-gradient(to right, transparent 5px, var(--mantine-color-yellow-filled) 5px 7px, transparent 7px)',
+                  }}
+                />
+              </Tooltip>
+            ))
+          : null}
+      </Box>
     </Stack>
   );
 };

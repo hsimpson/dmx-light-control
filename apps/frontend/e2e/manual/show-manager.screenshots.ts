@@ -72,6 +72,10 @@ const demoShow = {
       clips: [clip('clip-rainbow', 1, 8400, 32_000, true)],
     },
   ],
+  cues: [
+    { __typename: 'ShowCueDto', id: 'cue-verse', name: 'Verse', ms: 8400 },
+    { __typename: 'ShowCueDto', id: 'cue-chorus', name: 'Chorus', ms: 24_400 },
+  ],
 };
 
 const showControl = {
@@ -119,8 +123,8 @@ const demoProject = {
 };
 
 const LABELS = {
-  en: { followBeat: 'Follow beat', fn: 'Function', show: 'Show' },
-  de: { followBeat: 'Dem Beat folgen', fn: 'Funktion', show: 'Show' },
+  en: { followBeat: 'Follow beat', fn: 'Function', show: 'Show', cueName: 'Cue name', removeCue: 'Remove cue' },
+  de: { followBeat: 'Dem Beat folgen', fn: 'Funktion', show: 'Show', cueName: 'Cue-Name', removeCue: 'Cue entfernen' },
 } as const;
 
 type Locale = keyof typeof LABELS;
@@ -173,6 +177,19 @@ for (const locale of Object.keys(LABELS) as Locale[]) {
         page.locator('label').filter({ hasText: new RegExp(`^${labels.fn}$`) }),
         page.getByRole('combobox', { name: labels.fn, exact: true }),
         followBeat,
+      ]);
+    });
+
+    test('cue settings', async ({ page }) => {
+      await page.goto(`/${locale}/project/${demoProject.publicId}/shows`);
+      await page.getByRole('button', { name: 'Verse' }).click();
+      const name = page.getByRole('textbox', { name: labels.cueName });
+      await expect(name).toHaveValue('Verse');
+
+      await shoot(page, imagePath(locale, 'show-manager-cue.png', 'show-manager'), [
+        page.getByTestId('show-cue').filter({ hasText: 'Verse' }),
+        name,
+        page.getByRole('button', { name: labels.removeCue }),
       ]);
     });
 

@@ -10,6 +10,7 @@ Im Tab **Show-Manager** bauen Sie zeitgesteuerte Lichtshows zur Musik. Eine Show
 - [Show anlegen](#show-anlegen)
 - [Audiospur](#audiospur)
   - [Beat-Linien](#beat-linien)
+  - [Cues](#cues)
 - [Lichtspuren](#lichtspuren)
   - [Clip-Einstellungen](#clip-einstellungen)
   - [Überlappende Clips](#überlappende-clips)
@@ -43,6 +44,19 @@ Klicken Sie auf **Audio hinzufügen** und wählen Sie eine Datei. Unterstützt w
 ### Beat-Linien
 
 Die senkrechten Linien auf der Zeitleiste sind die Beats, die der Server im Audio gefunden hat. Er nutzt dieselbe Beat-Erkennung wie das Steuerelement [Audio-Trigger](../virtual-console/audio-trigger.md): Einsätze von Kick und Bass zwischen 40 und 150 Hz. Die Linien wandern mit ihrem Audio-Clip. Der erste Beat wird erst nach 0,3 s Audio erkannt; ein Kick ganz am Anfang einer Datei hat daher keine Linie.
+
+### Cues
+
+Cues markieren Stellen der Show, zu denen Sie springen wollen, etwa den Refrain oder einen Drop.
+
+1. Setzen Sie den roten Abspielkopf an die Stelle und klicken Sie auf **Cue hinzufügen**. Der Cue rastet an einer nahen Beat-Linie ein und heißt **Cue 1**, **Cue 2** und so weiter.
+2. Klicken Sie auf die gelbe Fahne eines Cues auf der Audiospur, um dorthin zu springen; läuft die Show, spielt sie ab dem Cue weiter. Ziehen Sie die Fahne, um den Cue zu verschieben; er rastet an einer nahen Beat-Linie ein.
+3. Ändern Sie den **Cue-Name** oder klicken Sie auf **Cue entfernen**; auch die Entf-Taste entfernt den ausgewählten Cue.
+4. Klicken Sie auf **Speichern**.
+
+![Einstellungen eines Cues](images/show-manager-cue.png)
+
+Cues gehören zur Show, nicht zu einem Audio-Clip: Verschieben oder Entfernen von Audio lässt sie, wo sie sind. Sie ändern weder die Länge der Show noch, was sie abspielt. Das Steuerelement [Show](../virtual-console/show-control.md) zeigt sie auf seiner Zeitleiste.
 
 ## Lichtspuren
 

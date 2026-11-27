@@ -16,6 +16,7 @@ type Show = {
   beatsMs: number[];
   audioClips: { publicId: string; fileName: string; startMs: number; durationMs: number; peaks: number[] }[];
   lightTracks: { id: string; clips: { id: string; functionPublicId: string; followBeat: boolean }[] }[];
+  cues: { id: string; name: string; ms: number }[];
 };
 
 const SHOW_FIELDS = gql`
@@ -38,6 +39,11 @@ const SHOW_FIELDS = gql`
         functionPublicId
         followBeat
       }
+    }
+    cues {
+      id
+      name
+      ms
     }
   }
 `;
@@ -218,6 +224,34 @@ describe('Shows', () => {
     const response = await uploadWav('5f0c1a2b-3c4d-4e5f-8a9b-0c1d2e3f4a5b');
 
     expect(response.statusCode).toBe(404);
+  });
+
+  it('GIVEN cue points WHEN saved THEN they come back by time and replace the previous ones', async () => {
+    const show = await addShow('Cues');
+
+    const saved = await updateShow({
+      publicId: show.publicId,
+      cues: [
+        { id: 'b', name: 'Chorus', ms: 30000 },
+        { id: 'a', name: 'Intro', ms: 0 },
+      ],
+    });
+    const replaced = await updateShow({ publicId: show.publicId, cues: [{ id: 'c', name: 'Drop', ms: 1000 }] });
+
+    expect(saved.data?.updateShow.cues.map(cue => cue.name)).toEqual(['Intro', 'Chorus']);
+    expect(saved.data?.updateShow.durationMs).toBe(0);
+    expect(replaced.data?.updateShow.cues).toEqual([{ id: 'c', name: 'Drop', ms: 1000 }]);
+  });
+
+  it('GIVEN a cue beyond twelve hours WHEN saved THEN it is rejected', async () => {
+    const show = await addShow('Late cue');
+
+    const saved = await updateShow({
+      publicId: show.publicId,
+      cues: [{ id: 'x', name: 'Too late', ms: 12 * 3600 * 1000 + 1 }],
+    });
+
+    expect(saved.errors).toBeDefined();
   });
 
   it('GIVEN light tracks WHEN the function is deleted THEN its clips leave the show', async () => {

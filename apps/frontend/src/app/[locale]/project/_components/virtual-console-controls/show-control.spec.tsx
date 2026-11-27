@@ -26,6 +26,7 @@ const showsQuery = {
           beatsMs: [],
           audioClips: [],
           lightTracks: [],
+          cues: [{ __typename: 'ShowCueDto' as const, id: 'cue-1', name: 'Chorus', ms: 50_000 }],
         },
       ],
     },
@@ -60,6 +61,16 @@ describe('ShowControl', () => {
     await user.click(screen.getByRole('button', { name: 'Stop' }));
 
     expect(socket.stopShow).toHaveBeenCalledTimes(1);
+  });
+
+  it('GIVEN a show with a cue WHEN its mark is clicked THEN the show plays from the cue', async () => {
+    const { user } = renderWithProviders(<ShowControl control={control} mode="play" />, { apolloMocks: [showsQuery] });
+
+    const mark = await screen.findByRole('button', { name: 'Jump to Chorus' });
+    expect(mark).toHaveStyle({ left: '25%' });
+    await user.click(mark);
+
+    expect(socket.playShow).toHaveBeenCalledWith(SHOW_ID, 50_000);
   });
 
   it('GIVEN edit mode WHEN rendered THEN the transport does not catch the pointer', () => {

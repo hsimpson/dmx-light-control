@@ -61,9 +61,10 @@ export class ShowService {
     }
     const name = input.name?.trim();
     // Drizzle rejects an update without values, e.g. when only audio clips move.
-    if (name !== undefined || input.lightTracks) {
+    const cues = input.cues?.toSorted((a, b) => a.ms - b.ms);
+    if (name !== undefined || input.lightTracks || cues) {
       await this.withUniqueName(name ?? existing.name, async () =>
-        this.showRepository.updateOneByPublicId(input.publicId, { name, lightTracks: input.lightTracks }),
+        this.showRepository.updateOneByPublicId(input.publicId, { name, lightTracks: input.lightTracks, cues }),
       );
     }
     if (input.audioClips) {

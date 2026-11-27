@@ -22,6 +22,11 @@ fragment ShowFields on ShowDto {
       followBeat
     }
   }
+  cues {
+    id
+    name
+    ms
+  }
 }
 
 query GetShows($projectPublicId: UUID!) {

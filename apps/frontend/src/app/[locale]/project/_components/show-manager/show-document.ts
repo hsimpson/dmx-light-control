@@ -4,6 +4,7 @@ export type ShowDocument = ShowFieldsFragment;
 export type ShowLightTrack = ShowDocument['lightTracks'][number];
 export type ShowLightClip = ShowLightTrack['clips'][number];
 export type ShowAudioClip = ShowDocument['audioClips'][number];
+export type ShowCue = ShowDocument['cues'][number];
 
 export const SHOW_DEFAULT_CLIP_MS = 8000;
 export const SHOW_MIN_CLIP_MS = 100;
@@ -60,6 +61,21 @@ export const moveLightClipToTrack = (show: ShowDocument, clipId: string, trackId
   if (!clip || !target || target.clips.some(candidate => candidate.id === clipId)) return show;
   return addLightClip(removeLightClip(show, clipId), trackId, clip);
 };
+
+export const addCue = (show: ShowDocument, ms: number, name: string): ShowDocument => ({
+  ...show,
+  cues: [...show.cues, { id: crypto.randomUUID(), name, ms: Math.max(0, Math.round(ms)) }],
+});
+
+export const updateCue = (show: ShowDocument, cueId: string, patch: Partial<ShowCue>): ShowDocument => ({
+  ...show,
+  cues: show.cues.map(cue => (cue.id === cueId ? { ...cue, ...patch } : cue)),
+});
+
+export const removeCue = (show: ShowDocument, cueId: string): ShowDocument => ({
+  ...show,
+  cues: show.cues.filter(cue => cue.id !== cueId),
+});
 
 export const moveAudioClip = (show: ShowDocument, publicId: string, startMs: number): ShowDocument => ({
   ...show,
@@ -124,4 +140,5 @@ export const toUpdateShowInput = (show: ShowDocument): UpdateShowInput => ({
     })),
   })),
   audioClips: show.audioClips.map(({ publicId, startMs }) => ({ publicId, startMs })),
+  cues: show.cues.map(({ id, name, ms }) => ({ id, name, ms })),
 });

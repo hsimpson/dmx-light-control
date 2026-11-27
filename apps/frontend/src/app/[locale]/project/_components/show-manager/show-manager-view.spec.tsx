@@ -61,6 +61,7 @@ const show = {
       ],
     },
   ],
+  cues: [],
 };
 
 const showsQuery = (shows: unknown[]) => ({
@@ -126,6 +127,7 @@ describe('ShowManagerView', () => {
                   },
                 ],
                 audioClips: [{ publicId: 'audio-1', startMs: 0 }],
+                cues: [],
               },
             },
           },
@@ -143,6 +145,22 @@ describe('ShowManagerView', () => {
     await waitFor(() => {
       expect(saved).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('GIVEN a show WHEN a cue is added THEN it appears at the playhead and can be renamed', async () => {
+    const { user } = renderWithProviders(<ShowManagerView projectPublicId="proj-1" />, {
+      apolloMocks: [showsQuery([show]), projectQuery],
+    });
+
+    await user.click(await screen.findByRole('button', { name: 'Add cue' }));
+    const name = screen.getByLabelText('Cue name');
+    expect(name).toHaveValue('Cue 1');
+    await user.clear(name);
+    await user.type(name, 'Drop');
+    await user.tab();
+
+    expect(screen.getByRole('button', { name: 'Drop' })).toHaveStyle({ left: '0px' });
+    expect(screen.getByText('Unsaved changes play after saving')).toBeInTheDocument();
   });
 
   it('GIVEN a show WHEN a track is added and a function placed on it THEN both appear in the draft', async () => {

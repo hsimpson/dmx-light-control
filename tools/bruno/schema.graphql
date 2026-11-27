@@ -2908,6 +2908,40 @@ input ShowAudioClipPositionInput {
   startMs: Int!
 }
 
+type ShowCueDto {
+  """
+  Client-generated id of the cue, unique within the show
+  """
+  id: String!
+
+  """
+  Position on the show timeline in milliseconds
+  """
+  ms: Int!
+
+  """
+  Display name of the cue
+  """
+  name: String!
+}
+
+input ShowCueInput {
+  """
+  Client-generated id of the cue, unique within the show
+  """
+  id: String!
+
+  """
+  Position on the show timeline in milliseconds
+  """
+  ms: Int!
+
+  """
+  Display name of the cue
+  """
+  name: String!
+}
+
 type ShowDto {
   """
   Clips of the single audio track, ordered by start
@@ -2923,6 +2957,11 @@ type ShowDto {
   The date and time when the entity was created
   """
   createdAt: DateTime!
+
+  """
+  Cue points on the show timeline, ascending by position
+  """
+  cues: [ShowCueDto!]!
 
   """
   End of the last clip in milliseconds
@@ -3371,6 +3410,11 @@ input UpdateShowInput {
   New start positions of audio clips; clips not listed keep their position
   """
   audioClips: [ShowAudioClipPositionInput!]
+
+  """
+  Replacement cue points. Replaces every cue.
+  """
+  cues: [ShowCueInput!]
 
   """
   Replacement light tracks. Replaces every track and clip.

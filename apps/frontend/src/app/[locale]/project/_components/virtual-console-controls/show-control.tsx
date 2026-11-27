@@ -39,7 +39,12 @@ const ShowControl = ({ control, mode, selected = false }: Omit<VirtualConsoleCon
         {control.label}
       </Text>
       {control.showPublicId ? (
-        <ShowTransport showPublicId={control.showPublicId} durationMs={show?.durationMs ?? 0} compact />
+        <ShowTransport
+          showPublicId={control.showPublicId}
+          durationMs={show?.durationMs ?? 0}
+          cues={show?.cues}
+          compact
+        />
       ) : (
         <Text size="xs" c="dimmed">
           {t({ id: 'ProjectDetail.virtualConsole.noShow', defaultMessage: 'No show selected' })}

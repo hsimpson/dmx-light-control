@@ -23,6 +23,11 @@ graphql:
           }
           beatsMs
           createdAt
+          cues {
+            id
+            ms
+            name
+          }
           durationMs
           lightTracks {
             clips {

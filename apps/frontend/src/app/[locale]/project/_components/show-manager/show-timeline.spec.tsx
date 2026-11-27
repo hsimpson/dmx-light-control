@@ -27,6 +27,7 @@ const show: ShowDocument = {
     },
     { id: 'track-2', name: 'Back', clips: [] },
   ],
+  cues: [{ id: 'cue-1', name: 'Chorus', ms: 3000 }],
 };
 
 function renderTimeline(selection: ShowSelection = null) {
@@ -172,6 +173,35 @@ describe('ShowTimeline', () => {
       [['clip-1', 1000]],
     ]);
     Reflect.deleteProperty(document, 'elementsFromPoint');
+  });
+
+  it('GIVEN a cue WHEN pressed THEN it is selected and the show jumps to it', () => {
+    const { onSelect, onSeek } = renderTimeline();
+
+    fireEvent.pointerDown(screen.getByRole('button', { name: 'Chorus' }), { clientX: 0 });
+
+    expect(onSelect).toHaveBeenCalledWith({ kind: 'cue', id: 'cue-1' });
+    expect(onSeek).toHaveBeenCalledExactlyOnceWith(3000);
+  });
+
+  it('GIVEN a cue WHEN dragged near a beat THEN it snaps onto the beat', () => {
+    const { lastChange } = renderTimeline();
+    const cue = screen.getByRole('button', { name: 'Chorus' });
+
+    fireEvent.pointerDown(cue, { clientX: 0 });
+    // 95 px at 100 px/s: 3950 ms snaps to the beat at 4000 ms.
+    fireEvent.pointerMove(window, { clientX: 95 });
+
+    expect(lastChange()?.cues).toEqual([{ id: 'cue-1', name: 'Chorus', ms: 4000 }]);
+  });
+
+  it('GIVEN a selected cue WHEN Delete is pressed THEN it is removed', () => {
+    const { lastChange } = renderTimeline({ kind: 'cue', id: 'cue-1' });
+
+    fireEvent.keyDown(window, { key: 'Delete' });
+
+    expect(lastChange()?.cues).toEqual([]);
+    expect(lastChange()?.lightTracks[0]?.clips).toHaveLength(1);
   });
 
   it('GIVEN the marker WHEN dragged along the ruler and back THEN it follows and seeks once on release', () => {

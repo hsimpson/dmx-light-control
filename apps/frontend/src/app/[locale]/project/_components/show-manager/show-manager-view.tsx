@@ -29,6 +29,7 @@ import {
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
+  FlagIcon,
   MagnifyingGlassMinusIcon,
   MagnifyingGlassPlusIcon,
   MusicNotesPlusIcon,
@@ -39,14 +40,19 @@ import {
 } from '@phosphor-icons/react';
 import { useState } from 'react';
 import {
+  addCue,
   addLightClip,
   addLightTrack,
   createLightClip,
   findLightClip,
+  removeCue,
   removeLightClip,
   removeLightTrack,
+  showBeatsMs,
   showDurationMs,
+  snapToBeat,
   toUpdateShowInput,
+  updateCue,
   updateLightClip,
   type ShowDocument,
 } from './show-document';
@@ -56,6 +62,8 @@ import ShowTransport from './show-transport';
 const DEFAULT_PIXELS_PER_SECOND = 40;
 const MIN_PIXELS_PER_SECOND = 5;
 const MAX_PIXELS_PER_SECOND = 320;
+/** Same snap distance on screen as the timeline's clip edges. */
+const CUE_SNAP_PX = 8;
 const AUDIO_ACCEPT = '.mp3,.wav,.flac,.ogg,.opus,audio/*';
 
 type ShowManagerViewProperties = { projectPublicId: string };
@@ -207,6 +215,7 @@ const ShowManagerView = ({ projectPublicId }: ShowManagerViewProperties) => {
   const playheadMs = followsPlayback ? playback.positionMs : cursorMs;
   const transportStartMs = thisStatus === 'paused' && !seekedWhilePaused ? undefined : cursorMs;
   const selectedClip = selection?.kind === 'light' ? findLightClip(draft, selection.id) : undefined;
+  const selectedCue = selection?.kind === 'cue' ? draft.cues.find(cue => cue.id === selection.id) : undefined;
   const selectedTrack = draft.lightTracks.find(track => track.id === selectedTrackId);
   const firstFunction = functions[0];
 
@@ -221,6 +230,17 @@ const ShowManagerView = ({ projectPublicId }: ShowManagerViewProperties) => {
     const clip = createLightClip(firstFunction.publicId, playheadMs);
     edit(addLightClip(draft, selectedTrack.id, clip));
     setSelection({ kind: 'light', id: clip.id });
+  };
+
+  const addCueAtPlayhead = () => {
+    const ms = snapToBeat(playheadMs, showBeatsMs(draft), (CUE_SNAP_PX / pixelsPerSecond) * 1000);
+    const name = t(
+      { id: 'ShowManager.cueDefaultName', defaultMessage: 'Cue {number}' },
+      { number: draft.cues.length + 1 },
+    );
+    const next = addCue(draft, ms, name);
+    edit(next);
+    setSelection({ kind: 'cue', id: next.cues.at(-1)?.id ?? '' });
   };
 
   return (
@@ -302,6 +322,9 @@ const ShowManagerView = ({ projectPublicId }: ShowManagerViewProperties) => {
             onClick={addClip}
           >
             {t({ id: 'ShowManager.addClip', defaultMessage: 'Add function' })}
+          </Button>
+          <Button variant="default" leftSection={<FlagIcon />} onClick={addCueAtPlayhead}>
+            {t({ id: 'ShowManager.addCue', defaultMessage: 'Add cue' })}
           </Button>
           <ActionIcon
             variant="subtle"
@@ -411,7 +434,35 @@ const ShowManagerView = ({ projectPublicId }: ShowManagerViewProperties) => {
         </Paper>
       ) : null}
 
-      {selectedTrack && !selectedClip && selection?.kind !== 'audio' ? (
+      {selectedCue ? (
+        <Paper withBorder p="sm">
+          <Group align="flex-end">
+            <TextInput
+              key={selectedCue.id}
+              label={t({ id: 'ShowManager.cueName', defaultMessage: 'Cue name' })}
+              maxLength={64}
+              defaultValue={selectedCue.name}
+              onBlur={event => {
+                const name = event.currentTarget.value;
+                if (name !== selectedCue.name) edit(updateCue(draft, selectedCue.id, { name }));
+              }}
+            />
+            <Button
+              color="red"
+              variant="light"
+              leftSection={<TrashIcon />}
+              onClick={() => {
+                edit(removeCue(draft, selectedCue.id));
+                setSelection(null);
+              }}
+            >
+              {t({ id: 'ShowManager.removeCue', defaultMessage: 'Remove cue' })}
+            </Button>
+          </Group>
+        </Paper>
+      ) : null}
+
+      {selectedTrack && !selectedClip && selection?.kind !== 'audio' && selection?.kind !== 'cue' ? (
         <Paper withBorder p="sm">
           <Group align="flex-end">
             <TextInput

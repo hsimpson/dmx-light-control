@@ -28,6 +28,7 @@ Use the buttons in the pop-out window (the **Pop out** icon in the **Console** p
 - **Play** starts the show at the beginning; on a paused show it continues where it was.
 - **Pause** stops the music and the show's lights and keeps the position.
 - **Stop** ends the show.
+- The yellow marks on the timeline are the show's [cue points](../show-manager/show-manager.md#cue-points). Point at one to see its name and time; click it to play the show from there, also when it is paused or stopped.
 
 The show plays on the server, so every open console, the pop-out window and the Show manager show the same position. Playback rules are on the [Show manager](../show-manager/show-manager.md#play-a-show) page.
 

@@ -10,6 +10,7 @@ The **Show manager** tab builds timed light shows to music. A show is a timeline
 - [Create a show](#create-a-show)
 - [Audio track](#audio-track)
   - [Beat lines](#beat-lines)
+  - [Cue points](#cue-points)
 - [Light tracks](#light-tracks)
   - [Clip settings](#clip-settings)
   - [Overlapping clips](#overlapping-clips)
@@ -43,6 +44,19 @@ Click **Add audio** and choose a file. Supported are MP3, WAV, FLAC, Ogg (Vorbis
 ### Beat lines
 
 The vertical lines on the timeline are the beats the server found in the audio. It uses the same beat detection as the [Audio triggers](../virtual-console/audio-trigger.md) control: onsets of kick and bass between 40 and 150 Hz. The lines move with their audio clip. The first beat can only be found after 0.3 s of audio, so a kick right at the start of a file has no line.
+
+### Cue points
+
+Cue points mark places in the show you want to jump to, such as the chorus or a drop.
+
+1. Move the red playhead to the place and click **Add cue**. The cue snaps to a beat line close by and is named **Cue 1**, **Cue 2** and so on.
+2. Click a cue's yellow flag on the audio track to jump there; while the show plays, it continues from the cue. Drag the flag to move the cue; it snaps to a beat line close by.
+3. Change the **Cue name** or click **Remove cue**; the Delete key removes the selected cue too.
+4. Click **Save**.
+
+![Settings of a cue](images/show-manager-cue.png)
+
+Cues belong to the show, not to an audio clip: moving or removing audio leaves them where they are. They do not change the show's length or what it plays. The [Show](../virtual-console/show-control.md) control shows them on its timeline.
 
 ## Light tracks
 

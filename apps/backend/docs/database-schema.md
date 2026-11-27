@@ -168,6 +168,7 @@ erDiagram
         integer project_id FK,UK
         varchar name UK
         jsonb light_tracks
+        jsonb cues
         timestamp created_at
         timestamp updated_at
     }

@@ -138,3 +138,34 @@
   width: 8px;
   cursor: ew-resize;
 }
+
+/* Flag at the top of the audio lane; its left edge is the cue position. */
+.cue {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  max-width: 120px;
+  overflow: hidden;
+  padding: 0 4px;
+  font-size: var(--mantine-font-size-xs);
+  line-height: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: grab;
+  touch-action: none;
+  border-radius: 0 var(--mantine-radius-xs) var(--mantine-radius-xs) 0;
+  color: var(--mantine-color-black);
+  background: var(--mantine-color-yellow-filled);
+}
+
+.cueSelected {
+  outline: 2px solid var(--mantine-color-white);
+}
+
+.cueLine {
+  position: absolute;
+  top: 28px;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dashed var(--mantine-color-yellow-filled);
+}

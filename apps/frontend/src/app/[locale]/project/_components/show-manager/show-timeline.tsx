@@ -13,11 +13,13 @@ import {
 import {
   moveAudioClip,
   moveLightClipToTrack,
+  removeCue,
   removeLightClip,
   SHOW_MIN_CLIP_MS,
   showBeatsMs,
   showDurationMs,
   snapToBeat,
+  updateCue,
   updateLightClip,
   type ShowAudioClip,
   type ShowDocument,
@@ -34,10 +36,12 @@ const TICK_STEPS_S = [1, 2, 5, 10, 15, 30, 60, 120, 300];
 const TAIL_MS = 30_000;
 const MS_PER_SECOND = 1000;
 
-export type ShowSelection = { kind: 'light' | 'audio'; id: string } | null;
+type SelectionKind = 'light' | 'audio' | 'cue';
+
+export type ShowSelection = { kind: SelectionKind; id: string } | null;
 
 type Drag = {
-  kind: 'move' | 'resize' | 'audio' | 'scrub';
+  kind: 'move' | 'resize' | 'audio' | 'scrub' | 'cue';
   id: string;
   originX: number;
   startMs: number;
@@ -76,7 +80,7 @@ const ShowTimeline = ({
   const [scrubMs, setScrubMs] = useState<number | null>(null);
   const markerMs = scrubMs ?? playheadMs;
   const beatsMs = showBeatsMs(show);
-  const isSelected = (kind: 'light' | 'audio', id: string) => selection?.kind === kind && selection.id === id;
+  const isSelected = (kind: SelectionKind, id: string) => selection?.kind === kind && selection.id === id;
   const toPx = (ms: number) => (ms / MS_PER_SECOND) * pixelsPerSecond;
   const toMs = (px: number) => (px / pixelsPerSecond) * MS_PER_SECOND;
   const snapMs = (ms: number, grid: readonly number[] = beatsMs) => snapToBeat(ms, grid, toMs(SNAP_PX));
@@ -104,6 +108,8 @@ const ShowTimeline = ({
     const deltaMs = toMs(clientX - drag.originX);
     if (drag.kind === 'scrub') {
       setScrubMs(Math.max(0, Math.round(drag.startMs + deltaMs)));
+    } else if (drag.kind === 'cue') {
+      onChange(updateCue(show, drag.id, { ms: Math.max(0, Math.round(snapMs(drag.startMs + deltaMs))) }));
     } else if (drag.kind === 'audio') {
       // Its own beats move with it; snapping to them would hold it in place.
       const others = showBeatsMs({ ...show, audioClips: show.audioClips.filter(clip => clip.publicId !== drag.id) });
@@ -148,10 +154,10 @@ const ShowTimeline = ({
   }, [dragging]);
 
   const onWindowKeyDown = useEffectEvent((event: globalThis.KeyboardEvent) => {
-    if (selection?.kind !== 'light' || (event.key !== 'Delete' && event.key !== 'Backspace')) return;
-    if (isTextEntry(event.target)) return;
+    if (selection === null || selection.kind === 'audio') return;
+    if ((event.key !== 'Delete' && event.key !== 'Backspace') || isTextEntry(event.target)) return;
     event.preventDefault();
-    onChange(removeLightClip(show, selection.id));
+    onChange(selection.kind === 'cue' ? removeCue(show, selection.id) : removeLightClip(show, selection.id));
     onSelect(null);
   });
   useEffect(() => {
@@ -227,6 +233,29 @@ const ShowTimeline = ({
                 {clip.fileName}
               </div>
             ))}
+            {show.cues.map(cue => (
+              <div
+                key={cue.id}
+                role="button"
+                tabIndex={0}
+                aria-label={cue.name}
+                aria-pressed={isSelected('cue', cue.id)}
+                className={`${classes.cue} ${isSelected('cue', cue.id) ? classes.cueSelected : ''}`}
+                style={{ left: toPx(cue.ms) }}
+                data-testid="show-cue"
+                onPointerDown={event => {
+                  onSelect({ kind: 'cue', id: cue.id });
+                  onSeek(cue.ms);
+                  startDrag({ kind: 'cue', id: cue.id, startMs: cue.ms, durationMs: 0 }, event);
+                }}
+                onKeyDown={onActivate(() => {
+                  onSelect({ kind: 'cue', id: cue.id });
+                  onSeek(cue.ms);
+                })}
+              >
+                {cue.name}
+              </div>
+            ))}
           </div>
         </div>
         {show.lightTracks.map(track => (
@@ -285,6 +314,9 @@ const ShowTimeline = ({
         <div className={classes.overlay} style={{ left: LABEL_WIDTH_PX, width: widthPx }} aria-hidden>
           {[...new Set(beatsMs)].map(beat => (
             <div key={beat} className={classes.beat} style={{ left: toPx(beat) }} data-testid="show-beat" />
+          ))}
+          {show.cues.map(cue => (
+            <div key={cue.id} className={classes.cueLine} style={{ left: toPx(cue.ms) }} />
           ))}
           <div className={classes.playhead} style={{ left: toPx(markerMs) }} data-testid="show-playhead" />
         </div>
