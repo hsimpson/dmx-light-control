@@ -232,6 +232,10 @@ const ShowManagerView = ({ projectPublicId }: ShowManagerViewProperties) => {
     setSelection({ kind: 'light', id: clip.id });
   };
 
+  const zoom = (factor: number) => {
+    setPixelsPerSecond(pps => Math.min(MAX_PIXELS_PER_SECOND, Math.max(MIN_PIXELS_PER_SECOND, pps * factor)));
+  };
+
   const addCueAtPlayhead = () => {
     const ms = snapToBeat(playheadMs, showBeatsMs(draft), (CUE_SNAP_PX / pixelsPerSecond) * 1000);
     const name = t(
@@ -330,7 +334,7 @@ const ShowManagerView = ({ projectPublicId }: ShowManagerViewProperties) => {
             variant="subtle"
             aria-label={t({ id: 'ShowManager.zoomOut', defaultMessage: 'Zoom out' })}
             onClick={() => {
-              setPixelsPerSecond(pps => Math.max(MIN_PIXELS_PER_SECOND, pps / 2));
+              zoom(0.5);
             }}
           >
             <MagnifyingGlassMinusIcon />
@@ -339,7 +343,7 @@ const ShowManagerView = ({ projectPublicId }: ShowManagerViewProperties) => {
             variant="subtle"
             aria-label={t({ id: 'ShowManager.zoomIn', defaultMessage: 'Zoom in' })}
             onClick={() => {
-              setPixelsPerSecond(pps => Math.min(MAX_PIXELS_PER_SECOND, pps * 2));
+              zoom(2);
             }}
           >
             <MagnifyingGlassPlusIcon />
@@ -378,6 +382,7 @@ const ShowManagerView = ({ projectPublicId }: ShowManagerViewProperties) => {
         onSelectTrack={setSelectedTrackId}
         onChange={edit}
         onSeek={seek}
+        onZoom={zoom}
       />
 
       {selectedClip ? (

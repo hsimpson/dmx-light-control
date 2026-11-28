@@ -34,6 +34,7 @@ function renderTimeline(selection: ShowSelection = null) {
   const onChange = vi.fn<(next: ShowDocument) => void>();
   const onSelect = vi.fn();
   const onSeek = vi.fn();
+  const onZoom = vi.fn<(factor: number) => void>();
   const view = renderWithProviders(
     <ShowTimeline
       show={show}
@@ -46,10 +47,11 @@ function renderTimeline(selection: ShowSelection = null) {
       onSelectTrack={vi.fn()}
       onChange={onChange}
       onSeek={onSeek}
+      onZoom={onZoom}
     />,
   );
   const lastChange = () => onChange.mock.calls.at(-1)?.[0];
-  return { ...view, onChange, onSelect, onSeek, lastChange };
+  return { ...view, onChange, onSelect, onSeek, onZoom, lastChange };
 }
 
 describe('ShowTimeline', () => {
@@ -202,6 +204,31 @@ describe('ShowTimeline', () => {
 
     expect(lastChange()?.cues).toEqual([]);
     expect(lastChange()?.lightTracks[0]?.clips).toHaveLength(1);
+  });
+
+  it('GIVEN the timeline WHEN the wheel turns up and down THEN it zooms in and out instead of scrolling', () => {
+    const { onZoom } = renderTimeline();
+    const scroll = screen.getByLabelText('Timeline').closest('[class*="scroll"]');
+    if (!scroll) throw new Error('scroll area missing');
+
+    const scrolledUp = fireEvent.wheel(scroll, { deltaY: -100 });
+    fireEvent.wheel(scroll, { deltaY: 100 });
+
+    expect(scrolledUp).toBe(false);
+    const [[zoomIn], [zoomOut]] = onZoom.mock.calls;
+    expect(zoomIn).toBeGreaterThan(1);
+    expect(zoomOut).toBeLessThan(1);
+  });
+
+  it('GIVEN the timeline WHEN the wheel turns with Shift or sideways THEN it scrolls instead of zooming', () => {
+    const { onZoom } = renderTimeline();
+    const scroll = screen.getByLabelText('Timeline').closest('[class*="scroll"]');
+    if (!scroll) throw new Error('scroll area missing');
+
+    fireEvent.wheel(scroll, { deltaY: 100, shiftKey: true });
+    fireEvent.wheel(scroll, { deltaX: 100, deltaY: 10 });
+
+    expect(onZoom).not.toHaveBeenCalled();
   });
 
   it('GIVEN the marker WHEN dragged along the ruler and back THEN it follows and seeks once on release', () => {

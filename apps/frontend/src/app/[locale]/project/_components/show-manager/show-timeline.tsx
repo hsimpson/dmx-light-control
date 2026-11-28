@@ -4,6 +4,7 @@ import { useTranslation } from '@/lib/i18n/use-translation';
 import {
   useEffect,
   useEffectEvent,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -35,6 +36,9 @@ const TICK_STEPS_S = [1, 2, 5, 10, 15, 30, 60, 120, 300];
 /** Room after the last clip to drag clips further out. */
 const TAIL_MS = 30_000;
 const MS_PER_SECOND = 1000;
+/** One mouse-wheel notch (about 100 px) zooms by about a fifth. */
+const WHEEL_ZOOM_PER_PX = 0.002;
+const WHEEL_LINE_PX = 16;
 
 type SelectionKind = 'light' | 'audio' | 'cue';
 
@@ -59,6 +63,7 @@ type ShowTimelineProperties = {
   onSelectTrack: (trackId: string) => void;
   onChange: (show: ShowDocument) => void;
   onSeek: (ms: number) => void;
+  onZoom: (factor: number) => void;
 };
 
 const ShowTimeline = ({
@@ -72,9 +77,13 @@ const ShowTimeline = ({
   onSelectTrack,
   onChange,
   onSeek,
+  onZoom,
 }: ShowTimelineProperties) => {
   const { t } = useTranslation();
   const dragRef = useRef<Drag | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // The time under the cursor when the wheel zoomed, kept under it once the new zoom is laid out.
+  const zoomAnchorRef = useRef<{ ms: number; offsetPx: number } | null>(null);
   const [dragging, setDragging] = useState(false);
   // The marker while it is dragged; the seek itself waits for release, so a playing show jumps once.
   const [scrubMs, setScrubMs] = useState<number | null>(null);
@@ -170,6 +179,36 @@ const ShowTimeline = ({
     };
   }, []);
 
+  const onWheel = useEffectEvent((event: WheelEvent) => {
+    const scroll = scrollRef.current;
+    // Shift and sideways swipes keep scrolling the timeline.
+    if (!scroll || event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+    event.preventDefault();
+    const offsetPx = event.clientX - scroll.getBoundingClientRect().left;
+    zoomAnchorRef.current = { ms: toMs(scroll.scrollLeft + offsetPx - LABEL_WIDTH_PX), offsetPx };
+    const deltaPx = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? event.deltaY * WHEEL_LINE_PX : event.deltaY;
+    onZoom(Math.exp(-deltaPx * WHEEL_ZOOM_PER_PX));
+  });
+  useEffect(() => {
+    const scroll = scrollRef.current;
+    if (!scroll) return;
+    const wheel = (event: WheelEvent) => {
+      onWheel(event);
+    };
+    // Not passive, so the page does not scroll while the timeline zooms.
+    scroll.addEventListener('wheel', wheel, { passive: false });
+    return () => {
+      scroll.removeEventListener('wheel', wheel);
+    };
+  }, []);
+  useLayoutEffect(() => {
+    const anchor = zoomAnchorRef.current;
+    const scroll = scrollRef.current;
+    if (!anchor || !scroll) return;
+    scroll.scrollLeft = LABEL_WIDTH_PX + (anchor.ms / MS_PER_SECOND) * pixelsPerSecond - anchor.offsetPx;
+    zoomAnchorRef.current = null;
+  }, [pixelsPerSecond]);
+
   const onActivate = (activate: () => void) => (event: KeyboardEvent<HTMLElement>) => {
     if (event.key !== 'Enter' && event.key !== ' ') return;
     event.preventDefault();
@@ -189,7 +228,7 @@ const ShowTimeline = ({
   });
 
   return (
-    <div className={classes.scroll}>
+    <div ref={scrollRef} className={classes.scroll}>
       <div className={classes.content} style={{ width: LABEL_WIDTH_PX + widthPx }}>
         <div className={`${classes.row} ${classes.rulerRow}`}>
           <div className={classes.label} />

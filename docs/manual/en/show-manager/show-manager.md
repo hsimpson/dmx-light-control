@@ -65,7 +65,7 @@ Cues belong to the show, not to an audio clip: moving or removing audio leaves t
 3. Drag a clip to move it, also onto another light track, and drag its right edge to make it longer or shorter. Clip edges snap to a beat line close by.
 4. Click **Save**.
 
-Click a track name without a clip selected to rename the track (**Track name**) or delete it (**Remove track**). Use the magnifier icons to zoom the timeline in and out.
+Click a track name without a clip selected to rename the track (**Track name**) or delete it (**Remove track**). Use the magnifier icons or the mouse wheel over the timeline to zoom it in and out; the wheel keeps the spot under the pointer in place. Hold Shift while turning the wheel to scroll sideways.
 
 ### Clip settings
 

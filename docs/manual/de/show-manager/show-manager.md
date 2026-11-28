@@ -65,7 +65,7 @@ Cues gehören zur Show, nicht zu einem Audio-Clip: Verschieben oder Entfernen vo
 3. Ziehen Sie einen Clip, um ihn zu verschieben, auch auf eine andere Lichtspur, und ziehen Sie seinen rechten Rand, um ihn länger oder kürzer zu machen. Clip-Ränder rasten an einer nahen Beat-Linie ein.
 4. Klicken Sie auf **Speichern**.
 
-Klicken Sie ohne ausgewählten Clip auf einen Spurnamen, um die Spur umzubenennen (**Spurname**) oder zu löschen (**Spur entfernen**). Mit den Lupen-Symbolen vergrößern und verkleinern Sie die Zeitleiste.
+Klicken Sie ohne ausgewählten Clip auf einen Spurnamen, um die Spur umzubenennen (**Spurname**) oder zu löschen (**Spur entfernen**). Mit den Lupen-Symbolen oder dem Mausrad über der Zeitleiste vergrößern und verkleinern Sie sie; beim Mausrad bleibt die Stelle unter dem Mauszeiger, wo sie ist. Halten Sie Umschalt gedrückt, um mit dem Mausrad seitwärts zu blättern.
 
 ### Clip-Einstellungen
 
