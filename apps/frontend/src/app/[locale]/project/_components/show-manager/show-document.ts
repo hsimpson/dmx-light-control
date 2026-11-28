@@ -117,6 +117,13 @@ export const snapToBeat = (ms: number, beatsMs: readonly number[], toleranceMs: 
 };
 
 /** `m:ss`, the precision a show transport needs. */
+/** The cue last passed at `ms` and the one after it; `cues` are sorted by time, as the backend stores them. */
+export const cueAt = (cues: readonly ShowCue[], ms: number): { current?: ShowCue; next?: ShowCue } => {
+  const nextIndex = cues.findIndex(cue => cue.ms > ms);
+  const passed = nextIndex === -1 ? cues.length : nextIndex;
+  return { current: cues[passed - 1], next: cues[nextIndex] };
+};
+
 export const formatShowTime = (ms: number): string => {
   const totalSeconds = Math.max(0, Math.floor(ms / MS_PER_SECOND));
   const minutes = Math.floor(totalSeconds / SECONDS_PER_MINUTE);

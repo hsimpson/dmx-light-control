@@ -5,6 +5,7 @@ import {
   addLightTrack,
   audioClipsOverlap,
   createLightClip,
+  cueAt,
   formatShowTime,
   moveAudioClip,
   removeCue,
@@ -140,5 +141,16 @@ describe('show document', () => {
       audioClips: [{ publicId: 'a', startMs: 500 }],
       cues: [{ id: 'q', name: 'Drop', ms: 700 }],
     });
+  });
+
+  it('GIVEN sorted cues WHEN asked at a time THEN it returns the cue last passed and the next one', () => {
+    const cues = [
+      { id: 'a', name: 'Verse', ms: 1000 },
+      { id: 'b', name: 'Chorus', ms: 5000 },
+    ];
+
+    expect(cueAt(cues, 500)).toEqual({ current: undefined, next: cues[0] });
+    expect(cueAt(cues, 1000)).toEqual({ current: cues[0], next: cues[1] });
+    expect(cueAt(cues, 9000)).toEqual({ current: cues[1], next: undefined });
   });
 });

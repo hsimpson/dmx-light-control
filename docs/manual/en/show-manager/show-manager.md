@@ -56,7 +56,7 @@ Cue points mark places in the show you want to jump to, such as the chorus or a 
 
 ![Settings of a cue](images/show-manager-cue.png)
 
-Cues belong to the show, not to an audio clip: moving or removing audio leaves them where they are. They do not change the show's length or what it plays. The [Show](../virtual-console/show-control.md) control shows them on its timeline.
+Cues belong to the show, not to an audio clip: moving or removing audio leaves them where they are. They do not change the show's length or what it plays. The [Show](../virtual-console/show-control.md) control shows them on its timeline and as buttons to jump to.
 
 ## Light tracks
 

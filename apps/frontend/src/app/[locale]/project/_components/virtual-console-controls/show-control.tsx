@@ -28,6 +28,8 @@ const ShowControl = ({ control, mode, selected = false }: Omit<VirtualConsoleCon
         backgroundColor: control.backgroundColor,
         color: control.foregroundColor,
         borderRadius: 4,
+        // Lets the transport size itself from the control's height.
+        containerType: 'size',
         outline: selected ? '2px solid var(--mantine-color-yellow-filled)' : undefined,
         // Edit mode moves and resizes the control; its buttons must not catch the pointer.
         pointerEvents: mode === 'edit' ? 'none' : undefined,
@@ -43,7 +45,7 @@ const ShowControl = ({ control, mode, selected = false }: Omit<VirtualConsoleCon
           showPublicId={control.showPublicId}
           durationMs={show?.durationMs ?? 0}
           cues={show?.cues}
-          compact
+          layout="console"
         />
       ) : (
         <Text size="xs" c="dimmed">

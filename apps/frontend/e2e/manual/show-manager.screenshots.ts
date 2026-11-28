@@ -85,7 +85,7 @@ const showControl = {
   x: 40,
   y: 40,
   width: 360,
-  height: 104,
+  height: 160,
   label: 'Opening',
   backgroundColor: '#1a1b1e',
   borderWidth: null,

@@ -1,7 +1,7 @@
 import { dmxStore, resetDmxStore } from '@/lib/dmx/dmx-store';
 import { GetShowsDocument } from '@/shared/types/graphql/graphql';
 import { renderWithProviders } from '@/testhelpers/render-with-providers';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createControl } from '../virtual-console-document';
 import ShowControl from './show-control';
@@ -63,14 +63,46 @@ describe('ShowControl', () => {
     expect(socket.stopShow).toHaveBeenCalledTimes(1);
   });
 
-  it('GIVEN a show with a cue WHEN its mark is clicked THEN the show plays from the cue', async () => {
+  it('GIVEN a show with a cue WHEN its button is clicked THEN the show plays from the cue', async () => {
     const { user } = renderWithProviders(<ShowControl control={control} mode="play" />, { apolloMocks: [showsQuery] });
 
-    const mark = await screen.findByRole('button', { name: 'Jump to Chorus' });
-    expect(mark).toHaveStyle({ left: '25%' });
-    await user.click(mark);
+    const cue = await screen.findByRole('button', { name: 'Jump to Chorus' });
+    expect(cue).toHaveTextContent('Chorus');
+    await user.click(cue);
 
     expect(socket.playShow).toHaveBeenCalledWith(SHOW_ID, 50_000);
+  });
+
+  it('GIVEN the show plays before a cue WHEN rendered THEN the next cue counts down and none is current', async () => {
+    dmxStore
+      .getState()
+      .setShowPlayback({ showPublicId: SHOW_ID, status: 'playing', positionMs: 15_000, durationMs: 200_000 });
+    renderWithProviders(<ShowControl control={control} mode="play" />, { apolloMocks: [showsQuery] });
+
+    expect(await screen.findByText('Next: Chorus in 0:35')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Jump to Chorus' })).toHaveAttribute('data-current', 'false');
+  });
+
+  it('GIVEN the show played past a cue WHEN rendered THEN that cue is current and nothing is next', async () => {
+    dmxStore
+      .getState()
+      .setShowPlayback({ showPublicId: SHOW_ID, status: 'playing', positionMs: 60_000, durationMs: 200_000 });
+    renderWithProviders(<ShowControl control={control} mode="play" />, { apolloMocks: [showsQuery] });
+
+    expect(await screen.findByRole('button', { name: 'Jump to Chorus' })).toHaveAttribute('data-current', 'true');
+    expect(screen.queryByText(/^Next:/)).not.toBeInTheDocument();
+  });
+
+  it('GIVEN a stopped show WHEN the position bar is moved by keyboard THEN the show plays from there', async () => {
+    renderWithProviders(<ShowControl control={control} mode="play" />, { apolloMocks: [showsQuery] });
+
+    const bar = await screen.findByRole('slider', { name: 'Position' });
+    await waitFor(() => {
+      expect(bar).toHaveAttribute('aria-valuemax', '200000');
+    });
+    fireEvent.keyDown(bar, { key: 'ArrowRight' });
+
+    expect(socket.playShow).toHaveBeenCalledWith(SHOW_ID, 1000);
   });
 
   it('GIVEN edit mode WHEN rendered THEN the transport does not catch the pointer', () => {

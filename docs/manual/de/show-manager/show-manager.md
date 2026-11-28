@@ -56,7 +56,7 @@ Cues markieren Stellen der Show, zu denen Sie springen wollen, etwa den Refrain 
 
 ![Einstellungen eines Cues](images/show-manager-cue.png)
 
-Cues gehören zur Show, nicht zu einem Audio-Clip: Verschieben oder Entfernen von Audio lässt sie, wo sie sind. Sie ändern weder die Länge der Show noch, was sie abspielt. Das Steuerelement [Show](../virtual-console/show-control.md) zeigt sie auf seiner Zeitleiste.
+Cues gehören zur Show, nicht zu einem Audio-Clip: Verschieben oder Entfernen von Audio lässt sie, wo sie sind. Sie ändern weder die Länge der Show noch, was sie abspielt. Das Steuerelement [Show](../virtual-console/show-control.md) zeigt sie auf seiner Zeitleiste und als Schaltflächen zum Springen.
 
 ## Lichtspuren
 

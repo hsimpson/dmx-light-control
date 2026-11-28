@@ -1,6 +1,6 @@
 # Show
 
-Das Steuerelement **Show** spielt eine Show aus dem [Show-Manager](../show-manager/show-manager.md) auf der virtuellen Konsole ab, wie ein Audio-Player: Abspielen, Pause, Stopp und eine kleine Zeitleiste mit vergangener, gesamter und verbleibender Zeit.
+Das Steuerelement **Show** spielt eine Show aus dem [Show-Manager](../show-manager/show-manager.md) auf der virtuellen Konsole ab, wie ein Audio-Player: Abspielen, Pause, Stopp und eine Zeitleiste mit vergangener, gesamter und verbleibender Zeit und eine Schaltfläche je Cue. Machen Sie das Steuerelement im Editor größer, wachsen Schaltflächen, Zeiten und Zeitleiste mit.
 
 ![Ein Show-Steuerelement, während seine Show läuft](images/show-control.png)
 
@@ -28,7 +28,9 @@ Nutzen Sie die Tasten im ausgekoppelten Fenster (das Symbol **Auskoppeln** im Be
 - **Abspielen** startet die Show am Anfang; eine pausierte Show macht dort weiter, wo sie war.
 - **Pause** hält Musik und Licht der Show an und behält die Position.
 - **Stopp** beendet die Show.
-- Die gelben Markierungen auf der Zeitleiste sind die [Cues](../show-manager/show-manager.md#cues) der Show. Zeigen Sie auf eine, um Name und Zeit zu sehen; klicken Sie darauf, um die Show ab dort abzuspielen, auch wenn sie pausiert oder gestoppt ist.
+- Ziehen oder klicken Sie auf der Zeitleiste oder bewegen Sie sie mit den Pfeiltasten, um zu springen: Die Show spielt ab der Stelle, an der Sie loslassen, auch wenn sie pausiert oder gestoppt ist.
+- Die gelben Linien auf der Zeitleiste sind die [Cues](../show-manager/show-manager.md#cues) der Show. Darunter hat jeder Cue eine Schaltfläche mit seinem Namen; klicken Sie darauf, um die Show ab diesem Cue abzuspielen. Die Schaltfläche des zuletzt passierten Cues ist hervorgehoben.
+- Läuft die Show oder ist sie pausiert, nennt **Als Nächstes: … in …** hinter den Zeiten den nächsten Cue und zählt bis zu ihm herunter.
 
 Die Show läuft auf dem Server, daher zeigen alle offenen Konsolen, das ausgekoppelte Fenster und der Show-Manager dieselbe Position. Die Regeln der Wiedergabe stehen auf der Seite [Show-Manager](../show-manager/show-manager.md#show-abspielen).
 
